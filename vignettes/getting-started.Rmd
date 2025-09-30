@@ -7,8 +7,13 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=FALSE}
+eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
+knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
+```
+
 ```r
-library(tidy1212)
+library(mongolstats)
 library(dplyr)
 ```
 
@@ -46,4 +51,3 @@ reqs <- tibble::tibble(
 )
 nso_package(reqs, labels = "en") %>% select(tbl_id, period, value) %>% head()
 ```
-

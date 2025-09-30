@@ -7,6 +7,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=FALSE}
+eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
+knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
+```
+
 ```r
 library(mongolstats)
 library(dplyr)
@@ -29,4 +34,3 @@ joined %>% select(shapeName, name, value) %>% head()
 ```
 
 If you have official region names in your dataset, prefer `mn_join_by_name()` for exact matching.
-
