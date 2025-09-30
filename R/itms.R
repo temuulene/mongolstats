@@ -7,7 +7,6 @@
 #'
 #' @return tibble with columns like `list_id`, `tbl_id`, `tbl_nm`, `tbl_eng_nm`,
 #'   `unit_id`, `cd_nm`, `cd_eng_nm`, `strt_prd`, `end_prd`, `prd_se`, `lst_chn_de`.
-#' @export
 #' @keywords internal
 #' @noRd
 .fetch_itms_raw <- function() {
@@ -28,7 +27,6 @@ nso_itms <- function() .fetch_itms()
 #'
 #' @param tbl_id Table identifier (e.g., "DT_NSO_2600_004V1").
 #' @return tibble with columns `field`, `itm_id`, `up_itm_id`, `scr_mn`, `scr_eng`.
-#' @export
 #' @keywords internal
 #' @noRd
 .fetch_detail_raw <- function(tbl_id) {
