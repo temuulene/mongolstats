@@ -18,11 +18,9 @@ Imports:
     jsonlite,
     tibble,
     dplyr,
-    tidyr,
     purrr,
     stringr,
     sf,
-    rlang,
     memoise,
     cachem,
     rappdirs,
@@ -38,6 +36,6 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Config/testthat/edition: 3
-URL: https://temuulene.github.io/mongolstats, https://opendata.1212.mn/
+URL: https://temuulene.github.io/mongolstats/, https://opendata.1212.mn/
 BugReports: https://github.com/temuulene/mongolstats/issues
 License: MIT + file LICENSE
