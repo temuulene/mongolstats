@@ -1,5 +1,7 @@
 # mongolstats
 
+![pkgdown](https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yml/badge.svg)
+
 Tidy access to the National Statistics Office of Mongolia Open Data API (opendata.1212.mn) and Mongolia administrative boundaries.
 
 ## Quick start
