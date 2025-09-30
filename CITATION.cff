@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it as below.
+title: mongolstats
+version: 0.0.0.9000
+type: software
+authors:
+  - given-names: Temuulen
+    family-names: 
+    email: temuulen@gmail.com
+repository-code: https://github.com/temuulene/mongolstats
+url: https://temuulene.github.io/mongolstats
+license: MIT
+abstract: >-
+  Tidy access to the National Statistics Office of Mongolia Open Data API and administrative boundaries, with tidyverse-style helpers and sf integration.
+keywords:
+  - R
+  - rstats
+  - tidyverse
+  - sf
+  - geospatial
+  - opendata
+  - Mongolia
+  - NSO
