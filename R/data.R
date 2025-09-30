@@ -7,6 +7,7 @@
 #' @param tbl_id Table identifier (e.g., "DT_NSO_2600_004V1").
 #' @param period Character vector of periods (e.g., "201701", "2016"). Optional.
 #' @param code,code1,code2 Optional character vectors of classification codes.
+#' @param labels How to handle code labels: "none" (default, no labels), "en" (English labels only), "mn" (Mongolian labels only), or "both" (both English and Mongolian labels).
 #' @return tibble with columns including `tbl_id`, `period`, `code*`, `scr_*` labels,
 #'   and numeric `value`.
 #' @export
@@ -45,14 +46,9 @@ nso_data <- function(tbl_id, period = NULL, code = NULL, code1 = NULL, code2 = N
   if ("DTVAL_CO" %in% names(out)) out <- dplyr::rename(out, value = DTVAL_CO)
   if ("value" %in% names(out)) out$value <- suppressWarnings(as.numeric(out$value))
   # Ensure code columns are character vectors, not list-cols
-  .to_chr <- function(v, n) {
-    if (is.null(v) || length(v) == 0) return(rep(NA_character_, n))
-    if (is.list(v)) return(vapply(v, function(x) if (length(x)) as.character(x[[1]]) else NA_character_, character(1)))
-    as.character(v)
-  }
-  if ("code" %in% names(out)) out$code <- .to_chr(out$code, nrow(out))
-  if ("code1" %in% names(out)) out$code1 <- .to_chr(out$code1, nrow(out))
-  if ("code2" %in% names(out)) out$code2 <- .to_chr(out$code2, nrow(out))
+  if ("code" %in% names(out)) out$code <- .ms_to_chr(out$code, nrow(out))
+  if ("code1" %in% names(out)) out$code1 <- .ms_to_chr(out$code1, nrow(out))
+  if ("code2" %in% names(out)) out$code2 <- .ms_to_chr(out$code2, nrow(out))
 
   if (!identical(labels, "none")) {
     out <- .apply_labels_single(out, tbl_id, labels)
@@ -68,6 +64,7 @@ nso_data <- function(tbl_id, period = NULL, code = NULL, code1 = NULL, code2 = N
 #'
 #' @param requests A data frame with columns `tbl_id`, and optional `period`,
 #'   `code`, `code1`, `code2`; or a list of such records.
+#' @param labels How to handle code labels: "none" (default, no labels), "en" (English labels only), "mn" (Mongolian labels only), or "both" (both English and Mongolian labels).
 #' @return tibble of combined results with an added `tbl_id` column.
 #' @export
 nso_package <- function(requests, labels = c("none", "en", "mn", "both")) {
@@ -120,9 +117,9 @@ nso_package <- function(requests, labels = c("none", "en", "mn", "both")) {
   if ("DTVAL_CO" %in% names(out)) out <- dplyr::rename(out, value = DTVAL_CO)
   if ("value" %in% names(out)) out$value <- suppressWarnings(as.numeric(out$value))
   # Ensure code columns are character vectors
-  if ("code" %in% names(out)) out$code <- .to_chr(out$code, nrow(out))
-  if ("code1" %in% names(out)) out$code1 <- .to_chr(out$code1, nrow(out))
-  if ("code2" %in% names(out)) out$code2 <- .to_chr(out$code2, nrow(out))
+  if ("code" %in% names(out)) out$code <- .ms_to_chr(out$code, nrow(out))
+  if ("code1" %in% names(out)) out$code1 <- .ms_to_chr(out$code1, nrow(out))
+  if ("code2" %in% names(out)) out$code2 <- .ms_to_chr(out$code2, nrow(out))
 
   if (!identical(labels, "none") && "tbl_id" %in% names(out)) {
     out <- .apply_labels_multi(out, labels)
