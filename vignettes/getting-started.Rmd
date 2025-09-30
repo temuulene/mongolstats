@@ -1,0 +1,49 @@
+---
+title: "Getting started with tidy1212"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with tidy1212}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```r
+library(tidy1212)
+library(dplyr)
+```
+
+## List tables and search
+
+```r
+itms <- nso_itms()
+itms %>% select(tbl_id, tbl_eng_nm, strt_prd, end_prd) %>% head()
+
+nso_itms_search("population") %>% select(tbl_id, tbl_eng_nm) %>% head()
+```
+
+## Fetch data
+
+```r
+dat <- nso_data(
+  tbl_id = "DT_NSO_2600_004V1",
+  period = c("201701","201702","201703"),
+  code = c("1","2"),
+  code1 = "101",
+  labels = "en"
+)
+
+dat %>% select(tbl_id, period, code, code_en, value) %>% head()
+```
+
+## Batch fetch
+
+```r
+reqs <- tibble::tibble(
+  tbl_id = c("DT_NSO_0300_062V1","DT_NSO_0300_004V5"),
+  period = "2016",
+  code = c("12","181"),
+  code1 = c("101","11")
+)
+nso_package(reqs, labels = "en") %>% select(tbl_id, period, value) %>% head()
+```
+

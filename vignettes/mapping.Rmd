@@ -1,0 +1,44 @@
+---
+title: "Mapping with tidy1212"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Mapping with tidy1212}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```r
+library(tidy1212)
+library(dplyr)
+library(sf)
+```
+
+This vignette shows how to join data to ADM1 boundaries by name.
+
+```r
+adm1 <- mn_boundaries("ADM1") %>% mn_boundaries_normalize()
+head(adm1$name_std)
+```
+
+Suppose we fetched a table that reports values by aimag:
+
+```r
+# Replace with a table that has region breakdowns
+tbl <- "DT_NSO_0500_007V1"  # GDP by region, aimag and capital
+
+periods <- nso_table_periods(tbl)
+dat <- nso_data(tbl, period = tail(periods, 1))
+
+# Assume English names are in one of the label columns (e.g., scr_eng1)
+# Create a synthetic name column for demo if needed
+nm_col <- intersect(names(dat), c("scr_eng", "scr_eng1", "scr_eng2"))[1]
+dat$name <- dat[[nm_col]]
+
+joined <- mn_join_by_name(dat, name_col = "name", level = "ADM1")
+plot(sf::st_geometry(joined))
+```
+
+Note: Name-based joins are heuristic. For rigorous joins, prefer stable codes
+once a consistent NSO geographic classification is identified.
+```
+
