@@ -1,4 +1,4 @@
-# mongolstats
+﻿# mongolstats
 
 ![pkgdown](https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yml/badge.svg) ![R-CMD-check](https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yml/badge.svg)
 
@@ -58,7 +58,7 @@ Tidy access to the National Statistics Office of Mongolia (NSO) Open Data API (o
 - Fetch data via `nso_data()` and batch requests with `nso_package()`
 - Optional label columns in English or Mongolian (`labels = "en" | "mn" | "both"`)
 - Sector discovery and table search helpers
-- Mongolia administrative boundaries (ADM0–ADM2) as `sf`
+- Mongolia administrative boundaries (ADM0â€“ADM2) as `sf`
 - Name-normalized and fuzzy boundary joins for quick mapping
 - Lightweight on-disk caching for faster table/codebook lookups
 
@@ -119,27 +119,27 @@ joined_fuzzy <- mn_fuzzy_join_by_name(dat, name_col = "code1_en", level = "ADM1"
 ## Core Functions
 
 - Discovery
-  - `nso_itms()` — list all tables
-  - `nso_itms_detail(tbl_id)` — codebook for variables (CODE, CODE1, CODE2)
-  - `nso_sectors()`, `nso_subsectors(subid)` — sector hierarchy
-  - `nso_search(query, sector)` — keyword search across table names
+  - `nso_itms()` â€” list all tables
+  - `nso_itms_detail(tbl_id)` â€” codebook for variables (CODE, CODE1, CODE2)
+  - `nso_sectors()`, `nso_subsectors(subid)` â€” sector hierarchy
+  - `nso_search(query, sector)` â€” keyword search across table names
 
 - Data
-  - `nso_data(tbl_id, period, code, code1, code2, labels)` — fetch one table
-  - `nso_package(requests, labels)` — batch fetch many tables
+  - `nso_data(tbl_id, period, code, code1, code2, labels)` â€” fetch one table
+  - `nso_package(requests, labels)` â€” batch fetch many tables
   - `labels` can be "none" (default), "en", "mn", or "both"
 
 - Boundaries and Joins
-  - `mn_boundaries(level)` — ADM0/ADM1/ADM2 `sf` from GeoBoundaries
-  - `mn_boundaries_normalize(g)` — adds `name_std` for joining
-  - `mn_join_by_name(data, name_col, level, boundaries)` — exact join
-  - `mn_fuzzy_join_by_name(data, name_col, level, max_distance)` — fuzzy join
-  - `mn_boundary_keys(level)` — quick crosswalk of boundary IDs/names
+  - `mn_boundaries(level)` â€” ADM0/ADM1/ADM2 `sf` from GeoBoundaries
+  - `mn_boundaries_normalize(g)` â€” adds `name_std` for joining
+  - `mn_join_by_name(data, name_col, level, boundaries)` â€” exact join
+  - `mn_fuzzy_join_by_name(data, name_col, level, max_distance)` â€” fuzzy join
+  - `mn_boundary_keys(level)` â€” quick crosswalk of boundary IDs/names
 
 - Utilities
   - `nso_cache_enable()`, `nso_cache_disable()`, `nso_cache_clear()`
-  - `nso_period_seq(start, end, by)` — build period codes (YYYY or YYYYMM)
-  - `nso_table_periods(tbl_id)` — derive valid periods from table metadata
+  - `nso_period_seq(start, end, by)` â€” build period codes (YYYY or YYYYMM)
+  - `nso_table_periods(tbl_id)` â€” derive valid periods from table metadata
 
 ## Working with Periods
 
@@ -179,6 +179,4 @@ plot(j["value"])
 Issues and pull requests are welcome at:
 - https://github.com/temuulene/mongolstats/issues
 
-## License
-
-MIT © mongolstats authors
+## License`n`nMIT © Temuulen Enebish`n
