@@ -11,8 +11,9 @@ miss <- setdiff(need, intersect(need, avail))
 if (length(miss)) install.packages(miss, repos = "https://cloud.r-project.org", lib = .libPaths()[1], dependencies = TRUE)
 
 if (rmarkdown::pandoc_available()) {
-  try(pkgdown::build_site(preview = FALSE, install = TRUE), silent = FALSE)
+  try(pkgdown::build_site(preview = FALSE, install = FALSE), silent = FALSE)
 } else {
   message("Pandoc not available; skipping site build. Install Pandoc or RStudio.")
 }
 cat("PKGDOWN: done\n")
+
