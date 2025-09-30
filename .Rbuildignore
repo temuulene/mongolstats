@@ -1,0 +1,10 @@
+^README\.Rmd$
+^pkgdown/.
+^\.github/.
+^\.vscode/.
+^\.Rproj\.user$
+^\.Rhistory$
+^\.Rproj$
+^_pkgdown\.yml$
+^vignettes/.
+^docs$

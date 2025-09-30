@@ -1,0 +1,42 @@
+Package: mongolstats
+Type: Package
+Title: Mongolian NSO Open Data and Boundaries (Tidy Client)
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "Temuulen",
+             family = "",
+             role = c("aut", "cre"),
+             email = "temuulen@gmail.com"))
+Description: A tidyverse-friendly client for the National Statistics Office of Mongolia
+    Open Data API (opendata.1212.mn) with helpers to discover tables, variables, and fetch
+    statistical data. Also includes utilities to retrieve Mongolia administrative boundaries
+    (ADM0-ADM2) as 'sf' objects from open sources for mapping and spatial analysis.
+Depends: 
+    R (>= 4.1.0)
+Imports: 
+    httr2,
+    jsonlite,
+    tibble,
+    dplyr,
+    tidyr,
+    purrr,
+    stringr,
+    sf,
+    rlang,
+    memoise,
+    cachem,
+    rappdirs,
+    stringi,
+    stringdist
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    pkgdown
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Config/testthat/edition: 3
+URL: https://yourname.github.io/mongolstats, https://opendata.1212.mn/
+BugReports: https://github.com/yourname/mongolstats/issues
+License: MIT + file LICENSE

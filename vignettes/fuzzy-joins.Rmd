@@ -1,0 +1,32 @@
+---
+title: "Fuzzy name joins with mongolstats"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Fuzzy name joins with mongolstats}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```r
+library(mongolstats)
+library(dplyr)
+library(sf)
+```
+
+This vignette shows how to join tabular data to ADM1 boundaries using fuzzy matching.
+
+```r
+adm1 <- mn_boundaries("ADM1") %>% mn_boundaries_normalize()
+
+# Create a small example with slightly altered names
+sample_names <- head(adm1$shapeName, 6)
+altered <- sub("a", "", sample_names) # remove one 'a' to simulate typos
+dat <- tibble::tibble(name = altered, value = seq_along(altered))
+
+# Fuzzy join (max distance 2)
+joined <- mn_fuzzy_join_by_name(dat, name_col = "name", level = "ADM1", boundaries = adm1, max_distance = 2)
+joined %>% select(shapeName, name, value) %>% head()
+```
+
+If you have official region names in your dataset, prefer `mn_join_by_name()` for exact matching.
+

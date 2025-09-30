@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+inst/doc
+doc
+pkgdown
+*.Rproj
+*.html
+*.utf8.md
+README.md

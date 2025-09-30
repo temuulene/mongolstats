@@ -1,0 +1,15 @@
+template:
+  bootstrap: 5
+  bootswatch: flatly
+url: https://yourname.github.io/mongolstats
+navbar:
+  structure:
+    left: [reference, articles]
+    right: [search]
+articles:
+  - title: Getting Started
+    contents:
+      - vignettes/getting-started.Rmd
+  - title: Mapping
+    contents:
+      - vignettes/mapping.Rmd
