@@ -49,6 +49,8 @@ nso_itms <- function() .fetch_itms()
 }
 
 #' Get variable codes for a table
+#' @param tbl_id Table identifier (e.g., "DT_NSO_2600_004V1").
+#' @return tibble with columns `field`, `itm_id`, `up_itm_id`, `scr_mn`, `scr_eng`.
 #' @export
 nso_itms_detail <- function(tbl_id) {
   stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
