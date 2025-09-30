@@ -5,15 +5,15 @@ user_lib <- file.path(normalizePath("."), ".Rlib")
 if (!dir.exists(user_lib)) dir.create(user_lib, recursive = TRUE)
 .libPaths(c(user_lib, .libPaths()))
 
-need <- c("pkgdown","knitr","rmarkdown")
+need <- c("pkgdown","knitr","rmarkdown","roxygen2")
 avail <- rownames(installed.packages(lib.loc = .libPaths()[1]))
 miss <- setdiff(need, intersect(need, avail))
 if (length(miss)) install.packages(miss, repos = "https://cloud.r-project.org", lib = .libPaths()[1], dependencies = TRUE)
 
 if (rmarkdown::pandoc_available()) {
+  try(roxygen2::roxygenise(), silent = FALSE)
   try(pkgdown::build_site(preview = FALSE, install = FALSE), silent = FALSE)
 } else {
   message("Pandoc not available; skipping site build. Install Pandoc or RStudio.")
 }
 cat("PKGDOWN: done\n")
-
