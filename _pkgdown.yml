@@ -1,7 +1,7 @@
 template:
   bootstrap: 5
   bootswatch: flatly
-url: https://yourname.github.io/mongolstats
+url: https://temuulene.github.io/mongolstats
 navbar:
   structure:
     left: [reference, articles]

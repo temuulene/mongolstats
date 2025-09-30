@@ -9,7 +9,7 @@ Tidy access to the National Statistics Office of Mongolia Open Data API (opendat
 ## Installation
 
 ```r
-# devtools::install_github("yourname/mongolstats")
+# devtools::install_github("temuulene/mongolstats")
 # or install locally from this repo
 ```
 
