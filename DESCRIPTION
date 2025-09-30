@@ -4,7 +4,7 @@ Title: Mongolian NSO Open Data and Boundaries (Tidy Client)
 Version: 0.0.0.9000
 Authors@R: 
     c(person(given = "Temuulen",
-             family = "",
+             family = "Enebish",
              role = c("aut", "cre"),
              email = "temuulen@gmail.com"))
 Description: A tidyverse-friendly client for the National Statistics Office of Mongolia
@@ -32,7 +32,8 @@ Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
-    pkgdown
+    pkgdown,
+    roxygen2
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

@@ -5,7 +5,7 @@ version: 0.0.0.9000
 type: software
 authors:
   - given-names: Temuulen
-    family-names: 
+    family-names: Enebish
     email: temuulen@gmail.com
 repository-code: https://github.com/temuulene/mongolstats
 url: https://temuulene.github.io/mongolstats

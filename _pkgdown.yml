@@ -6,6 +6,14 @@ navbar:
   structure:
     left: [reference, articles]
     right: [search]
+home:
+  title: mongolstats
+  description: Tidy access to Mongolian NSO Open Data and boundaries (sf) with tidyverse-style helpers.
+  links:
+    - text: NSO Open Data
+      href: https://opendata.1212.mn/
+    - text: Source on GitHub
+      href: https://github.com/temuulene/mongolstats
 articles:
   - title: Getting Started
     contents:
@@ -13,3 +21,35 @@ articles:
   - title: Mapping
     contents:
       - vignettes/mapping.Rmd
+  - title: Joins
+    contents:
+      - vignettes/fuzzy-joins.Rmd
+      - vignettes/code-joins.Rmd
+reference:
+  - title: Discover Tables
+    contents:
+      - nso_itms
+      - nso_itms_detail
+      - nso_itms_search
+      - nso_itms_by_sector
+      - nso_sectors
+      - nso_subsectors
+  - title: Fetch Data
+    contents:
+      - nso_data
+      - nso_package
+      - nso_search
+  - title: Boundaries and Joins
+    contents:
+      - mn_boundaries
+      - mn_boundary_keys
+      - mn_boundaries_normalize
+      - mn_join_by_name
+      - mn_fuzzy_join_by_name
+  - title: Utilities
+    contents:
+      - nso_cache_enable
+      - nso_cache_disable
+      - nso_cache_clear
+      - nso_period_seq
+      - nso_table_periods
