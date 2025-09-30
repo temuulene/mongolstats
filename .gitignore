@@ -9,3 +9,4 @@ pkgdown
 *.html
 *.utf8.md
 README.md
+.Rlib/
