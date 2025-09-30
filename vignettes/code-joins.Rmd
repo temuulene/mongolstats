@@ -7,6 +7,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=FALSE}
+eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
+knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
+```
+
 ```r
 library(mongolstats)
 library(dplyr)
@@ -69,4 +74,3 @@ Notes:
 - This example constructs a crosswalk dynamically; you can persist it (e.g., `inst/extdata/adm1_cw.csv`) and reuse it across tables if they share admin codes.
 - If a table uses different admin levels, repeat the pattern with `mn_boundaries("ADM2")` and adjust the field accordingly.
 - Once NSO publishes stable geographic codes, you can replace the name-normalization with a direct code match to boundary keys.
-

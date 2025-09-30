@@ -7,8 +7,13 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=FALSE}
+eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
+knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
+```
+
 ```r
-library(tidy1212)
+library(mongolstats)
 library(dplyr)
 library(sf)
 ```
@@ -41,4 +46,3 @@ plot(sf::st_geometry(joined))
 Note: Name-based joins are heuristic. For rigorous joins, prefer stable codes
 once a consistent NSO geographic classification is identified.
 ```
-
