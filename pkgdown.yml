@@ -4,9 +4,9 @@ pkgdown_sha: fe04924b3df129bea60ac871614b01d87bcae147
 articles:
   code-joins: code-joins.html
   fuzzy-joins: fuzzy-joins.html
-  getting-started: getting-started.html
   mapping: mapping.html
-last_built: 2025-10-01T01:22Z
+  mongolstats: mongolstats.html
+last_built: 2025-10-01T01:47Z
 urls:
   reference: https://temuulene.github.io/mongolstats/reference
   article: https://temuulene.github.io/mongolstats/articles
