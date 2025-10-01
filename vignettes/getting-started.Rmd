@@ -21,9 +21,9 @@ library(dplyr)
 
 ```{r}
 itms <- nso_itms()
-itms %>% select(tbl_id, tbl_eng_nm, strt_prd, end_prd) %>% head()
+itms %>% dplyr::select(dplyr::any_of(c("tbl_id", "tbl_eng_nm", "strt_prd", "end_prd"))) %>% head()
 
-nso_itms_search("population") %>% select(tbl_id, tbl_eng_nm) %>% head()
+nso_itms_search("population") %>% dplyr::select(dplyr::any_of(c("tbl_id", "tbl_eng_nm"))) %>% head()
 ```
 
 ## Fetch data with labels
@@ -37,7 +37,7 @@ dat <- nso_data(
   labels = "en"
 )
 
-dat %>% select(tbl_id, period, code, code_en, value) %>% head()
+dat %>% dplyr::select(dplyr::any_of(c("tbl_id", "period", "code", "code_en", "value"))) %>% head()
 ```
 
 ## Batch fetch
