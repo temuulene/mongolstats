@@ -1,6 +1,11 @@
 ﻿# mongolstats
 
-![pkgdown](https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yml/badge.svg) ![R-CMD-check](https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yml/badge.svg)
+<!-- badges: start -->
+[![pkgdown](https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yml/badge.svg)](https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yml)
+[![R-CMD-check](https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yml)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- badges: end -->
 
 Tidy access to the National Statistics Office of Mongolia Open Data API (opendata.1212.mn) and Mongolia administrative boundaries.
 

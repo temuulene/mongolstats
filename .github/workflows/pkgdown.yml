@@ -24,8 +24,10 @@ jobs:
           needs: website
 
       - name: Generate Rd docs and build site
+        env:
+          PKGDOWN_EVAL: true
         run: |
-          Rscript -e "roxygen2::roxygenise(); pkgdown::build_site(preview = FALSE)"
+          Rscript -e "roxygen2::roxygenise(); pkgdown::build_site(preview = FALSE, new_process = FALSE)"
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4

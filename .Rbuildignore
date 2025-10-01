@@ -6,5 +6,7 @@
 ^\.Rhistory$
 ^\.Rproj$
 ^_pkgdown\.yml$
-^vignettes/.
 ^docs$
+^\.Rlib$
+^CLAUDE\.md$
+^cran-comments\.md$
