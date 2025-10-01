@@ -25,6 +25,7 @@ navbar:
       href: articles/getting-started.html
     github:
       icon: fab fa-github
+      aria-label: GitHub
       href: https://github.com/temuulene/mongolstats
 home:
   title: mongolstats
@@ -88,3 +89,4 @@ reference:
       - nso_cache_clear
       - nso_period_seq
       - nso_table_periods
+      - nso_options
