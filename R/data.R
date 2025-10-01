@@ -13,7 +13,11 @@
 #' @export
 nso_data <- function(tbl_id, period = NULL, code = NULL, code1 = NULL, code2 = NULL,
                      labels = c("none", "en", "mn", "both")) {
-  labels <- match.arg(labels)
+  if (missing(labels)) {
+    labels <- getOption("mongolstats.default_labels", "none")
+  } else {
+    labels <- match.arg(labels)
+  }
   stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
 
   body <- .compact(list(
@@ -68,7 +72,11 @@ nso_data <- function(tbl_id, period = NULL, code = NULL, code1 = NULL, code2 = N
 #' @return tibble of combined results with an added `tbl_id` column.
 #' @export
 nso_package <- function(requests, labels = c("none", "en", "mn", "both")) {
-  labels <- match.arg(labels)
+  if (missing(labels)) {
+    labels <- getOption("mongolstats.default_labels", "none")
+  } else {
+    labels <- match.arg(labels)
+  }
   if (is.data.frame(requests)) {
     reqs <- purrr::pmap(
       requests[, intersect(names(requests), c("tbl_id", "period", "code", "code1", "code2")), drop = FALSE],
@@ -126,29 +134,4 @@ nso_package <- function(requests, labels = c("none", "en", "mn", "both")) {
   }
 
   out
-}
-
-# Label helpers -----------------------------------------------------------
-.apply_labels_single <- function(df, tbl_id, labels) {
-  cb <- tryCatch(nso_itms_detail(tbl_id), error = function(e) NULL)
-  if (is.null(cb) || nrow(cb) == 0) return(df)
-  add_lab <- function(d, field, code_col) {
-    if (!code_col %in% names(d)) return(d)
-    map <- cb[cb$field == field, c("itm_id", "scr_eng", "scr_mn")]
-    if (nrow(map) == 0) return(d)
-    names(map) <- c(code_col, paste0(code_col, "_en"), paste0(code_col, "_mn"))
-    dplyr::left_join(d, map, by = code_col)
-  }
-  df <- add_lab(df, "CODE", "code")
-  df <- add_lab(df, "CODE1", "code1")
-  df <- add_lab(df, "CODE2", "code2")
-  if (labels == "en") df <- df[, setdiff(names(df), grep("_mn$", names(df), value = TRUE))]
-  if (labels == "mn") df <- df[, setdiff(names(df), grep("_en$", names(df), value = TRUE))]
-  df
-}
-
-.apply_labels_multi <- function(df, labels) {
-  split <- split(df, df$tbl_id)
-  out <- lapply(names(split), function(id) .apply_labels_single(split[[id]], id, labels))
-  dplyr::bind_rows(out)
 }

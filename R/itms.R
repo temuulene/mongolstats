@@ -87,3 +87,14 @@ nso_itms_by_sector <- function(list_id) {
 
 # null-coalescing helper
 `%||%` <- function(x, y) if (is.null(x)) y else x
+
+# Aliases for tidycensus-like ergonomics ---------------------------------
+
+#' List available NSO tables (alias)
+#' @export
+nso_tables <- function() nso_itms()
+
+#' Get variable codes for a table (alias)
+#' @param tbl_id Table identifier.
+#' @export
+nso_variables <- function(tbl_id) nso_itms_detail(tbl_id)

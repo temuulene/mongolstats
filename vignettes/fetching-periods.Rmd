@@ -1,0 +1,51 @@
+---
+title: "Fetching data and working with periods"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Fetching data and periods}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
+knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
+```
+
+```r
+library(mongolstats)
+library(dplyr)
+```
+
+## Build period sequences
+
+```r
+# Monthly sequence
+nso_period_seq("201801", "201812", by = "M")
+
+# Yearly sequence
+nso_period_seq("2018", "2022", by = "Y")
+```
+
+## Valid periods for a table
+
+```r
+tbl <- "DT_NSO_0500_007V1"
+periods <- nso_table_periods(tbl)
+head(periods)
+tail(periods)
+```
+
+## Fetch data by period and codes
+
+```r
+dat <- nso_data(
+  tbl_id = "DT_NSO_2600_004V1",
+  period = c("201701", "201702", "201703"),
+  code   = c("1", "2"),
+  code1  = "101",
+  labels = "en"
+)
+dat %>% select(tbl_id, period, code, code_en, value) %>% slice_head(n = 6)
+```
+
