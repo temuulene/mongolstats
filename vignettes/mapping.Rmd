@@ -12,7 +12,7 @@ eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
 knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
 ```
 
-```r
+```{r}
 library(mongolstats)
 library(dplyr)
 library(sf)
@@ -20,14 +20,14 @@ library(sf)
 
 This vignette shows how to join data to ADM1 boundaries by name.
 
-```r
+```{r}
 adm1 <- mn_boundaries("ADM1") %>% mn_boundaries_normalize()
 head(adm1$name_std)
 ```
 
 Suppose we fetched a table that reports values by aimag:
 
-```r
+```{r}
 # Replace with a table that has region breakdowns
 tbl <- "DT_NSO_0500_007V1"  # GDP by region, aimag and capital
 
@@ -45,4 +45,3 @@ plot(sf::st_geometry(joined))
 
 Note: Name-based joins are heuristic. For rigorous joins, prefer stable codes
 once a consistent NSO geographic classification is identified.
-```

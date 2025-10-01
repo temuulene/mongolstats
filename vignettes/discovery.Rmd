@@ -12,29 +12,28 @@ eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
 knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
 ```
 
-```r
+```{r}
 library(mongolstats)
 library(dplyr)
 ```
 
 ## List available tables
 
-```r
+```{r}
 itms <- nso_tables()
 itms %>% select(tbl_id, tbl_eng_nm, strt_prd, end_prd) %>% slice_head(n = 10)
 ```
 
 ## Search tables by keyword
 
-```r
+```{r}
 nso_itms_search("population") %>% select(tbl_id, tbl_eng_nm) %>% slice_head(n = 10)
 ```
 
 ## Explore variables (codebook) for a table
 
-```r
+```{r}
 vars <- nso_variables("DT_NSO_2600_004V1")
 vars %>% count(field)
 vars %>% filter(field %in% c("CODE","CODE1","CODE2")) %>% slice_head(n = 10)
 ```
-

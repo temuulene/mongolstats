@@ -12,14 +12,14 @@ eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
 knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
 ```
 
-```r
+```{r}
 library(mongolstats)
 library(dplyr)
 ```
 
 ## Create a batch request tibble
 
-```r
+```{r}
 reqs <- tibble::tibble(
   tbl_id = c("DT_NSO_0300_062V1", "DT_NSO_0300_004V5"),
   period = "2016",
@@ -31,16 +31,15 @@ reqs
 
 ## Fetch multiple tables at once
 
-```r
+```{r}
 pkg <- nso_package(reqs, labels = "en")
 pkg %>% select(tbl_id, period, value) %>% slice_head(n = 10)
 ```
 
 ## Combine with discovery utilities
 
-```r
+```{r}
 itms <- nso_tables()
 target <- itms %>% filter(stringr::str_detect(stringr::str_to_lower(tbl_eng_nm), "population")) %>% slice_head(n = 5)
 target %>% select(tbl_id, tbl_eng_nm)
 ```
-

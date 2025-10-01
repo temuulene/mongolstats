@@ -12,7 +12,7 @@ eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
 knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
 ```
 
-```r
+```{r}
 library(mongolstats)
 library(dplyr)
 library(sf)
@@ -22,7 +22,7 @@ This vignette demonstrates a reproducible pattern to perform code-based joins to
 
 Because NSO table classifications vary by table, we first obtain the table’s codebook (via `nso_itms_detail()`) and identify the field that corresponds to an administrative division (e.g., aimag-level). We then construct a one-time crosswalk that maps the table’s codes to boundary identifiers.
 
-```r
+```{r}
 # Example table with region/aimag breakdown in its metadata
 tbl <- "DT_NSO_0500_007V1"  # GDP by region, aimag and the capital (example)
 
