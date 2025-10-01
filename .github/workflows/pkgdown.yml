@@ -23,7 +23,7 @@ jobs:
 
       - name: Generate Rd docs and build site
         run: |
-          Rscript -e "roxygen2::roxygenise(); pkgdown::build_site(preview = FALSE, install = FALSE)"
+          Rscript -e "roxygen2::roxygenise(); pkgdown::build_site(preview = FALSE)"
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
