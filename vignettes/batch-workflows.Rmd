@@ -33,7 +33,8 @@ reqs
 
 ```{r}
 pkg <- nso_package(reqs, labels = "en")
-pkg %>% select(tbl_id, period, value) %>% slice_head(n = 10)
+# Be robust to empty or differently-shaped results in CI/site builds
+pkg %>% dplyr::select(dplyr::any_of(c("tbl_id", "period", "value"))) %>% dplyr::slice_head(n = 10)
 ```
 
 ## Combine with discovery utilities

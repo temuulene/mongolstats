@@ -46,5 +46,5 @@ dat <- nso_data(
   code1  = "101",
   labels = "en"
 )
-dat %>% select(tbl_id, period, code, code_en, value) %>% slice_head(n = 6)
+dat %>% dplyr::select(dplyr::any_of(c("tbl_id", "period", "code", "code_en", "value"))) %>% dplyr::slice_head(n = 6)
 ```
