@@ -12,7 +12,7 @@ eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
 knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
 ```
 
-```r
+```{r}
 library(mongolstats)
 library(dplyr)
 library(sf)
@@ -20,7 +20,7 @@ library(sf)
 
 This vignette shows how to join tabular data to ADM1 boundaries using fuzzy matching.
 
-```r
+```{r}
 adm1 <- mn_boundaries("ADM1") %>% mn_boundaries_normalize()
 
 # Create a small example with slightly altered names
