@@ -1,8 +1,8 @@
 ---
-title: "Mapping with tidy1212"
+title: "Mapping with mongolstats"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Mapping with tidy1212}
+  %\VignetteIndexEntry{Mapping with mongolstats}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

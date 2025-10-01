@@ -1,8 +1,8 @@
 ---
-title: "Getting started with tidy1212"
+title: "mongolstats"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting started with tidy1212}
+  %\VignetteIndexEntry{mongolstats}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

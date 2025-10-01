@@ -1,11 +1,11 @@
 template:
   bootstrap: 5
   bootswatch: flatly
-url: https://temuulene.github.io/mongolstats
+url: https://temuulene.github.io/mongolstats/
 navbar:
   structure:
-    left: [reference, articles]
-    right: [search]
+    left: [intro, reference, articles]
+    right: [search, github]
 home:
   title: mongolstats
   description: Tidy access to Mongolian NSO Open Data and boundaries (sf) with tidyverse-style helpers.
@@ -15,13 +15,10 @@ home:
     - text: Source on GitHub
       href: https://github.com/temuulene/mongolstats
 articles:
-  - title: Getting Started
-    contents:
-      - getting-started
   - title: Mapping
     contents:
       - mapping
-  - title: Joins
+  - title: Advanced Joins
     contents:
       - fuzzy-joins
       - code-joins
