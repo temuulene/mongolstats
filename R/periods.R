@@ -35,16 +35,21 @@ nso_period_seq <- function(start, end, by = c("Y", "M")) {
 nso_table_periods <- function(tbl_id) {
   it <- tryCatch(nso_itms(), error = function(e) NULL)
   if (is.null(it) || !("tbl_id" %in% names(it))) return(character())
-  row <- it[it$tbl_id == tbl_id, , drop = FALSE]
-  if (!nrow(row)) return(character())
-  start <- as.character(row$strt_prd[1])
-  end <- as.character(row$end_prd[1])
-  prd <- as.character(row$prd_se[1])
-  if (nchar(start) == 6 || prd %in% c("M", "Q")) {
+  idx <- which(!is.na(it$tbl_id) & it$tbl_id == tbl_id)
+  if (!length(idx)) return(character())
+  row <- it[idx[1], , drop = FALSE]
+  start <- suppressWarnings(as.character(row$strt_prd[1]))
+  end <- suppressWarnings(as.character(row$end_prd[1]))
+  prd <- suppressWarnings(as.character(row$prd_se[1]))
+  if (is.na(start) || is.na(end) || !nzchar(start) || !nzchar(end)) return(character())
+  if (!is.na(prd) && prd %in% c("M", "Q")) {
     # treat as monthly; quarters not handled specially
     return(nso_period_seq(start, end, by = "M"))
   } else {
+    if (nchar(start) == 6) {
+      # UI suggests monthly codes in metadata even if prd missing
+      return(nso_period_seq(start, end, by = "M"))
+    }
     return(nso_period_seq(start, end, by = "Y"))
   }
 }
-
