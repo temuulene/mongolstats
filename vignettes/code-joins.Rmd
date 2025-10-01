@@ -56,7 +56,13 @@ periods <- nso_table_periods(tbl)
 dat <- nso_data(tbl, period = tail(periods, 1), labels = "en")
 
 # Ensure the appropriate code column is used (adm_field)
-dat <- dat %>% rename(tbl_code = {{adm_field}})
+# nso_data() standardizes to lowercase code columns (code, code1, code2)
+col <- tolower(adm_field)
+if (col %in% names(dat)) {
+  dat$tbl_code <- dat[[col]]
+} else {
+  dat$tbl_code <- NA_character_
+}
 
 dat_coded <- dat %>% 
   dplyr::left_join(cw, by = "tbl_code")

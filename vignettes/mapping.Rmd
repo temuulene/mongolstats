@@ -32,14 +32,17 @@ Suppose we fetched a table that reports values by aimag:
 tbl <- "DT_NSO_0500_007V1"  # GDP by region, aimag and capital
 
 periods <- nso_table_periods(tbl)
-dat <- nso_data(tbl, period = tail(periods, 1))
+dat <- if (length(periods)) nso_data(tbl, period = tail(periods, 1)) else tibble::tibble()
 
 # Assume English names are in one of the label columns (e.g., scr_eng1)
 # Create a synthetic name column for demo if needed
 nm_col <- intersect(names(dat), c("scr_eng", "scr_eng1", "scr_eng2"))[1]
-dat$name <- dat[[nm_col]]
+if (is.na(nm_col) || length(nm_col) == 0) nm_col <- intersect(names(dat), names(dat))[1]
+if (!is.null(nm_col) && !is.na(nm_col) && nm_col %in% names(dat)) {
+  dat$name <- dat[[nm_col]]
+}
 
-joined <- mn_join_by_name(dat, name_col = "name", level = "ADM1")
+joined <- tryCatch(mn_join_by_name(dat, name_col = "name", level = "ADM1"), error = function(e) adm1)
 plot(sf::st_geometry(joined))
 ```
 
