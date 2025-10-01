@@ -1,11 +1,31 @@
 template:
   bootstrap: 5
-  bootswatch: flatly
+  bslib:
+    primary: "#0ea5e9"
+    success: "#22c55e"
+    warning: "#f59e0b"
+    danger:  "#ef4444"
+    base_font: {google: "Inter"}
+    heading_font: {google: "Inter Tight"}
+    code_font: {google: "JetBrains Mono"}
+    bootswatch: NULL
+    bg: "#ffffff"
+    fg: "#212529"
+    enable-dark-mode: true
 url: https://temuulene.github.io/mongolstats/
+development:
+  mode: auto
 navbar:
   structure:
-    left: [intro, reference, articles]
+    left: [intro, reference, articles, news]
     right: [search, github]
+  components:
+    intro:
+      text: Get started
+      href: articles/getting-started.html
+    github:
+      icon: fab fa-github
+      href: https://github.com/temuulene/mongolstats
 home:
   title: mongolstats
   description: Tidy access to Mongolian NSO Open Data and boundaries (sf) with tidyverse-style helpers.
@@ -14,7 +34,23 @@ home:
       href: https://opendata.1212.mn/
     - text: Source on GitHub
       href: https://github.com/temuulene/mongolstats
+opengraph:
+  image:
+    src: https://raw.githubusercontent.com/temuulene/mongolstats/main/man/figures/social.png
+  twitter:
+    creator: "@temuulen"
+    card: summary_large_image
 articles:
+  - title: Get Started
+    contents:
+      - getting-started
+  - title: Discovery
+    contents:
+      - discovery
+  - title: Fetching & Periods
+    contents:
+      - fetching-periods
+      - batch-workflows
   - title: Mapping
     contents:
       - mapping
@@ -26,7 +62,9 @@ reference:
   - title: Discover Tables
     contents:
       - nso_itms
+      - nso_tables
       - nso_itms_detail
+      - nso_variables
       - nso_itms_search
       - nso_itms_by_sector
       - nso_sectors

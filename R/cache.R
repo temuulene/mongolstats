@@ -17,7 +17,8 @@ nso_cache_enable <- function(dir = NULL) {
     stop("Enable caching requires memoise, cachem, rappdirs packages.")
   }
   if (is.null(dir)) {
-    dir <- file.path(rappdirs::user_cache_dir("tidy1212"))
+    # Namespace under mongolstats and include a cache version for safe upgrades
+    dir <- file.path(rappdirs::user_cache_dir("mongolstats"), "v1")
   }
   if (!dir.exists(dir)) dir.create(dir, recursive = TRUE, showWarnings = FALSE)
   cache <- cachem::cache_disk(dir)
@@ -57,4 +58,3 @@ nso_cache_clear <- function() {
     .fetch_detail_raw(tbl_id)
   }
 }
-

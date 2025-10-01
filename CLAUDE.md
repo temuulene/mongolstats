@@ -35,7 +35,7 @@ Rscript tools/build_site.R
 ### Core Components
 
 1. **HTTP Layer** (`R/http.R`)
-   - Base URL: http://opendata.1212.mn
+   - Base URL: https://opendata.1212.mn (overridable via options)
    - Uses httr2 with automatic retry (3 attempts, exponential backoff)
    - `.nso_req()`, `.nso_get()`, `.nso_post()` handle all API communication
    - Custom User-Agent: `mongolstats/{version}`
@@ -61,7 +61,7 @@ Rscript tools/build_site.R
 5. **Caching** (`R/cache.R`)
    - Optional on-disk caching via memoise + cachem
    - Caches `nso_itms()` and `nso_itms_detail()` results
-   - Enable with `nso_cache_enable()`, cache stored in `rappdirs::user_cache_dir("tidy1212")`
+   - Enable with `nso_cache_enable()`, cache stored in `rappdirs::user_cache_dir("mongolstats")/v1`
 
 6. **Utilities** (`R/periods.R`, `R/utils.R`)
    - `nso_period_seq()`: Generate period sequences (YYYY or YYYYMM)
@@ -108,3 +108,6 @@ Vignettes are in `vignettes/` and disabled by default to stabilize CI:
 - `mapping.Rmd`
 - `fuzzy-joins.Rmd`
 - `code-joins.Rmd`
+- `discovery.Rmd`
+- `fetching-periods.Rmd`
+- `batch-workflows.Rmd`
