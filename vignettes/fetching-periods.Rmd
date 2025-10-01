@@ -12,14 +12,14 @@ eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
 knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
 ```
 
-```r
+```{r}
 library(mongolstats)
 library(dplyr)
 ```
 
 ## Build period sequences
 
-```r
+```{r}
 # Monthly sequence
 nso_period_seq("201801", "201812", by = "M")
 
@@ -29,7 +29,7 @@ nso_period_seq("2018", "2022", by = "Y")
 
 ## Valid periods for a table
 
-```r
+```{r}
 tbl <- "DT_NSO_0500_007V1"
 periods <- nso_table_periods(tbl)
 head(periods)
@@ -38,7 +38,7 @@ tail(periods)
 
 ## Fetch data by period and codes
 
-```r
+```{r}
 dat <- nso_data(
   tbl_id = "DT_NSO_2600_004V1",
   period = c("201701", "201702", "201703"),
@@ -48,4 +48,3 @@ dat <- nso_data(
 )
 dat %>% select(tbl_id, period, code, code_en, value) %>% slice_head(n = 6)
 ```
-

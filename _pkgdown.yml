@@ -23,6 +23,23 @@ navbar:
     intro:
       text: Get started
       href: articles/getting-started.html
+    articles:
+      text: Articles
+      menu:
+        - text: Getting started
+          href: articles/getting-started.html
+        - text: Discovering tables and variables
+          href: articles/discovery.html
+        - text: Fetching data and periods
+          href: articles/fetching-periods.html
+        - text: Batch fetching workflows
+          href: articles/batch-workflows.html
+        - text: Mapping with mongolstats
+          href: articles/mapping.html
+        - text: Fuzzy name joins
+          href: articles/fuzzy-joins.html
+        - text: Code-based joins
+          href: articles/code-joins.html
     github:
       icon: fab fa-github
       aria-label: GitHub
@@ -33,8 +50,6 @@ home:
   links:
     - text: NSO Open Data
       href: https://opendata.1212.mn/
-    - text: Source on GitHub
-      href: https://github.com/temuulene/mongolstats
 opengraph:
   image:
     src: https://raw.githubusercontent.com/temuulene/mongolstats/main/man/figures/social.png
