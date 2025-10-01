@@ -10,3 +10,4 @@ pkgdown
 *.html
 *.utf8.md
 .Rlib/
+check/
