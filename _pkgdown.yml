@@ -17,14 +17,14 @@ home:
 articles:
   - title: Getting Started
     contents:
-      - vignettes/getting-started.Rmd
+      - getting-started
   - title: Mapping
     contents:
-      - vignettes/mapping.Rmd
+      - mapping
   - title: Joins
     contents:
-      - vignettes/fuzzy-joins.Rmd
-      - vignettes/code-joins.Rmd
+      - fuzzy-joins
+      - code-joins
 reference:
   - title: Discover Tables
     contents:
