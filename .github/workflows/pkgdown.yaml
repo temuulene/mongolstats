@@ -33,8 +33,12 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::.
+          extra-packages: any::pkgdown, any::roxygen2, local::.
           needs: website
+
+      - name: Regenerate Rd with roxygen2
+        run: roxygen2::roxygenise()
+        shell: Rscript {0}
 
       - name: Build pkgdown site
         run: pkgdown::build_site(preview = FALSE, install = FALSE)
