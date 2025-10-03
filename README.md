@@ -1,8 +1,9 @@
 # mongolstats
 
 <!-- badges: start -->
-[![pkgdown](https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yml/badge.svg)](https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yml)
-[![R-CMD-check](https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yml)
+[![R-CMD-check](https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yaml)
+[![Website](https://img.shields.io/badge/docs-pkgdown-blue.svg)](https://temuulene.github.io/mongolstats/)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
@@ -22,45 +23,32 @@ devtools::install_github("temuulene/mongolstats")
 library(mongolstats)
 library(dplyr)
 
-# Enable caching to speed up discovery calls
-nso_cache_enable()
+# Use new PXWeb API (data.1212.mn)
+nso_options(mongolstats.lang = "en")
 
 # List available tables
 itms <- nso_itms()
 itms %>% select(tbl_id, tbl_eng_nm, strt_prd, end_prd) %>% slice_head(n = 5)
 
 # Inspect variables (codebook) for a table
-vars <- nso_itms_detail("DT_NSO_2600_004V1")
+vars <- nso_variables("DT_NSO_0300_001V2")
 vars %>% count(field)
 
-# Fetch data with labels
+# Fetch data
 dat <- nso_data(
-  tbl_id = "DT_NSO_2600_004V1",
-  period = c("201701","201702","201703"),
-  code   = c("1","2"),
-  code1  = "101",
-  labels = "en"
+  tbl_id = "DT_NSO_0300_001V2",
+  selections = list(Sex = "Total", Age = "Total", Year = "2024")
 )
-dat %>% select(tbl_id, period, code, code_en, code1_en, value) %>% slice_head(n = 6)
-
-# Batch fetch multiple tables
-reqs <- tibble::tibble(
-  tbl_id = c("DT_NSO_0300_062V1", "DT_NSO_0300_004V5"),
-  period = "2016",
-  code   = c("12", "181"),
-  code1  = c("101", "11")
-)
-pkg <- nso_package(reqs, labels = "en")
-pkg %>% select(tbl_id, period, value) %>% slice_head(n = 6)
+dat %>% slice_head(n = 6)
 ```
 
 ## Features
 
-- Tidy HTTP client for NSO Open Data API (v2)
+- PXWeb client for NSO Open Data (data.1212.mn)
 - Discover tables and variables with `nso_itms()` / `nso_itms_detail()`
-- Fetch data via `nso_data()`; batch requests with `nso_package()`
+- Fetch data via `nso_data(tbl_id, selections=...)`; batch with `nso_package()`
 - Optional label columns in English or Mongolian (`labels = "en" | "mn" | "both"`)
-- Sector discovery and table search helpers
+- Category navigation and table search helpers
 - Mongolia administrative boundaries (ADM0–ADM2) as `sf`
 - Exact and fuzzy name-based boundary joins
 - Lightweight on-disk caching for faster table/codebook lookups
@@ -79,5 +67,4 @@ Issues and pull requests are welcome: https://github.com/temuulene/mongolstats/i
 
 ## License
 
-MIT © Temuulen Enebish
-
+MIT Ac Temuulen Enebish

@@ -105,3 +105,4 @@ reference:
       - nso_period_seq
       - nso_table_periods
       - nso_options
+      - nso_rebuild_px_index
