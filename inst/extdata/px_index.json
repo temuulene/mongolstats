@@ -1,0 +1,245 @@
+﻿[
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_001V2.px",
+        "tbl_id":  "DT_NSO_0300_001V2.px",
+        "tbl_eng_nm":  "RESIDENT POPULATION IN MONGOLIA, by sex, single year of age, and by year",
+        "tbl_nm":  "МОНГОЛ УЛСАД ОРШИН СУУГАА ХҮН АМЫН ТОО, хүйс, нэг нас, жилээр",
+        "strt_prd":  "2000",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_001V3.px",
+        "tbl_id":  "DT_NSO_0300_001V3.px",
+        "tbl_eng_nm":  "POPULATION OF MONGOLIA, by sex, single year of age, and by year",
+        "tbl_nm":  "ХҮН АМЫН ТОО, хүйс, нэг нас, жилээр",
+        "strt_prd":  "2011",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_002V1.px",
+        "tbl_id":  "DT_NSO_0300_002V1.px",
+        "tbl_eng_nm":  "MID-YEAR TOTAL POPULATION, by aimags and the Capital, and by year",
+        "tbl_nm":  "ЖИЛИЙН ДУНДАЖ ХҮН АМЫН ТОО, аймаг, нийслэл, жилээр",
+        "strt_prd":  "1990",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_002V4.px",
+        "tbl_id":  "DT_NSO_0300_002V4.px",
+        "tbl_eng_nm":  "MID-YEAR RESIDENT POPULATION, by bag, khoroo, and by year",
+        "tbl_nm":  "МОНГОЛ УЛСАД ОРШИН СУУГАА ЖИЛИЙН ДУНДАЖ ХҮН АМЫН ТОО, баг, хороо, жилээр",
+        "strt_prd":  "2001",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_003V1.px",
+        "tbl_id":  "DT_NSO_0300_003V1.px",
+        "tbl_eng_nm":  "POPULATION OF MONGOLIA, by sex, age group, and by year",
+        "tbl_nm":  "ХҮН АМЫН ТОО, хүйс, насны бүлэг, жилээр",
+        "strt_prd":  "1956",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_004V1.px",
+        "tbl_id":  "DT_NSO_0300_004V1.px",
+        "tbl_eng_nm":  "POPULATION OF MONGOLIA, by location, aimags and the Capital, and by year",
+        "tbl_nm":  "ХҮН АМЫН ТОО, байршил, аймаг, нийслэл, жилээр",
+        "strt_prd":  "1935",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_004V5.px",
+        "tbl_id":  "DT_NSO_0300_004V5.px",
+        "tbl_eng_nm":  "RESIDENT POPULATION IN MONGOLIA, by location, bag, khoroo, and by year",
+        "tbl_nm":  "МОНГОЛ УЛСАД ОРШИН СУУГАА ХҮН АМЫН ТОО, байршил, баг, хороо, жилээр",
+        "strt_prd":  "2014",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_006V1.px",
+        "tbl_id":  "DT_NSO_0300_006V1.px",
+        "tbl_eng_nm":  "NUMBER OF HOUSEHOLDS, by location, aimags and the Capital, and by year",
+        "tbl_nm":  "ӨРХИЙН ТОО, байршил, аймаг, нийслэл, жилээр",
+        "strt_prd":  "1963",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_006V2.px",
+        "tbl_id":  "DT_NSO_0300_006V2.px",
+        "tbl_eng_nm":  "NUMBER OF HOUSEHOLDS, by soum and discrict, and by year",
+        "tbl_nm":  "ӨРХИЙН ТОО, сум, дүүрэг, жилээр",
+        "strt_prd":  "2003",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_006V5.px",
+        "tbl_id":  "DT_NSO_0300_006V5.px",
+        "tbl_eng_nm":  "NUMBER OF HOUSEHOLDS, by location, bag, khoroo, and by year",
+        "tbl_nm":  "ӨРХИЙН ТОО, байршил, баг, хороо, жилээр",
+        "strt_prd":  "2012",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_007V1.px",
+        "tbl_id":  "DT_NSO_0300_007V1.px",
+        "tbl_eng_nm":  "NUMBER OF ORPHAN CHILDREN, by region, aimags and the Capital",
+        "tbl_nm":  "БҮТЭН ӨНЧИН ХҮҮХДИЙН ТОО, бүс, аймаг, нийслэлээр",
+        "strt_prd":  "2003",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_008V1.px",
+        "tbl_id":  "DT_NSO_0300_008V1.px",
+        "tbl_eng_nm":  "CHILD LIVING WITH ONE OF THE PARENTS, by region, aimags and the Capital",
+        "tbl_nm":  "ЭЦЭГ, ЭХИЙН ХЭН НЭГЭНТЭЙ АМЬДАРЧ БАЙГАА ХҮҮХДИЙН ТОО, бүс, аймаг, нийслэлээр",
+        "strt_prd":  "2003",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_010V1.px",
+        "tbl_id":  "DT_NSO_0300_010V1.px",
+        "tbl_eng_nm":  "NUMBER OF MOTHERS HEADED HOUSEHOLD, number of household members, by region, aimags and the Capital",
+        "tbl_nm":  "ӨРХ ТОЛГОЙЛСОН ЭХИЙН ТОО, өрхийн гишүүдийн тоогоор, бүс, аймаг, нийслэлээр",
+        "strt_prd":  "2003",
+        "end_prd":  "2022"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_011V3.px",
+        "tbl_id":  "DT_NSO_0300_011V3.px",
+        "tbl_eng_nm":  "HOUSEHOLDS WITN 4 AND MORE CHILDREN AGED BELOW 18 YEARS OLD, by region, aimags",
+        "tbl_nm":  "18 ХҮРТЭЛХ НАСНЫ 4, ТҮҮНЭЭС ДЭЭШ ХҮҮХЭДТЭЙ ӨРХ, бүс, аймаг, нийслэлээр",
+        "strt_prd":  "2013",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_014V1.px",
+        "tbl_id":  "DT_NSO_0300_014V1.px",
+        "tbl_eng_nm":  "Number of old aged living single headed households",
+        "tbl_nm":  "ӨРХ ҮҮСГЭН ГАНЦ БИЕЭР АМЬДАРДАГ ӨНДӨР НАСТАЙ ХҮНИЙ ТОО, хүйсээр",
+        "strt_prd":  "2003",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_027V1.px",
+        "tbl_id":  "DT_NSO_0300_027V1.px",
+        "tbl_eng_nm":  "POPULATION OF MONGOLIA, by location, sex, and by year",
+        "tbl_nm":  "ХҮН АМЫН ТОО, байршил, хүйс, жилээр",
+        "strt_prd":  "1935",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_033V1.px",
+        "tbl_id":  "DT_NSO_0300_033V1.px",
+        "tbl_eng_nm":  "NUMBER OF HOUSEHOLDS, by aimags and the Capital, and by year",
+        "tbl_nm":  "ӨРХИЙН ТОО, аймаг, нийслэл, жилээр",
+        "strt_prd":  "1935",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_034V1.px",
+        "tbl_id":  "DT_NSO_0300_034V1.px",
+        "tbl_eng_nm":  "DENSITY, by aimags and the Capital, and by year",
+        "tbl_nm":  "ХҮН АМЫН НЯГТРАЛ, аймаг, нийслэл, жилээр",
+        "strt_prd":  "1963",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_034V2.px",
+        "tbl_id":  "DT_NSO_0300_034V2.px",
+        "tbl_eng_nm":  "DENSITY, by soum and discrict, and by year",
+        "tbl_nm":  "ХҮН АМЫН НЯГТРАЛ, сум, дүүрэг, жилээр",
+        "strt_prd":  "2010",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_035V1.px",
+        "tbl_id":  "DT_NSO_0300_035V1.px",
+        "tbl_eng_nm":  "DEPENDENCY RATIO, by aimags and the Capital, and by year",
+        "tbl_nm":  "ХҮН АМ ЗҮЙН АЧААЛАЛ, аймаг, нийслэл, жилээр",
+        "strt_prd":  "1963",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_035V2.px",
+        "tbl_id":  "DT_NSO_0300_035V2.px",
+        "tbl_eng_nm":  "DEPENDENCY RATIO, by soum and district, and by year",
+        "tbl_nm":  "ХҮН АМ ЗҮЙН АЧААЛАЛ, сум, дүүрэг, жилээр",
+        "strt_prd":  "2010",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_040V1.px",
+        "tbl_id":  "DT_NSO_0300_040V1.px",
+        "tbl_eng_nm":  "POPULATION MIGRATION, by aimags and the Capital, and by year",
+        "tbl_nm":  "ХҮН АМЫН ШИЛЖИХ ХӨДӨЛГӨӨН, аймаг, нийслэл, жилээр",
+        "strt_prd":  "1983",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_067V2.px",
+        "tbl_id":  "DT_NSO_0300_067V2.px",
+        "tbl_eng_nm":  "RESIDENT POPULATION IN MONGOLIA, by age group, bag, khoroo, and by year",
+        "tbl_nm":  "МОНГОЛ УЛСАД ОРШИН СУУГАА ХҮН АМЫН ТОО, насны бүлэг, баг, хороо, жилээр",
+        "strt_prd":  "2000",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_068V2.px",
+        "tbl_id":  "DT_NSO_0300_068V2.px",
+        "tbl_eng_nm":  "RESIDENT POPULATION IN MONGOLIA, by sex, bag, khoroo, and by year",
+        "tbl_nm":  "МОНГОЛ УЛСАД ОРШИН СУУГАА ХҮН АМЫН ТОО, хүйс, баг, хороо, жилээр",
+        "strt_prd":  "1990",
+        "end_prd":  "2024"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_0300_077V2.px",
+        "tbl_id":  "DT_NSO_0300_077V2.px",
+        "tbl_eng_nm":  "RESIDENT POPULTATION AGED 15 AND OVER, by age group, sex, marital status, and by census years",
+        "tbl_nm":  "15 БА ТҮҮНЭЭС ДЭЭШ НАСНЫ СУУРИН ХҮН АМЫН ТОО, насны бүлэг, хүйс, гэрлэлтийн байдал, тооллого явагдсан оноор",
+        "strt_prd":  "1969",
+        "end_prd":  "2020"
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_3300_044V1.px",
+        "tbl_id":  "DT_NSO_3300_044V1.px",
+        "tbl_eng_nm":  "HEAD OF HOUSEHOLD PERSON, by region, aimags and the Capital",
+        "tbl_nm":  "ӨРХ ТОЛГОЙЛСОН ГАНЦ БИЕ ЭЦЭГ, ЭХ, бүс, аймаг, нийслэлээр",
+        "strt_prd":  null,
+        "end_prd":  null
+    },
+    {
+        "px_path":  "Population, household/1_Population, household",
+        "px_file":  "DT_NSO_3300_045V1.px",
+        "tbl_id":  "DT_NSO_3300_045V1.px",
+        "tbl_eng_nm":  "MOTHERS WHO HEAD HOUSEHOLD WITH CHILDREN AGED BELOW 18 YEARS OLD, by region, aimags and the capital",
+        "tbl_nm":  "18 ХҮРТЭЛХ НАСНЫ ХҮҮХЭДТЭЙ ӨРХ ТОЛГОЙЛСОН ЭХ, бүс, аймаг, нийслэлээр",
+        "strt_prd":  "1990",
+        "end_prd":  "2024"
+    }
+]
