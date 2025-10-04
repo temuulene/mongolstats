@@ -26,6 +26,7 @@
 
 #' List PXWeb children under a path
 #' @importFrom utils head tail
+#' @importFrom curl curl_escape
 #' @keywords internal
 .px_list <- function(paths = character(), lang = .px_lang()) {
   url <- do.call(.px_url, as.list(c(paths, lang = lang)))
