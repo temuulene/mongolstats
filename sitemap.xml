@@ -4,7 +4,6 @@
 <url><loc>https://temuulene.github.io/mongolstats/CODE_OF_CONDUCT.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/CONTRIBUTING.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/LICENSE-text.html</loc></url>
-<url><loc>https://temuulene.github.io/mongolstats/LICENSE.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/articles/batch-workflows.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/articles/code-joins.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/articles/discovery.html</loc></url>
@@ -16,6 +15,8 @@
 <url><loc>https://temuulene.github.io/mongolstats/authors.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/index.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/news/index.html</loc></url>
+<url><loc>https://temuulene.github.io/mongolstats/reference/dot-px_list.html</loc></url>
+<url><loc>https://temuulene.github.io/mongolstats/reference/dot-px_meta.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/reference/index.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/reference/mn_boundaries.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/reference/mn_boundaries_normalize.html</loc></url>
@@ -33,11 +34,10 @@
 <url><loc>https://temuulene.github.io/mongolstats/reference/nso_options.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/reference/nso_package.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/reference/nso_period_seq.html</loc></url>
+<url><loc>https://temuulene.github.io/mongolstats/reference/nso_rebuild_px_index.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/reference/nso_search.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/reference/nso_sectors.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/reference/nso_subsectors.html</loc></url>
 <url><loc>https://temuulene.github.io/mongolstats/reference/nso_table_periods.html</loc></url>
-<url><loc>https://temuulene.github.io/mongolstats/reference/nso_tables.html</loc></url>
-<url><loc>https://temuulene.github.io/mongolstats/reference/nso_variables.html</loc></url>
 </urlset>
 

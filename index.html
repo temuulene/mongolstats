@@ -36,7 +36,18 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="articles/getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="articles/index.html">Articles</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/getting-started.html">Getting started</a></li>
+    <li><a class="dropdown-item" href="articles/discovery.html">Discovering tables and variables</a></li>
+    <li><a class="dropdown-item" href="articles/fetching-periods.html">Fetching data and periods</a></li>
+    <li><a class="dropdown-item" href="articles/batch-workflows.html">Batch fetching workflows</a></li>
+    <li><a class="dropdown-item" href="articles/mapping.html">Mapping with mongolstats</a></li>
+    <li><a class="dropdown-item" href="articles/fuzzy-joins.html">Fuzzy name joins</a></li>
+    <li><a class="dropdown-item" href="articles/code-joins.html">Code-based joins</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -71,48 +82,35 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://temuulene.github.io/mongolstats/">mongolstats</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Enable caching to speed up discovery calls</span></span>
-<span><span class="fu"><a href="reference/nso_cache_enable.html">nso_cache_enable</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Use new PXWeb API (data.1212.mn)</span></span>
+<span><span class="fu"><a href="reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># List available tables</span></span>
 <span><span class="va">itms</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_itms.html">nso_itms</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">itms</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span>, <span class="va">strt_prd</span>, <span class="va">end_prd</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Inspect variables (codebook) for a table</span></span>
-<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_itms_detail.html">nso_itms_detail</a></span><span class="op">(</span><span class="st">"DT_NSO_2600_004V1"</span><span class="op">)</span></span>
+<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_itms_detail.html">nso_variables</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_001V2"</span><span class="op">)</span></span>
 <span><span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">field</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Fetch data with labels</span></span>
+<span><span class="co"># Fetch data</span></span>
 <span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_2600_004V1"</span>,</span>
-<span>  period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"201701"</span>,<span class="st">"201702"</span>,<span class="st">"201703"</span><span class="op">)</span>,</span>
-<span>  code   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>,<span class="st">"2"</span><span class="op">)</span>,</span>
-<span>  code1  <span class="op">=</span> <span class="st">"101"</span>,</span>
-<span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_0300_001V2"</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sex <span class="op">=</span> <span class="st">"Total"</span>, Age <span class="op">=</span> <span class="st">"Total"</span>, Year <span class="op">=</span> <span class="st">"2024"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">dat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">period</span>, <span class="va">code</span>, <span class="va">code_en</span>, <span class="va">code1_en</span>, <span class="va">value</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Batch fetch multiple tables</span></span>
-<span><span class="va">reqs</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  tbl_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_062V1"</span>, <span class="st">"DT_NSO_0300_004V5"</span><span class="op">)</span>,</span>
-<span>  period <span class="op">=</span> <span class="st">"2016"</span>,</span>
-<span>  code   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"12"</span>, <span class="st">"181"</span><span class="op">)</span>,</span>
-<span>  code1  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"101"</span>, <span class="st">"11"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">pkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_package.html">nso_package</a></span><span class="op">(</span><span class="va">reqs</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span><span class="va">pkg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">period</span>, <span class="va">value</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">dat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h2>
 <ul>
-<li>Tidy HTTP client for NSO Open Data API (v2)</li>
+<li>PXWeb client for NSO Open Data (data.1212.mn)</li>
 <li>Discover tables and variables with <code><a href="reference/nso_itms.html">nso_itms()</a></code> / <code><a href="reference/nso_itms_detail.html">nso_itms_detail()</a></code>
 </li>
-<li>Fetch data via <code><a href="reference/nso_data.html">nso_data()</a></code>; batch requests with <code><a href="reference/nso_package.html">nso_package()</a></code>
+<li>Fetch data via <code>nso_data(tbl_id, selections=...)</code>; batch with <code><a href="reference/nso_package.html">nso_package()</a></code>
 </li>
 <li>Optional label columns in English or Mongolian (<code>labels = "en" | "mn" | "both"</code>)</li>
-<li>Sector discovery and table search helpers</li>
+<li>Category navigation and table search helpers</li>
 <li>Mongolia administrative boundaries (ADM0–ADM2) as <code>sf</code>
 </li>
 <li>Exact and fuzzy name-based boundary joins</li>
@@ -138,7 +136,7 @@
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>MIT © Temuulen Enebish</p>
+<p>MIT Ac Temuulen Enebish</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -147,15 +145,15 @@
 <li><a href="https://github.com/temuulene/mongolstats/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/temuulene/mongolstats/issues" class="external-link">Report a bug</a></li>
 <li><a href="https://opendata.1212.mn/" class="external-link">NSO Open Data</a></li>
-<li><a href="https://github.com/temuulene/mongolstats" class="external-link">Source on GitHub</a></li>
 </ul>
 </div>
 
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+<li>
+<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
+</li>
 </ul>
 </div>
 
@@ -184,8 +182,9 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yml" class="external-link"><img src="https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yml/badge.svg" alt="pkgdown"></a></li>
-<li><a href="https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yaml" class="external-link"><img src="https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yaml/badge.svg" alt="pkgdown"></a></li>
+<li><a href="https://temuulene.github.io/mongolstats/"><img src="https://img.shields.io/badge/docs-pkgdown-blue.svg" alt="Website"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
 </ul>
@@ -200,7 +199,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
