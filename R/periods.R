@@ -26,30 +26,22 @@ nso_period_seq <- function(start, end, by = c("Y", "M")) {
   }
 }
 
-#' Get valid periods for a table
-#'
-#' Uses `nso_itms()` metadata to compute the valid period codes for a given table.
+#' Get valid periods for a table (PXWeb)
 #' @param tbl_id Table identifier.
-#' @return Character vector of period codes.
+#' @return Character vector of period labels (e.g., years)
 #' @export
 nso_table_periods <- function(tbl_id) {
-  it <- tryCatch(nso_itms(), error = function(e) NULL)
-  if (is.null(it) || !("tbl_id" %in% names(it))) return(character())
-  idx <- which(!is.na(it$tbl_id) & it$tbl_id == tbl_id)
-  if (!length(idx)) return(character())
-  row <- it[idx[1], , drop = FALSE]
-  start <- suppressWarnings(as.character(row$strt_prd[1]))
-  end <- suppressWarnings(as.character(row$end_prd[1]))
-  prd <- suppressWarnings(as.character(row$prd_se[1]))
-  if (is.na(start) || is.na(end) || !nzchar(start) || !nzchar(end)) return(character())
-  if (!is.na(prd) && prd %in% c("M", "Q")) {
-    # treat as monthly; quarters not handled specially
-    return(nso_period_seq(start, end, by = "M"))
-  } else {
-    if (nchar(start) == 6) {
-      # UI suggests monthly codes in metadata even if prd missing
-      return(nso_period_seq(start, end, by = "M"))
-    }
-    return(nso_period_seq(start, end, by = "Y"))
-  }
+  idx <- .px_index()
+  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) tbl_id else paste0(tbl_id, ".px")
+  row <- idx[idx$px_file == px_file, , drop = FALSE]
+  if (!nrow(row)) return(character())
+  paths <- if (nzchar(row$px_path[1])) strsplit(row$px_path[1], "/", fixed = TRUE)[[1]] else character()
+  meta <- tryCatch(.px_meta_cached(paths, px_file, lang = .px_lang()), error = function(e) NULL)
+  if (is.null(meta) || is.null(meta$variables)) return(character())
+  # Prefer a variable flagged as time or named Year
+  vars <- meta$variables
+  vi <- purrr::detect_index(vars, function(v) isTRUE(v$time) || tolower(v$text %||% "") %in% c("year","time"))
+  if (!vi) return(character())
+  vt <- .px_chr(vars[[vi]]$valueTexts %||% character())
+  vt
 }

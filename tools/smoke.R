@@ -25,22 +25,20 @@ try({
 }, silent = TRUE)
 
 try({
-  detail <- nso_itms_detail("DT_NSO_2600_004V1")
-  cat("SMOKE: nso_itms_detail(DT_NSO_2600_004V1) => fields=", paste(unique(detail$field), collapse=","),
+  detail <- nso_itms_detail("DT_NSO_0300_001V2")
+  cat("SMOKE: nso_itms_detail(DT_NSO_0300_001V2) => fields=", paste(unique(detail$field), collapse=","),
       " n=", nrow(detail), "\n", sep = "")
 }, silent = TRUE)
 
 try({
   dat <- nso_data(
-    tbl_id = "DT_NSO_2600_004V1",
-    period = c("201701","201702","201703"),
-    code = c("1","2"),
-    code1 = "101",
+    tbl_id = "DT_NSO_0300_001V2",
+    selections = list(Sex = "Total", Age = "Total", Year = "2024"),
     labels = "en"
   )
   rng <- suppressWarnings(range(dat$value, na.rm = TRUE))
   cat("SMOKE: nso_data(labels='en') => rows=", nrow(dat), " value_min=", rng[1], " value_max=", rng[2],
-      " has_code_en=", any(grepl('code_en', names(dat))), "\n", sep = "")
+      " has_any_label=", any(grepl('(_en|_mn)$', names(dat))), "\n", sep = "")
 }, silent = TRUE)
 
 if (requireNamespace("sf", quietly = TRUE)) {

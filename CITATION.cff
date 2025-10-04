@@ -11,13 +11,13 @@ repository-code: https://github.com/temuulene/mongolstats
 url: https://temuulene.github.io/mongolstats
 license: MIT
 abstract: >-
-  Tidy access to the National Statistics Office of Mongolia Open Data API and administrative boundaries, with tidyverse-style helpers and sf integration.
+  Tidy access to the National Statistics Office of Mongolia PXWeb API and administrative boundaries, with tidyverse-style helpers and sf integration.
 keywords:
   - R
   - rstats
   - tidyverse
   - sf
   - geospatial
-  - opendata
+  - pxweb
   - Mongolia
   - NSO

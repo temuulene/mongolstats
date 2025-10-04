@@ -1,9 +1,10 @@
-# Internal HTTP utilities for opendata.1212.mn
+# Internal HTTP utilities for NSO endpoints (PXWeb/default)
 
 # Base URL and behavior are option-driven to allow overrides
 # Default to HTTPS; users can set options(mongolstats.base_url = "http://...") if needed
 .nso_base_url <- function() {
-  getOption("mongolstats.base_url", default = "https://opendata.1212.mn")
+  # Default to PXWeb UI base; low-level helpers can be reused for future endpoints
+  getOption("mongolstats.base_url", default = "https://data.1212.mn/pxweb")
 }
 
 .nso_user_agent <- function() {

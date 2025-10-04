@@ -16,3 +16,7 @@
   NULL
 }
 
+# Normalize possibly nested/listed character vectors from PXWeb metadata
+.px_chr <- function(x) {
+  as.character(unlist(x, use.names = FALSE))
+}

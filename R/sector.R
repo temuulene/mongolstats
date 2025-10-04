@@ -1,22 +1,19 @@
-# Sector and sub-sector discovery
+# Sector-like navigation for PXWeb NSO catalog
 
-#' List top-level sectors
-#'
-#' @return tibble with sector `list_id`, names and flags.
+#' List top-level categories (PXWeb NSO root)
+#' @return tibble with `id`, `type`, `text`
 #' @export
 nso_sectors <- function() {
-  res <- .nso_get("api/Sector", query = list(type = "json"))
-  tibble::as_tibble(res$value)
+  kids <- tryCatch(.px_list_cached(character(), lang = .px_lang()), error = function(e) NULL)
+  tibble::as_tibble(kids)
 }
 
-#' List sub-sectors for a sector
-#'
-#' @param subid Sector identifier from `nso_sectors()` `list_id`.
-#' @return tibble of sub-sectors.
+#' List children for a given path (PXWeb)
+#' @param subid Path id from `nso_sectors()`/`nso_subsectors()` (e.g., 'Population, household' or 'Population, household/1_Population, household')
 #' @export
 nso_subsectors <- function(subid) {
   stopifnot(is.character(subid), length(subid) == 1L)
-  res <- .nso_get("api/Sector", query = list(subid = subid, type = "json"))
-  tibble::as_tibble(res$value)
+  paths <- if (nzchar(subid)) strsplit(subid, "/", fixed = TRUE)[[1]] else character()
+  kids <- tryCatch(.px_list_cached(paths, lang = .px_lang()), error = function(e) NULL)
+  tibble::as_tibble(kids)
 }
-

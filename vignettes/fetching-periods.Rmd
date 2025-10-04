@@ -8,8 +8,14 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
-knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
+eval_site <- TRUE
+if (requireNamespace("pkgdown", quietly = TRUE)) eval_site <- pkgdown::in_pkgdown()
+if (eval_site && requireNamespace("curl", quietly = TRUE)) eval_site <- curl::has_internet()
+knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE, error = TRUE)
+if (eval_site) {
+  options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
+  try(mongolstats::nso_cache_enable(), silent = TRUE)
+}
 ```
 
 ```{r}
@@ -30,21 +36,19 @@ nso_period_seq("2018", "2022", by = "Y")
 ## Valid periods for a table
 
 ```{r}
-tbl <- "DT_NSO_0500_007V1"
+tbl <- "DT_NSO_0300_001V2"
 periods <- nso_table_periods(tbl)
 head(periods)
 tail(periods)
 ```
 
-## Fetch data by period and codes
+## Fetch data by period and variables
 
 ```{r}
 dat <- nso_data(
-  tbl_id = "DT_NSO_2600_004V1",
-  period = c("201701", "201702", "201703"),
-  code   = c("1", "2"),
-  code1  = "101",
+  tbl_id = "DT_NSO_0300_001V2",
+  selections = list(Sex = "Total", Age = "Total", Year = head(periods, 1)),
   labels = "en"
 )
-dat %>% dplyr::select(dplyr::any_of(c("tbl_id", "period", "code", "code_en", "value"))) %>% dplyr::slice_head(n = 6)
+dat %>% dplyr::slice_head(n = 6)
 ```

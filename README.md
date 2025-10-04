@@ -8,7 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
-Tidy access to the National Statistics Office of Mongolia (NSO) Open Data API (opendata.1212.mn) and Mongolia administrative boundaries, inspired by the ergonomics of tidycensus. Provides a tidyverse-friendly interface for discovering tables, exploring codebooks, fetching data, and working with `sf` geometries for mapping.
+Tidy access to the National Statistics Office of Mongolia (NSO) statistics via the PXWeb API (data.1212.mn) and Mongolia administrative boundaries, inspired by the ergonomics of tidycensus. Provides a tidyverse-friendly interface for discovering tables, exploring codebooks, fetching data, and working with `sf` geometries for mapping.
 
 ## Installation
 
@@ -44,7 +44,7 @@ dat %>% slice_head(n = 6)
 
 ## Features
 
-- PXWeb client for NSO Open Data (data.1212.mn)
+- PXWeb client for NSO data (data.1212.mn)
 - Discover tables and variables with `nso_itms()` / `nso_itms_detail()`
 - Fetch data via `nso_data(tbl_id, selections=...)`; batch with `nso_package()`
 - Optional label columns in English or Mongolian (`labels = "en" | "mn" | "both"`)

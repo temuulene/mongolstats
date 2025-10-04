@@ -8,8 +8,14 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
-knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
+eval_site <- TRUE
+if (requireNamespace("pkgdown", quietly = TRUE)) eval_site <- pkgdown::in_pkgdown()
+if (eval_site && requireNamespace("curl", quietly = TRUE)) eval_site <- curl::has_internet()
+knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE, error = TRUE)
+if (eval_site) {
+  options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
+  try(mongolstats::nso_cache_enable(), silent = TRUE)
+}
 ```
 
 ```{r}
@@ -17,14 +23,12 @@ library(mongolstats)
 library(dplyr)
 ```
 
-## Create a batch request tibble
+## Create batch requests
 
 ```{r}
-reqs <- tibble::tibble(
-  tbl_id = c("DT_NSO_0300_062V1", "DT_NSO_0300_004V5"),
-  period = "2016",
-  code   = c("12", "181"),
-  code1  = c("101", "11")
+reqs <- list(
+  list(tbl_id = "DT_NSO_0300_001V2", selections = list(Sex = "Total", Age = "Total", Year = "2024")),
+  list(tbl_id = "DT_NSO_0300_004V5", selections = list(Year = "2024"))
 )
 reqs
 ```
@@ -33,14 +37,13 @@ reqs
 
 ```{r}
 pkg <- nso_package(reqs, labels = "en")
-# Be robust to empty or differently-shaped results in CI/site builds
-pkg %>% dplyr::select(dplyr::any_of(c("tbl_id", "period", "value"))) %>% dplyr::slice_head(n = 10)
+pkg %>% dplyr::slice_head(n = 10)
 ```
 
 ## Combine with discovery utilities
 
 ```{r}
 itms <- nso_tables()
-target <- itms %>% filter(stringr::str_detect(stringr::str_to_lower(tbl_eng_nm), "population")) %>% slice_head(n = 5)
-target %>% select(tbl_id, tbl_eng_nm)
+target <- itms %>% dplyr::filter(stringr::str_detect(stringr::str_to_lower(tbl_eng_nm), "population")) %>% dplyr::slice_head(n = 5)
+target %>% dplyr::select(tbl_id, tbl_eng_nm)
 ```
