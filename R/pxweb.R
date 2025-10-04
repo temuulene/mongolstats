@@ -214,22 +214,34 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang()) {
   paths <- if (nzchar(row$px_path[1])) strsplit(row$px_path[1], "/", fixed = TRUE)[[1]] else character()
   meta <- .px_meta_cached(paths, px_file, lang = lang)
   vars <- meta$variables
-  # Build query: match selections by variable text (case-insensitive)
+  # Build query: ensure every variable in the table is included.
   q <- list()
-  for (nm in names(selections)) {
-    target <- tolower(nm)
-    vi <- purrr::detect_index(vars, function(v) tolower(.px_first_nonempty(v$text, v$code, "")) == target)
-    if (!vi) stop("Variable not found in table: ", nm)
-    v <- vars[[vi]]
-    vals <- as.character(selections[[nm]])
-    # If user provided labels, map to codes via valueTexts
-    vt <- .px_chr(v$valueTexts)
+  sel_names <- tolower(names(selections))
+  for (v in vars) {
+    vname <- tolower(.px_first_nonempty(v$text, v$code, ""))
     vv <- .px_chr(v$values)
-    if (length(vt) && any(vals %in% vt)) {
-      idxs <- match(vals, vt)
-      vals <- vv[idxs]
+    vt <- .px_chr(v$valueTexts)
+    if (vname %in% sel_names) {
+      # User-provided selection for this variable
+      vals <- as.character(selections[[which(sel_names == vname)[1]]])
+      # If labels provided, map to codes
+      if (length(vt) && any(vals %in% vt)) {
+        idxs <- match(vals, vt)
+        vals <- vv[idxs]
+      }
+      # Validate
+      if (length(vv) && !all(vals %in% vv)) {
+        bad <- unique(setdiff(vals, vv))
+        ex <- paste(utils::head(vv, 5), collapse = ", ")
+        stop(sprintf("Invalid selection for '%s': %s. Available codes include: %s",
+                     .px_first_nonempty(v$text, v$code, vname),
+                     paste(bad, collapse = ", "), ex))
+      }
+      q[[length(q)+1]] <- list(code = v$code, selection = list(filter = "item", values = vals))
+    } else {
+      # Not specified: select all for this variable
+      q[[length(q)+1]] <- list(code = v$code, selection = list(filter = "all", values = list("*")))
     }
-    q[[length(q)+1]] <- list(code = v$code, selection = list(filter = "item", values = vals))
   }
   body <- list(query = q, response = list(format = "JSON"))
   url <- .px_url(paths, px_file, lang = lang)

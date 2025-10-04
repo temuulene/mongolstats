@@ -16,6 +16,10 @@ if (eval_site) {
   options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
   try(mongolstats::nso_cache_enable(), silent = TRUE)
 }
+# Always install local package before knitting to ensure latest API
+if (requireNamespace("remotes", quietly = TRUE)) {
+  try(remotes::install_local(".", upgrade = "never", force = TRUE, dependencies = FALSE), silent = TRUE)
+}
 ```
 
 ```{r}
@@ -51,4 +55,26 @@ dat <- nso_data(
   labels = "en"
 )
 dat %>% dplyr::slice_head(n = 6)
+```
+
+## Multi-year pulls and quick trend summaries
+
+```{r}
+yrs <- head(periods, 5)
+series <- nso_data(
+  tbl_id = tbl,
+  selections = list(Sex = "Total", Age = "Total", Year = yrs)
+)
+
+series %>%
+  dplyr::group_by(Year) %>%
+  dplyr::summarise(value = sum(value, na.rm = TRUE)) %>%
+  dplyr::arrange(Year)
+```
+
+If you prefer a quick base plot during interactive work:
+
+```{r}
+trend <- series %>% dplyr::group_by(Year) %>% dplyr::summarise(value = sum(value, na.rm = TRUE))
+if (nrow(trend) > 1) plot(as.numeric(trend$Year), trend$value, type = "b", main = "Total by Year", xlab = "Year", ylab = "Value")
 ```

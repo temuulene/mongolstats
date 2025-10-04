@@ -16,6 +16,10 @@ if (eval_site) {
   options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
   try(mongolstats::nso_cache_enable(), silent = TRUE)
 }
+# Always install local package before knitting to ensure latest API
+if (requireNamespace("remotes", quietly = TRUE)) {
+  try(remotes::install_local(".", upgrade = "never", force = TRUE, dependencies = FALSE), silent = TRUE)
+}
 ```
 
 ```{r}
@@ -40,3 +44,9 @@ joined %>% select(shapeName, name, value) %>% head()
 ```
 
 If you have official region names in your dataset, prefer `mn_join_by_name()` for exact matching.
+
+## Guidance for fuzzy matching
+
+- Use `max_distance` conservatively (e.g., 1–2) to avoid incorrect matches.
+- You can supply a different string distance `method` if `stringdist` is installed; Jaro-Winkler and Levenshtein are common choices.
+- Always review near ties and ambiguous matches manually; consider exporting candidate pairs for QA if the dataset is critical.
