@@ -25,7 +25,8 @@ Imports:
     cachem,
     rappdirs,
     stringi,
-    stringdist
+    stringdist,
+    curl
 Suggests:
     testthat (>= 3.0.0),
     knitr,
@@ -36,7 +37,7 @@ Suggests:
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Config/testthat/edition: 3
 URL: https://temuulene.github.io/mongolstats/, https://opendata.1212.mn/
 BugReports: https://github.com/temuulene/mongolstats/issues
