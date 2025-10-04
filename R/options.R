@@ -12,6 +12,9 @@
 nso_options <- function(...) {
   opts_prefix <- c(
     "mongolstats.base_url",
+    "mongolstats.px_base_url",
+    "mongolstats.lang",
+    "mongolstats.px_db",
     "mongolstats.timeout",
     "mongolstats.retry_tries",
     "mongolstats.retry_backoff",
@@ -27,4 +30,3 @@ nso_options <- function(...) {
   do.call(options, dots)
   invisible(old)
 }
-

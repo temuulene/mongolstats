@@ -54,16 +54,16 @@
 
 # Internal cached wrappers
 .px_list_cached <- function(paths = character(), lang = .px_lang()) {
-  if (isTRUE(.tidy1212_cache_env$enabled) && !is.null(.tidy1212_cache_env$px_list_memo)) {
-    .tidy1212_cache_env$px_list_memo(paths, lang)
+  if (isTRUE(.mongolstats_cache_env$enabled) && !is.null(.mongolstats_cache_env$px_list_memo)) {
+    .mongolstats_cache_env$px_list_memo(paths, lang)
   } else {
     .px_list(paths, lang)
   }
 }
 
 .px_meta_cached <- function(paths, table, lang = .px_lang()) {
-  if (isTRUE(.tidy1212_cache_env$enabled) && !is.null(.tidy1212_cache_env$px_meta_memo)) {
-    .tidy1212_cache_env$px_meta_memo(paths, table, lang)
+  if (isTRUE(.mongolstats_cache_env$enabled) && !is.null(.mongolstats_cache_env$px_meta_memo)) {
+    .mongolstats_cache_env$px_meta_memo(paths, table, lang)
   } else {
     .px_meta(paths, table, lang)
   }
@@ -94,10 +94,10 @@ nso_px_tables <- function() {
           vars <- meta_en$variables
           if (length(vars)) {
             time_idx <- which(vapply(vars, function(v) isTRUE(v$time) || grepl("year|time", tolower(v$text %||% "")), logical(1)))
-            if (!length(time_idx)) time_idx <- which(vapply(vars, function(v) length(v$values) && all(grepl("^20[0-9]{2}$", v$valueTexts %||% "")), logical(1)))
+            if (!length(time_idx)) time_idx <- which(vapply(vars, function(v) length(v$values) && all(grepl("^20[0-9]{2}$", .px_chr(v$valueTexts) %||% "")), logical(1)))
             if (length(time_idx)) {
-              vt <- vars[[time_idx[1]]]$valueTexts %||% character()
-              if (length(vt)) c(head(vt,1), tail(vt,1)) else c(NA_character_, NA_character_)
+              vt <- .px_chr(vars[[time_idx[1]]]$valueTexts %||% character())
+              if (length(vt)) c(vt[1], vt[length(vt)]) else c(NA_character_, NA_character_)
             } else c(NA_character_, NA_character_)
           } else c(NA_character_, NA_character_)
         }, error = function(e) c(NA_character_, NA_character_))
@@ -138,8 +138,8 @@ nso_px_variables <- function(tbl_id) {
       name <- .px_first_nonempty(v$text, v$code, paste0("V", i))
       tibble::tibble(
         field = name,
-        itm_id = as.character(v$values %||% character()),
-        scr_eng = as.character(v$valueTexts %||% character())
+        itm_id = .px_chr(v$values %||% character()),
+        scr_eng = .px_chr(v$valueTexts %||% character())
       )
   })
   if (!is.null(vm)) {
@@ -147,8 +147,8 @@ nso_px_variables <- function(tbl_id) {
       name <- .px_first_nonempty(v$text, v$code, paste0("V", i))
       tibble::tibble(
         field = name,
-        itm_id = as.character(v$values %||% character()),
-        scr_mn = as.character(v$valueTexts %||% character())
+        itm_id = .px_chr(v$values %||% character()),
+        scr_mn = .px_chr(v$valueTexts %||% character())
       )
     })
     out <- dplyr::left_join(out, out_mn, by = c("field","itm_id"))
@@ -223,9 +223,11 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang()) {
     v <- vars[[vi]]
     vals <- as.character(selections[[nm]])
     # If user provided labels, map to codes via valueTexts
-    if (length(v$valueTexts) && any(vals %in% v$valueTexts)) {
-      idxs <- match(vals, v$valueTexts)
-      vals <- v$values[idxs]
+    vt <- .px_chr(v$valueTexts)
+    vv <- .px_chr(v$values)
+    if (length(vt) && any(vals %in% vt)) {
+      idxs <- match(vals, vt)
+      vals <- vv[idxs]
     }
     q[[length(q)+1]] <- list(code = v$code, selection = list(filter = "item", values = vals))
   }

@@ -46,10 +46,10 @@ navbar:
       href: https://github.com/temuulene/mongolstats
 home:
   title: mongolstats
-  description: Tidy access to Mongolian NSO Open Data and boundaries (sf) with tidyverse-style helpers.
+  description: Tidy access to NSO statistics via PXWeb and boundaries (sf) with tidyverse-style helpers.
   links:
-    - text: NSO Open Data
-      href: https://opendata.1212.mn/
+    - text: NSO PXWeb
+      href: https://data.1212.mn/pxweb/
 opengraph:
   image:
     src: https://raw.githubusercontent.com/temuulene/mongolstats/main/man/figures/social.png

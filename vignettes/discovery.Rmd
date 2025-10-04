@@ -8,32 +8,33 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
-knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
+eval_site <- TRUE
+if (requireNamespace("pkgdown", quietly = TRUE)) eval_site <- pkgdown::in_pkgdown()
+if (eval_site && requireNamespace("curl", quietly = TRUE)) eval_site <- curl::has_internet()
+knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE, error = TRUE)
+if (eval_site) {
+  options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
+  try(mongolstats::nso_cache_enable(), silent = TRUE)
+}
 ```
 
 ```{r}
 library(mongolstats)
 library(dplyr)
+nso_options(mongolstats.lang = "en")
 ```
 
 ## List available tables
 
 ```{r}
-itms <- nso_tables()
-itms %>% select(tbl_id, tbl_eng_nm, strt_prd, end_prd) %>% slice_head(n = 10)
-```
-
-## Search tables by keyword
-
-```{r}
-nso_itms_search("population") %>% select(tbl_id, tbl_eng_nm) %>% slice_head(n = 10)
+itms <- nso_itms()
+itms %>% dplyr::select(tbl_id, tbl_eng_nm, strt_prd, end_prd) %>% dplyr::slice_head(n = 10)
 ```
 
 ## Explore variables (codebook) for a table
 
 ```{r}
-vars <- nso_variables("DT_NSO_2600_004V1")
-vars %>% count(field)
-vars %>% filter(field %in% c("CODE","CODE1","CODE2")) %>% slice_head(n = 10)
+vars <- nso_variables("DT_NSO_0300_001V2")
+vars %>% dplyr::count(field)
+vars %>% dplyr::slice_head(n = 10)
 ```
