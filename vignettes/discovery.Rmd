@@ -16,6 +16,10 @@ if (eval_site) {
   options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
   try(mongolstats::nso_cache_enable(), silent = TRUE)
 }
+# Always install local package before knitting to ensure latest API
+if (requireNamespace("remotes", quietly = TRUE)) {
+  try(remotes::install_local(".", upgrade = "never", force = TRUE, dependencies = FALSE), silent = TRUE)
+}
 ```
 
 ```{r}
@@ -24,11 +28,44 @@ library(dplyr)
 nso_options(mongolstats.lang = "en")
 ```
 
+## Discovery overview
+
+PXWeb exposes a tree of folders (sectors/subsectors) containing tables. Discovery functions help you:
+
+- Navigate the catalog with `nso_sectors()` and `nso_subsectors()`
+- List available tables with `nso_itms()`
+- Search by keyword with `nso_itms_search()` / `nso_search()`
+- Explore a table’s variables using `nso_variables()`
+
 ## List available tables
 
 ```{r}
 itms <- nso_itms()
 itms %>% dplyr::select(tbl_id, tbl_eng_nm, strt_prd, end_prd) %>% dplyr::slice_head(n = 10)
+```
+
+## Navigate sectors
+
+Top-level categories (folder-like nodes):
+
+```{r}
+root <- nso_sectors()
+root %>% dplyr::slice_head(n = 10)
+```
+
+Children under a category (pass `id` from above):
+
+```{r}
+first_id <- if (nrow(root)) root$id[1] else ""
+kids <- nso_subsectors(first_id)
+kids %>% dplyr::slice_head(n = 10)
+```
+
+## Search by keyword
+
+```{r}
+pop <- nso_itms_search("population")
+pop %>% dplyr::select(tbl_id, tbl_eng_nm) %>% dplyr::slice_head(n = 10)
 ```
 
 ## Explore variables (codebook) for a table
@@ -38,3 +75,8 @@ vars <- nso_variables("DT_NSO_0300_001V2")
 vars %>% dplyr::count(field)
 vars %>% dplyr::slice_head(n = 10)
 ```
+
+Tips
+
+- Use `field` to identify the dimension names you’ll pass in `selections` when fetching data.
+- Each `field` has codes (`itm_id`) and English/Mongolian labels (`scr_eng`/`scr_mn`).

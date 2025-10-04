@@ -16,6 +16,10 @@ if (eval_site) {
   options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
   try(mongolstats::nso_cache_enable(), silent = TRUE)
 }
+# Always install local package before knitting to ensure latest API
+if (requireNamespace("remotes", quietly = TRUE)) {
+  try(remotes::install_local(".", upgrade = "never", force = TRUE, dependencies = FALSE), silent = TRUE)
+}
 ```
 
 ```{r}
@@ -43,8 +47,27 @@ dat <- if (length(periods)) nso_data(tbl, selections = list(Year = tail(periods,
 if ("Region_en" %in% names(dat)) dat$name <- dat$Region_en else if ("Region" %in% names(dat)) dat$name <- dat$Region
 
 joined <- tryCatch(mn_join_by_name(dat, name_col = "name", level = "ADM1"), error = function(e) adm1)
+```{r fig.alt="Map of joined ADM1 geometries", fig.cap="ADM1 map joined to example data"}
 plot(sf::st_geometry(joined))
+```
 ```
 
 Note: Name-based joins are heuristic. For rigorous joins, prefer stable codes
 once a consistent NSO geographic classification is identified.
+
+## Alternative: join using stable keys
+
+If your dataset includes stable identifiers, prefer key-based joins with `mn_boundary_keys()`:
+
+```{r}
+keys <- mn_boundary_keys("ADM1")  # contains shapeID, shapeName, shapeISO, name_std
+# Example: if your data has shapeISO, join on that instead of names
+```
+
+## Plotting with alt text (accessibility)
+
+For site accessibility, set alt text and captions in plot chunks:
+
+```{r fig.alt="Map of Mongolia ADM1 boundaries joined to example values", fig.cap="ADM1 map example"}
+plot(sf::st_geometry(adm1))
+```

@@ -16,6 +16,10 @@ if (eval_site) {
   options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
   try(mongolstats::nso_cache_enable(), silent = TRUE)
 }
+# Always install local package before knitting to ensure latest API
+if (requireNamespace("remotes", quietly = TRUE)) {
+  try(remotes::install_local(".", upgrade = "never", force = TRUE, dependencies = FALSE), silent = TRUE)
+}
 ```
 
 ```{r}
@@ -40,6 +44,37 @@ pkg <- nso_package(reqs, labels = "en")
 pkg %>% dplyr::slice_head(n = 10)
 ```
 
+## Compare results across tables
+
+When the batch includes different tables, `nso_package()` adds a `tbl_id` column, enabling grouped summaries:
+
+```{r}
+pkg %>%
+  dplyr::group_by(tbl_id) %>%
+  dplyr::summarise(total = sum(value, na.rm = TRUE), n = dplyr::n())
+```
+
+## Building requests from a tibble
+
+You can also provide a tibble with `tbl_id` and `selections` as a list-column:
+
+```{r}
+req_tbl <- tibble::tibble(
+  tbl_id = c("DT_NSO_0300_001V2","DT_NSO_0300_004V5"),
+  selections = list(
+    list(Sex = "Total", Age = "Total", Year = c("2023","2024")),
+    list(Year = c("2023","2024"))
+  )
+)
+
+pkg2 <- nso_package(req_tbl, labels = "en")
+pkg2 %>% dplyr::slice_head(n = 10)
+```
+
+Tips
+
+- For large batches, enable caching before discovery-heavy steps: `nso_cache_enable()`.
+- Handle intermittent network failures by re-running for affected tables; `nso_package()` processes each request independently.
 ## Combine with discovery utilities
 
 ```{r}
