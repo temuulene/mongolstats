@@ -92,6 +92,18 @@ fuzzy matching.</p>
 <span><span class="co"># Fuzzy join (max distance 2)</span></span>
 <span><span class="va">joined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_fuzzy_join_by_name.html">mn_fuzzy_join_by_name</a></span><span class="op">(</span><span class="va">dat</span>, name_col <span class="op">=</span> <span class="st">"name"</span>, level <span class="op">=</span> <span class="st">"ADM1"</span>, boundaries <span class="op">=</span> <span class="va">adm1</span>, max_distance <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">joined</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">shapeName</span>, <span class="va">name</span>, <span class="va">value</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Simple feature collection with 6 features and 3 fields</span></span>
+<span><span class="co">## Geometry type: MULTIPOLYGON</span></span>
+<span><span class="co">## Dimension:     XY</span></span>
+<span><span class="co">## Bounding box:  xmin: 90.0023 ymin: 42.39561 xmax: 111.9678 ymax: 50.8851</span></span>
+<span><span class="co">## Geodetic CRS:  WGS 84</span></span>
+<span><span class="co">##     shapeName       name value                       geometry</span></span>
+<span><span class="co">## 1         Uvs        Uvs     1 MULTIPOLYGON (((95.50543 49...</span></span>
+<span><span class="co">## 2       Khovd      Khovd     2 MULTIPOLYGON (((91.33829 48...</span></span>
+<span><span class="co">## 3     Zavkhan     Zvkhan     3 MULTIPOLYGON (((93.4295 48....</span></span>
+<span><span class="co">## 4      Bulgan      Bulgn     4 MULTIPOLYGON (((102.6428 50...</span></span>
+<span><span class="co">## 5   Dornogovi  Dornogovi     5 MULTIPOLYGON (((107.6873 44...</span></span>
+<span><span class="co">## 6 Ulaanbaatar Ulanbaatar     6 MULTIPOLYGON (((106.3564 48...</span></span></code></pre>
 <p>If you have official region names in your dataset, prefer
 <code><a href="../reference/mn_join_by_name.html">mn_join_by_name()</a></code> for exact matching.</p>
   </main>

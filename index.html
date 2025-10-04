@@ -14,8 +14,8 @@
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="mongolstats">
-<meta name="description" content="Tidy access to Mongolian NSO Open Data and boundaries (sf) with tidyverse-style helpers.">
-<meta property="og:description" content="Tidy access to Mongolian NSO Open Data and boundaries (sf) with tidyverse-style helpers.">
+<meta name="description" content="Tidy access to NSO statistics via PXWeb and boundaries (sf) with tidyverse-style helpers.">
+<meta property="og:description" content="Tidy access to NSO statistics via PXWeb and boundaries (sf) with tidyverse-style helpers.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -67,7 +67,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>Tidy access to the National Statistics Office of Mongolia (NSO) Open Data API (opendata.1212.mn) and Mongolia administrative boundaries, inspired by the ergonomics of tidycensus. Provides a tidyverse-friendly interface for discovering tables, exploring codebooks, fetching data, and working with <code>sf</code> geometries for mapping.</p>
+<p>Tidy access to the National Statistics Office of Mongolia (NSO) statistics via the PXWeb API (data.1212.mn) and Mongolia administrative boundaries, inspired by the ergonomics of tidycensus. Provides a tidyverse-friendly interface for discovering tables, exploring codebooks, fetching data, and working with <code>sf</code> geometries for mapping.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -104,7 +104,7 @@
 <h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h2>
 <ul>
-<li>PXWeb client for NSO Open Data (data.1212.mn)</li>
+<li>PXWeb client for NSO data (data.1212.mn)</li>
 <li>Discover tables and variables with <code><a href="reference/nso_itms.html">nso_itms()</a></code> / <code><a href="reference/nso_itms_detail.html">nso_itms_detail()</a></code>
 </li>
 <li>Fetch data via <code>nso_data(tbl_id, selections=...)</code>; batch with <code><a href="reference/nso_package.html">nso_package()</a></code>
@@ -144,7 +144,7 @@
 <ul class="list-unstyled">
 <li><a href="https://github.com/temuulene/mongolstats/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/temuulene/mongolstats/issues" class="external-link">Report a bug</a></li>
-<li><a href="https://opendata.1212.mn/" class="external-link">NSO Open Data</a></li>
+<li><a href="https://data.1212.mn/pxweb/" class="external-link">NSO PXWeb</a></li>
 </ul>
 </div>
 

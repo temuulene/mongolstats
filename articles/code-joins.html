@@ -87,19 +87,28 @@ field that corresponds to an administrative division (e.g.,
 aimag-level). We then construct a one-time crosswalk that maps the
 table’s codes to boundary identifiers.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Example table with region/aimag breakdown in its metadata</span></span>
-<span><span class="va">tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_0500_007V1"</span>  <span class="co"># GDP by region, aimag and the capital (example)</span></span>
+<code class="sourceCode R"><span><span class="va">tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_0300_004V5"</span>  <span class="co"># Resident population by location and region</span></span>
 <span></span>
-<span><span class="co"># 1) Fetch codebook for the table</span></span>
-<span><span class="va">cb</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_detail.html">nso_itms_detail</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cb</span><span class="op">$</span><span class="va">field</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 2) Inspect items under each field and select the likely admin field</span></span>
-<span><span class="va">adm_field</span> <span class="op">&lt;-</span> <span class="st">"CODE1"</span>  <span class="co"># adjust if the admin dimension sits in another field</span></span>
-<span><span class="va">adm_codes</span> <span class="op">&lt;-</span> <span class="va">cb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">field</span> <span class="op">==</span> <span class="va">adm_field</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">itm_id</span>, <span class="va">scr_eng</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">adm_codes</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 3) Build a crosswalk from table codes to boundary keys via name normalization</span></span>
+<span><span class="co"># 1) Fetch codebook for the table (PXWeb variables)</span></span>
+<span><span class="va">cb</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_detail.html">nso_variables</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cb</span><span class="op">$</span><span class="va">field</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] "Region"   "Location" "Year"</span></span></code></pre>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 2) Inspect items under the likely admin dimension (e.g., 'Region')</span></span>
+<span><span class="va">adm_field</span> <span class="op">&lt;-</span> <span class="st">"Region"</span></span>
+<span><span class="va">adm_codes</span> <span class="op">&lt;-</span> <span class="va">cb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">field</span> <span class="op">==</span> <span class="va">adm_field</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">itm_id</span>, <span class="va">scr_eng</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">adm_codes</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 2</span></span></span>
+<span><span class="co">##   itm_id  scr_eng              </span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 0       Total                </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 1       Western region       </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 183     Bayan-Ulgii          </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> 18301   Ulgii                </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> 1830151 1-r bag, Khust aral  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> 1830153 2-r bag, Tsagaan ereg</span></span></code></pre>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 3) Build a crosswalk from table codes to boundary keys via name normalization</span></span>
 <span><span class="va">adm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_boundaries.html">mn_boundaries</a></span><span class="op">(</span><span class="st">"ADM1"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="../reference/mn_boundaries_normalize.html">mn_boundaries_normalize</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">adm_codes</span><span class="op">$</span><span class="va">name_std</span> <span class="op">&lt;-</span> <span class="va">adm_codes</span><span class="op">$</span><span class="va">scr_eng</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_lower</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">stringi</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_trans_general.html" class="external-link">stri_trans_general</a></span><span class="op">(</span><span class="st">"Latin-ASCII"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
@@ -113,30 +122,39 @@ table’s codes to boundary identifiers.</p>
 <span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>tbl_code <span class="op">=</span> <span class="va">itm_id</span>, <span class="va">shapeISO</span>, <span class="va">shapeName</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cw</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 4) Fetch data and join using the crosswalk</span></span>
-<span><span class="va">periods</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_table_periods.html">nso_table_periods</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span></span>
-<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span><span class="va">tbl</span>, period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">periods</span>, <span class="fl">1</span><span class="op">)</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Ensure the appropriate code column is used (adm_field)</span></span>
-<span><span class="co"># nso_data() standardizes to lowercase code columns (code, code1, code2)</span></span>
-<span><span class="va">col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html" class="external-link">tolower</a></span><span class="op">(</span><span class="va">adm_field</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="va">col</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">dat</span><span class="op">$</span><span class="va">tbl_code</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="va">dat</span><span class="op">$</span><span class="va">tbl_code</span> <span class="op">&lt;-</span> <span class="cn">NA_character_</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">dat_coded</span> <span class="op">&lt;-</span> <span class="va">dat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">cw</span>, by <span class="op">=</span> <span class="st">"tbl_code"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 5) Join to sf using shapeISO (preferred over names when available)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cw</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
+<span><span class="co">##   tbl_code shapeISO shapeName</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 0        <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>       </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 1        <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>       </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 183      <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>       </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> 18301    <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>       </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> 1830151  <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>       </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> 1830153  <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span></span></span></code></pre>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">periods</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_table_periods.html">nso_table_periods</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span><span class="va">tbl</span>, selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">periods</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error: HTTP 400 Bad Request.</span></span></code></pre>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Use the admin field as the key</span></span>
+<span><span class="va">col</span> <span class="op">&lt;-</span> <span class="va">adm_field</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="va">col</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span><span class="op">)</span> <span class="va">dat</span><span class="op">$</span><span class="va">tbl_code</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span> <span class="kw">else</span> <span class="va">dat</span><span class="op">$</span><span class="va">tbl_code</span> <span class="op">&lt;-</span> <span class="cn">NA_character_</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error: object 'dat' not found</span></span></code></pre>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat_coded</span> <span class="op">&lt;-</span> <span class="va">dat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">cw</span>, by <span class="op">=</span> <span class="st">"tbl_code"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error: object 'dat' not found</span></span></code></pre>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 5) Join to sf using shapeISO (preferred over names when available)</span></span>
 <span><span class="va">adm1_keys</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_boundary_keys.html">mn_boundary_keys</a></span><span class="op">(</span><span class="st">"ADM1"</span><span class="op">)</span>  <span class="co"># contains shapeISO and name_std</span></span>
 <span><span class="va">geo</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_boundaries.html">mn_boundaries</a></span><span class="op">(</span><span class="st">"ADM1"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">adm1_keys</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shapeISO"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">joined</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">geo</span>, <span class="va">dat_coded</span>, by <span class="op">=</span> <span class="st">"shapeISO"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">joined</span><span class="op">[</span><span class="st">"value"</span><span class="op">]</span><span class="op">)</span>  <span class="co"># or use your preferred mapping workflow</span></span></code></pre></div>
+<span><span class="va">joined</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">geo</span>, <span class="va">dat_coded</span>, by <span class="op">=</span> <span class="st">"shapeISO"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error: object 'dat_coded' not found</span></span></code></pre>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">joined</span><span class="op">[</span><span class="st">"value"</span><span class="op">]</span><span class="op">)</span>  <span class="co"># or use your preferred mapping workflow</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error: object 'joined' not found</span></span></code></pre>
 <p>Notes:</p>
 <ul>
 <li>This example constructs a crosswalk dynamically; you can persist it
