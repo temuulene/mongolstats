@@ -8,4 +8,3 @@ test_that("nso_table_periods handles unknown tbl_id", {
   # No network assumption here; function should return character(0) if metadata not available
   expect_type(nso_table_periods("DT_NSO_NON_EXISTENT"), "character")
 })
-

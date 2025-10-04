@@ -1,137 +1,70 @@
-# Data retrieval endpoints
+# Data retrieval via PXWeb
 
-#' Fetch statistical data for a table
-#'
-#' Wrapper around POST api/Data that returns tidy results as a tibble.
-#'
-#' @param tbl_id Table identifier (e.g., "DT_NSO_2600_004V1").
-#' @param period Character vector of periods (e.g., "201701", "2016"). Optional.
-#' @param code,code1,code2 Optional character vectors of classification codes.
-#' @param labels How to handle code labels: "none" (default, no labels), "en" (English labels only), "mn" (Mongolian labels only), or "both" (both English and Mongolian labels).
-#' @return tibble with columns including `tbl_id`, `period`, `code*`, `scr_*` labels,
-#'   and numeric `value`.
-#' @export
-nso_data <- function(tbl_id, period = NULL, code = NULL, code1 = NULL, code2 = NULL,
-                     labels = c("none", "en", "mn", "both")) {
-  if (missing(labels)) {
-    labels <- getOption("mongolstats.default_labels", "none")
-  } else {
-    labels <- match.arg(labels)
+# Map codes to labels using table metadata in en/mn
+.px_add_labels <- function(df, tbl_id, which = c("none","en","mn","both")) {
+  which <- match.arg(which)
+  if (identical(which, "none")) return(df)
+  idx <- .px_index()
+  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) tbl_id else paste0(tbl_id, ".px")
+  row <- idx[idx$px_file == px_file, , drop = FALSE]
+  if (!nrow(row)) return(df)
+  paths <- if (nzchar(row$px_path[1])) strsplit(row$px_path[1], "/", fixed = TRUE)[[1]] else character()
+  meta_en <- tryCatch(.px_meta_cached(paths, px_file, lang = "en"), error = function(e) NULL)
+  meta_mn <- if (which %in% c("mn","both")) tryCatch(.px_meta_cached(paths, px_file, lang = "mn"), error = function(e) NULL) else NULL
+  add_lab <- function(d, vmeta, suffix) {
+    if (is.null(vmeta)) return(d)
+    for (v in vmeta$variables) {
+      col <- .px_first_nonempty(v$text, v$code)
+      if (is.null(col) || !nzchar(col) || !col %in% names(d)) next
+      map <- tibble::tibble(code = .px_chr(v$values), lbl = .px_chr(v$valueTexts))
+      names(map) <- c(col, paste0(col, suffix))
+      d <- dplyr::left_join(d, map, by = col)
+    }
+    d
   }
-  stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
-
-  body <- .compact(list(
-    tbl_id = unname(tbl_id),
-    Period = if (!is.null(period)) as.character(period) else NULL,
-    CODE = if (!is.null(code)) as.character(code) else NULL,
-    CODE1 = if (!is.null(code1)) as.character(code1) else NULL,
-    CODE2 = if (!is.null(code2)) as.character(code2) else NULL
-  ))
-
-  res <- .nso_post("api/Data", body = body, query = list(type = "json"))
-
-  dat <- res$DataList
-  out <- .as_tibble_df(dat)
-  if (nrow(out) == 0) return(out)
-
-  # Standardize column names without requiring tidyselect pronouns
-  if ("TBL_ID" %in% names(out)) out <- dplyr::rename(out, tbl_id = TBL_ID)
-  if ("Indicator_RN" %in% names(out)) out <- dplyr::rename(out, tbl_id = Indicator_RN)
-  if ("Period" %in% names(out)) out <- dplyr::rename(out, period = Period)
-  if ("CODE" %in% names(out)) out <- dplyr::rename(out, code = CODE)
-  if ("CODE1" %in% names(out)) out <- dplyr::rename(out, code1 = CODE1)
-  if ("CODE2" %in% names(out)) out <- dplyr::rename(out, code2 = CODE2)
-  if ("SCR_MN" %in% names(out)) out <- dplyr::rename(out, scr_mn = SCR_MN)
-  if ("SCR_ENG" %in% names(out)) out <- dplyr::rename(out, scr_eng = SCR_ENG)
-  if ("SCR_MN1" %in% names(out)) out <- dplyr::rename(out, scr_mn1 = SCR_MN1)
-  if ("SCR_ENG1" %in% names(out)) out <- dplyr::rename(out, scr_eng1 = SCR_ENG1)
-  if ("SCR_MN2" %in% names(out)) out <- dplyr::rename(out, scr_mn2 = SCR_MN2)
-  if ("SCR_ENG2" %in% names(out)) out <- dplyr::rename(out, scr_eng2 = SCR_ENG2)
-  if ("DTVAL_CO" %in% names(out)) out <- dplyr::rename(out, value = DTVAL_CO)
-  if ("value" %in% names(out)) out$value <- suppressWarnings(as.numeric(out$value))
-  # Ensure code columns are character vectors, not list-cols
-  if ("code" %in% names(out)) out$code <- .ms_to_chr(out$code, nrow(out))
-  if ("code1" %in% names(out)) out$code1 <- .ms_to_chr(out$code1, nrow(out))
-  if ("code2" %in% names(out)) out$code2 <- .ms_to_chr(out$code2, nrow(out))
-
-  if (!identical(labels, "none")) {
-    out <- .apply_labels_single(out, tbl_id, labels)
-  }
-
-  out
+  if (which %in% c("en","both")) df <- add_lab(df, meta_en, "_en")
+  if (which %in% c("mn","both")) df <- add_lab(df, meta_mn, "_mn")
+  df
 }
 
-#' Fetch multiple tables in one request
-#'
-#' Wrapper around POST api/Package that accepts a data frame or list of
-#' requests and returns a bound tibble of results.
-#'
-#' @param requests A data frame with columns `tbl_id`, and optional `period`,
-#'   `code`, `code1`, `code2`; or a list of such records.
-#' @param labels How to handle code labels: "none" (default, no labels), "en" (English labels only), "mn" (Mongolian labels only), or "both" (both English and Mongolian labels).
-#' @return tibble of combined results with an added `tbl_id` column.
+#' Fetch statistical data for a table (PXWeb)
+#' @param tbl_id Table identifier (e.g., "DT_NSO_0300_001V2").
+#' @param selections Named list mapping variable labels (e.g., Year, Sex) to desired codes or labels.
+#' @param labels Label handling: "none" (codes only), "en", "mn", or "both".
 #' @export
-nso_package <- function(requests, labels = c("none", "en", "mn", "both")) {
-  if (missing(labels)) {
-    labels <- getOption("mongolstats.default_labels", "none")
-  } else {
-    labels <- match.arg(labels)
-  }
+nso_data <- function(tbl_id, selections, labels = c("none","en","mn","both")) {
+  if (missing(labels)) labels <- getOption("mongolstats.default_labels", "none")
+  labels <- match.arg(labels)
+  stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
+  stopifnot(is.list(selections))
+  out <- nso_px_data(tbl_id, selections = selections, lang = .px_lang())
+  .px_add_labels(out, tbl_id, which = labels)
+}
+
+#' Fetch multiple tables and bind (PXWeb)
+#' @param requests A list of records, each with `tbl_id` and `selections` (named list)
+#' @param labels Label handling as in `nso_data()`
+#' @export
+nso_package <- function(requests, labels = c("none","en","mn","both")) {
+  if (missing(labels)) labels <- getOption("mongolstats.default_labels", "none")
+  labels <- match.arg(labels)
   if (is.data.frame(requests)) {
-    reqs <- purrr::pmap(
-      requests[, intersect(names(requests), c("tbl_id", "period", "code", "code1", "code2")), drop = FALSE],
-      function(tbl_id, period = NULL, code = NULL, code1 = NULL, code2 = NULL) {
-        .compact(list(
-          tbl_id = unname(tbl_id),
-          PERIOD = if (!is.null(period)) as.character(period) else NULL,
-          CODE = if (!is.null(code)) as.character(code) else NULL,
-          CODE1 = if (!is.null(code1)) as.character(code1) else NULL,
-          CODE2 = if (!is.null(code2)) as.character(code2) else NULL
-        ))
-      }
-    )
+    # expect columns: tbl_id (character), selections (list-column)
+    if (!("tbl_id" %in% names(requests) && "selections" %in% names(requests))) {
+      stop("For PXWeb, provide a data frame with columns tbl_id and selections (list-column)")
+    }
+    reqs <- purrr::pmap(requests[, c("tbl_id","selections")], list)
   } else if (is.list(requests)) {
-    reqs <- lapply(requests, function(r) {
-      .compact(list(
-        tbl_id = unname(r$tbl_id),
-        PERIOD = if (!is.null(r$period)) as.character(r$period) else NULL,
-        CODE = if (!is.null(r$code)) as.character(r$code) else NULL,
-        CODE1 = if (!is.null(r$code1)) as.character(r$code1) else NULL,
-        CODE2 = if (!is.null(r$code2)) as.character(r$code2) else NULL
-      ))
-    })
+    reqs <- requests
   } else {
-    stop("`requests` must be a data.frame or list of records")
+    stop("`requests` must be a list of records or a data frame with tbl_id + selections")
   }
-
-  res <- .nso_post("api/Package", body = reqs, query = list(type = "json"))
-  dat <- res$DataList
-  out <- .as_tibble_df(dat)
-  if (nrow(out) == 0) return(out)
-
-  # Standardize names
-  if ("TBL_ID" %in% names(out)) out <- dplyr::rename(out, tbl_id = TBL_ID)
-  if ("Indicator_RN" %in% names(out)) out <- dplyr::rename(out, tbl_id = Indicator_RN)
-  if ("PERIOD" %in% names(out)) out <- dplyr::rename(out, period = PERIOD)
-  if ("CODE" %in% names(out)) out <- dplyr::rename(out, code = CODE)
-  if ("CODE1" %in% names(out)) out <- dplyr::rename(out, code1 = CODE1)
-  if ("CODE2" %in% names(out)) out <- dplyr::rename(out, code2 = CODE2)
-  if ("SCR_MN" %in% names(out)) out <- dplyr::rename(out, scr_mn = SCR_MN)
-  if ("SCR_ENG" %in% names(out)) out <- dplyr::rename(out, scr_eng = SCR_ENG)
-  if ("SCR_MN1" %in% names(out)) out <- dplyr::rename(out, scr_mn1 = SCR_MN1)
-  if ("SCR_ENG1" %in% names(out)) out <- dplyr::rename(out, scr_eng1 = SCR_ENG1)
-  if ("SCR_MN2" %in% names(out)) out <- dplyr::rename(out, scr_mn2 = SCR_MN2)
-  if ("SCR_ENG2" %in% names(out)) out <- dplyr::rename(out, scr_eng2 = SCR_ENG2)
-  if ("DTVAL_CO" %in% names(out)) out <- dplyr::rename(out, value = DTVAL_CO)
-  if ("value" %in% names(out)) out$value <- suppressWarnings(as.numeric(out$value))
-  # Ensure code columns are character vectors
-  if ("code" %in% names(out)) out$code <- .ms_to_chr(out$code, nrow(out))
-  if ("code1" %in% names(out)) out$code1 <- .ms_to_chr(out$code1, nrow(out))
-  if ("code2" %in% names(out)) out$code2 <- .ms_to_chr(out$code2, nrow(out))
-
-  if (!identical(labels, "none") && "tbl_id" %in% names(out)) {
-    out <- .apply_labels_multi(out, labels)
-  }
-
+  out <- purrr::map_dfr(reqs, function(r) {
+    tbl <- r$tbl_id
+    sel <- r$selections
+    df <- tryCatch(nso_px_data(tbl, selections = sel, lang = .px_lang()), error = function(e) tibble::tibble())
+    if (nrow(df)) df$tbl_id <- tbl
+    .px_add_labels(df, tbl, which = labels)
+  })
   out
 }

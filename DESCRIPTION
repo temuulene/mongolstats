@@ -1,6 +1,6 @@
 Package: mongolstats
 Type: Package
-Title: Mongolian NSO Open Data and Boundaries (Tidy Client)
+Title: Mongolian NSO PXWeb Data and Boundaries (Tidy Client)
 Version: 0.0.0.9000
 Authors@R: 
     c(person(given = "Temuulen",
@@ -8,7 +8,7 @@ Authors@R:
              role = c("aut", "cre"),
              email = "temuulen@gmail.com"))
 Description: A tidyverse-friendly client for the National Statistics Office of Mongolia
-    Open Data API (opendata.1212.mn) with helpers to discover tables, variables, and fetch
+    PXWeb API (data.1212.mn) with helpers to discover tables, variables, and fetch
     statistical data. Also includes utilities to retrieve Mongolia administrative boundaries
     (ADM0-ADM2) as 'sf' objects from open sources for mapping and spatial analysis.
 Depends: 
@@ -39,6 +39,6 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Config/testthat/edition: 3
-URL: https://temuulene.github.io/mongolstats/, https://opendata.1212.mn/
+URL: https://temuulene.github.io/mongolstats/, https://data.1212.mn/pxweb/
 BugReports: https://github.com/temuulene/mongolstats/issues
 License: MIT + file LICENSE

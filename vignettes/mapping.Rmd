@@ -8,8 +8,14 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-eval_site <- identical(Sys.getenv("PKGDOWN_EVAL"), "true")
-knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE)
+eval_site <- TRUE
+if (requireNamespace("pkgdown", quietly = TRUE)) eval_site <- pkgdown::in_pkgdown()
+if (eval_site && requireNamespace("curl", quietly = TRUE)) eval_site <- curl::has_internet()
+knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE, error = TRUE)
+if (eval_site) {
+  options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
+  try(mongolstats::nso_cache_enable(), silent = TRUE)
+}
 ```
 
 ```{r}
@@ -28,19 +34,13 @@ head(adm1$name_std)
 Suppose we fetched a table that reports values by aimag:
 
 ```{r}
-# Replace with a table that has region breakdowns
-tbl <- "DT_NSO_0500_007V1"  # GDP by region, aimag and capital
+tbl <- "DT_NSO_0300_004V5"  # Resident population by location and region
 
 periods <- nso_table_periods(tbl)
-dat <- if (length(periods)) nso_data(tbl, period = tail(periods, 1)) else tibble::tibble()
+dat <- if (length(periods)) nso_data(tbl, selections = list(Year = tail(periods, 1)), labels = "en") else tibble::tibble()
 
-# Assume English names are in one of the label columns (e.g., scr_eng1)
-# Create a synthetic name column for demo if needed
-nm_col <- intersect(names(dat), c("scr_eng", "scr_eng1", "scr_eng2"))[1]
-if (is.na(nm_col) || length(nm_col) == 0) nm_col <- intersect(names(dat), names(dat))[1]
-if (!is.null(nm_col) && !is.na(nm_col) && nm_col %in% names(dat)) {
-  dat$name <- dat[[nm_col]]
-}
+# Create a name column from the 'Region' dimension if present
+if ("Region_en" %in% names(dat)) dat$name <- dat$Region_en else if ("Region" %in% names(dat)) dat$name <- dat$Region
 
 joined <- tryCatch(mn_join_by_name(dat, name_col = "name", level = "ADM1"), error = function(e) adm1)
 plot(sf::st_geometry(joined))
