@@ -16,6 +16,10 @@ if (eval_site) {
   options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
   try(mongolstats::nso_cache_enable(), silent = TRUE)
 }
+# Always install local package before knitting to ensure latest API
+if (requireNamespace("remotes", quietly = TRUE)) {
+  try(remotes::install_local(".", upgrade = "never", force = TRUE, dependencies = FALSE), silent = TRUE)
+}
 ```
 
 ```{r}
@@ -79,3 +83,9 @@ Notes:
 - This example constructs a crosswalk dynamically; you can persist it (e.g., `inst/extdata/adm1_cw.csv`) and reuse it across tables if they share admin codes.
 - If a table uses different admin levels, repeat the pattern with `mn_boundaries("ADM2")` and adjust the field accordingly.
 - Once NSO publishes stable geographic codes, you can replace the name-normalization with a direct code match to boundary keys.
+
+## Tips for robust code-based joins
+
+- Prefer ISO-like stable keys (e.g., `shapeISO`) over names when available.
+- Keep your crosswalks in version control (e.g., `inst/extdata/…`) and document their provenance.
+- Validate joins by checking for unmatched rows and duplicates in the key.
