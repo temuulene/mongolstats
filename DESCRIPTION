@@ -33,7 +33,8 @@ Suggests:
     rmarkdown,
     pkgdown,
     roxygen2,
-    lifecycle
+    lifecycle,
+    pxweb
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

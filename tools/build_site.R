@@ -5,7 +5,7 @@ user_lib <- file.path(normalizePath("."), ".Rlib")
 if (!dir.exists(user_lib)) dir.create(user_lib, recursive = TRUE)
 .libPaths(c(user_lib, .libPaths()))
 
-need <- c("pkgdown","knitr","rmarkdown","roxygen2","curl","remotes")
+need <- c("pkgdown","knitr","rmarkdown","roxygen2","curl","remotes","pxweb")
 avail <- rownames(installed.packages(lib.loc = .libPaths()[1]))
 miss <- setdiff(need, intersect(need, avail))
 if (length(miss)) install.packages(miss, repos = "https://cloud.r-project.org", lib = .libPaths()[1], dependencies = TRUE)
