@@ -82,6 +82,19 @@
 <span><span class="co"># Point to new PXWeb API (default set on load)</span></span>
 <span><span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<p>This vignette introduces the core workflow for using mongolstats:</p>
+<ul>
+<li>Discover tables and explore their variables (codebooks)</li>
+<li>Fetch data by selecting values for each table dimension</li>
+<li>Optionally enrich with English/Mongolian labels for readability</li>
+<li>Work with period utilities for time series</li>
+</ul>
+<p>We’ll keep examples small for clarity; see the other vignettes for
+discovery, periods, mapping, and batch workflows.</p>
+</div>
+<div class="section level2">
 <h2 id="list-tables">List tables<a class="anchor" aria-label="anchor" href="#list-tables"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -123,19 +136,108 @@
 <span><span class="co">## <span style="color: #BCBCBC;"> 8</span> Age   4      3       <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 9</span> Age   5      4       <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span> Age   6      5       <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span></code></pre>
+<p>Notes</p>
+<ul>
+<li>Each PXWeb table has one or more dimensions (e.g., Year, Sex, Age).
+Use their labels to select values.</li>
+<li>You can pass values as codes or labels; mongolstats maps labels to
+codes under the hood for you.</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="fetch-data">Fetch data<a class="anchor" aria-label="anchor" href="#fetch-data"></a>
 </h2>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">per</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu"><a href="../reference/nso_table_periods.html">nso_table_periods</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_001V2"</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="st">""</span><span class="op">)</span></span>
+<span><span class="va">yr</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">per</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">per</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="va">per</span> <span class="kw">else</span> <span class="st">"2022"</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
 <span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_0300_001V2"</span>,</span>
-<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sex <span class="op">=</span> <span class="st">"Total"</span>, Age <span class="op">=</span> <span class="st">"Total"</span>, Year <span class="op">=</span> <span class="st">"2024"</span><span class="op">)</span></span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sex <span class="op">=</span> <span class="st">"Total"</span>, Age <span class="op">=</span> <span class="st">"Total"</span>, Year <span class="op">=</span> <span class="va">yr</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Error: HTTP 400 Bad Request.</span></span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Error: object 'dat' not found</span></span></code></pre>
+</div>
+<div class="section level2">
+<h2 id="selecting-by-label-vs-code">Selecting by label vs code<a class="anchor" aria-label="anchor" href="#selecting-by-label-vs-code"></a>
+</h2>
+<p>You can also select using dimension codes. For example, if
+<code>Sex</code> has codes <code>T</code> for total and
+<code>M</code>/<code>F</code> for male/female, both of the following are
+equivalent for many tables:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">yr</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu"><a href="../reference/nso_table_periods.html">nso_table_periods</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_001V2"</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="st">"2022"</span><span class="op">)</span></span>
+<span><span class="va">dat_lbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_0300_001V2"</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sex <span class="op">=</span> <span class="st">"Total"</span>, Age <span class="op">=</span> <span class="st">"Total"</span>, Year <span class="op">=</span> <span class="va">yr</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error: HTTP 400 Bad Request.</span></span></code></pre>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat_code</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_0300_001V2"</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sex <span class="op">=</span> <span class="st">"T"</span>, Age <span class="op">=</span> <span class="st">"Total"</span>, Year <span class="op">=</span> <span class="va">yr</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error in nso_px_data(tbl_id, selections = selections, lang = .px_lang()): Invalid selection for 'Sex': T. Available codes include: 0, 1, 2</span></span></code></pre>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rows_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">dat_lbl</span><span class="op">)</span>, rows_code <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">dat_code</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error: object 'dat_lbl' not found</span></span></code></pre>
+</div>
+<div class="section level2">
+<h2 id="adding-labels-to-the-result">Adding labels to the result<a class="anchor" aria-label="anchor" href="#adding-labels-to-the-result"></a>
+</h2>
+<p>Use the <code>labels</code> argument to add readable columns for each
+dimension:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">per</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="fu"><a href="../reference/nso_table_periods.html">nso_table_periods</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_001V2"</span><span class="op">)</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">yrs</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">per</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">2</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">per</span>, <span class="fl">2</span><span class="op">)</span> <span class="kw">else</span> <span class="va">per</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">yrs</span><span class="op">)</span><span class="op">)</span> <span class="va">yrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2021"</span>,<span class="st">"2022"</span><span class="op">)</span></span>
+<span><span class="va">dat_labeled</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_0300_001V2"</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Male"</span>,<span class="st">"Female"</span><span class="op">)</span>, Age <span class="op">=</span> <span class="st">"Total"</span>, Year <span class="op">=</span> <span class="va">yrs</span><span class="op">)</span>,</span>
+<span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error: HTTP 400 Bad Request.</span></span></code></pre>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat_labeled</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html" class="external-link">any_of</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Year"</span>,<span class="st">"Sex"</span>,<span class="st">"value"</span>,<span class="st">"Year_en"</span>,<span class="st">"Sex_en"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error: object 'dat_labeled' not found</span></span></code></pre>
+</div>
+<div class="section level2">
+<h2 id="working-with-periods">Working with periods<a class="anchor" aria-label="anchor" href="#working-with-periods"></a>
+</h2>
+<p>Use helpers to discover valid periods for a table and build
+sequences:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">periods</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_table_periods.html">nso_table_periods</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_001V2"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">periods</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">periods</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] "2024" "2023" "2022" "2021" "2020" "2019"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "2005" "2004" "2003" "2002" "2001" "2000"</span></span></code></pre>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Yearly sequence helper</span></span>
+<span><span class="fu"><a href="../reference/nso_period_seq.html">nso_period_seq</a></span><span class="op">(</span><span class="st">"2018"</span>,<span class="st">"2022"</span>, by <span class="op">=</span> <span class="st">"Y"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] "2018" "2019" "2020" "2021" "2022"</span></span></code></pre>
+</div>
+<div class="section level2">
+<h2 id="summaries">Summaries<a class="anchor" aria-label="anchor" href="#summaries"></a>
+</h2>
+<p>With dplyr, it’s straightforward to summarise values by year or
+category:</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">per</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="fu"><a href="../reference/nso_table_periods.html">nso_table_periods</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_001V2"</span><span class="op">)</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">yrs</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">per</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">5</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">per</span>, <span class="fl">5</span><span class="op">)</span> <span class="kw">else</span> <span class="va">per</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">yrs</span><span class="op">)</span><span class="op">)</span> <span class="va">yrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2018"</span>,<span class="st">"2019"</span>,<span class="st">"2020"</span>,<span class="st">"2021"</span>,<span class="st">"2022"</span><span class="op">)</span></span>
+<span><span class="va">dat_year</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_0300_001V2"</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sex <span class="op">=</span> <span class="st">"Total"</span>, Age <span class="op">=</span> <span class="st">"Total"</span>, Year <span class="op">=</span> <span class="va">yrs</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error: HTTP 400 Bad Request.</span></span></code></pre>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat_year</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">Year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error: object 'dat_year' not found</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

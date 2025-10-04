@@ -106,6 +106,19 @@ fuzzy matching.</p>
 <span><span class="co">## 6 Ulaanbaatar Ulanbaatar     6 MULTIPOLYGON (((106.3564 48...</span></span></code></pre>
 <p>If you have official region names in your dataset, prefer
 <code><a href="../reference/mn_join_by_name.html">mn_join_by_name()</a></code> for exact matching.</p>
+<div class="section level2">
+<h2 id="guidance-for-fuzzy-matching">Guidance for fuzzy matching<a class="anchor" aria-label="anchor" href="#guidance-for-fuzzy-matching"></a>
+</h2>
+<ul>
+<li>Use <code>max_distance</code> conservatively (e.g., 1–2) to avoid
+incorrect matches.</li>
+<li>You can supply a different string distance <code>method</code> if
+<code>stringdist</code> is installed; Jaro-Winkler and Levenshtein are
+common choices.</li>
+<li>Always review near ties and ambiguous matches manually; consider
+exporting candidate pairs for QA if the dataset is critical.</li>
+</ul>
+</div>
   </main>
 </div>
 

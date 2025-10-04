@@ -80,6 +80,24 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
+<h2 id="discovery-overview">Discovery overview<a class="anchor" aria-label="anchor" href="#discovery-overview"></a>
+</h2>
+<p>PXWeb exposes a tree of folders (sectors/subsectors) containing
+tables. Discovery functions help you:</p>
+<ul>
+<li>Navigate the catalog with <code><a href="../reference/nso_sectors.html">nso_sectors()</a></code> and
+<code><a href="../reference/nso_subsectors.html">nso_subsectors()</a></code>
+</li>
+<li>List available tables with <code><a href="../reference/nso_itms.html">nso_itms()</a></code>
+</li>
+<li>Search by keyword with <code><a href="../reference/nso_itms_search.html">nso_itms_search()</a></code> /
+<code><a href="../reference/nso_search.html">nso_search()</a></code>
+</li>
+<li>Explore a table’s variables using <code><a href="../reference/nso_itms_detail.html">nso_variables()</a></code>
+</li>
+</ul>
+</div>
+<div class="section level2">
 <h2 id="list-available-tables">List available tables<a class="anchor" aria-label="anchor" href="#list-available-tables"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -100,9 +118,55 @@
 <span><span class="co">## <span style="color: #BCBCBC;">10</span> DT_NSO_0600_002V22 CONSUMER PRICE INDEX, by group, compared… 2015=100 2023=1…</span></span></code></pre>
 </div>
 <div class="section level2">
+<h2 id="navigate-sectors">Navigate sectors<a class="anchor" aria-label="anchor" href="#navigate-sectors"></a>
+</h2>
+<p>Top-level categories (folder-like nodes):</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">root</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_sectors.html">nso_sectors</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">root</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 8 × 3</span></span></span>
+<span><span class="co">##   id                    type  text                 </span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> Economy, environment  l     Economy, environment </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> Education, health     l     Education, health    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> Historical data       l     Historical data      </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> Industry, service     l     Industry, service    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> Labour, business      l     Labour, business     </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> Population, household l     Population, household</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">7</span> Regional development  l     Regional development </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">8</span> Society, development  l     Society, development</span></span></code></pre>
+<p>Children under a category (pass <code>id</code> from above):</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">first_id</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">root</span><span class="op">)</span><span class="op">)</span> <span class="va">root</span><span class="op">$</span><span class="va">id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="kw">else</span> <span class="st">""</span></span>
+<span><span class="va">kids</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_subsectors.html">nso_subsectors</a></span><span class="op">(</span><span class="va">first_id</span><span class="op">)</span></span>
+<span><span class="va">kids</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 3</span></span></span>
+<span><span class="co">##    id                             type  text                          </span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                         </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> Balance of Payments            l     Balance of Payments           </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> Consumer Price Index           l     Consumer Price Index          </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> Environment                    l     Environment                   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> Environmental-Economic Account l     Environmental-Economic Account</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> Foreign Trade                  l     Foreign Trade                 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> Government budget              l     Government budget             </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> Housing price index            l     Housing price index           </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> Investment                     l     Investment                    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> Money and Finance              l     Money and Finance             </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> National Accounts              l     National Accounts</span></span></code></pre>
+</div>
+<div class="section level2">
+<h2 id="search-by-keyword">Search by keyword<a class="anchor" aria-label="anchor" href="#search-by-keyword"></a>
+</h2>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_search.html">nso_itms_search</a></span><span class="op">(</span><span class="st">"population"</span><span class="op">)</span></span>
+<span><span class="va">pop</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 0 × 2</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 2 variables: tbl_id &lt;chr&gt;, tbl_eng_nm &lt;chr&gt;</span></span></span></code></pre>
+</div>
+<div class="section level2">
 <h2 id="explore-variables-codebook-for-a-table">Explore variables (codebook) for a table<a class="anchor" aria-label="anchor" href="#explore-variables-codebook-for-a-table"></a>
 </h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_detail.html">nso_variables</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_001V2"</span><span class="op">)</span></span>
 <span><span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">field</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
@@ -111,7 +175,7 @@
 <span><span class="co">## <span style="color: #BCBCBC;">1</span> Age      88</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">2</span> Sex       3</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">3</span> Year     25</span></span></code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 6</span></span></span>
 <span><span class="co">##    field itm_id scr_eng scr_mn px_path                                   px_file</span></span>
@@ -126,6 +190,14 @@
 <span><span class="co">## <span style="color: #BCBCBC;"> 8</span> Age   4      3       <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 9</span> Age   5      4       <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span> Age   6      5       <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span></code></pre>
+<p>Tips</p>
+<ul>
+<li>Use <code>field</code> to identify the dimension names you’ll pass
+in <code>selections</code> when fetching data.</li>
+<li>Each <code>field</code> has codes (<code>itm_id</code>) and
+English/Mongolian labels
+(<code>scr_eng</code>/<code>scr_mn</code>).</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

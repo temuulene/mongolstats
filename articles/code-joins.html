@@ -165,7 +165,20 @@ if they share admin codes.</li>
 accordingly.</li>
 <li>Once NSO publishes stable geographic codes, you can replace the
 name-normalization with a direct code match to boundary keys.</li>
-</ul></main>
+</ul>
+<div class="section level2">
+<h2 id="tips-for-robust-code-based-joins">Tips for robust code-based joins<a class="anchor" aria-label="anchor" href="#tips-for-robust-code-based-joins"></a>
+</h2>
+<ul>
+<li>Prefer ISO-like stable keys (e.g., <code>shapeISO</code>) over names
+when available.</li>
+<li>Keep your crosswalks in version control (e.g.,
+<code>inst/extdata/…</code>) and document their provenance.</li>
+<li>Validate joins by checking for unmatched rows and duplicates in the
+key.</li>
+</ul>
+</div>
+  </main>
 </div>
 
 
