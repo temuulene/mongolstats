@@ -214,6 +214,20 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang()) {
   paths <- if (nzchar(row$px_path[1])) strsplit(row$px_path[1], "/", fixed = TRUE)[[1]] else character()
   meta <- .px_meta_cached(paths, px_file, lang = lang)
   vars <- meta$variables
+  # Seed cookie if server uses Set-Cookie (e.g., rxid) to accept POST
+  cookie <- NULL
+  try({
+    seed <- httr2::request(.px_url(paths, px_file, lang = lang)) |>
+      httr2::req_user_agent(.nso_user_agent()) |>
+      httr2::req_timeout(.nso_timeout()) |>
+      httr2::req_retry(max_tries = .nso_retry_tries(), backoff = .nso_retry_backoff()) |>
+      httr2::req_perform()
+    setck <- tryCatch(httr2::resp_header(seed, "set-cookie"), error = function(e) NULL)
+    if (!is.null(setck) && is.character(setck) && length(setck)) {
+      rx <- regmatches(setck, regexpr("rxid=[^;]+", setck))
+      if (length(rx) && nzchar(rx[1])) cookie <- rx[1]
+    }
+  }, silent = TRUE)
   # Build query: ensure every variable in the table is included.
   q <- list()
   sel_names <- tolower(names(selections))
@@ -239,18 +253,45 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang()) {
       }
       q[[length(q)+1]] <- list(code = v$code, selection = list(filter = "item", values = vals))
     } else {
-      # Not specified: select all for this variable
-      q[[length(q)+1]] <- list(code = v$code, selection = list(filter = "all", values = list("*")))
+      # Not specified: select all explicit codes for this variable
+      q[[length(q)+1]] <- list(code = v$code, selection = list(filter = "item", values = vv))
     }
   }
   body <- list(query = q, response = list(format = "JSON"))
+  # Build pxweb-style named query for fallback
+  px_query <- stats::setNames(vector("list", length(vars)), vapply(vars, function(v) v$code, character(1)))
+  for (v in vars) {
+    vname <- .px_first_nonempty(v$text, v$code, "")
+    vv <- .px_chr(v$values)
+    vt <- .px_chr(v$valueTexts)
+    if (tolower(vname) %in% sel_names) {
+      vals <- as.character(selections[[which(sel_names == tolower(vname))[1]]])
+      if (length(vt) && any(vals %in% vt)) vals <- vv[match(vals, vt)]
+      px_query[[v$code]] <- vals
+    } else {
+      px_query[[v$code]] <- vv
+    }
+  }
   url <- .px_url(paths, px_file, lang = lang)
   req <- httr2::request(url) |>
     httr2::req_user_agent(.nso_user_agent()) |>
     httr2::req_timeout(.nso_timeout()) |>
     httr2::req_retry(max_tries = .nso_retry_tries(), backoff = .nso_retry_backoff()) |>
+    { if (!is.null(cookie)) httr2::req_headers(., Cookie = cookie) else . } |>
     httr2::req_body_json(body)
-  resp <- .nso_perform(req)
+  resp <- tryCatch(.nso_perform(req), error = function(e) e)
+  if (inherits(resp, "error") || (inherits(resp, "httr2_response") && !is.null(httr2::resp_status(resp)) && httr2::resp_status(resp) >= 400)) {
+    if (requireNamespace("pxweb", quietly = TRUE)) {
+      # Fallback via pxweb client
+      px <- tryCatch(pxweb::pxweb_get(url, query = px_query), error = function(e) e)
+      if (!inherits(px, "error")) {
+        df <- tryCatch(pxweb::pxweb_to_data_frame(px, column.name.type = "text", variable.value.type = "code"), error = function(e) NULL)
+        if (!is.null(df)) return(tibble::as_tibble(df))
+      }
+    }
+    # If fallback not available or failed, rethrow informative error
+    stop(structure(list(message = "PXWeb request failed with HTTP error; try installing 'pxweb' package for fallback or verify selections.", call = NULL), class = c("mongolstats_http_error","error","condition")))
+  }
   out <- jsonlite::fromJSON(httr2::resp_body_string(resp), simplifyVector = FALSE)
   # Flatten PXWeb response
   cols <- out$columns
