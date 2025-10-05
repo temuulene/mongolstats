@@ -76,8 +76,8 @@ dat %>% dplyr::slice_head(n = 6)
 
 ## Selecting by label vs code
 
-You can also select using dimension codes. For example, if `Sex` has codes `T` for total and `M`/`F` for male/female,
-both of the following are equivalent for many tables:
+You can also select using dimension codes. For this table, `Sex` has codes `0` (Total), `1` (Male), `2` (Female).
+Both of the following are equivalent:
 
 ```{r}
 yr <- tryCatch(tail(nso_table_periods("DT_NSO_0300_001V2"), 1), error = function(e) "2022")
@@ -88,7 +88,7 @@ dat_lbl <- nso_data(
 
 dat_code <- nso_data(
   tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = "T", Age = "Total", Year = yr)
+  selections = list(Sex = "0", Age = "0", Year = yr)
 )
 
 list(rows_label = nrow(dat_lbl), rows_code = nrow(dat_code))

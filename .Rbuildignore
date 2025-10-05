@@ -4,7 +4,7 @@
 ^\.vscode/.
 ^\.Rproj\.user$
 ^\.Rhistory$
-^\.Rproj$
+^.*\.Rproj$
 ^_pkgdown\.yml$
 ^docs$
 ^\.Rlib$
@@ -16,3 +16,17 @@
 ^CODE_OF_CONDUCT\.md$
 ^CONTRIBUTING\.md$
 ^check_.*$
+^CHANGES_SUMMARY\.md$
+^CRITICAL_FIX\.md$
+^DEBUGGING_FINDINGS\.md$
+^INSTALL_R_WSL\.md$
+^MANUAL_SETUP_REQUIRED\.md$
+^README_FIX\.md$
+^REBUILD_INSTRUCTIONS\.md$
+^add_missing_table\.py$
+^debug_full_flow\.R$
+^install_r\.sh$
+^install_r_packages\.R$
+^rebuild_index\.R$
+^test_.*\.R$
+^test_.*\.sh$
