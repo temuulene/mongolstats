@@ -26,20 +26,26 @@ navbar:
     articles:
       text: Articles
       menu:
-        - text: Getting started
-          href: articles/getting-started.html
         - text: Discovering tables and variables
           href: articles/discovery.html
+        - text: Query builder
+          href: articles/query-builder.html
         - text: Fetching data and periods
           href: articles/fetching-periods.html
         - text: Batch fetching workflows
           href: articles/batch-workflows.html
+        - text: Parallel batching
+          href: articles/parallel-batching.html
+        - text: Offline & caching
+          href: articles/offline-caching.html
         - text: Mapping with mongolstats
           href: articles/mapping.html
         - text: Fuzzy name joins
           href: articles/fuzzy-joins.html
         - text: Code-based joins
           href: articles/code-joins.html
+        - text: Troubleshooting
+          href: articles/troubleshooting.html
     github:
       icon: fab fa-github
       aria-label: GitHub
@@ -65,8 +71,13 @@ articles:
       - discovery
   - title: Fetching & Periods
     contents:
+      - query-builder
       - fetching-periods
       - batch-workflows
+      - parallel-batching
+  - title: Performance & Offline
+    contents:
+      - offline-caching
   - title: Mapping
     contents:
       - mapping
@@ -74,6 +85,9 @@ articles:
     contents:
       - fuzzy-joins
       - code-joins
+  - title: Troubleshooting
+    contents:
+      - troubleshooting
 reference:
   - title: Discover Tables
     contents:
@@ -81,6 +95,8 @@ reference:
       - nso_tables
       - nso_itms_detail
       - nso_variables
+      - nso_dims
+      - nso_dim_values
       - nso_itms_search
       - nso_itms_by_sector
       - nso_sectors
@@ -90,6 +106,9 @@ reference:
       - nso_data
       - nso_package
       - nso_search
+      - nso_query
+      - as_px_query
+      - nso_fetch
   - title: Boundaries and Joins
     contents:
       - mn_boundaries
@@ -102,7 +121,10 @@ reference:
       - nso_cache_enable
       - nso_cache_disable
       - nso_cache_clear
+      - nso_cache_status
       - nso_period_seq
       - nso_table_periods
       - nso_options
       - nso_rebuild_px_index
+      - nso_offline_enable
+      - nso_offline_disable

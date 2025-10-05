@@ -1,0 +1,62 @@
+[
+    {
+        "id": "Balance of Payments",
+        "type": "l",
+        "text": "Balance of Payments"
+    },
+    {
+        "id": "Consumer Price Index",
+        "type": "l",
+        "text": "Consumer Price Index"
+    },
+    {
+        "id": "Environment",
+        "type": "l",
+        "text": "Environment"
+    },
+    {
+        "id": "Environmental-Economic Account",
+        "type": "l",
+        "text": "Environmental-Economic Account"
+    },
+    {
+        "id": "Foreign Trade",
+        "type": "l",
+        "text": "Foreign Trade"
+    },
+    {
+        "id": "Government budget",
+        "type": "l",
+        "text": "Government budget"
+    },
+    {
+        "id": "Housing price index",
+        "type": "l",
+        "text": "Housing price index"
+    },
+    {
+        "id": "Investment",
+        "type": "l",
+        "text": "Investment"
+    },
+    {
+        "id": "Money and Finance",
+        "type": "l",
+        "text": "Money and Finance"
+    },
+    {
+        "id": "National Accounts",
+        "type": "l",
+        "text": "National Accounts"
+    },
+    {
+        "id": "Producer price index",
+        "type": "l",
+        "text": "Producer price index"
+    },
+    {
+        "id": "Productivity",
+        "type": "l",
+        "text": "Productivity"
+    }
+]

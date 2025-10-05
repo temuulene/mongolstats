@@ -1,0 +1,73 @@
+{
+    "title": "ASSET ACCOUNT FOR LIVESTOCK",
+    "variables": [
+        {
+            "code": "Малын төрөл",
+            "text": "Type of livestock",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+            ],
+            "valueTexts": [
+                "Total livestock",
+                " Horses",
+                " Cattle",
+                " Camels",
+                " Sheep",
+                " Goats",
+                " Pigs",
+                " Poultry"
+            ]
+        },
+        {
+            "code": "Үзүүлэлт",
+            "text": "Indicator",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+            "valueTexts": [
+                "Opening stock",
+                " Total additions",
+                "     Growth in livestock",
+                "     Import of stock",
+                "     Other additions to stock",
+                " Total reductions",
+                "     Livestock slaughtered",
+                "     Exports of livestock",
+                "     Other reductions in stock",
+                " Net change in stock",
+                " Closing stock"
+            ]
+        },
+        {
+            "code": "Он",
+            "text": "Year",
+            "values": [
+                "0",
+                "1",
+                "2"
+            ],
+            "valueTexts": [
+                "2023",
+                "2022",
+                "2021"
+            ]
+        }
+    ]
+}

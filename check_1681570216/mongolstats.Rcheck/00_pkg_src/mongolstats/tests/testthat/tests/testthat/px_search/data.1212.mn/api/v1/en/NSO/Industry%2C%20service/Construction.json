@@ -1,0 +1,49 @@
+[
+    {
+        "id": "CONSTRUCTION, CAPITAL REPAIRS PERFORMED BY DOMESTIC ENTERPRISES, by soum and district,",
+        "type": "l",
+        "text": "CONSTRUCTION, CAPITAL REPAIRS PERFORMED BY DOMESTIC ENTERPRISES, by soum and district,"
+    },
+    {
+        "id": "DT_NSO_0902_002V1.px",
+        "type": "t",
+        "text": "CONSTRUCTION, CAPITAL REPAIRS AND MAINTENANCES, by type of construction, aimags and the Capital, and by quarter (cumulative) by Indicator, Region and Quarter",
+        "updated": "2025-09-15T09:00:40"
+    },
+    {
+        "id": "DT_NSO_0902_003V1.px",
+        "type": "t",
+        "text": "GROUPING OF CONSTRUCTION ENTERPRISES, by amount of completed construction, capital repairs and maintenance, and by year by Indicator and Year",
+        "updated": "2025-09-15T09:00:40"
+    },
+    {
+        "id": "DT_NSO_0902_004V1.px",
+        "type": "t",
+        "text": "STRUCTURE OF CONSTRUCTION, CAPITAL REPAIRS AND MAINTENANCE, by type of construction, and by year by Indicator and Year",
+        "updated": "2025-09-15T09:00:40"
+    },
+    {
+        "id": "DT_NSO_0902_005V1.px",
+        "type": "t",
+        "text": "COMMISSIONED CONSTRUCTION AND CAPITAL REPAIRS, by type and capacity of construction, and by year by Indicator and Year",
+        "updated": "2025-09-15T09:00:40"
+    },
+    {
+        "id": "DT_NSO_0902_006V1.px",
+        "type": "t",
+        "text": "CONSTRUCTION, CAPITAL REPAIRS AND MAINTENANCE, by type of enterprises, and by quarter (cumulative) by Indicator and Quarter (cumulative)",
+        "updated": "2025-09-15T09:00:40"
+    },
+    {
+        "id": "DT_NSO_0902_009V1.px",
+        "type": "t",
+        "text": "COMMISSIONED CONSTRUCTION, CAPITAL REPAIRS AND MAINTENANCE, by type of construction, aimags and the Capital, and by year by Indicator, Region and Year",
+        "updated": "2025-09-15T09:00:40"
+    },
+    {
+        "id": "DT_NSO_1100_015V2.px",
+        "type": "t",
+        "text": "CONSTRUCTION COST INDEX,construction type by quarter",
+        "updated": "2025-09-23T17:48:28"
+    }
+]

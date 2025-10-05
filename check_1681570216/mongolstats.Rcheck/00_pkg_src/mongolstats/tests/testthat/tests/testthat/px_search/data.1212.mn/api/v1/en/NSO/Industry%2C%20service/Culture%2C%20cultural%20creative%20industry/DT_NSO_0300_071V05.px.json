@@ -1,0 +1,45 @@
+{
+    "title": "PUBLIC LIBRARIES INDICATORS",
+    "variables": [
+        {
+            "code": "Үзүүлэлт",
+            "text": "Indicators",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3"
+            ],
+            "valueTexts": [
+                "Libraries",
+                " Book funds, thousand copies",
+                " Books per 10 000 population, thousand copies",
+                " Regular readers, thousand persons"
+            ]
+        },
+        {
+            "code": "он",
+            "text": "Time (Annual)",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+            ],
+            "valueTexts": [
+                "2024",
+                "2023",
+                "2022",
+                "2021",
+                "2020",
+                "2019",
+                "2018",
+                "2017"
+            ]
+        }
+    ]
+}

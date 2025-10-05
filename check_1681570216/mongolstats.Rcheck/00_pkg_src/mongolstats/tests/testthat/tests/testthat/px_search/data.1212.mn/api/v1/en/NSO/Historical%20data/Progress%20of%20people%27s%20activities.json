@@ -1,0 +1,38 @@
+[
+    {
+        "id": "DT_NSO_0100_T0022.px",
+        "type": "t",
+        "text": "REAL INCOMES OF POPULATION by Category (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    },
+    {
+        "id": "DT_NSO_0100_T0023.px",
+        "type": "t",
+        "text": "AVERAGE MONTHLY WAGES OF EMPLOYEES, including preium, at current prices by Category (3) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    },
+    {
+        "id": "DT_NSO_0100_T0024.px",
+        "type": "t",
+        "text": "NUMBER OF MOTHERS OF LARGE FAMILIES RECEIVING STATE ALLOWANCES, at current prices by Category (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    },
+    {
+        "id": "DT_NSO_0100_T0025.px",
+        "type": "t",
+        "text": "PENSIONS, at current prices and by year by Indicator and Year",
+        "updated": "2025-09-16T19:34:33"
+    },
+    {
+        "id": "DT_NSO_0100_T0026.px",
+        "type": "t",
+        "text": "BANK SAVING OF POPULATION, current prices by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    },
+    {
+        "id": "DT_NSO_0100_T0027.px",
+        "type": "t",
+        "text": "CONSUMPTION OF MAIN FOODSTUFFS PER CAPITA by Category (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    }
+]

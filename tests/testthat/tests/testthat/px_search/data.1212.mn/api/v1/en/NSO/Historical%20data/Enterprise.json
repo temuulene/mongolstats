@@ -1,0 +1,44 @@
+[
+    {
+        "id": "DT_NSO_0100_01TB08.px",
+        "type": "t",
+        "text": "GROSS INDUSTRIAL OUTPUT, by economic activity, at current prices and by month by Category and Year",
+        "updated": "2025-09-16T15:01:38"
+    },
+    {
+        "id": "DT_NSO_0100_01TB09.px",
+        "type": "t",
+        "text": "GROSS INDUSTRIAL OUTPUT, by economic activity, at constant prices of 1967 and by year by Category and Year",
+        "updated": "2025-09-16T15:07:49"
+    },
+    {
+        "id": "DT_NSO_0100_01TB10.px",
+        "type": "t",
+        "text": "PRODUCTION OF MAJOR COMMODITIES, by production type and by year by Commodities and Year",
+        "updated": "2025-09-16T15:56:14"
+    },
+    {
+        "id": "DT_NSO_0100_01TB11.px",
+        "type": "t",
+        "text": "AVERAGE NUMBER OF WORKERS AND EMPLOYEES, by economic activity and by year by Economic activity and Year",
+        "updated": "2025-09-16T16:08:36"
+    },
+    {
+        "id": "DT_NSO_0100_01TB12.px",
+        "type": "t",
+        "text": "BALANCE OF ELECTRICITY ENERGY, by year by Indicators and Year",
+        "updated": "2025-09-16T18:20:41"
+    },
+    {
+        "id": "DT_NSO_0100_01TB13.px",
+        "type": "t",
+        "text": "BALANCE OF COAL, by year by Indicator and Year",
+        "updated": "2025-09-16T16:13:33"
+    },
+    {
+        "id": "DT_NSO_0100_01TB14.px",
+        "type": "t",
+        "text": "AVERAGE NUMBER OF EMPLOYEES IN INDUSTRY, by year by Category and Year",
+        "updated": "2025-09-16T16:22:03"
+    }
+]

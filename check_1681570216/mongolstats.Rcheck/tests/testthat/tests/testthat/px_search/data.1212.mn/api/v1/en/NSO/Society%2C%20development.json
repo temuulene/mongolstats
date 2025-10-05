@@ -1,0 +1,62 @@
+[
+    {
+        "id": "Disability",
+        "type": "l",
+        "text": "Disability"
+    },
+    {
+        "id": "Election",
+        "type": "l",
+        "text": "Election"
+    },
+    {
+        "id": "Food Security",
+        "type": "l",
+        "text": "Food Security"
+    },
+    {
+        "id": "Gender",
+        "type": "l",
+        "text": "Gender"
+    },
+    {
+        "id": "Household income and expenditure",
+        "type": "l",
+        "text": "Household income and expenditure"
+    },
+    {
+        "id": "Human Development Index",
+        "type": "l",
+        "text": "Human Development Index"
+    },
+    {
+        "id": "Law and crime",
+        "type": "l",
+        "text": "Law and crime"
+    },
+    {
+        "id": "Millennium Development Goals Indicators",
+        "type": "l",
+        "text": "Millennium Development Goals Indicators"
+    },
+    {
+        "id": "Monasteries, Temples and Churches",
+        "type": "l",
+        "text": "Monasteries, Temples and Churches"
+    },
+    {
+        "id": "Poverty, inequality and minimum subsistence level",
+        "type": "l",
+        "text": "Poverty, inequality and minimum subsistence level"
+    },
+    {
+        "id": "Social Insurance and Welfare",
+        "type": "l",
+        "text": "Social Insurance and Welfare"
+    },
+    {
+        "id": "Sustainable Development Goals",
+        "type": "l",
+        "text": "Sustainable Development Goals"
+    }
+]

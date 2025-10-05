@@ -1,0 +1,50 @@
+[
+    {
+        "id": "DT_NSO_2001_013V1.px",
+        "type": "t",
+        "text": "NUMBER OF STUDENTS IN UNIVERSITIES, INSTITUTES AND COLLEGES, by sex, aimags and the Capital, and by year by Sex, Region and Year",
+        "updated": "2025-09-24T16:34:59"
+    },
+    {
+        "id": "DT_NSO_2001_013V2.px",
+        "type": "t",
+        "text": "STUDENTS OF UNIVERSITIES, INSTITUTES AND COLLEGES, by professional field, and by year by Professional field and Year",
+        "updated": "2025-09-24T16:37:40"
+    },
+    {
+        "id": "DT_NSO_2001_014V1.px",
+        "type": "t",
+        "text": "GRADUATES OF UNIVERSITIES AND COLLEGES, by professional field, and by year by Professional field and Year",
+        "updated": "2025-09-24T16:39:45"
+    },
+    {
+        "id": "DT_NSO_2001_015V2.px",
+        "type": "t",
+        "text": "STUDENTS IN TERTIARY EDUCATIONAL INSTITUTIONS, by educational degree, and by year by Educational degree and Year",
+        "updated": "2025-09-24T16:42:01"
+    },
+    {
+        "id": "DT_NSO_2001_016V1.px",
+        "type": "t",
+        "text": "NUMBER OF FULL-TIME TEACHERS IN UNIVERSITIES, INSTITUTES AND COLLEGES, by sex, and by year by Sex and Year",
+        "updated": "2025-09-24T16:44:07"
+    },
+    {
+        "id": "DT_NSO_2001_024V1.px",
+        "type": "t",
+        "text": "NUMBER OF GRADUATES OF TERTIARY EDUCATIONAL INSTITUTIONS, by type of ownership, educational degree, and by year by Type of ownership, Educational degree and Year",
+        "updated": "2025-09-24T16:46:13"
+    },
+    {
+        "id": "DT_NSO_2001_024V2.px",
+        "type": "t",
+        "text": "GRADUATES OF DOMESTIC UNIVERSITIES, INSTITUTES AND COLLEGES, by professional field, by educational degree, and by year by Professional field, Educational degree and Year",
+        "updated": "2025-09-24T16:48:45"
+    },
+    {
+        "id": "DT_NSO_2001_024V3.px",
+        "type": "t",
+        "text": "STUDENTS OF DOMESTIC TERTIARY EDUCATION INSTITUTIONS, by professional field, by educational degree, and by year by Professional field, Educational degree and Year",
+        "updated": "2025-09-24T16:50:46"
+    }
+]

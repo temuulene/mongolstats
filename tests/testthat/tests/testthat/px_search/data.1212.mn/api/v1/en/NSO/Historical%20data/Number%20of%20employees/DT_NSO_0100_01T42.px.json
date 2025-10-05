@@ -1,0 +1,67 @@
+{
+    "title": "NUMBER OF SPECIALITS WITH HIGHER AND SECONDARY SPECIALIZED EDUCATION ENGAGED IN THE NATIONAL ECONOMY, by year",
+    "variables": [
+        {
+            "code": "Төрөл",
+            "text": "Type",
+            "values": [
+                "0",
+                "1",
+                "2"
+            ],
+            "valueTexts": [
+                "Number of specialits with higher and secondary specialiezed education, total",
+                " with higher education",
+                " with secondary specialiezed education"
+            ]
+        },
+        {
+            "code": "он",
+            "text": "Year",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19"
+            ],
+            "valueTexts": [
+                "1989",
+                "1988",
+                "1987",
+                "1986",
+                "1985",
+                "1984",
+                "1983",
+                "1982",
+                "1981",
+                "1980",
+                "1979",
+                "1978",
+                "1977",
+                "1976",
+                "1975",
+                "1974",
+                "1973",
+                "1972",
+                "1971",
+                "1970"
+            ]
+        }
+    ]
+}

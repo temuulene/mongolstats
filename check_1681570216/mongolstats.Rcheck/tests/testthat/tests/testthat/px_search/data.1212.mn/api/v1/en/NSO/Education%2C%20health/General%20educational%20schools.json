@@ -1,0 +1,122 @@
+[
+    {
+        "id": "DT_NSO_2001_001V1.px",
+        "type": "t",
+        "text": "FULL-TIME TEACHERS IN GENERAL EDUCATIONAL SCHOOLS, by aimags and the Capital, and by year by Region and Year",
+        "updated": "2025-09-24T14:34:37"
+    },
+    {
+        "id": "DT_NSO_2001_001V2.px",
+        "type": "t",
+        "text": "FULL-TIME TEACHERS IN GENERAL EDUCATIONAL SCHOOLS, by soum and district, and by year by Region and Year",
+        "updated": "2025-09-24T14:36:47"
+    },
+    {
+        "id": "DT_NSO_2001_002V1.px",
+        "type": "t",
+        "text": "NUMBER OF GENERAL EDUCATIONAL SCHOOLS, by aimags and the Capital, and by year by Region and Year",
+        "updated": "2025-09-24T14:39:38"
+    },
+    {
+        "id": "DT_NSO_2001_002V2.px",
+        "type": "t",
+        "text": "GENERAL EDUCATIONAL SCHOOLS, by soum and district, and by year by Region and Year",
+        "updated": "2025-09-24T14:59:17"
+    },
+    {
+        "id": "DT_NSO_2001_003V1.px",
+        "type": "t",
+        "text": "NUMBER OF GENERAL EDUCATIONAL SCHOOLS, by type, and by year by Type and Year",
+        "updated": "2025-09-24T15:05:15"
+    },
+    {
+        "id": "DT_NSO_2001_004V1.px",
+        "type": "t",
+        "text": "FULL-TIME STUDENTS OF GENERAL EDUCATIONAL SCHOOLS, by aimags and the Capital, and by year by Region and Year",
+        "updated": "2025-09-24T15:08:20"
+    },
+    {
+        "id": "DT_NSO_2001_017V1.px",
+        "type": "t",
+        "text": "GENERAL EDUCATIONAL SCHOOLS, by type of ownership, and by year by Type of ownership and Year",
+        "updated": "2025-09-24T15:10:30"
+    },
+    {
+        "id": "DT_NSO_2001_018V1.px",
+        "type": "t",
+        "text": "TOTAL NUMBER OF PUPILS STUDYING IN GENERAL EDUCATIONAL SCHOOLS, by year by Indicator and Year",
+        "updated": "2025-09-24T15:12:50"
+    },
+    {
+        "id": "DT_NSO_2001_019V1.px",
+        "type": "t",
+        "text": "GENERAL EDUCATIONAL SCHOOL'S PUPILS, REQUESTED TO LIVE IN DORMITORIES, by aimags and the Capital, and by year by Region and Year",
+        "updated": "2025-09-24T15:15:52"
+    },
+    {
+        "id": "DT_NSO_2001_020V1.px",
+        "type": "t",
+        "text": "GENERAL EDUCATIONAL SCHOOL'S PUPILS, LIVING IN DORMITORIES, by aimags and the Capital, and by year by Region and Year",
+        "updated": "2025-09-24T15:20:31"
+    },
+    {
+        "id": "DT_NSO_2002_014V1.px",
+        "type": "t",
+        "text": "NUMBER OF NEW ENTRANTS TO GENERAL EDUCATIONAL SCHOOLS, by soum and district, and by year by Region and Year",
+        "updated": "2025-09-24T15:23:21"
+    },
+    {
+        "id": "DT_NSO_2002_015V1.px",
+        "type": "t",
+        "text": "PUPIL-TEACHER RATIO IN GENERAL EDUCATIONAL SCHOOLS, by aimags and the Capital, and by year by Indicator, Region and Year",
+        "updated": "2025-09-24T15:28:24"
+    },
+    {
+        "id": "DT_NSO_2002_056V1.px",
+        "type": "t",
+        "text": "EVALUATION OF GENERAL ADMISSION EXAM (DIMENSIONAL SCORING), by sex, aimags and the Capital, and by year by Indicator, Region, Sex and Year",
+        "updated": "2025-09-24T15:31:04"
+    },
+    {
+        "id": "DT_NSO_2002_057V1.px",
+        "type": "t",
+        "text": "FULL-TIME GRADUATES FROM GENERAL EDUCATIONAL SCHOOLS, by grade, aimags and the Capital, and by year by Grade, Region and Year",
+        "updated": "2025-09-24T15:42:13"
+    },
+    {
+        "id": "DT_NSO_2002_057V2.px",
+        "type": "t",
+        "text": "FULL-TIME STUDENTS OF GENERAL EDUCATIONAL SCHOOLS, by soum and district, and by year by Region and Year",
+        "updated": "2025-09-24T15:46:17"
+    },
+    {
+        "id": "DT_NSO_2002_057V3.px",
+        "type": "t",
+        "text": "FULL-TIME GRADUATES FROM GENERAL EDUCATIONAL SCHOOLS, by soum and district, and by year by Region and Year",
+        "updated": "2025-09-24T15:49:56"
+    },
+    {
+        "id": "DT_NSO_2002_058V1.px",
+        "type": "t",
+        "text": "STUDENTS WITH DISABILITIES STUDYING IN GENERAL EDUCATIONAL SCHOOLS, by aimag and the Capital, and by year by Sex, Region and Year",
+        "updated": "2025-09-24T15:53:09"
+    },
+    {
+        "id": "DT_NSO_2002_059V1.px",
+        "type": "t",
+        "text": "FULL-TIME TEACHERS IN GENERAL EDUCATIONAL SCHOOLS, by type of ownership, and by year by Type of ownership, Indicator and Year",
+        "updated": "2025-09-24T15:59:24"
+    },
+    {
+        "id": "DT_NSO_2002_065V1.px",
+        "type": "t",
+        "text": "NET INTAKE RATE (NIR) IN THE FIRST GRADE OF PRIMARY, by sex, and by year by Sex, Region and Year",
+        "updated": "2025-09-24T16:01:41"
+    },
+    {
+        "id": "DT_NSO_2002_065V2.px",
+        "type": "t",
+        "text": "GROSS PRIMARY GRADUATION RATIO (GPGR), by sex, aimags and the Capital, and by year by Sex, Region and Year",
+        "updated": "2025-09-24T16:07:34"
+    }
+]

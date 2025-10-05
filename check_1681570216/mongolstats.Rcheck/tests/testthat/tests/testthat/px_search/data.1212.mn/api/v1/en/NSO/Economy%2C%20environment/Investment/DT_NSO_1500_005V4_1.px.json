@@ -1,0 +1,93 @@
+{
+    "title": "FOREIGN DIRECT INVESTMENT INFLOWS, by economic sector and year",
+    "variables": [
+        {
+            "code": "Эдийн засгийн үйл ажиллагааны салбар",
+            "text": "Economic sector",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19",
+                "20",
+                "21"
+            ],
+            "valueTexts": [
+                "Total",
+                " Construction",
+                " Education",
+                " Manufacturing",
+                " Wholesale and retail trade; repair of motor vehicles and motorcycles",
+                " Accommodation and food service activities",
+                " Information and communication",
+                " Professional, scientific and technical activities",
+                " Activities of extraterritorial organizations and bodies",
+                " Financial and insurance activities",
+                " Transportation and storage",
+                " Public administration and defence; compulsory social security",
+                " Arts, entertainment and recreation",
+                " Water supply; sewerage, waste management and remediation activities",
+                " Mining and quarrying",
+                " Other service activities",
+                " Real estate activities",
+                " Agriculture, forestry and fishing",
+                " Activities of households as employers; undifferentiated goods and services producing activities of households for own use",
+                " Human health and social work activities",
+                " Electricity, gas, steam and air conditioning supply",
+                "   Public administration and defence; compulsory social security"
+            ]
+        },
+        {
+            "code": "Он",
+            "text": "Year",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13"
+            ],
+            "valueTexts": [
+                "2024",
+                "2023",
+                "2022",
+                "2021",
+                "2020",
+                "2019",
+                "2018",
+                "2017",
+                "2016",
+                "2015",
+                "2014",
+                "2013",
+                "2012",
+                "2011"
+            ]
+        }
+    ]
+}

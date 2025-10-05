@@ -1,0 +1,47 @@
+[
+    {
+        "id": "Births, deaths",
+        "type": "l",
+        "text": "Births, deaths"
+    },
+    {
+        "id": "Disease",
+        "type": "l",
+        "text": "Disease"
+    },
+    {
+        "id": "General educational schools",
+        "type": "l",
+        "text": "General educational schools"
+    },
+    {
+        "id": "General indicators for Education",
+        "type": "l",
+        "text": "General indicators for Education"
+    },
+    {
+        "id": "Health insurance",
+        "type": "l",
+        "text": "Health insurance"
+    },
+    {
+        "id": "Main indicators for Health sector",
+        "type": "l",
+        "text": "Main indicators for Health sector"
+    },
+    {
+        "id": "Pre-school education",
+        "type": "l",
+        "text": "Pre-school education"
+    },
+    {
+        "id": "Universities, institutes and colleges",
+        "type": "l",
+        "text": "Universities, institutes and colleges"
+    },
+    {
+        "id": "Vocational education",
+        "type": "l",
+        "text": "Vocational education"
+    }
+]

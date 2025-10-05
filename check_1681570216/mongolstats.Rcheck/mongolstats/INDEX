@@ -1,0 +1,32 @@
+as_px_query             Convert a query to a PXWeb body
+mn_boundaries           Mongolia administrative boundaries (sf)
+mn_boundaries_normalize
+                        Add normalized name columns to boundaries
+mn_boundary_keys        Boundary keys/crosswalk helper
+mn_fuzzy_join_by_name   Fuzzy join data to boundaries by name
+mn_join_by_name         Join data to boundaries by (normalized) names
+nso_cache_clear         Clear cached entries
+nso_cache_disable       Disable caching
+nso_cache_enable        Enable or configure caching
+nso_cache_status        Cache status
+nso_data                Fetch statistical data for a table (PXWeb)
+nso_dim_values          List values for a table dimension
+nso_dims                List dimensions for a PXWeb table
+nso_fetch               Fetch a query and return a tibble
+nso_itms                List available NSO tables (PXWeb)
+nso_itms_by_sector      List tables under a sector or sub-sector (PXWeb
+                        path)
+nso_itms_detail         Get variable codes for a table (PXWeb)
+nso_itms_search         Search tables by keyword (PXWeb)
+nso_offline_disable     Disable offline mode
+nso_offline_enable      Enable offline mode
+nso_options             Set or get mongolstats options
+nso_package             Fetch multiple tables and bind (PXWeb)
+nso_period_seq          Create period codes
+nso_query               Create a PXWeb query object
+nso_rebuild_px_index    Rebuild PXWeb index and optionally write to a
+                        file
+nso_search              Search NSO tables
+nso_sectors             List top-level categories (PXWeb NSO root)
+nso_subsectors          List children for a given path (PXWeb)
+nso_table_periods       Get valid periods for a table (PXWeb)

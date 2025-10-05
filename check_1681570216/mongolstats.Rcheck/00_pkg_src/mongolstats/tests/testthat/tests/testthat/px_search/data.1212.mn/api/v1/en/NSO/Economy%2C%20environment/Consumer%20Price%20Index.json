@@ -1,0 +1,128 @@
+[
+    {
+        "id": "DT_NSO_0300_010V5.px",
+        "type": "t",
+        "text": "WEEKLY PRICES OF MAIN PRODUCTS AND GASOLINE, aimags",
+        "updated": "2025-09-30T18:22:54"
+    },
+    {
+        "id": "DT_NSO_0303_07V7.px",
+        "type": "t",
+        "text": "CONSUMER PRICE INDEX IN AIMAGS, compared with the previous month, by group by Reference year, Region, Groups and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0303_07V8.px",
+        "type": "t",
+        "text": "CONSUMER PRICE INDEX IN AIMAGS, compared with the same period of the previous year, by group by Reference year, Region, Groups and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0303_07V9.px",
+        "type": "t",
+        "text": "CONSUMER PRICE INDEX IN AIMAGS, compared with the end of the previous year, by group by Reference year, Region, Groups and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_001V3.px",
+        "type": "t",
+        "text": "NATIONAL BASE CONSUMER PRICE INDEX, by group and month by Reference year, Group and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_001V4.px",
+        "type": "t",
+        "text": "WEEKLY PRICES OF MAIN PRODUCTS AND GASOLINE",
+        "updated": "2025-09-30T18:23:09"
+    },
+    {
+        "id": "DT_NSO_0600_002V1.px",
+        "type": "t",
+        "text": "NATIONAL CONSUMER PRICE INDEX, 1991-1-16=100 by Indicator and Year",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_002V21.px",
+        "type": "t",
+        "text": "CONSUMER PRICE INDEX, by group, compared to the previous month by Reference year, Region, Group and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_002V22.px",
+        "type": "t",
+        "text": "CONSUMER PRICE INDEX, by group, compared to the end of the previous year by Reference year, Region, Group and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_002V23.px",
+        "type": "t",
+        "text": "REGIONAL CONSUMER PRICE INDEX, by group,compared to the same period of the previous year by Reference year, Region, Group and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_002V24.px",
+        "type": "t",
+        "text": "REGIONAL CONSUMER PRICE INDEX, by group, compared to the end of the previous year by Reference year, Region, Group and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_002V25.px",
+        "type": "t",
+        "text": "REGIONAL CONSUMER PRICE INDEX, by group, compared to the previous month by Reference year, Region, Group and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_002V26.px",
+        "type": "t",
+        "text": "CONSUMER PRICE INDEX, by group, compared to the same period of the previous year by Reference year, Region, Group and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_003V4.px",
+        "type": "t",
+        "text": "CONSUMER PRICE INDEX IN THE CAPITAL, by groups, compared with previous month by Reference year, Group and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_008V1.px",
+        "type": "t",
+        "text": "NATIONAL CONSUMER PRICE INDEX, by groups and percent changes compared with the end of previous year by Reference year, Group and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_009V1.px",
+        "type": "t",
+        "text": "NATIONAL CONSUMER PRICE INDEX, by group, monthly percent change by Reference year, Group and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_010V1.px",
+        "type": "t",
+        "text": "NATIONAL CONSUMER PRICE INDEX, by groups and percent changes, compared with the same period of previous year by Reference year, Group and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_011V1.px",
+        "type": "t",
+        "text": "CONSUMER PRICE INDEX IN THE CAPITAL, by groups, compared with the end of previous year by Reference year, Group and Month",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_012V1.px",
+        "type": "t",
+        "text": "CONSUMER PRICE INDEX IN THE CAPITAL, by groups, compared with the same period of previous year by Indicator, Group and Month",
+        "updated": "2025-09-23T15:31:31"
+    },
+    {
+        "id": "DT_NSO_0600_013V2.px",
+        "type": "t",
+        "text": "INFLATION RATE by Indicator and Year",
+        "updated": "2025-09-15T09:07:40"
+    },
+    {
+        "id": "DT_NSO_0600_019V1.px",
+        "type": "t",
+        "text": "AVERAGE PRICE OF MAIN SELECTED COMMODITIES, by type of goods and services, aimags and the Capital and by month by Goods and services, Region and Month",
+        "updated": "2025-09-15T09:07:40"
+    }
+]

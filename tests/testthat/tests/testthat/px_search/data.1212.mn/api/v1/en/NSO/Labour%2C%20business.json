@@ -1,0 +1,32 @@
+[
+    {
+        "id": "Civil servants",
+        "type": "l",
+        "text": "Civil servants"
+    },
+    {
+        "id": "Decent work",
+        "type": "l",
+        "text": "Decent work"
+    },
+    {
+        "id": "Labour",
+        "type": "l",
+        "text": "Labour"
+    },
+    {
+        "id": "SMEs",
+        "type": "l",
+        "text": "SMEs"
+    },
+    {
+        "id": "Statistical Business Register",
+        "type": "l",
+        "text": "Statistical Business Register"
+    },
+    {
+        "id": "Wages",
+        "type": "l",
+        "text": "Wages"
+    }
+]

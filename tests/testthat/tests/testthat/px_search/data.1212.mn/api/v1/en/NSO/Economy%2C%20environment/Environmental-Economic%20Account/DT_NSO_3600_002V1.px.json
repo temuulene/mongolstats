@@ -1,0 +1,101 @@
+{
+    "title": "ENVIRONMENTAL TAXES ACCOUNT",
+    "variables": [
+        {
+            "code": "Татварын төрөл",
+            "text": "Categories of environmental taxes",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4"
+            ],
+            "valueTexts": [
+                "Total",
+                "Energy taxes",
+                "Transport taxes",
+                "Pollution taxes",
+                "Resource taxes"
+            ]
+        },
+        {
+            "code": "Эдийн засгийн салбар",
+            "text": "Economic activity",
+            "values": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19",
+                "20",
+                "0"
+            ],
+            "valueTexts": [
+                "Agriculture",
+                " Mining and quarrying",
+                " Manufacturing",
+                " Electricity, gas, steam, air conditioning supply",
+                " Water supply",
+                " Construction",
+                " Wholesale and retail trade",
+                " Transportation and storage",
+                " Accommodation and food service activities",
+                " Information and communication",
+                " Financial and insurance activities",
+                " Real estate activities",
+                " Professional, scientific and technical activities",
+                " Administrative and support service activities",
+                " Public administration",
+                " Human health and social work activities",
+                " Education",
+                " Arts, entertainment and recreation",
+                " Other service activities",
+                " Household",
+                " Total environmental taxes"
+            ]
+        },
+        {
+            "code": "Он",
+            "text": "Year",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+            ],
+            "valueTexts": [
+                "2024",
+                "2023",
+                "2022",
+                "2021",
+                "2020",
+                "2019",
+                "2018",
+                "2017",
+                "2016",
+                "2015"
+            ]
+        }
+    ]
+}

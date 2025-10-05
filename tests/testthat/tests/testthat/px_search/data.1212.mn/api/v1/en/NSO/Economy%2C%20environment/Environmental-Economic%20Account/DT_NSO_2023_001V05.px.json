@@ -1,0 +1,71 @@
+{
+    "title": "PHYSICAL FLOW ACCOUNT FOR FERTILIZERS",
+    "variables": [
+        {
+            "code": "Бордооны төрөл",
+            "text": "Type of fertilizers",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "valueTexts": [
+                "Total",
+                " Nitrogen fertilizers",
+                " Phostate fertilizers",
+                " Potash fertilizers",
+                " Mixed fertilizers",
+                " Other fertilizers"
+            ]
+        },
+        {
+            "code": "Үзүүлэлт",
+            "text": "Indicator",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+            ],
+            "valueTexts": [
+                "Total output",
+                " Imports",
+                " Total supply",
+                " Intermediate consumption",
+                "     Crops",
+                "     Forestry",
+                " Household final consumption",
+                " Changes in inventories",
+                " Exports",
+                " Total use"
+            ]
+        },
+        {
+            "code": "Он",
+            "text": "Year",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4"
+            ],
+            "valueTexts": [
+                "2023",
+                "2022",
+                "2021",
+                "2020",
+                "2019"
+            ]
+        }
+    ]
+}
