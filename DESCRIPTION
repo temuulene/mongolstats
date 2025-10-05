@@ -34,7 +34,8 @@ Suggests:
     pkgdown,
     roxygen2,
     lifecycle,
-    pxweb
+    pxweb,
+    remotes
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
