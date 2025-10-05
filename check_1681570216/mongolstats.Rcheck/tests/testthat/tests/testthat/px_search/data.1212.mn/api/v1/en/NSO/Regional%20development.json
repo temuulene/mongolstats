@@ -1,0 +1,107 @@
+[
+    {
+        "id": "Agriculture",
+        "type": "l",
+        "text": "Agriculture"
+    },
+    {
+        "id": "Construction",
+        "type": "l",
+        "text": "Construction"
+    },
+    {
+        "id": "Disability",
+        "type": "l",
+        "text": "Disability"
+    },
+    {
+        "id": "Education, Science, and Intellectual Property",
+        "type": "l",
+        "text": "Education, Science, and Intellectual Property"
+    },
+    {
+        "id": "Election",
+        "type": "l",
+        "text": "Election"
+    },
+    {
+        "id": "Government budget",
+        "type": "l",
+        "text": "Government budget"
+    },
+    {
+        "id": "Human development",
+        "type": "l",
+        "text": "Human development"
+    },
+    {
+        "id": "Infrastructure, housing",
+        "type": "l",
+        "text": "Infrastructure, housing"
+    },
+    {
+        "id": "Justice and crime",
+        "type": "l",
+        "text": "Justice and crime"
+    },
+    {
+        "id": "Livestock",
+        "type": "l",
+        "text": "Livestock"
+    },
+    {
+        "id": "Monasteries, Temples and Churches",
+        "type": "l",
+        "text": "Monasteries, Temples and Churches"
+    },
+    {
+        "id": "Money and Finance",
+        "type": "l",
+        "text": "Money and Finance"
+    },
+    {
+        "id": "National accounts",
+        "type": "l",
+        "text": "National accounts"
+    },
+    {
+        "id": "Population and household",
+        "type": "l",
+        "text": "Population and household"
+    },
+    {
+        "id": "Population livelihood",
+        "type": "l",
+        "text": "Population livelihood"
+    },
+    {
+        "id": "Price",
+        "type": "l",
+        "text": "Price"
+    },
+    {
+        "id": "SMEs",
+        "type": "l",
+        "text": "SMEs"
+    },
+    {
+        "id": "Statistical business register",
+        "type": "l",
+        "text": "Statistical business register"
+    },
+    {
+        "id": "Territory, administrative units",
+        "type": "l",
+        "text": "Territory, administrative units"
+    },
+    {
+        "id": "Trade",
+        "type": "l",
+        "text": "Trade"
+    },
+    {
+        "id": "Transportation",
+        "type": "l",
+        "text": "Transportation"
+    }
+]

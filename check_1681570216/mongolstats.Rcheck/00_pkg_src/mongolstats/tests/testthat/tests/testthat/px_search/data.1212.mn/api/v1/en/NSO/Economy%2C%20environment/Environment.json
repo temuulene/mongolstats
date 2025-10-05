@@ -1,0 +1,110 @@
+[
+    {
+        "id": "DT_NSO_2024_135V01.px",
+        "type": "t",
+        "text": "AVERAGE ANNUAL CONCENTRATIONS OF AIR POLLUTANTS, by station location and by year by Station location, Indicator and Year",
+        "updated": "2025-09-24T12:29:06"
+    },
+    {
+        "id": "DT_NSO_2300_005V12.px",
+        "type": "t",
+        "text": "WATER QUALITY, by station location and by year by Indicator, Station location and Year",
+        "updated": "2025-09-24T12:29:20"
+    },
+    {
+        "id": "DT_NSO_2400_001V1.px",
+        "type": "t",
+        "text": "UNIFIED LAND TERRITORY OF MONGOLIA, by main type and by year by Main type and Year",
+        "updated": "2025-09-24T12:29:36"
+    },
+    {
+        "id": "DT_NSO_2400_001V2.px",
+        "type": "t",
+        "text": "REPORT ON LAND OWNED BY MONGOLIAN CITIZENS, by aimags and the capital and by year by Indicator, Aimags and the Capital and Year",
+        "updated": "2025-09-24T12:29:49"
+    },
+    {
+        "id": "DT_NSO_2400_005V1.px",
+        "type": "t",
+        "text": "FOREST FIRES, by aimags and the capital and by year by Region and Year",
+        "updated": "2025-09-24T12:30:00"
+    },
+    {
+        "id": "DT_NSO_2400_006V1.px",
+        "type": "t",
+        "text": "FOREST HARVEST VOLUME, by aimags and the capital and by year by Region and Year",
+        "updated": "2025-09-24T12:38:22"
+    },
+    {
+        "id": "DT_NSO_2400_009V1.px",
+        "type": "t",
+        "text": "LAND DEGRADATION, by type and by year by Type and Year",
+        "updated": "2025-09-25T15:46:24"
+    },
+    {
+        "id": "DT_NSO_2400_012V1.px",
+        "type": "t",
+        "text": "DISASTERS AND DAMAGES, by indicator, national total and by month by Indicator and Month",
+        "updated": "2025-09-24T15:37:41"
+    },
+    {
+        "id": "DT_NSO_2400_015V1.px",
+        "type": "t",
+        "text": "MAXIMUM ALLOWABLE CONCENTRATION OF QUALITY STANDART, by chemical combination and by year by Indicator, Chemical combination and Year",
+        "updated": "2025-09-25T15:46:44"
+    },
+    {
+        "id": "DT_NSO_2400_015V2.px",
+        "type": "t",
+        "text": "CONCENTRATION OF AIR POLLUTION, by location, indicator of air pollution and by month by Location, Indicator of air pollution and Month",
+        "updated": "2025-09-25T15:46:55"
+    },
+    {
+        "id": "DT_NSO_2400_015V3.px",
+        "type": "t",
+        "text": "GREENHOUSE GAS REMOVALS AND EMISSIONS, by chemical combination and by year by Indicator, Chemical combination and Year",
+        "updated": "2025-09-25T15:47:08"
+    },
+    {
+        "id": "DT_NSO_2400_015V4.px",
+        "type": "t",
+        "text": "REPORT OF UNIFIED LAND TERRITORY OF MONGOLIA, by aimags and the capital, unified land territory and by year by Aimags and the Capital, Unified land territory and Year",
+        "updated": "2025-09-25T15:47:18"
+    },
+    {
+        "id": "DT_NSO_2400_022V2.px",
+        "type": "t",
+        "text": "AVERAGE AIR TEMPERATURE, by station location, indicator and by month by Indicator, Station location and Month",
+        "updated": "2025-09-25T15:47:36"
+    },
+    {
+        "id": "DT_NSO_2400_022V3.px",
+        "type": "t",
+        "text": "AVERAGE AIR TEMPERATURE, by station location, indicator and by year by Indicator, Station location and Year",
+        "updated": "2025-09-25T15:47:47"
+    },
+    {
+        "id": "DT_NSO_2400_026V1.px",
+        "type": "t",
+        "text": "SUM OF PRECIPITATION, by station location and by month by Station location and Month",
+        "updated": "2025-09-25T15:47:57"
+    },
+    {
+        "id": "DT_NSO_2400_027V1.px",
+        "type": "t",
+        "text": "MAXIMUM WIND SPEED, by station location and by month by Station location and Month",
+        "updated": "2025-09-25T15:48:06"
+    },
+    {
+        "id": "DT_NSO_2400_028V1.px",
+        "type": "t",
+        "text": "NUMBER OF DUST DAYS, by station location and by month by Station location and Month",
+        "updated": "2025-09-25T15:48:19"
+    },
+    {
+        "id": "DT_NSO_2400_028V2.px",
+        "type": "t",
+        "text": "NUMBER OF SNOW STORM DAYS, by station location and by month by Station location and Month",
+        "updated": "2025-09-25T15:48:26"
+    }
+]

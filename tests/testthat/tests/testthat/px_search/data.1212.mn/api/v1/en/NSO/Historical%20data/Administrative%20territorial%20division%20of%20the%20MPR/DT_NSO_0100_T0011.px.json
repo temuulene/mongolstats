@@ -1,0 +1,107 @@
+{
+    "title": "ADMINISTRATIVE TERRITORIAL DIVISION OF THE MPR",
+    "variables": [
+        {
+            "code": "Ангилал",
+            "text": "Category",
+            "values": [
+                "0",
+                "1",
+                "2"
+            ],
+            "valueTexts": [
+                "Area (thousands of sq.km)",
+                " Number of Somons",
+                " Number of Khorons"
+            ]
+        },
+        {
+            "code": "Аймаг",
+            "text": "Categroy (2)",
+            "values": [
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19",
+                "20",
+                "21",
+                "22",
+                "23",
+                "24",
+                "25"
+            ],
+            "valueTexts": [
+                "Aimags (2)",
+                " Mongolian Peoples Pepublic",
+                " Arkhangai",
+                " Bayan-Ulgy",
+                " Bayan Khongor",
+                " Bulgan",
+                " Govi-Altai",
+                " Dornogovi",
+                " Dornod",
+                " Dundgovi",
+                " Dzavkhan",
+                " Uvurkhangai",
+                " Umnugovi",
+                " Sukhbaatar",
+                " Selenge",
+                " Tuv*",
+                " Uvsnuur",
+                " Kovd",
+                " Khuvsgul",
+                " City of Ulaanbaatar**",
+                " Darkhan***",
+                " Erdenet***",
+                " City of Sukhe-Batar"
+            ]
+        },
+        {
+            "code": "он",
+            "text": "Time (Annual)",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12"
+            ],
+            "valueTexts": [
+                "1961",
+                "1960",
+                "1959",
+                "1958",
+                "1957",
+                "1955",
+                "1950",
+                "1945",
+                "1940",
+                "1931",
+                "1930",
+                "1924",
+                "1921"
+            ]
+        }
+    ]
+}

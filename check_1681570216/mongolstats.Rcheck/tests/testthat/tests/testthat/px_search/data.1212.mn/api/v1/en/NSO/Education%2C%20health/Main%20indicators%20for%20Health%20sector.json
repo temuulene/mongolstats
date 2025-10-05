@@ -1,0 +1,115 @@
+[
+    {
+        "id": "DT_NSO_0300_071V01.px",
+        "type": "t",
+        "text": "EMPLOYEES OF HEALTH ORGANIZATIONS, by specialization categories by Specialization and Time (Annual)",
+        "updated": "2025-07-08T16:21:11"
+    },
+    {
+        "id": "DT_NSO_0300_071V02.px",
+        "type": "t",
+        "text": "INPATIENTS PER 10000 POPULATION, 10 leading classification of diseases by Classification of disease and Time (Annual)",
+        "updated": "2025-07-04T16:52:54"
+    },
+    {
+        "id": "DT_NSO_0300_071V03.px",
+        "type": "t",
+        "text": "ABORTION RATIO PER 1000 LIVE BIRTHS, by region, aimags and the Capital by Aimags and the Capital and Time (Annual)",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "DT_NSO_2100_005V2.px",
+        "type": "t",
+        "text": "NUMBER OF HOSPITAL BEDS, by region, aimags, Capital and soum by Aimag, soum and Time",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "DT_NSO_2100_005V3.px",
+        "type": "t",
+        "text": "HOSPITAL BEDS, by type, by region, aimags and the Capital by Aimag, Indicators and Annual",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "DT_NSO_2100_006V1.px",
+        "type": "t",
+        "text": "NUMBER OF PHYSICIANS, by region, aimags and the Capital by Aimag and Annual",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "DT_NSO_2100_006V2.px",
+        "type": "t",
+        "text": "NUMBER OF PHYSICIANS, by region, aimags, Capital and soum by Aimag, soum and Time (Annual)",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "DT_NSO_2100_007V1.px",
+        "type": "t",
+        "text": "NUMBER OF PHARMACISTS, by region, aimags and the Capital by Aimag and Time (Annual)",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "DT_NSO_2100_008V2.px",
+        "type": "t",
+        "text": "NUMBER OF REPORTING HEALTH ORGANIZATIONS, by region by Aimag, soum and Time (Annual)",
+        "updated": "2025-08-01T10:06:27"
+    },
+    {
+        "id": "DT_NSO_2100_009V1.px",
+        "type": "t",
+        "text": "NUMBER OF PERSONS PER PHYSICIAN, by region, aimags and the Capital by Aimag and Annual",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "DT_NSO_2100_010V1.px",
+        "type": "t",
+        "text": "NUMBER OF PERSONS PER NURSE, by region, aimags and the Capital by Aimag and Annual",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "DT_NSO_2100_010V3.px",
+        "type": "t",
+        "text": "NURSES, by profession, by region, aimags and the Capital by Aimag, Indicators and Annual",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "DT_NSO_2100_026V1.px",
+        "type": "t",
+        "text": "MID LEVEL MEDICAL PERSONNEL, by professions, by region, aimags, Capital and soum by Indicator, Aimag, soum and Annual",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "DT_NSO_2100_030V1.px",
+        "type": "t",
+        "text": "EXPENDITURE ON HEALTH SECTOR by Indicators and Time (Annual)",
+        "updated": "2025-07-04T16:52:54"
+    },
+    {
+        "id": "DT_NSO_2100_032V1.px",
+        "type": "t",
+        "text": "IMMUNIZATION COVERRAGE FOR INFANTS, by types of immunization, by region, aimags and the Capital by Indicator, Aimag and Annual",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "DT_NSO_2100_033V1.px",
+        "type": "t",
+        "text": "REVENUE AND EXPENDITURE OF HEALTH INSURANCE FUND, by type, and by month (cumulative) by Indicator and Month",
+        "updated": "2025-09-16T09:46:12"
+    },
+    {
+        "id": "DT_NSO_2100_042V1.px",
+        "type": "t",
+        "text": "HEALTH MANAGER, by region, aimags, Capital and soum by Aimag, soum and Annual",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "DT_NSO_2100_043V1.px",
+        "type": "t",
+        "text": "PHARMACIST, by region, aimags, Capital and soum by Aimag, soum and Annual",
+        "updated": "2025-08-11T13:58:13"
+    },
+    {
+        "id": "NUMBER OF INPATIENTS, by region",
+        "type": "l",
+        "text": "NUMBER OF INPATIENTS, by region"
+    }
+]

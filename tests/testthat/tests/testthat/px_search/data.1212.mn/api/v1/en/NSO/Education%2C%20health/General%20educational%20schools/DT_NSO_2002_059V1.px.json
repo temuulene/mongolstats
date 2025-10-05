@@ -1,0 +1,65 @@
+{
+    "title": "FULL-TIME TEACHERS IN GENERAL EDUCATIONAL SCHOOLS, by type of ownership, and by year",
+    "variables": [
+        {
+            "code": "Өмчийн хэлбэр",
+            "text": "Type of ownership",
+            "values": [
+                "0",
+                "1",
+                "2"
+            ],
+            "valueTexts": [
+                "Total",
+                "Public",
+                "Private"
+            ]
+        },
+        {
+            "code": "Үзүүлэлт",
+            "text": "Indicator",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4"
+            ],
+            "valueTexts": [
+                "Total",
+                "For primary class",
+                "For secondary class",
+                "For senior class",
+                "For secondary and senior class"
+            ]
+        },
+        {
+            "code": "Он",
+            "text": "Year",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+            ],
+            "valueTexts": [
+                "2024",
+                "2023",
+                "2022",
+                "2021",
+                "2020",
+                "2019",
+                "2018",
+                "2017",
+                "2016",
+                "2015"
+            ]
+        }
+    ]
+}

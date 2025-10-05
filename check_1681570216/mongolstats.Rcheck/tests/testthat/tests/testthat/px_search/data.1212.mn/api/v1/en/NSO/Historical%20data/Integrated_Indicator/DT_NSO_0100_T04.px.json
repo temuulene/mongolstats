@@ -1,0 +1,61 @@
+{
+    "title": "GDP, by industries, at current prices, million togrog",
+    "variables": [
+        {
+            "code": "Салбар",
+            "text": "Industries (2)",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
+            ],
+            "valueTexts": [
+                "GDP",
+                " Agriculture",
+                " Industry",
+                " Construction",
+                " Trade",
+                " Transport, communication",
+                " Other"
+            ]
+        },
+        {
+            "code": "он",
+            "text": "Time (Annual)",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12"
+            ],
+            "valueTexts": [
+                "1992",
+                "1991",
+                "1990",
+                "1989",
+                "1988",
+                "1987",
+                "1986",
+                "1985",
+                "1984",
+                "1983",
+                "1982",
+                "1981",
+                "1980"
+            ]
+        }
+    ]
+}

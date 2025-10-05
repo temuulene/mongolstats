@@ -1,0 +1,45 @@
+{
+    "title": "THE LITERACY RATE, by year",
+    "variables": [
+        {
+            "code": "Хүйс",
+            "text": "Sex",
+            "values": [
+                "0",
+                "1",
+                "2"
+            ],
+            "valueTexts": [
+                "Literacy rate",
+                " Male",
+                " Female"
+            ]
+        },
+        {
+            "code": "Он",
+            "text": "Year",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8"
+            ],
+            "valueTexts": [
+                "1989",
+                "1979",
+                "1969",
+                "1963",
+                "1956",
+                "1950",
+                "1947",
+                "1940",
+                "1935"
+            ]
+        }
+    ]
+}

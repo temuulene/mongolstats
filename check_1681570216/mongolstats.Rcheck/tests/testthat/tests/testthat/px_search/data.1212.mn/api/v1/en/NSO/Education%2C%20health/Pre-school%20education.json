@@ -1,0 +1,62 @@
+[
+    {
+        "id": "DT_NSO_2001_010V1.px",
+        "type": "t",
+        "text": "NUMBER OF FULL-TIME TEACHERS IN PRE-SCHOOL INSTITUTIONS, by aimags and the Capital, and by year by Region and Year",
+        "updated": "2025-09-24T16:11:52"
+    },
+    {
+        "id": "DT_NSO_2001_010V2.px",
+        "type": "t",
+        "text": "EMPLOYEES OF PRE-SCHOOL INSTITUTIONS, by sex, aimags and the Capital, and by year by Indicator, Region, Sex and Year",
+        "updated": "2025-09-24T16:14:02"
+    },
+    {
+        "id": "DT_NSO_2001_011V1.px",
+        "type": "t",
+        "text": "NUMBER OF KINDERGARTENS, by aimags and the Capital, and by year by Region and Year",
+        "updated": "2025-09-24T16:19:53"
+    },
+    {
+        "id": "DT_NSO_2001_011V3.px",
+        "type": "t",
+        "text": "NUMBER OF KINDERGARTENS, by soum and district, and by year by Region and Year",
+        "updated": "2025-09-24T16:18:06"
+    },
+    {
+        "id": "DT_NSO_2001_012V1.px",
+        "type": "t",
+        "text": "NUMBER OF CHILDREN IN PRE-SCHOOL INSTITUTIONS, by aimags and the Capital, and by year by Region and Year",
+        "updated": "2025-09-24T16:22:11"
+    },
+    {
+        "id": "DT_NSO_2001_021V1.px",
+        "type": "t",
+        "text": "NUMBER OF KINDERGARTENS, by type of ownership, and year by Type of ownership and Year",
+        "updated": "2025-09-21T14:01:35"
+    },
+    {
+        "id": "DT_NSO_2001_022V1.px",
+        "type": "t",
+        "text": "CHILDREN ENROLLED IN EARLY CHILDHOOD EDUCATION, by year by Indicator and Year",
+        "updated": "2025-09-24T16:24:36"
+    },
+    {
+        "id": "DT_NSO_2002_026V1.px",
+        "type": "t",
+        "text": "NUMBER OF EMPLOYEES IN PRE-SCHOOLS INSTITUTIONS, by soum and district, and by year by Indicator, Region and Year",
+        "updated": "2025-09-24T16:26:54"
+    },
+    {
+        "id": "DT_NSO_2002_058V2.px",
+        "type": "t",
+        "text": "NUMBER OF CHILDREN WITH DISABILITIES IN PRE-SCHOOL INSTITUTIONS, by aimag and the Capital, and by year by Sex, Region and Year",
+        "updated": "2025-09-24T16:28:59"
+    },
+    {
+        "id": "DT_NSO_2002_058V4.px",
+        "type": "t",
+        "text": "CHILDREN IN PRE-SCHOOL INSTITUTIONS, by soum and district, and by year by Region and Year",
+        "updated": "2025-09-24T16:31:50"
+    }
+]

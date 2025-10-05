@@ -1,0 +1,69 @@
+{
+    "title": "PERCENTAGE DISTRIBUTION OF THE ETHNIC GROUP, share to total and by year",
+    "variables": [
+        {
+            "code": "Үндэс угсаа",
+            "text": "Ethnic group",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18"
+            ],
+            "valueTexts": [
+                "Ethnic group",
+                " Khalkh",
+                " Kazakh",
+                " Durvud",
+                " Buriad",
+                " Bayad",
+                " Dariganga",
+                " Uriankhai",
+                " Zakhchin",
+                " Darkhad",
+                " Torguud",
+                " Uuld",
+                " Khoton",
+                " Myangad",
+                " Barga",
+                " Uzemchin",
+                " Russian",
+                " Chinese",
+                " Other"
+            ]
+        },
+        {
+            "code": "Он",
+            "text": "Year",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4"
+            ],
+            "valueTexts": [
+                "1989",
+                "1979",
+                "1969",
+                "1963",
+                "1956"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,57 @@
+[
+    {
+        "id": "Agriculture",
+        "type": "l",
+        "text": "Agriculture"
+    },
+    {
+        "id": "Construction",
+        "type": "l",
+        "text": "Construction"
+    },
+    {
+        "id": "Culture, cultural creative industry",
+        "type": "l",
+        "text": "Culture, cultural creative industry"
+    },
+    {
+        "id": "Industry",
+        "type": "l",
+        "text": "Industry"
+    },
+    {
+        "id": "Intellectual property",
+        "type": "l",
+        "text": "Intellectual property"
+    },
+    {
+        "id": "Livestock",
+        "type": "l",
+        "text": "Livestock"
+    },
+    {
+        "id": "Science",
+        "type": "l",
+        "text": "Science"
+    },
+    {
+        "id": "Telecommunication",
+        "type": "l",
+        "text": "Telecommunication"
+    },
+    {
+        "id": "Tourism",
+        "type": "l",
+        "text": "Tourism"
+    },
+    {
+        "id": "Trade, hotel and restaurant",
+        "type": "l",
+        "text": "Trade, hotel and restaurant"
+    },
+    {
+        "id": "Transportation",
+        "type": "l",
+        "text": "Transportation"
+    }
+]

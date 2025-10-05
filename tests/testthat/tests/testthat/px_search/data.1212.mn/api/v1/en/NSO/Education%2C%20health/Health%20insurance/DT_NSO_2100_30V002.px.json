@@ -1,0 +1,73 @@
+{
+    "title": "SALES OF ESSENTIAL DRUGS DISCOUNTED FROM HEALTH INSURANCE FUND, by general groups, and by year",
+    "variables": [
+        {
+            "code": "Үзүүлэлт",
+            "text": "Indicator",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19"
+            ],
+            "valueTexts": [
+                "Total",
+                "    Cardiovascular drugs",
+                "    Anti-infection drugs",
+                "    Cure for gastrointestinal diseases",
+                "    Medicine for mental and behavioral disorders",
+                "    Medicines for hormones and hormone function, and contraceptives",
+                "    Medicine that affect the blood",
+                "    Anti-seizure medicine",
+                "    Pain-relief, reduce fever, anti-inflammatory drugs",
+                "    Medicines that affect respiratory activity",
+                "        Anti-cancer, immunosuppression, palliative medicine",
+                "        Allergy and anti anaphylaxis medicine",
+                "        Medicines that affect kidney and urinary tract",
+                "        Medicine for skin diseases",
+                "        Medicines that affect immune system",
+                "        Medicine for eye pain",
+                "        Vitamins and minerals",
+                "        Medical cure for paralysis",
+                "    Reproductive system and perinatal health medicines",
+                "        Oxytocin and anti-oxytocin"
+            ]
+        },
+        {
+            "code": "Он",
+            "text": "Year",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "valueTexts": [
+                "2024",
+                "2023",
+                "2022",
+                "2021",
+                "2020",
+                "2019"
+            ]
+        }
+    ]
+}
