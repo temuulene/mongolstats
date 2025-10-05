@@ -44,6 +44,7 @@ nso_data <- function(tbl_id, selections, labels = c("none","en","mn","both")) {
 #' Fetch multiple tables and bind (PXWeb)
 #' @param requests A list of records, each with `tbl_id` and `selections` (named list)
 #' @param labels Label handling as in `nso_data()`
+#' @param parallel If TRUE, use future.apply to fetch tables in parallel.
 #' @export
 nso_package <- function(requests, labels = c("none","en","mn","both"),
                         parallel = getOption("mongolstats.parallel", FALSE)) {
