@@ -30,3 +30,4 @@
 ^rebuild_index\.R$
 ^test_.*\.R$
 ^test_.*\.sh$
+^\.lintr$

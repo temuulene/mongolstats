@@ -14,6 +14,8 @@ nso_package(
 \item{requests}{A list of records, each with \code{tbl_id} and \code{selections} (named list)}
 
 \item{labels}{Label handling as in \code{nso_data()}}
+
+\item{parallel}{If TRUE, use future.apply to fetch tables in parallel.}
 }
 \description{
 Fetch multiple tables and bind (PXWeb)
