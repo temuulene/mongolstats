@@ -47,9 +47,10 @@ dat <- if (length(periods)) nso_data(tbl, selections = list(Year = tail(periods,
 if ("Region_en" %in% names(dat)) dat$name <- dat$Region_en else if ("Region" %in% names(dat)) dat$name <- dat$Region
 
 joined <- tryCatch(mn_join_by_name(dat, name_col = "name", level = "ADM1"), error = function(e) adm1)
+```
+
 ```{r fig.alt="Map of joined ADM1 geometries", fig.cap="ADM1 map joined to example data"}
 plot(sf::st_geometry(joined))
-```
 ```
 
 Note: Name-based joins are heuristic. For rigorous joins, prefer stable codes
