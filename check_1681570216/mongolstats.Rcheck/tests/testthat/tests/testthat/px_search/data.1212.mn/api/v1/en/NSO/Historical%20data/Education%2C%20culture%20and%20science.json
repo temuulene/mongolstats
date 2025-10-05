@@ -1,0 +1,80 @@
+[
+    {
+        "id": "DT_NSO_0100_01TT01.px",
+        "type": "t",
+        "text": "NUMBER OF EDUCATIONAL ESTABLISHMENTS by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01TT02.px",
+        "type": "t",
+        "text": "NUMBER OF PUPILS AND STUDENTS by Category (3) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01TT03.px",
+        "type": "t",
+        "text": "NUMBER OF STUDENTS AT HIGHER EDUCATIONAL ESTABLISHMENTS OF THE MPR by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01TT04.px",
+        "type": "t",
+        "text": "NUMBER OF GENERAL EDUCATIONAL DAY-TIME SCHOOLS by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01TT05.px",
+        "type": "t",
+        "text": "NUMBER OF PUPILS AT GENERAL EDUCATIONAL DAY-TIME SCHOOLS, by aimags and towns (cities) by Category, Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01TT06.px",
+        "type": "t",
+        "text": "ENROLMENT OF PUPILS IN DAY-TIME GENERAL EDUCATIONAL SCHOOLS AND LEAVERS FROM DAY-TIME GENERAL EDUCATIONAL SCHOOLS by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01TT07.px",
+        "type": "t",
+        "text": "TEACHING STAFF BY TUPE OF EDUCATIONAL ESTABLISHMENTS by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01TT08.px",
+        "type": "t",
+        "text": "NUMBER OF KINDERGARTENS AND CRECHES by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01TT09.px",
+        "type": "t",
+        "text": "NUMBER OF SCIENTIFIC ORGANIZATIONS AND WORKERS, at the end of the year by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01TTT01.px",
+        "type": "t",
+        "text": "MAGAZINE PUBLISHING by Indicators (4) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01TTT02.px",
+        "type": "t",
+        "text": "NEWSPAPER PUBLISHING by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01TTT03.px",
+        "type": "t",
+        "text": "NUMBER OF VISITS TO ENTERTAINMENTS by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01TTT04.px",
+        "type": "t",
+        "text": "CULTURAL AND EDUCATIONAL INSTITUTIONS by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    }
+]

@@ -1,0 +1,60 @@
+---
+title: "Caching and offline workflows"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Caching and offline workflows}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+eval_site <- TRUE
+if (requireNamespace("pkgdown", quietly = TRUE)) eval_site <- pkgdown::in_pkgdown()
+if (eval_site && requireNamespace("curl", quietly = TRUE)) eval_site <- curl::has_internet()
+knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE, error = FALSE)
+if (eval_site) {
+  options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
+}
+if (requireNamespace("remotes", quietly = TRUE)) {
+  try(remotes::install_local(".", upgrade = "never", force = TRUE, dependencies = FALSE), silent = TRUE)
+}
+```
+
+```{r}
+library(mongolstats)
+```
+
+## Enable cache
+
+Cache speeds up repeated calls to table listings and metadata. You can also set a TTL.
+
+```{r}
+dir <- tryCatch(nso_cache_enable(ttl = 7 * 24 * 3600), error = function(e) NULL)
+dir
+```
+
+## Inspect cache status
+
+```{r}
+nso_cache_status()
+```
+
+## Offline mode
+
+Offline mode prevents network requests. Cached metadata remains available, but data fetches requiring the network will error with a clear message.
+
+```{r}
+nso_offline_enable()
+
+# This will use cache if available; otherwise it will error due to offline mode
+itms <- try(nso_itms(), silent = TRUE)
+itms
+
+nso_offline_disable()
+```
+
+## Tips
+
+- Use caching during development to avoid repeated PXWeb metadata hits.
+- Keep examples small and guard network calls when knitting documents (`curl::has_internet()`).
+- For reproducibility, store your selections and results; cache is a convenience, not a persistence layer.

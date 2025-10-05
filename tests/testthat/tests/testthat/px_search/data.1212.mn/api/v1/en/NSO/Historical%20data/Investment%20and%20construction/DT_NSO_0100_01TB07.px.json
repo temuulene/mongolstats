@@ -1,0 +1,87 @@
+{
+    "title": "Fixed assets of constuction, by type , million togrog",
+    "variables": [
+        {
+            "code": "Ангилал",
+            "text": "Category (2)",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15"
+            ],
+            "valueTexts": [
+                "Total",
+                " Fixed assets of production activities",
+                " buildings",
+                " construction",
+                " pipline construction",
+                " power machine",
+                " working machine",
+                " construction machinery",
+                " carrier vehicle",
+                " production instrument",
+                " simple transportation",
+                " workhorse",
+                " household implements",
+                " other",
+                " Fixed assets of supporting activities",
+                " Fixed assets of non-production activities"
+            ]
+        },
+        {
+            "code": "он",
+            "text": "Time (Annual)",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16"
+            ],
+            "valueTexts": [
+                "1976",
+                "1975",
+                "1974",
+                "1973",
+                "1972",
+                "1971",
+                "1970",
+                "1969",
+                "1968",
+                "1967",
+                "1966",
+                "1965",
+                "1964",
+                "1963",
+                "1962",
+                "1961",
+                "1960"
+            ]
+        }
+    ]
+}

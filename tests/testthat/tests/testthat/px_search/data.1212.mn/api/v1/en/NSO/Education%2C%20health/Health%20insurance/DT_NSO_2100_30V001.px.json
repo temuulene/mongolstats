@@ -1,0 +1,79 @@
+{
+    "title": "REVENUE AND EXPENDITURE OF HEALTH INSURANCE FUND, by type, and by year",
+    "variables": [
+        {
+            "code": "Үзүүлэлт",
+            "text": "Indicator",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19",
+                "20",
+                "21",
+                "22"
+            ],
+            "valueTexts": [
+                "Revenue of health insurance fund",
+                " Revenue of health insurance premiums",
+                " Premium paid by individuals",
+                " Premium paid by the employers and insured",
+                " From the government budget for individuals liable for government insurance subsidy",
+                " Funds to be allocated from the state budget to finance the cost of health care services provided by the state through the health insurance organization",
+                " Others",
+                " Expenditure of health insurance fund",
+                " Hospital care and service expenditure",
+                " Inpatients care",
+                " Outpatients care",
+                " Diagnosis and analysis",
+                " Day care",
+                " Nursing care and service expenditure",
+                " Traditional medicine care",
+                " Palliative care",
+                " Some rehabilitative care, home care, day care and diagnostic tests provided by family or soum or village health centers",
+                " Emergency care",
+                " Ambulancy",
+                " Telemedicine",
+                " Prevention, early detection screening and diagnostic tests",
+                " Discounted medicine",
+                "  Others"
+            ]
+        },
+        {
+            "code": "Он",
+            "text": "Year",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "valueTexts": [
+                "2024",
+                "2023",
+                "2022",
+                "2021",
+                "2020",
+                "2019"
+            ]
+        }
+    ]
+}

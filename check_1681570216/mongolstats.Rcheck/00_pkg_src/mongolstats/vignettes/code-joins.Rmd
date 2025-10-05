@@ -1,0 +1,91 @@
+---
+title: "Code-based joins with mongolstats"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Code-based joins with mongolstats}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+eval_site <- TRUE
+if (requireNamespace("pkgdown", quietly = TRUE)) eval_site <- pkgdown::in_pkgdown()
+if (eval_site && requireNamespace("curl", quietly = TRUE)) eval_site <- curl::has_internet()
+knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE, error = TRUE)
+if (eval_site) {
+  options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
+  try(mongolstats::nso_cache_enable(), silent = TRUE)
+}
+# Always install local package before knitting to ensure latest API
+if (requireNamespace("remotes", quietly = TRUE)) {
+  try(remotes::install_local(".", upgrade = "never", force = TRUE, dependencies = FALSE), silent = TRUE)
+}
+```
+
+```{r}
+library(mongolstats)
+library(dplyr)
+library(sf)
+```
+
+This vignette demonstrates a reproducible pattern to perform code-based joins to administrative boundaries.
+
+Because NSO table classifications vary by table, we first obtain the table’s codebook (via `nso_itms_detail()`) and identify the field that corresponds to an administrative division (e.g., aimag-level). We then construct a one-time crosswalk that maps the table’s codes to boundary identifiers.
+
+```{r}
+tbl <- "DT_NSO_0300_004V5"  # Resident population by location and region
+
+# 1) Fetch codebook for the table (PXWeb variables)
+cb  <- nso_variables(tbl)
+unique(cb$field)
+
+# 2) Inspect items under the likely admin dimension (e.g., 'Region')
+adm_field <- "Region"
+adm_codes <- cb %>% dplyr::filter(field == adm_field) %>% dplyr::select(itm_id, scr_eng)
+head(adm_codes)
+
+# 3) Build a crosswalk from table codes to boundary keys via name normalization
+adm1 <- mn_boundaries("ADM1") %>% mn_boundaries_normalize()
+adm_codes$name_std <- adm_codes$scr_eng %>% stringr::str_to_lower() %>% 
+  stringi::stri_trans_general("Latin-ASCII") %>% 
+  stringr::str_replace_all("[^a-z0-9]+", " ") %>% stringr::str_squish()
+
+cw <- adm_codes %>% 
+  dplyr::left_join(
+    dplyr::tibble(shapeName = adm1$shapeName, shapeISO = adm1$shapeISO) %>% 
+      dplyr::mutate(name_std = mn_boundaries_normalize(adm1)$name_std),
+    by = "name_std"
+  ) %>%
+  dplyr::select(tbl_code = itm_id, shapeISO, shapeName)
+
+head(cw)
+
+periods <- nso_table_periods(tbl)
+dat <- nso_data(tbl, selections = list(Year = tail(periods, 1)), labels = "en")
+
+# Use the admin field as the key
+col <- adm_field
+if (col %in% names(dat)) dat$tbl_code <- dat[[col]] else dat$tbl_code <- NA_character_
+
+dat_coded <- dat %>% 
+  dplyr::left_join(cw, by = "tbl_code")
+
+# 5) Join to sf using shapeISO (preferred over names when available)
+adm1_keys <- mn_boundary_keys("ADM1")  # contains shapeISO and name_std
+geo <- mn_boundaries("ADM1") %>% dplyr::left_join(adm1_keys, by = c("shapeISO"))
+
+joined <- dplyr::left_join(geo, dat_coded, by = "shapeISO")
+plot(joined["value"])  # or use your preferred mapping workflow
+```
+
+Notes:
+
+- This example constructs a crosswalk dynamically; you can persist it (e.g., `inst/extdata/adm1_cw.csv`) and reuse it across tables if they share admin codes.
+- If a table uses different admin levels, repeat the pattern with `mn_boundaries("ADM2")` and adjust the field accordingly.
+- Once NSO publishes stable geographic codes, you can replace the name-normalization with a direct code match to boundary keys.
+
+## Tips for robust code-based joins
+
+- Prefer ISO-like stable keys (e.g., `shapeISO`) over names when available.
+- Keep your crosswalks in version control (e.g., `inst/extdata/…`) and document their provenance.
+- Validate joins by checking for unmatched rows and duplicates in the key.

@@ -1,0 +1,65 @@
+{
+    "title": "THE SUPPLY OF PRIMARY AND SECONDARY ENERGY, by economic activity",
+    "variables": [
+        {
+            "code": "Үзүүлэлт",
+            "text": "Indicator",
+            "values": [
+                "0",
+                "1",
+                "2"
+            ],
+            "valueTexts": [
+                "Total supply of energy",
+                "Supply of primary energy",
+                "Supply of secondary energy"
+            ]
+        },
+        {
+            "code": "Эдийн засгийн салбар",
+            "text": "Economic activity",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "valueTexts": [
+                "Total",
+                "Agriculture, forestry, fishing and hunting",
+                "Mining and quarrying",
+                "Manufacturing",
+                "Electricity, gas, steam, and air conditioning supply",
+                "Import"
+            ]
+        },
+        {
+            "code": "Он",
+            "text": "Year",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8"
+            ],
+            "valueTexts": [
+                "2023",
+                "2022",
+                "2021",
+                "2020",
+                "2019",
+                "2018",
+                "2017",
+                "2016",
+                "2015"
+            ]
+        }
+    ]
+}

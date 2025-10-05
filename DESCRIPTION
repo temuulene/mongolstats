@@ -35,7 +35,14 @@ Suggests:
     roxygen2,
     lifecycle,
     pxweb,
-    remotes
+    remotes,
+    httptest2,
+    covr,
+    lintr,
+    styler,
+    future,
+    future.apply,
+    cli
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

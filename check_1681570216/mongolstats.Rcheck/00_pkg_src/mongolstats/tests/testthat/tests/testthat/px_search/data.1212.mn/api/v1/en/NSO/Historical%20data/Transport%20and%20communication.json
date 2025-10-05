@@ -1,0 +1,50 @@
+[
+    {
+        "id": "DT_NSO_0100_01T31.px",
+        "type": "t",
+        "text": "Freight turnover of all types of transport by type, million ton.km by Indicator (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    },
+    {
+        "id": "DT_NSO_0100_01T32.px",
+        "type": "t",
+        "text": "Freight carried by all types of transport by type, thousand ton. by Indicator (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    },
+    {
+        "id": "DT_NSO_0100_01T33.px",
+        "type": "t",
+        "text": "Passenger turnover of all types of transport by type, million person,km by Indicator (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    },
+    {
+        "id": "DT_NSO_0100_01T34.px",
+        "type": "t",
+        "text": "Passenger carried by all types of transport by type,million person by Indicator (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    },
+    {
+        "id": "DT_NSO_0100_01T35.px",
+        "type": "t",
+        "text": "Number of vehicles, peaces by Indicator (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    },
+    {
+        "id": "DT_NSO_0100_01T36.px",
+        "type": "t",
+        "text": "Improved avto road, at the end of the year, km by Indicator (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    },
+    {
+        "id": "DT_NSO_0100_01T37.px",
+        "type": "t",
+        "text": "Basic indicators of communications by Indicator (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    },
+    {
+        "id": "DT_NSO_0100_01T38.px",
+        "type": "t",
+        "text": "Basic indicators of communication services by Indicator (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:21"
+    }
+]

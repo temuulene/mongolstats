@@ -1,0 +1,81 @@
+[
+    {
+        "id": "DT_NSO_1800_005V2.px",
+        "type": "t",
+        "text": "INBOUND FOREIGN PASSENGERS, by purpose of travel, geographical region, and by year by Geographical region, Purpose of visit and Year",
+        "updated": "2025-09-15T09:03:28"
+    },
+    {
+        "id": "DT_NSO_1800_005V3.px",
+        "type": "t",
+        "text": "NUMBER OF OUTBOUND MONGOLIAN, by sex, purpose of visit, country, and by year by Country name, Indicator and Year",
+        "updated": "2025-09-15T09:03:28"
+    },
+    {
+        "id": "DT_NSO_1800_006V1.px",
+        "type": "t",
+        "text": "NUMBER OF INBOUND TRANSPORTATIONS, type of transport, border crossing, and by year by Type of transport vehicles, Name of border crossings and Year",
+        "updated": "2025-09-15T09:03:28"
+    },
+    {
+        "id": "DT_NSO_1800_006V202.px",
+        "type": "t",
+        "text": "NUMBER OF INBOUND PASSENGERS, by sex, age group, purpose of travel, and by month by Sex, Purpose of travel, Age group and Month",
+        "updated": "2025-09-15T12:44:14"
+    },
+    {
+        "id": "DT_NSO_1800_007V1.px",
+        "type": "t",
+        "text": "NUMBER OF OUTBOUND TRANSPORTATIONS, type of transport, border crossings, and by year by Type of transport vehicles, Name of border crossings and Year",
+        "updated": "2025-09-15T09:03:28"
+    },
+    {
+        "id": "DT_NSO_1800_007V202.px",
+        "type": "t",
+        "text": "NUMBER OF INBOUND PASSENGERS, by sex, age group, duration of stay, and by month by Sex, Duration of stay, Age group and Month",
+        "updated": "2025-09-15T12:44:14"
+    },
+    {
+        "id": "DT_NSO_1800_008V202.px",
+        "type": "t",
+        "text": "NUMBER OF OUTBOUND MONGOLIAN, by sex, age group, purpose of travel, and by month by Sex, Purpose of travel, Age group and Month",
+        "updated": "2025-09-15T09:03:28"
+    },
+    {
+        "id": "DT_NSO_1800_009V202.px",
+        "type": "t",
+        "text": "NUMBER OF OUTBOUND MONGOLIAN, by sex, age group, duration of stay, and by month by Sex, Duration of stay, Age group and Month",
+        "updated": "2025-09-15T09:03:28"
+    },
+    {
+        "id": "DT_NSO_1800_010V202.px",
+        "type": "t",
+        "text": "NUMBER OF OUTBOUND MONGOLIAN, by sex, country, and by month by Sex, Country name and Month",
+        "updated": "2025-09-15T12:44:14"
+    },
+    {
+        "id": "INBOUND AND OUTBOUND PASSENGERS by Name of border crossing",
+        "type": "l",
+        "text": "INBOUND AND OUTBOUND PASSENGERS by Name of border crossing"
+    },
+    {
+        "id": "Number of inbound and outbound foreign passengers by country of origin",
+        "type": "l",
+        "text": "Number of inbound and outbound foreign passengers by country of origin"
+    },
+    {
+        "id": "NUMBER OF INBOUND PASSENGERS by border crossings and purpose of visit",
+        "type": "l",
+        "text": "NUMBER OF INBOUND PASSENGERS by border crossings and purpose of visit"
+    },
+    {
+        "id": "NUMBER OF INBOUND TOURISTS by country",
+        "type": "l",
+        "text": "NUMBER OF INBOUND TOURISTS by country"
+    },
+    {
+        "id": "NUMBER OF OUTBOUND MONGOLIAN, by border crossings and purpose of visit",
+        "type": "l",
+        "text": "NUMBER OF OUTBOUND MONGOLIAN, by border crossings and purpose of visit"
+    }
+]

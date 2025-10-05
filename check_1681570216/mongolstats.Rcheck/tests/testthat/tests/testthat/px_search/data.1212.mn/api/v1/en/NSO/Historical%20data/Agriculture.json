@@ -1,0 +1,116 @@
+[
+    {
+        "id": "DT_NSO_0100_01T01.px",
+        "type": "t",
+        "text": "NUMBER OF AGRICULTURAL PRODUCTION UNITS by Classification (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T010.px",
+        "type": "t",
+        "text": "OUTPUT OF MEAT AND WOOL PRODUCTS, thous.tons by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T011.px",
+        "type": "t",
+        "text": "AGRICULTURAL AREAS, thous.hectars by Category (3) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T012.px",
+        "type": "t",
+        "text": "SOWN AREAS /thous.heactars/ by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T013.px",
+        "type": "t",
+        "text": "CROSS HARVEST OF CROP PRODUCTION, by type, thous.tons by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T014.px",
+        "type": "t",
+        "text": "PER HECTARE YIELDS OF PRINCIPAL AGRICULTURAL CROPS, by type, centners by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T015.px",
+        "type": "t",
+        "text": "CROSS HAY HARVEST AND LAYING IN OF FODDER, thous.tons by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T016.px",
+        "type": "t",
+        "text": "NUMBER OF LIVESTOCK HOUSE, thous.pieces by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T017.px",
+        "type": "t",
+        "text": "NUMBER OF MINE AND BORING WELLS, thous.pieces by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T018.px",
+        "type": "t",
+        "text": "PRODUCTIVITY PER HEAD OF LIVESTOCK, kg by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T019.px",
+        "type": "t",
+        "text": "NUMBER OF VETERINARY STAFF by Category (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T02.px",
+        "type": "t",
+        "text": "CROSS AGRICULTURAL OUTPUT, at current prices, mln.togrog by Classificatin (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T03.px",
+        "type": "t",
+        "text": "NUMBER OF LIVESTOCK, by sectors (by farm category), by type, thous.heads by livestock type (2), Sector (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T04.px",
+        "type": "t",
+        "text": "NUMBER OF LIVESTOCK by Category, Aimags (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T05.px",
+        "type": "t",
+        "text": "REARING YOUNG LIVESTOCK by Calf (1), Category (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T06.px",
+        "type": "t",
+        "text": "NUMBER OF BREEDING STOCK, by type, thous.heads by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T07.px",
+        "type": "t",
+        "text": "NUMBER OF PICS AND POULTRY, thous.heads by Category (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T08.px",
+        "type": "t",
+        "text": "OUTPUT OF MAIN AGRICULTURAL PRODUCTS by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_01T09.px",
+        "type": "t",
+        "text": "PRODUCTIVITY PER HEAD OF LIVESTOCK by Category (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    }
+]

@@ -1,0 +1,50 @@
+[
+    {
+        "id": "DT_NSO_0100_01TB01.px",
+        "type": "t",
+        "text": "GDP, by industries, at 1995 constant prices by Industries (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_T006.px",
+        "type": "t",
+        "text": "Fixed assets of national economy, by industries, million togrog by Industries (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_T008.px",
+        "type": "t",
+        "text": "Productivity of Labour, by national income per workers, at constant prices of 1986, thousand togrog by Industries (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_T01.px",
+        "type": "t",
+        "text": "Gross social product, by industries, at current prices, million togrog by Industries (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_T02.px",
+        "type": "t",
+        "text": "Gross social product, by industries, at constant prices of 1986, million togrog by Industries (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_T03.px",
+        "type": "t",
+        "text": "National income produced, by industries, at constant prices of 1986, million togrog by Industries (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_T04.px",
+        "type": "t",
+        "text": "GDP, by industries, at current prices, million togrog by Industries (2) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    },
+    {
+        "id": "DT_NSO_0100_T05.px",
+        "type": "t",
+        "text": "National income produced, by industries, at current prices, million togrog by Industries (1) and Time (Annual)",
+        "updated": "2025-02-04T09:10:20"
+    }
+]

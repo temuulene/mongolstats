@@ -1,0 +1,47 @@
+{
+    "title": "MAXIMUM ALLOWABLE CONCENTRATION OF QUALITY STANDART, by chemical combination and by year",
+    "variables": [
+        {
+            "code": "Үзүүлэлт",
+            "text": "Indicator",
+            "values": [
+                "0",
+                "1"
+            ],
+            "valueTexts": [
+                "Daily averege",
+                " Once upon max"
+            ]
+        },
+        {
+            "code": "Химийн нэгдэл",
+            "text": "Chemical combination",
+            "values": [
+                "0",
+                "1",
+                "2",
+                "3"
+            ],
+            "valueTexts": [
+                "Sulphur dioxide",
+                " Nitrogen dioxide",
+                " Carbon dioxide",
+                " Particulate matter"
+            ]
+        },
+        {
+            "code": "Он",
+            "text": "Year",
+            "values": [
+                "0",
+                "1",
+                "2"
+            ],
+            "valueTexts": [
+                "2018",
+                "2016",
+                "2011"
+            ]
+        }
+    ]
+}
