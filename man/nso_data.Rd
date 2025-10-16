@@ -4,7 +4,13 @@
 \alias{nso_data}
 \title{Fetch statistical data for a table (PXWeb)}
 \usage{
-nso_data(tbl_id, selections, labels = c("none", "en", "mn", "both"))
+nso_data(
+  tbl_id,
+  selections,
+  labels = c("none", "en", "mn", "both"),
+  value_name = getOption("mongolstats.value_name", "value"),
+  include_raw = getOption("mongolstats.attach_raw", FALSE)
+)
 }
 \arguments{
 \item{tbl_id}{Table identifier (e.g., "DT_NSO_0300_001V2").}
@@ -12,6 +18,10 @@ nso_data(tbl_id, selections, labels = c("none", "en", "mn", "both"))
 \item{selections}{Named list mapping variable labels (e.g., Year, Sex) to desired codes or labels.}
 
 \item{labels}{Label handling: "none" (codes only), "en", "mn", or "both".}
+
+\item{value_name}{Name of the numeric value column in the result (default: "value").}
+
+\item{include_raw}{If TRUE, attach the raw PX payload as attribute \code{px_raw}.}
 }
 \description{
 Fetch statistical data for a table (PXWeb)

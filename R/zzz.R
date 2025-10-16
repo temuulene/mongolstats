@@ -11,9 +11,13 @@
     mongolstats.verbose = FALSE,
     mongolstats.offline = FALSE,
     mongolstats.progress = TRUE,
-    mongolstats.default_labels = "none"
+    mongolstats.default_labels = "none",
+    mongolstats.value_name = "value",
+    mongolstats.attach_raw = FALSE
   )
   to_set <- !(names(op.mongolstats) %in% names(op))
-  if (any(to_set)) options(op.mongolstats[to_set])
+  if (any(to_set)) {
+    options(op.mongolstats[to_set])
+  }
   invisible()
 }

@@ -18,31 +18,51 @@
 #' @return Cache directory path (invisibly).
 #' @export
 nso_cache_enable <- function(dir = NULL, ttl = NULL) {
-  if (!requireNamespace("memoise", quietly = TRUE) ||
+  if (
+    !requireNamespace("memoise", quietly = TRUE) ||
       !requireNamespace("cachem", quietly = TRUE) ||
-      !requireNamespace("rappdirs", quietly = TRUE)) {
+      !requireNamespace("rappdirs", quietly = TRUE)
+  ) {
     stop("Enable caching requires memoise, cachem, rappdirs packages.")
   }
   if (is.null(dir)) {
     # Namespace under mongolstats and include a cache version for safe upgrades
     dir <- file.path(rappdirs::user_cache_dir("mongolstats"), "v1")
   }
-  if (!dir.exists(dir)) dir.create(dir, recursive = TRUE, showWarnings = FALSE)
-  cache <- if (is.null(ttl)) cachem::cache_disk(dir) else cachem::cache_disk(dir, max_age = ttl)
+  if (!dir.exists(dir)) {
+    dir.create(dir, recursive = TRUE, showWarnings = FALSE)
+  }
+  cache <- if (is.null(ttl)) {
+    cachem::cache_disk(dir)
+  } else {
+    cachem::cache_disk(dir, max_age = ttl)
+  }
   .mongolstats_cache_env$cache <- cache
   .mongolstats_cache_env$dir <- dir
   if (exists(".fetch_itms_raw", mode = "function")) {
-    .mongolstats_cache_env$fetch_itms_memo <- memoise::memoise(.fetch_itms_raw, cache = cache)
+    .mongolstats_cache_env$fetch_itms_memo <- memoise::memoise(
+      .fetch_itms_raw,
+      cache = cache
+    )
   }
   if (exists(".fetch_detail_raw", mode = "function")) {
-    .mongolstats_cache_env$fetch_detail_memo <- memoise::memoise(.fetch_detail_raw, cache = cache)
+    .mongolstats_cache_env$fetch_detail_memo <- memoise::memoise(
+      .fetch_detail_raw,
+      cache = cache
+    )
   }
   # PXWeb memoized helpers if available
   if (exists(".px_list", mode = "function")) {
-    .mongolstats_cache_env$px_list_memo <- memoise::memoise(function(paths, lang) .px_list(paths, lang), cache = cache)
+    .mongolstats_cache_env$px_list_memo <- memoise::memoise(
+      function(paths, lang) .px_list(paths, lang),
+      cache = cache
+    )
   }
   if (exists(".px_meta", mode = "function")) {
-    .mongolstats_cache_env$px_meta_memo <- memoise::memoise(function(paths, table, lang) .px_meta(paths, table, lang), cache = cache)
+    .mongolstats_cache_env$px_meta_memo <- memoise::memoise(
+      function(paths, table, lang) .px_meta(paths, table, lang),
+      cache = cache
+    )
   }
   .mongolstats_cache_env$enabled <- TRUE
   invisible(dir)
@@ -58,7 +78,11 @@ nso_cache_disable <- function() {
 #' Clear cached entries
 #' @export
 nso_cache_clear <- function() {
-  if (!is.null(.mongolstats_cache_env$cache)) .mongolstats_cache_env$cache$reset()
+  if (!is.null(.mongolstats_cache_env$cache)) {
+    # Some environments may have restrictive permissions on cache dirs;
+    # reset best-effort and suppress warnings to keep this operation silent.
+    try(suppressWarnings(.mongolstats_cache_env$cache$reset()), silent = TRUE)
+  }
   invisible(TRUE)
 }
 
@@ -77,7 +101,10 @@ nso_cache_status <- function() {
 }
 
 .fetch_itms <- function() {
-  if (isTRUE(.mongolstats_cache_env$enabled) && !is.null(.mongolstats_cache_env$fetch_itms_memo)) {
+  if (
+    isTRUE(.mongolstats_cache_env$enabled) &&
+      !is.null(.mongolstats_cache_env$fetch_itms_memo)
+  ) {
     .mongolstats_cache_env$fetch_itms_memo()
   } else {
     .fetch_itms_raw()
@@ -85,7 +112,10 @@ nso_cache_status <- function() {
 }
 
 .fetch_detail <- function(tbl_id) {
-  if (isTRUE(.mongolstats_cache_env$enabled) && !is.null(.mongolstats_cache_env$fetch_detail_memo)) {
+  if (
+    isTRUE(.mongolstats_cache_env$enabled) &&
+      !is.null(.mongolstats_cache_env$fetch_detail_memo)
+  ) {
     .mongolstats_cache_env$fetch_detail_memo(tbl_id)
   } else {
     .fetch_detail_raw(tbl_id)

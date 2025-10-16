@@ -4,12 +4,21 @@
 \alias{nso_fetch}
 \title{Fetch a query and return a tibble}
 \usage{
-nso_fetch(x, labels = c("code", "en", "mn", "both"))
+nso_fetch(
+  x,
+  labels = c("code", "en", "mn", "both"),
+  value_name = getOption("mongolstats.value_name", "value"),
+  include_raw = getOption("mongolstats.attach_raw", FALSE)
+)
 }
 \arguments{
 \item{x}{An \code{nso_query} object.}
 
 \item{labels}{One of "code", "en", "mn", or "both" (mapped to internal API).}
+
+\item{value_name}{Name of the numeric value column in the result (default: "value").}
+
+\item{include_raw}{If TRUE, attach the raw PX payload as attribute \code{px_raw}.}
 }
 \value{
 A tibble.
