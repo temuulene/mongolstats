@@ -102,6 +102,24 @@
 <span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sex <span class="op">=</span> <span class="st">"Total"</span>, Age <span class="op">=</span> <span class="st">"Total"</span>, Year <span class="op">=</span> <span class="st">"2024"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">dat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="live-traversal-simple-path">Live traversal (simple path)<a class="anchor" aria-label="anchor" href="#live-traversal-simple-path"></a>
+</h3>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Navigate catalog → pick table → fetch</span></span>
+<span><span class="va">secs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_sectors.html">nso_sectors</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">subsecs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_subsectors.html">nso_subsectors</a></span><span class="op">(</span><span class="va">secs</span><span class="op">$</span><span class="va">id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">tbls</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_itms_by_sector.html">nso_itms_by_sector</a></span><span class="op">(</span><span class="va">subsecs</span><span class="op">$</span><span class="va">id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_table_meta.html">nso_table_meta</a></span><span class="op">(</span><span class="va">tbls</span><span class="op">$</span><span class="va">tbl_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>  <span class="co"># per-dimension codebooks</span></span>
+<span></span>
+<span><span class="va">dat2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="va">tbls</span><span class="op">$</span><span class="va">tbl_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2023"</span>, <span class="st">"2024"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  value_name <span class="op">=</span> <span class="st">"Variable"</span>,           <span class="co"># rename value column</span></span>
+<span>  include_raw <span class="op">=</span> <span class="cn">TRUE</span>                  <span class="co"># attach raw PX payload as attr(px_raw)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">dat2</span>, <span class="st">"px_raw"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
