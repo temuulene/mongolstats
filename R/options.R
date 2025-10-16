@@ -19,11 +19,17 @@ nso_options <- function(...) {
     "mongolstats.retry_tries",
     "mongolstats.retry_backoff",
     "mongolstats.verbose",
-    "mongolstats.default_labels"
+    "mongolstats.default_labels",
+    "mongolstats.progress",
+    "mongolstats.value_name",
+    "mongolstats.attach_raw"
   )
   dots <- list(...)
   if (!length(dots)) {
-    return(invisible(stats::setNames(lapply(opts_prefix, getOption), nm = opts_prefix)))
+    return(invisible(stats::setNames(
+      lapply(opts_prefix, getOption),
+      nm = opts_prefix
+    )))
   }
   old <- lapply(names(dots), getOption)
   names(old) <- names(dots)

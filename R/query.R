@@ -13,7 +13,9 @@
 #' @export
 nso_query <- function(tbl_id, selections = list()) {
   stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
-  if (!is.list(selections)) stop("`selections` must be a named list of values")
+  if (!is.list(selections)) {
+    stop("`selections` must be a named list of values")
+  }
   structure(list(tbl_id = tbl_id, selections = selections), class = "nso_query")
 }
 
@@ -22,12 +24,25 @@ print.nso_query <- function(x, ...) {
   cat("<nso_query>\n", sep = "")
   cat("  tbl_id    : ", x$tbl_id, "\n", sep = "")
   nsel <- length(x$selections)
-  cat("  selections: ", nsel, if (nsel == 1) " dimension\n" else " dimensions\n", sep = "")
+  cat(
+    "  selections: ",
+    nsel,
+    if (nsel == 1) " dimension\n" else " dimensions\n",
+    sep = ""
+  )
   if (nsel) {
     prev <- utils::head(names(x$selections), 5)
     for (nm in prev) {
       vals <- as.character(utils::head(x$selections[[nm]], 3))
-      cat("    - ", nm, ": ", paste(vals, collapse = ", "), if (length(x$selections[[nm]]) > 3) ", ..." else "", "\n", sep = "")
+      cat(
+        "    - ",
+        nm,
+        ": ",
+        paste(vals, collapse = ", "),
+        if (length(x$selections[[nm]]) > 3) ", ..." else "",
+        "\n",
+        sep = ""
+      )
     }
   }
   invisible(x)
@@ -36,10 +51,20 @@ print.nso_query <- function(x, ...) {
 # Internal: build a PXWeb JSON body from selections
 .px_build_body <- function(tbl_id, selections, lang = .px_lang()) {
   idx <- .px_index()
-  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) tbl_id else paste0(tbl_id, ".px")
+  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) {
+    tbl_id
+  } else {
+    paste0(tbl_id, ".px")
+  }
   row <- idx[idx$px_file == px_file, , drop = FALSE]
-  if (!nrow(row)) stop("Table not found in PXWeb index: ", tbl_id)
-  paths <- if (nzchar(row$px_path[1])) strsplit(row$px_path[1], "/", fixed = TRUE)[[1]] else character()
+  if (!nrow(row)) {
+    stop("Table not found in PXWeb index: ", tbl_id)
+  }
+  paths <- if (nzchar(row$px_path[1])) {
+    strsplit(row$px_path[1], "/", fixed = TRUE)[[1]]
+  } else {
+    character()
+  }
   meta <- .px_meta_cached(paths, px_file, lang = lang)
   vars <- meta$variables
   q <- list()
@@ -57,19 +82,37 @@ print.nso_query <- function(x, ...) {
       if (length(vv) && !all(vals %in% vv)) {
         bad <- unique(setdiff(vals, vv))
         ex_codes <- paste(utils::head(vv, 5), collapse = ", ")
-        ex_labs <- tryCatch({
-          labs <- .px_chr(v$valueTexts)
-          if (length(labs)) paste(utils::head(labs, 5), collapse = ", ") else NA_character_
-        }, error = function(e) NA_character_)
-        msg <- sprintf("Invalid selection for '%s': %s. Available codes include: %s",
-                       .px_first_nonempty(v$text, v$code, vname),
-                       paste(bad, collapse = ", "), ex_codes)
-        if (!is.na(ex_labs)) msg <- paste0(msg, "; labels include: ", ex_labs)
+        ex_labs <- tryCatch(
+          {
+            labs <- .px_chr(v$valueTexts)
+            if (length(labs)) {
+              paste(utils::head(labs, 5), collapse = ", ")
+            } else {
+              NA_character_
+            }
+          },
+          error = function(e) NA_character_
+        )
+        msg <- sprintf(
+          "Invalid selection for '%s': %s. Available codes include: %s",
+          .px_first_nonempty(v$text, v$code, vname),
+          paste(bad, collapse = ", "),
+          ex_codes
+        )
+        if (!is.na(ex_labs)) {
+          msg <- paste0(msg, "; labels include: ", ex_labs)
+        }
         stop(msg)
       }
-      q[[length(q)+1]] <- list(code = v$code, selection = list(filter = "item", values = I(as.character(vals))))
+      q[[length(q) + 1]] <- list(
+        code = v$code,
+        selection = list(filter = "item", values = I(as.character(vals)))
+      )
     } else {
-      q[[length(q)+1]] <- list(code = v$code, selection = list(filter = "item", values = I(as.character(vv))))
+      q[[length(q) + 1]] <- list(
+        code = v$code,
+        selection = list(filter = "item", values = I(as.character(vv)))
+      )
     }
   }
   list(query = q, response = list(format = "json"))
@@ -94,13 +137,25 @@ as_px_query <- function(x, lang = .px_lang()) {
 #'
 #' @param x An `nso_query` object.
 #' @param labels One of "code", "en", "mn", or "both" (mapped to internal API).
+#' @param value_name Name of the numeric value column in the result (default: "value").
+#' @param include_raw If TRUE, attach the raw PX payload as attribute `px_raw`.
 #' @return A tibble.
 #' @export
-nso_fetch <- function(x, labels = c("code","en","mn","both")) {
+nso_fetch <- function(
+  x,
+  labels = c("code", "en", "mn", "both"),
+  value_name = getOption("mongolstats.value_name", "value"),
+  include_raw = getOption("mongolstats.attach_raw", FALSE)
+) {
   stopifnot(inherits(x, "nso_query"))
   labels <- match.arg(labels)
   # Map 'code' -> existing 'none' for backwards compatibility
   lab <- if (identical(labels, "code")) "none" else labels
-  nso_data(tbl_id = x$tbl_id, selections = x$selections, labels = lab)
+  nso_data(
+    tbl_id = x$tbl_id,
+    selections = x$selections,
+    labels = lab,
+    value_name = value_name,
+    include_raw = include_raw
+  )
 }
-

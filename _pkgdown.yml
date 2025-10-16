@@ -95,6 +95,7 @@ reference:
       - nso_tables
       - nso_itms_detail
       - nso_variables
+      - nso_table_meta
       - nso_dims
       - nso_dim_values
       - nso_itms_search
