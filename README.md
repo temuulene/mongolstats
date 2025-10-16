@@ -42,6 +42,24 @@ dat <- nso_data(
 dat %>% slice_head(n = 6)
 ```
 
+### Live traversal (simple path)
+
+```r
+# Navigate catalog → pick table → fetch
+secs <- nso_sectors()
+subsecs <- nso_subsectors(secs$id[1])
+tbls <- nso_itms_by_sector(subsecs$id[1])
+meta <- nso_table_meta(tbls$tbl_id[1])  # per-dimension codebooks
+
+dat2 <- nso_data(
+  tbl_id = tbls$tbl_id[1],
+  selections = list(Year = c("2023", "2024")),
+  value_name = "Variable",           # rename value column
+  include_raw = TRUE                  # attach raw PX payload as attr(px_raw)
+)
+attr(dat2, "px_raw") %>% names()
+```
+
 ## Features
 
 - PXWeb client for NSO data (data.1212.mn)

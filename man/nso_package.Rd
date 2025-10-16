@@ -7,7 +7,8 @@
 nso_package(
   requests,
   labels = c("none", "en", "mn", "both"),
-  parallel = getOption("mongolstats.parallel", FALSE)
+  parallel = getOption("mongolstats.parallel", FALSE),
+  value_name = getOption("mongolstats.value_name", "value")
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ nso_package(
 \item{labels}{Label handling as in \code{nso_data()}}
 
 \item{parallel}{If TRUE, use future.apply to fetch tables in parallel.}
+
+\item{value_name}{Name of the numeric value column in the result (default: "value").}
 }
 \description{
 Fetch multiple tables and bind (PXWeb)
