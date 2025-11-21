@@ -8,7 +8,9 @@
 ^_pkgdown\.yml$
 ^docs$
 ^\.Rlib$
+
 ^cran-comments\.md$
+
 ^CITATION\.cff$
 ^CODE_OF_CONDUCT\.md$
 ^CONTRIBUTING\.md$
