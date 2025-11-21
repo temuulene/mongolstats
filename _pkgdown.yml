@@ -21,31 +21,15 @@ navbar:
     right: [search, github]
   components:
     intro:
-      text: Get started
+      text: Getting Started with mongolstats
       href: articles/getting-started.html
     articles:
       text: Articles
       menu:
-        - text: Discovering tables and variables
+        - text: Discovering Public Health Data
           href: articles/discovery.html
-        - text: Query builder
-          href: articles/query-builder.html
-        - text: Fetching data and periods
-          href: articles/fetching-periods.html
-        - text: Batch fetching workflows
-          href: articles/batch-workflows.html
-        - text: Parallel batching
-          href: articles/parallel-batching.html
-        - text: Offline & caching
-          href: articles/offline-caching.html
-        - text: Mapping with mongolstats
+        - text: Spatial Epidemiology with mongolstats
           href: articles/mapping.html
-        - text: Fuzzy name joins
-          href: articles/fuzzy-joins.html
-        - text: Code-based joins
-          href: articles/code-joins.html
-        - text: Troubleshooting
-          href: articles/troubleshooting.html
     github:
       icon: fab fa-github
       aria-label: GitHub
@@ -56,6 +40,8 @@ home:
   links:
     - text: NSO PXWeb
       href: https://data.1212.mn/pxweb/
+  sidebar:
+    structure: [links, license, community, citation, authors, dev]
 opengraph:
   image:
     src: https://raw.githubusercontent.com/temuulene/mongolstats/main/man/figures/social.png
@@ -63,31 +49,11 @@ opengraph:
     creator: "@temuulen"
     card: summary_large_image
 articles:
-  - title: Get Started
+  - title: Guides
     contents:
       - getting-started
-  - title: Discovery
-    contents:
       - discovery
-  - title: Fetching & Periods
-    contents:
-      - query-builder
-      - fetching-periods
-      - batch-workflows
-      - parallel-batching
-  - title: Performance & Offline
-    contents:
-      - offline-caching
-  - title: Mapping
-    contents:
       - mapping
-  - title: Advanced Joins
-    contents:
-      - fuzzy-joins
-      - code-joins
-  - title: Troubleshooting
-    contents:
-      - troubleshooting
 reference:
   - title: Discover Tables
     contents:

@@ -1,82 +1,286 @@
 ---
-title: "Discovering tables and variables"
+title: "Discovering Public Health Data"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Discovering tables and variables}
+  %\VignetteIndexEntry{Discovering Public Health Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-eval_site <- TRUE
-if (requireNamespace("pkgdown", quietly = TRUE)) eval_site <- pkgdown::in_pkgdown()
-if (eval_site && requireNamespace("curl", quietly = TRUE)) eval_site <- curl::has_internet()
-knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE, error = TRUE)
-if (eval_site) {
-  options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
-  try(mongolstats::nso_cache_enable(), silent = TRUE)
-}
-# Always install local package before knitting to ensure latest API
-if (requireNamespace("remotes", quietly = TRUE)) {
-  try(remotes::install_local(".", upgrade = "never", force = TRUE, dependencies = FALSE), silent = TRUE)
-}
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 6
+)
 ```
 
-```{r}
+```{r setup, message=FALSE, warning=FALSE}
 library(mongolstats)
 library(dplyr)
+library(ggplot2)
 nso_options(mongolstats.lang = "en")
 ```
 
-## Discovery overview
+## Overview
 
-PXWeb exposes a tree of folders (sectors/subsectors) containing tables. Discovery functions help you:
+Mongolia's National Statistics Office maintains comprehensive public health surveillance data. This guide demonstrates how to discover and access epidemiological data for research and policy analysis.
 
-- Navigate the catalog with `nso_sectors()` and `nso_subsectors()`
-- List available tables with `nso_itms()`
-- Search by keyword with `nso_itms_search()` / `nso_search()`
-- Explore a table’s variables using `nso_variables()`
+## Finding Health Tables
 
-## List available tables
+### Search by Keyword
 
-```{r}
-itms <- nso_itms()
-itms %>% dplyr::select(tbl_id, tbl_eng_nm, strt_prd, end_prd) %>% dplyr::slice_head(n = 10)
+Use `nso_itms_search()` to find tables related to specific health topics:
+
+```{r search-examples, eval=TRUE}
+# Infant and maternal health
+mortality <- nso_itms_search("mortality")
+mortality |>
+  select(tbl_id, tbl_eng_nm) |>
+  head(10)
+
+# Cancer surveillance
+cancer <- nso_itms_search("cancer")
+cancer |> select(tbl_id, tbl_eng_nm)
+
+# Communicable diseases
+infectious <- nso_itms_search("tuberculosis")
+infectious |> select(tbl_id, tbl_eng_nm)
 ```
 
-## Navigate sectors
+### Browse by Sector
 
-Top-level categories (folder-like nodes):
+Health and education statistics are grouped together:
 
-```{r}
-root <- nso_sectors()
-root %>% dplyr::slice_head(n = 10)
+```{r sectors, eval=TRUE}
+# View all sectors
+sectors <- nso_sectors()
+sectors
+
+# Find health-related subsectors
+health_sector <- sectors |> filter(grepl("health", text, ignore.case = TRUE))
+if (nrow(health_sector) > 0) {
+  subsectors <- nso_subsectors(health_sector$id[1])
+  subsectors |> head()
+}
 ```
 
-Children under a category (pass `id` from above):
+## Case Study: Cancer Epidemiology
 
-```{r}
-first_id <- if (nrow(root)) root$id[1] else ""
-kids <- nso_subsectors(first_id)
-kids %>% dplyr::slice_head(n = 10)
+### Exploring Cancer Incidence Data
+
+Let's analyze cancer trends in Mongolia:
+
+```{r cancer-metadata, eval=TRUE}
+# Find cancer incidence table
+cancer_tbl <- "DT_NSO_2100_012V1" # New cases per 10,000 population
+
+# Examine available dimensions
+meta <- nso_table_meta(cancer_tbl)
+meta
+
+# View cancer types
+cancer_types <- nso_dim_values(cancer_tbl, "Type malignant neoplasms", labels = "en")
+cancer_types |> head(10)
+
+# Check time coverage
+# Note: "Annual" dimension uses internal codes, so we map labels (years) to codes
+annual_meta <- nso_dim_values(cancer_tbl, "Annual", labels = "both")
+years <- annual_meta$label_en
+years
 ```
 
-## Search by keyword
+### Fetching and Visualizing Cancer Trends
 
-```{r}
-pop <- nso_itms_search("population")
-pop %>% dplyr::select(tbl_id, tbl_eng_nm) %>% dplyr::slice_head(n = 10)
+```{r cancer-analysis, eval=TRUE}
+# Fetch top cancer types over recent years
+# Get codes for the last 10 years
+recent_years <- annual_meta |>
+  arrange(label_en) |>
+  tail(10) |>
+  pull(code)
+
+cancer_data <- nso_data(
+  tbl_id = cancer_tbl,
+  selections = list(
+    "Type malignant neoplasms" = c("1", "2", "3", "4"), # Lung, Liver, Stomach, Cervix
+    "Annual" = recent_years
+  ),
+  labels = "en"
+)
+
+# Visualize trends
+cancer_data |>
+  ggplot(aes(x = as.integer(Annual_en), y = value, color = `Type malignant neoplasms_en`)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3, shape = 21, fill = "white", stroke = 1.5) +
+  scale_color_viridis_d(option = "plasma", end = 0.9) +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 5)) +
+  labs(
+    title = "Cancer Incidence Trends in Mongolia",
+    subtitle = "New cases per 10,000 population (Recent Trends)",
+    x = NULL,
+    y = "Incidence Rate",
+    color = NULL,
+    caption = "Source: NSO Mongolia"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "top",
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "grey40", margin = margin(b = 10)),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    axis.text = element_text(color = "grey30")
+  )
 ```
 
-## Explore variables (codebook) for a table
+## Case Study: Infant Mortality Surveillance
 
-```{r}
-vars <- nso_variables("DT_NSO_0300_001V2")
-vars %>% dplyr::count(field)
-vars %>% dplyr::slice_head(n = 10)
+### Regional Disparities
+
+```{r infant-mortality, eval=TRUE}
+# Infant mortality by aimag
+imr_tbl <- "DT_NSO_2800_019V1" # IMR per 1,000 live births
+
+# Get metadata
+imr_meta <- nso_table_meta(imr_tbl)
+aimags <- nso_dim_values(imr_tbl, "Aimag", labels = "en")
+
+# Fetch recent data for all regions
+imr_data <- nso_data(
+  tbl_id = imr_tbl,
+  selections = list(
+    "Aimag" = aimags$code,
+    "Time (Annual)" = "0" # Code for 2015 (checked via metadata)
+  ),
+  labels = "en"
+) |>
+  filter(Aimag != "0") |> # Exclude national total
+  mutate(Aimag_en = trimws(Aimag_en))
+
+# Find regions with highest IMR
+imr_data |>
+  arrange(desc(value)) |>
+  select(Aimag_en, value) |>
+  head(10)
 ```
 
-Tips
+### Time Trend Analysis
 
-- Use `field` to identify the dimension names you’ll pass in `selections` when fetching data.
-- Each `field` has codes (`itm_id`) and English/Mongolian labels (`scr_eng`/`scr_mn`).
+```{r imr-trends, eval=TRUE}
+# Analyze national trend
+imr_national <- nso_data(
+  tbl_id = imr_tbl,
+  selections = list(
+    "Aimag" = "0", # National total (code 0)
+    "Time (Annual)" = as.character(0:5) # Codes for 2015-2010 (0=2015, 5=2010 based on debug)
+  ),
+  labels = "en"
+)
+
+imr_national |>
+  mutate(year = as.integer(`Time (Annual)_en`)) |>
+  ggplot(aes(x = year, y = value)) +
+  geom_ribbon(aes(ymin = value * 0.9, ymax = value * 1.1), fill = "#e74c3c", alpha = 0.1) + # Illustrative CI
+  geom_line(color = "#c0392b", linewidth = 1.5) +
+  geom_point(color = "#c0392b", size = 4, shape = 21, fill = "white", stroke = 2) +
+  geom_text(aes(label = value), vjust = -1.5, fontface = "bold", color = "#c0392b") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.2))) +
+  labs(
+    title = "Infant Mortality Rate Decline",
+    subtitle = "Deaths per 1,000 live births (2010-2015)",
+    x = NULL,
+    y = "IMR",
+    caption = "Source: NSO Mongolia"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "grey40"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+## Case Study: Tuberculosis Burden
+
+```{r tb-data, eval=TRUE}
+# TB incidence
+tb_incidence <- nso_data(
+  tbl_id = "DT_NSO_2800_026V1", # TB per 100,000
+  selections = list(
+    "Aimag" = "0", # National Total
+    "Time (Annual)" = as.character(0:5) # Codes for recent years (checked via metadata)
+  ),
+  labels = "en"
+)
+
+# TB mortality
+tb_mortality <- nso_data(
+  tbl_id = "DT_NSO_2800_027V1", # TB deaths per 100,000
+  selections = list(
+    "Aimag" = "0", # National Total
+    "Time (Annual)" = as.character(0:5)
+  ),
+  labels = "en"
+)
+
+# Combine for case-fatality analysis
+tb_combined <- tb_incidence |>
+  select(time = `Time (Annual)_en`, incidence = value) |>
+  left_join(
+    tb_mortality |> select(time = `Time (Annual)_en`, mortality = value),
+    by = "time"
+  ) |>
+  mutate(
+    case_fatality = (mortality / incidence) * 100,
+    year = as.integer(time)
+  )
+
+# Visualize
+tb_combined |>
+  ggplot(aes(x = year)) +
+  geom_col(aes(y = incidence, fill = "Incidence"), alpha = 0.8, width = 0.7) +
+  geom_line(aes(y = mortality * 50, color = "Mortality (x50)"), linewidth = 1.5) +
+  geom_point(aes(y = mortality * 50, color = "Mortality (x50)"), size = 3, shape = 21, fill = "white", stroke = 2) +
+  scale_y_continuous(
+    name = "Incidence (per 100,000)",
+    sec.axis = sec_axis(~ . / 50, name = "Mortality (per 100,000)")
+  ) +
+  scale_fill_manual(values = c("Incidence" = "#34495e"), name = NULL) +
+  scale_color_manual(values = c("Mortality (x50)" = "#e74c3c"), name = NULL) +
+  labs(
+    title = "Tuberculosis Burden in Mongolia",
+    subtitle = "Incidence vs. Mortality Trends",
+    x = NULL,
+    caption = "Source: NSO Mongolia"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "grey40"),
+    legend.position = "top",
+    legend.box = "horizontal",
+    panel.grid.minor = element_blank(),
+    axis.title.y.right = element_text(color = "#e74c3c", margin = margin(l = 10)),
+    axis.text.y.right = element_text(color = "#e74c3c"),
+    axis.title.y.left = element_text(color = "#34495e", margin = margin(r = 10)),
+    axis.text.y.left = element_text(color = "#34495e")
+  )
+```
+
+## Tips for Epidemiological Research
+
+1. **Always check time coverage**: Use `nso_table_periods()` to verify data availability
+2. **Use labels for clarity**: Set `labels = "en"` to get readable dimension names
+3. **Join multiple indicators**: Combine tables to calculate derived metrics (e.g., case-fatality rates)
+4. **Account for denominator data**: Link disease counts with population data for rate calculations
+5. **Regional analysis**: Most health tables include breakdowns by aimag and soum for geographic analysis
+
+## Next Steps
+
+- **Mapping Health Outcomes**: See the [Mapping Guide](mapping.html) for spatial epidemiology
+- **Reference Documentation**: Explore all available functions in the [Reference](../reference/index.html)

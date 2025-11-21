@@ -1,74 +1,181 @@
 ---
-title: "Mapping with mongolstats"
+title: "Spatial Epidemiology with mongolstats"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Mapping with mongolstats}
+  %\VignetteIndexEntry{Spatial Epidemiology with mongolstats}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-eval_site <- TRUE
-if (requireNamespace("pkgdown", quietly = TRUE)) eval_site <- pkgdown::in_pkgdown()
-if (eval_site && requireNamespace("curl", quietly = TRUE)) eval_site <- curl::has_internet()
-knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE, error = TRUE)
-if (eval_site) {
-  options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
-  try(mongolstats::nso_cache_enable(), silent = TRUE)
-}
-# Always install local package before knitting to ensure latest API
-if (requireNamespace("remotes", quietly = TRUE)) {
-  try(remotes::install_local(".", upgrade = "never", force = TRUE, dependencies = FALSE), silent = TRUE)
-}
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 9,
+  fig.height = 7
+)
 ```
 
-```{r}
+```{r setup, message=FALSE, warning=FALSE}
 library(mongolstats)
-library(dplyr)
 library(sf)
+library(dplyr)
+library(ggplot2)
+nso_options(mongolstats.lang = "en")
 ```
 
-This vignette shows how to join data to ADM1 boundaries by name.
+## Overview
 
-```{r}
-adm1 <- mn_boundaries("ADM1") %>% mn_boundaries_normalize()
-head(adm1$name_std)
+Geographic analysis is essential for understanding health disparities and targeting interventions. This guide demonstrates spatial epidemiology using Mongolia's aimag-level (provincial) health data.
+
+## Getting Boundary Data
+
+Mongolia's administrative boundaries are available at three levels:
+
+```{r boundaries, eval=TRUE}
+# ADM0: National boundary
+country <- mn_boundaries(level = "ADM0")
+
+# ADM1: Aimags (21 provinces + Ulaanbaatar)
+aimags <- mn_boundaries(level = "ADM1")
+
+# ADM2: Soums (districts)
+soums <- mn_boundaries(level = "ADM2")
+
+# Quick preview
+aimags |>
+  ggplot() +
+  geom_sf(fill = "white", color = "grey30", size = 0.3) +
+  theme_void() +
+  labs(title = "Mongolia's 21 Aimags + Ulaanbaatar")
 ```
 
-Suppose we fetched a table that reports values by aimag:
+## Case Study: Maternal Mortality Geography
 
-```{r}
-tbl <- "DT_NSO_0300_004V5"  # Resident population by location and region
+### Understanding Regional Disparities
 
-periods <- nso_table_periods(tbl)
-dat <- if (length(periods)) nso_data(tbl, selections = list(Year = tail(periods, 1)), labels = "en") else tibble::tibble()
+Maternal mortality is a critical indicator of health system performance and equity.
 
-# Create a name column from the 'Region' dimension if present
-if ("Region_en" %in% names(dat)) dat$name <- dat$Region_en else if ("Region" %in% names(dat)) dat$name <- dat$Region
+```{r maternal-data, eval=TRUE}
+# Fetch maternal mortality by aimag
+mmr_data <- nso_data(
+  tbl_id = "DT_NSO_2100_050V1", # MMR per 100,000 live births
+  selections = list(
+    "Region" = nso_dim_values("DT_NSO_2100_050V1", "Region")$code,
+    "Year" = "2023"
+  ),
+  labels = "en"
+) |>
+  filter(Region != "0") |> # Exclude national total
+  mutate(Region_en = trimws(Region_en))
 
-joined <- tryCatch(mn_join_by_name(dat, name_col = "name", level = "ADM1"), error = function(e) adm1)
+# Preview data
+mmr_data |>
+  arrange(desc(value)) |>
+  select(Region_en, value) |>
+  head(10)
 ```
 
-```{r fig.alt="Map of joined ADM1 geometries", fig.cap="ADM1 map joined to example data"}
-plot(sf::st_geometry(joined))
+### Creating a Choropleth Map
+
+```{r maternal-map, eval=TRUE}
+# Join health data to geographic boundaries
+mmr_map <- aimags |>
+  left_join(mmr_data, by = c("shapeName" = "Region_en"))
+
+# Create choropleth
+mmr_map |>
+  ggplot() +
+  geom_sf(aes(fill = value), color = "white", size = 0.2) +
+  scale_fill_viridis_c(
+    option = "rocket",
+    direction = -1,
+    name = "MMR per\n100,000",
+    labels = scales::label_number()
+  ) +
+  labs(
+    title = "Maternal Mortality Ratio by Aimag (2023)",
+    subtitle = "Deaths per 100,000 live births",
+    caption = "Source: NSO Mongolia"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "grey40"),
+    legend.position = "right", # Moved to right to avoid overlap
+    legend.title = element_text(size = 10, face = "bold")
+  )
 ```
 
-Note: Name-based joins are heuristic. For rigorous joins, prefer stable codes
-once a consistent NSO geographic classification is identified.
+## Case Study: Infant Mortality Hot Spots
 
-## Alternative: join using stable keys
+### Identifying High-Risk Regions
 
-If your dataset includes stable identifiers, prefer key-based joins with `mn_boundary_keys()`:
+```{r imr-hotspots, eval=TRUE}
+# Get infant mortality rates
+imr_data <- nso_data(
+  tbl_id = "DT_NSO_2800_019V1", # IMR per 1,000 live births
+  selections = list(
+    "Aimag" = nso_dim_values("DT_NSO_2800_019V1", "Aimag")$code,
+    "Time (Annual)" = "2015"
+  ),
+  labels = "en"
+) |>
+  filter(Aimag != "0") |>
+  mutate(
+    Aimag_en = trimws(Aimag_en),
+    # Classify risk levels
+    risk_category = case_when(
+      value < 10 ~ "Low (<10)",
+      value < 20 ~ "Medium (10-20)",
+      value < 30 ~ "High (20-30)",
+      TRUE ~ "Very High (≥30)"
+    ),
+    risk_category = factor(
+      risk_category,
+      levels = c("Low (<10)", "Medium (10-20)", "High (20-30)", "Very High (≥30)")
+    )
+  )
 
-```{r}
-keys <- mn_boundary_keys("ADM1")  # contains shapeID, shapeName, shapeISO, name_std
-# Example: if your data has shapeISO, join on that instead of names
+# Create risk map
+aimags |>
+  left_join(imr_data, by = c("shapeName" = "Aimag_en")) |>
+  ggplot() +
+  geom_sf(aes(fill = risk_category), color = "white", size = 0.2) +
+  scale_fill_manual(
+    values = c(
+      "Low (<10)" = "#27ae60",
+      "Medium (10-20)" = "#f1c40f",
+      "High (20-30)" = "#e67e22",
+      "Very High (≥30)" = "#c0392b"
+    ),
+    na.value = "grey90",
+    name = "Risk Level",
+    drop = FALSE
+  ) +
+  labs(
+    title = "Infant Mortality Risk Categories (2015)",
+    subtitle = "Deaths per 1,000 live births",
+    caption = "Source: NSO Mongolia"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "grey40"),
+    legend.position = "right",
+    legend.title = element_text(size = 10, face = "bold")
+  )
 ```
 
-## Plotting with alt text (accessibility)
+## Tips for Spatial Epidemiology
 
-For site accessibility, set alt text and captions in plot chunks:
+1. **Check data completeness**: Not all aimags may have data for all indicators
+2. **Use appropriate scales**: Choose color scales that highlight health disparities
+3. **Add context**: Include reference lines (e.g., national average) when relevant
+4. **Consider population size**: Normalize rates by population when comparing regions
+5. **Temporal analysis**: Create animated maps to show geographic trends over time
 
-```{r fig.alt="Map of Mongolia ADM1 boundaries joined to example values", fig.cap="ADM1 map example"}
-plot(sf::st_geometry(adm1))
-```
+## Next Steps
+
+- **Discover Health Data**: Return to the [Discovery Guide](discovery.html)
+- **Learn More**: Explore all functions in the [Reference](../reference/index.html)

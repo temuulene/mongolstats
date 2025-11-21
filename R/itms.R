@@ -47,7 +47,7 @@ nso_itms_search <- function(query, fields = c("tbl_eng_nm", "tbl_nm")) {
       }
     })
   )
-  itms[isTRUE(pred) %||% FALSE, , drop = FALSE]
+  itms[pred & !is.na(pred), , drop = FALSE]
 }
 
 #' List tables under a sector or sub-sector (PXWeb path)
