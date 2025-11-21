@@ -1,0 +1,211 @@
+# mongolstats
+
+Tidy access to the National Statistics Office of Mongolia (NSO)
+statistics via the PXWeb API (data.1212.mn) and Mongolia administrative
+boundaries, inspired by the ergonomics of tidycensus. Provides a
+tidyverse-friendly interface for discovering tables, exploring
+codebooks, fetching data, and working with `sf` geometries for mapping.
+
+## Installation
+
+``` r
+# install.packages("devtools")
+devtools::install_github("temuulene/mongolstats")
+```
+
+## Quick start
+
+``` r
+library(mongolstats)
+library(dplyr)
+
+# Use new PXWeb API (data.1212.mn)
+nso_options(mongolstats.lang = "en")
+
+# List available tables
+itms <- nso_itms()
+itms %>% select(tbl_id, tbl_eng_nm, strt_prd, end_prd) %>% slice_head(n = 5)
+
+# Inspect variables (codebook) for a table
+vars <- nso_variables("DT_NSO_0300_001V2")
+vars %>% count(field)
+
+# Fetch data
+dat <- nso_data(
+  tbl_id = "DT_NSO_0300_001V2",
+  selections = list(Sex = "Total", Age = "Total", Year = "2024")
+)
+dat %>% slice_head(n = 6)
+```
+
+### Live traversal (simple path)
+
+``` r
+# Navigate catalog → pick table → fetch
+secs <- nso_sectors()
+subsecs <- nso_subsectors(secs$id[1])
+tbls <- nso_itms_by_sector(subsecs$id[1])
+meta <- nso_table_meta(tbls$tbl_id[1])  # per-dimension codebooks
+
+dat2 <- nso_data(
+  tbl_id = tbls$tbl_id[1],
+  selections = list(Year = c("2023", "2024")),
+  value_name = "Variable",           # rename value column
+  include_raw = TRUE                  # attach raw PX payload as attr(px_raw)
+)
+attr(dat2, "px_raw") %>% names()
+```
+
+## Features
+
+- PXWeb client for NSO data (data.1212.mn)
+- Discover tables and variables with
+  [`nso_itms()`](https://temuulene.github.io/mongolstats/reference/nso_itms.md)
+  /
+  [`nso_itms_detail()`](https://temuulene.github.io/mongolstats/reference/nso_itms_detail.md)
+- Fetch data via `nso_data(tbl_id, selections=...)`; batch with
+  [`nso_package()`](https://temuulene.github.io/mongolstats/reference/nso_package.md)
+- Optional label columns in English or Mongolian
+  (`labels = "en" | "mn" | "both"`)
+- Category navigation and table search helpers
+- Mongolia administrative boundaries (ADM0–ADM2) as `sf`
+- Exact and fuzzy name-based boundary joins
+- Lightweight on-disk caching for faster table/codebook lookups
+
+## Vignettes
+
+- Getting started
+- Discovering tables and variables
+- Fetching data and periods
+- Batch fetching workflows
+- Mapping, fuzzy joins, and code-based joins
+
+## Contributing
+
+Issues and pull requests are welcome:
+<https://github.com/temuulene/mongolstats/issues>
+
+## License
+
+MIT Ac Temuulen Enebish
+
+# Package index
+
+## Discover Tables
+
+- [`nso_itms()`](https://temuulene.github.io/mongolstats/reference/nso_itms.md)
+  [`nso_tables()`](https://temuulene.github.io/mongolstats/reference/nso_itms.md)
+  : List available NSO tables (PXWeb)
+- [`nso_itms_detail()`](https://temuulene.github.io/mongolstats/reference/nso_itms_detail.md)
+  [`nso_variables()`](https://temuulene.github.io/mongolstats/reference/nso_itms_detail.md)
+  : Get variable codes for a table (PXWeb)
+- [`nso_table_meta()`](https://temuulene.github.io/mongolstats/reference/nso_table_meta.md)
+  : Table metadata as per-dimension codebooks
+- [`nso_dims()`](https://temuulene.github.io/mongolstats/reference/nso_dims.md)
+  : List dimensions for a PXWeb table
+- [`nso_dim_values()`](https://temuulene.github.io/mongolstats/reference/nso_dim_values.md)
+  : List values for a table dimension
+- [`nso_itms_search()`](https://temuulene.github.io/mongolstats/reference/nso_itms_search.md)
+  : Search tables by keyword (PXWeb)
+- [`nso_itms_by_sector()`](https://temuulene.github.io/mongolstats/reference/nso_itms_by_sector.md)
+  : List tables under a sector or sub-sector (PXWeb path)
+- [`nso_sectors()`](https://temuulene.github.io/mongolstats/reference/nso_sectors.md)
+  : List top-level categories (PXWeb NSO root)
+- [`nso_subsectors()`](https://temuulene.github.io/mongolstats/reference/nso_subsectors.md)
+  : List children for a given path (PXWeb)
+
+## Fetch Data
+
+- [`nso_data()`](https://temuulene.github.io/mongolstats/reference/nso_data.md)
+  : Fetch statistical data for a table (PXWeb)
+- [`nso_package()`](https://temuulene.github.io/mongolstats/reference/nso_package.md)
+  : Fetch multiple tables and bind (PXWeb)
+- [`nso_search()`](https://temuulene.github.io/mongolstats/reference/nso_search.md)
+  : Search NSO tables
+- [`nso_query()`](https://temuulene.github.io/mongolstats/reference/nso_query.md)
+  : Create a PXWeb query object
+- [`as_px_query()`](https://temuulene.github.io/mongolstats/reference/as_px_query.md)
+  : Convert a query to a PXWeb body
+- [`nso_fetch()`](https://temuulene.github.io/mongolstats/reference/nso_fetch.md)
+  : Fetch a query and return a tibble
+
+## Boundaries and Joins
+
+- [`mn_boundaries()`](https://temuulene.github.io/mongolstats/reference/mn_boundaries.md)
+  : Mongolia administrative boundaries (sf)
+- [`mn_boundary_keys()`](https://temuulene.github.io/mongolstats/reference/mn_boundary_keys.md)
+  : Boundary keys/crosswalk helper
+- [`mn_boundaries_normalize()`](https://temuulene.github.io/mongolstats/reference/mn_boundaries_normalize.md)
+  : Add normalized name columns to boundaries
+- [`mn_join_by_name()`](https://temuulene.github.io/mongolstats/reference/mn_join_by_name.md)
+  : Join data to boundaries by (normalized) names
+- [`mn_fuzzy_join_by_name()`](https://temuulene.github.io/mongolstats/reference/mn_fuzzy_join_by_name.md)
+  : Fuzzy join data to boundaries by name
+
+## Utilities
+
+- [`nso_cache_enable()`](https://temuulene.github.io/mongolstats/reference/nso_cache_enable.md)
+  : Enable or configure caching
+- [`nso_cache_disable()`](https://temuulene.github.io/mongolstats/reference/nso_cache_disable.md)
+  : Disable caching
+- [`nso_cache_clear()`](https://temuulene.github.io/mongolstats/reference/nso_cache_clear.md)
+  : Clear cached entries
+- [`nso_cache_status()`](https://temuulene.github.io/mongolstats/reference/nso_cache_status.md)
+  : Cache status
+- [`nso_period_seq()`](https://temuulene.github.io/mongolstats/reference/nso_period_seq.md)
+  : Create period codes
+- [`nso_table_periods()`](https://temuulene.github.io/mongolstats/reference/nso_table_periods.md)
+  : Get valid periods for a table (PXWeb)
+- [`nso_options()`](https://temuulene.github.io/mongolstats/reference/nso_options.md)
+  : Set or get mongolstats options
+- [`nso_rebuild_px_index()`](https://temuulene.github.io/mongolstats/reference/nso_rebuild_px_index.md)
+  : Rebuild PXWeb index and optionally write to a file
+- [`nso_offline_enable()`](https://temuulene.github.io/mongolstats/reference/nso_offline_enable.md)
+  : Enable offline mode
+- [`nso_offline_disable()`](https://temuulene.github.io/mongolstats/reference/nso_offline_disable.md)
+  : Disable offline mode
+
+# Articles
+
+### Get Started
+
+- [Getting started with
+  mongolstats](https://temuulene.github.io/mongolstats/articles/getting-started.md):
+
+### Discovery
+
+- [Discovering tables and
+  variables](https://temuulene.github.io/mongolstats/articles/discovery.md):
+
+### Fetching & Periods
+
+- [Query builder: dims → query →
+  fetch](https://temuulene.github.io/mongolstats/articles/query-builder.md):
+- [Fetching data and working with
+  periods](https://temuulene.github.io/mongolstats/articles/fetching-periods.md):
+- [Batch fetching
+  workflows](https://temuulene.github.io/mongolstats/articles/batch-workflows.md):
+- [Parallel batching and
+  chunking](https://temuulene.github.io/mongolstats/articles/parallel-batching.md):
+
+### Performance & Offline
+
+- [Caching and offline
+  workflows](https://temuulene.github.io/mongolstats/articles/offline-caching.md):
+
+### Mapping
+
+- [Mapping with
+  mongolstats](https://temuulene.github.io/mongolstats/articles/mapping.md):
+
+### Advanced Joins
+
+- [Fuzzy name joins with
+  mongolstats](https://temuulene.github.io/mongolstats/articles/fuzzy-joins.md):
+- [Code-based joins with
+  mongolstats](https://temuulene.github.io/mongolstats/articles/code-joins.md):
+
+### Troubleshooting
+
+- [Troubleshooting PXWeb
+  requests](https://temuulene.github.io/mongolstats/articles/troubleshooting.md):
