@@ -5,7 +5,9 @@
 nso_itms <- function() {
   # use cached path when available
   idx <- tryCatch(.fetch_itms(), error = function(e) tibble::tibble())
-  if (!nrow(idx)) return(idx)
+  if (!nrow(idx)) {
+    return(idx)
+  }
   # Maintain partial compatibility: add list_id as px_path
   idx$list_id <- idx$px_path
   idx
@@ -29,12 +31,22 @@ nso_itms_detail <- function(tbl_id) {
 nso_itms_search <- function(query, fields = c("tbl_eng_nm", "tbl_nm")) {
   stopifnot(is.character(query), length(query) == 1L)
   itms <- nso_itms()
-  if (!nrow(itms)) return(itms)
-  pred <- Reduce(`|`, lapply(fields, function(f) {
-    if (f %in% names(itms)) {
-      stringr::str_detect(stringr::str_to_lower(itms[[f]] %||% ""), stringr::str_to_lower(query))
-    } else FALSE
-  }))
+  if (!nrow(itms)) {
+    return(itms)
+  }
+  pred <- Reduce(
+    `|`,
+    lapply(fields, function(f) {
+      if (f %in% names(itms)) {
+        stringr::str_detect(
+          stringr::str_to_lower(itms[[f]] %||% ""),
+          stringr::str_to_lower(query)
+        )
+      } else {
+        FALSE
+      }
+    })
+  )
   itms[isTRUE(pred) %||% FALSE, , drop = FALSE]
 }
 

@@ -20,8 +20,11 @@ nso_period_seq <- function(start, end, by = c("Y", "M")) {
     ms <- as.integer(substr(start, 5, 6))
     ye <- as.integer(substr(end, 1, 4))
     me <- as.integer(substr(end, 5, 6))
-    seq_dates <- seq.Date(as.Date(sprintf("%04d-%02d-01", ys, ms)),
-                          as.Date(sprintf("%04d-%02d-01", ye, me)), by = "month")
+    seq_dates <- seq.Date(
+      as.Date(sprintf("%04d-%02d-01", ys, ms)),
+      as.Date(sprintf("%04d-%02d-01", ye, me)),
+      by = "month"
+    )
     return(format(seq_dates, "%Y%m"))
   }
 }
@@ -32,16 +35,35 @@ nso_period_seq <- function(start, end, by = c("Y", "M")) {
 #' @export
 nso_table_periods <- function(tbl_id) {
   idx <- .px_index()
-  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) tbl_id else paste0(tbl_id, ".px")
+  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) {
+    tbl_id
+  } else {
+    paste0(tbl_id, ".px")
+  }
   row <- idx[idx$px_file == px_file, , drop = FALSE]
-  if (!nrow(row)) return(character())
-  paths <- if (nzchar(row$px_path[1])) strsplit(row$px_path[1], "/", fixed = TRUE)[[1]] else character()
-  meta <- tryCatch(.px_meta_cached(paths, px_file, lang = .px_lang()), error = function(e) NULL)
-  if (is.null(meta) || is.null(meta$variables)) return(character())
+  if (!nrow(row)) {
+    return(character())
+  }
+  paths <- if (nzchar(row$px_path[1])) {
+    strsplit(row$px_path[1], "/", fixed = TRUE)[[1]]
+  } else {
+    character()
+  }
+  meta <- tryCatch(
+    .px_meta_cached(paths, px_file, lang = .px_lang()),
+    error = function(e) NULL
+  )
+  if (is.null(meta) || is.null(meta$variables)) {
+    return(character())
+  }
   # Prefer a variable flagged as time or named Year
   vars <- meta$variables
-  vi <- purrr::detect_index(vars, function(v) isTRUE(v$time) || tolower(v$text %||% "") %in% c("year","time"))
-  if (!vi) return(character())
+  vi <- purrr::detect_index(vars, function(v) {
+    isTRUE(v$time) || tolower(v$text %||% "") %in% c("year", "time")
+  })
+  if (!vi) {
+    return(character())
+  }
   vt <- .px_chr(vars[[vi]]$valueTexts %||% character())
   vt
 }

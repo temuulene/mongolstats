@@ -4,16 +4,23 @@ cat("FULLCHECK: starting full R CMD check with vignettes\n")
 
 pkg_root <- normalizePath(".")
 user_lib <- file.path(pkg_root, ".Rlib")
-if (!dir.exists(user_lib)) dir.create(user_lib, recursive = TRUE)
+if (!dir.exists(user_lib)) {
+  dir.create(user_lib, recursive = TRUE)
+}
 .libPaths(c(user_lib, .libPaths()))
 cat("FULLCHECK: using lib =", .libPaths()[1], "\n")
 
-need <- c("rcmdcheck","roxygen2","knitr","rmarkdown")
+need <- c("rcmdcheck", "roxygen2", "knitr", "rmarkdown")
 avail <- rownames(installed.packages(lib.loc = .libPaths()[1]))
 miss <- setdiff(need, intersect(need, avail))
 if (length(miss)) {
-  cat("FULLCHECK: installing packages:", paste(miss, collapse=", "), "\n")
-  install.packages(miss, repos = "https://cloud.r-project.org", lib = .libPaths()[1], dependencies = TRUE)
+  cat("FULLCHECK: installing packages:", paste(miss, collapse = ", "), "\n")
+  install.packages(
+    miss,
+    repos = "https://cloud.r-project.org",
+    lib = .libPaths()[1],
+    dependencies = TRUE
+  )
 }
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -48,7 +55,10 @@ ensure_pandoc <- function() {
   }
   info <- rmarkdown::find_pandoc()
   v <- tryCatch(as.character(info$version), error = function(e) NA_character_)
-  d <- tryCatch(if (is.null(info$dir)) "" else as.character(info$dir), error = function(e) "")
+  d <- tryCatch(
+    if (is.null(info$dir)) "" else as.character(info$dir),
+    error = function(e) ""
+  )
   cat("FULLCHECK: pandoc version=", v, " dir=", d, "\n", sep = "")
   found
 }
@@ -60,7 +70,10 @@ has_pandoc <- ensure_pandoc()
 cat("FULLCHECK: regenerating Rd via roxygen2\n")
 try(roxygen2::roxygenise(), silent = FALSE)
 
-check_dir <- file.path(pkg_root, paste0("check_", as.integer(runif(1, 1e9, 2e9))))
+check_dir <- file.path(
+  pkg_root,
+  paste0("check_", as.integer(runif(1, 1e9, 2e9)))
+)
 dir.create(check_dir, showWarnings = FALSE)
 
 args <- c("--no-manual", "--as-cran")
@@ -80,17 +93,31 @@ res <- suppressWarnings(rcmdcheck::rcmdcheck(
 ))
 cat("FULLCHECK: done\n")
 
-status <- if (length(res$errors)) "errors" else if (length(res$warnings)) "warnings" else "note-or-clean"
-cat(sprintf("FULLCHECK: summary: %d errors, %d warnings, %d notes\n", length(res$errors), length(res$warnings), length(res$notes)))
+status <- if (length(res$errors)) {
+  "errors"
+} else if (length(res$warnings)) {
+  "warnings"
+} else {
+  "note-or-clean"
+}
+cat(sprintf(
+  "FULLCHECK: summary: %d errors, %d warnings, %d notes\n",
+  length(res$errors),
+  length(res$warnings),
+  length(res$notes)
+))
 
 if (length(res$errors)) {
-  cat("Errors:\n"); print(res$errors)
+  cat("Errors:\n")
+  print(res$errors)
 }
 if (length(res$warnings)) {
-  cat("Warnings:\n"); print(res$warnings)
+  cat("Warnings:\n")
+  print(res$warnings)
 }
 if (length(res$notes)) {
-  cat("Notes:\n"); print(res$notes)
+  cat("Notes:\n")
+  print(res$notes)
 }
 
 invisible(TRUE)

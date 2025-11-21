@@ -11,7 +11,9 @@ test_that("fuzzy join falls back gracefully when inputs are empty", {
   skip_on_cran()
   d <- data.frame(name = character(), value = numeric())
   expect_silent({
-    res <- try(mn_fuzzy_join_by_name(d, name_col = "name", level = "ADM1"), silent = TRUE)
+    res <- try(
+      mn_fuzzy_join_by_name(d, name_col = "name", level = "ADM1"),
+      silent = TRUE
+    )
   })
 })
-

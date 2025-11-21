@@ -4,7 +4,10 @@
 #' @return tibble with `id`, `type`, `text`
 #' @export
 nso_sectors <- function() {
-  kids <- tryCatch(.px_list_cached(character(), lang = .px_lang()), error = function(e) NULL)
+  kids <- tryCatch(
+    .px_list_cached(character(), lang = .px_lang()),
+    error = function(e) NULL
+  )
   tibble::as_tibble(kids)
 }
 
@@ -13,7 +16,14 @@ nso_sectors <- function() {
 #' @export
 nso_subsectors <- function(subid) {
   stopifnot(is.character(subid), length(subid) == 1L)
-  paths <- if (nzchar(subid)) strsplit(subid, "/", fixed = TRUE)[[1]] else character()
-  kids <- tryCatch(.px_list_cached(paths, lang = .px_lang()), error = function(e) NULL)
+  paths <- if (nzchar(subid)) {
+    strsplit(subid, "/", fixed = TRUE)[[1]]
+  } else {
+    character()
+  }
+  kids <- tryCatch(
+    .px_list_cached(paths, lang = .px_lang()),
+    error = function(e) NULL
+  )
   tibble::as_tibble(kids)
 }
