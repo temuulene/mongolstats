@@ -1,144 +1,275 @@
 ---
-title: "Getting started with mongolstats"
+title: "Getting Started with mongolstats"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting started with mongolstats}
+  %\VignetteIndexEntry{Getting Started with mongolstats}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-eval_site <- TRUE
-if (requireNamespace("pkgdown", quietly = TRUE)) eval_site <- pkgdown::in_pkgdown()
-if (eval_site && requireNamespace("curl", quietly = TRUE)) eval_site <- curl::has_internet()
-knitr::opts_chunk$set(eval = eval_site, message = FALSE, warning = FALSE, error = TRUE)
-if (eval_site) {
-  options(mongolstats.retry_tries = 5L, mongolstats.timeout = 60)
-  try(mongolstats::nso_cache_enable(), silent = TRUE)
-}
-# Always install local package before knitting to ensure latest API
-if (requireNamespace("remotes", quietly = TRUE)) {
-  try(remotes::install_local(".", upgrade = "never", force = TRUE, dependencies = FALSE), silent = TRUE)
-}
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    fig.width = 8,
+    fig.height = 6,
+    warning = FALSE,
+    message = FALSE
+)
 ```
 
-```{r}
+## Installation
+
+Install from GitHub:
+
+```{r install, eval=TRUE}
+# install.packages("devtools")
+# devtools::install_github("temuulene/mongolstats")
+```
+
+## Your First Analysis: Infant Mortality Trends
+
+Let's walk through a complete workflow using infant mortality data—a key indicator of population health and health system performance.
+
+### Step 1: Load Packages
+
+```{r setup}
 library(mongolstats)
 library(dplyr)
+library(ggplot2)
 
-# Point to new PXWeb API (default set on load)
+# Set language to English for readable output
 nso_options(mongolstats.lang = "en")
 ```
 
-## Overview
+### Step 2: Find the Right Table
 
-This vignette introduces the core workflow for using mongolstats:
+Search for infant mortality data:
 
-- Discover tables and explore their variables (codebooks)
-- Fetch data by selecting values for each table dimension
-- Optionally enrich with English/Mongolian labels for readability
-- Work with period utilities for time series
-
-We’ll keep examples small for clarity; see the other vignettes for discovery, periods, mapping, and batch workflows.
-
-## List tables
-
-```{r}
-itms <- nso_itms()
-itms %>% dplyr::select(dplyr::any_of(c("tbl_id", "tbl_eng_nm", "strt_prd", "end_prd"))) %>% dplyr::slice_head(n = 5)
+```{r search, eval=TRUE}
+# Search by keyword
+mortality_tables <- nso_itms_search("infant mortality")
+mortality_tables |>
+    select(tbl_id, tbl_eng_nm) |>
+    head(5)
 ```
 
-## Explore variables (codebook)
+We'll use `DT_NSO_2800_019V1` - Infant Mortality Rate per 1,000 live births.
 
-```{r}
-vars <- nso_variables("DT_NSO_0300_001V2")
-vars %>% dplyr::count(field)
-vars %>% dplyr::filter(field %in% c("Sex","Age","Year")) %>% dplyr::slice_head(n = 10)
+### Step 3: Explore Table Metadata
+
+Before fetching data, check what dimensions are available:
+
+```{r metadata, eval=TRUE}
+# View table structure
+meta <- nso_table_meta("DT_NSO_2800_019V1")
+meta
+
+# Check available years (data available from 1990-2015)
+time_vals <- nso_dim_values("DT_NSO_2800_019V1", "Time (Annual)", labels = "en")
+head(time_vals, 10)
 ```
 
-Notes
+### Step 4: Fetch Data
 
-- Each PXWeb table has one or more dimensions (e.g., Year, Sex, Age). Use their labels to select values.
-- You can pass values as codes or labels; mongolstats maps labels to codes under the hood for you.
+Get national infant mortality rates for the past two decades:
 
-## Fetch data
-
-```{r}
-per <- tryCatch(tail(nso_table_periods("DT_NSO_0300_001V2"), 1), error = function(e) "")
-yr <- if (length(per) && nzchar(per[1])) per else "2022"
-dat <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = "Total", Age = "Total", Year = yr)
+```{r fetch-data, eval=TRUE}
+imr_national <- nso_data(
+    tbl_id = "DT_NSO_2800_019V1",
+    selections = list(
+        "Aimag" = "Total", # National level
+        "Time (Annual)" = c("2010", "2011", "2012", "2013", "2014", "2015")
+    ),
+    labels = "en" # Get English labels
 )
 
-dat %>% dplyr::slice_head(n = 6)
+# Preview
+imr_national |>
+    head(10)
 ```
 
-## Selecting by label vs code
+### Step 5: Visualize the Trend
 
-You can also select using dimension codes. For this table, `Sex` has codes `0` (Total), `1` (Male), `2` (Female).
-Both of the following are equivalent:
+Create a publication-ready plot:
 
-```{r}
-yr <- tryCatch(tail(nso_table_periods("DT_NSO_0300_001V2"), 1), error = function(e) "2022")
-dat_lbl <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = "Total", Age = "Total", Year = yr)
-)
-
-dat_code <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = "0", Age = "0", Year = yr)
-)
-
-list(rows_label = nrow(dat_lbl), rows_code = nrow(dat_code))
+```{r plot-trend, eval=TRUE, fig.alt="Line plot showing decline in infant mortality rate from 2010 to 2015"}
+imr_national |>
+    mutate(year = as.integer(`Time (Annual)_en`)) |>
+    ggplot(aes(x = year, y = value)) +
+    geom_line(color = "#2c3e50", linewidth = 1.2) +
+    geom_point(color = "#e74c3c", size = 4, shape = 21, fill = "white", stroke = 2) +
+    geom_smooth(method = "loess", se = TRUE, color = "#3498db", fill = "#3498db", alpha = 0.1) +
+    scale_x_continuous(breaks = scales::pretty_breaks()) +
+    labs(
+        title = "Infant Mortality Rate in Mongolia",
+        subtitle = "Deaths per 1,000 live births (National Trend)",
+        x = NULL,
+        y = "IMR",
+        caption = "Source: NSO Mongolia via mongolstats"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+        plot.title = element_text(face = "bold", size = 16),
+        plot.subtitle = element_text(color = "grey40"),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank()
+    )
 ```
 
-## Adding labels to the result
+## Regional Comparison
 
-Use the `labels` argument to add readable columns for each dimension:
+Compare infant mortality across different regions:
 
-```{r}
-per <- tryCatch(nso_table_periods("DT_NSO_0300_001V2"), error = function(e) character())
-yrs <- if (length(per) >= 2) tail(per, 2) else per
-if (!length(yrs)) yrs <- c("2021","2022")
-dat_labeled <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = c("Male","Female"), Age = "Total", Year = yrs),
-  labels = "en"
-)
+```{r regional, eval=TRUE}
+# Get all aimags for most recent year
+imr_regional <- nso_data(
+    tbl_id = "DT_NSO_2800_019V1",
+    selections = list(
+        "Aimag" = nso_dim_values("DT_NSO_2800_019V1", "Aimag")$code,
+        "Time (Annual)" = "2015" # Most recent year in dataset
+    ),
+    labels = "en"
+) |>
+    filter(Aimag != "0") |> # Exclude national total
+    filter(Aimag != "511") |> # Exclude duplicate Ulaanbaatar code
+    mutate(
+        Aimag_en = trimws(Aimag_en),
+        Type = ifelse(Aimag %in% c("1", "2", "3", "4"), "Region", "Aimag")
+    )
 
-dat_labeled %>% dplyr::select(dplyr::any_of(c("Year","Sex","value","Year_en","Sex_en"))) %>% dplyr::slice_head(n = 8)
+# Top 10 highest IMR regions
+imr_regional |>
+    arrange(desc(value)) |>
+    select(Aimag_en, value) |>
+    head(10)
 ```
 
-## Working with periods
+### Visualize Regional Disparities
 
-Use helpers to discover valid periods for a table and build sequences:
-
-```{r}
-periods <- nso_table_periods("DT_NSO_0300_001V2")
-head(periods); tail(periods)
-
-# Yearly sequence helper
-nso_period_seq("2018","2022", by = "Y")
+```{r regional-plot, eval=TRUE, fig.alt="Bar chart comparing infant mortality rates across Mongolia's aimags", fig.height=8}
+imr_regional |>
+    arrange(desc(value)) |>
+    mutate(Aimag_en = forcats::fct_reorder(Aimag_en, value)) |>
+    ggplot(aes(x = value, y = Aimag_en)) +
+    # Aimags with gradient
+    geom_col(data = ~ subset(., Type == "Aimag"), aes(fill = value), width = 0.7) +
+    # Regions with distinct color
+    geom_col(data = ~ subset(., Type == "Region"), fill = "#2c3e50", width = 0.7) +
+    geom_text(aes(label = round(value, 1)), hjust = -0.2, color = "grey30", size = 3.5) +
+    scale_fill_gradient2(
+        low = "#27ae60",
+        mid = "#f39c12",
+        high = "#e74c3c",
+        midpoint = median(imr_regional$value[imr_regional$Type == "Aimag"])
+    ) +
+    geom_vline(
+        xintercept = median(imr_regional$value[imr_regional$Type == "Aimag"]),
+        linetype = "dashed",
+        color = "grey50",
+        linewidth = 0.5
+    ) +
+    scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+    labs(
+        title = "Infant Mortality by Aimag (2015)",
+        subtitle = "Dark bars represent Regional Averages",
+        x = "Deaths per 1,000 live births",
+        y = NULL
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(
+        plot.title = element_text(face = "bold", size = 14),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.y = element_text(color = "black")
+    )
 ```
 
-## Summaries
+## Adding Geographic Context
 
-With dplyr, it’s straightforward to summarise values by year or category:
+Combine with mapping for spatial analysis:
 
-```{r}
-per <- tryCatch(nso_table_periods("DT_NSO_0300_001V2"), error = function(e) character())
-yrs <- if (length(per) >= 5) tail(per, 5) else per
-if (!length(yrs)) yrs <- c("2018","2019","2020","2021","2022")
-dat_year <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = "Total", Age = "Total", Year = yrs)
-)
+```{r map-example, eval=TRUE, fig.alt="Choropleth map of infant mortality rates across Mongolia"}
+library(sf)
 
-dat_year %>%
-  dplyr::group_by(Year) %>%
-  dplyr::summarise(value = sum(value, na.rm = TRUE)) %>%
-  dplyr::arrange(Year) %>%
-  dplyr::slice_head(n = 10)
+# Get aimag boundaries
+aimags <- mn_boundaries(level = "ADM1")
+
+# Join IMR data to map
+imr_map <- aimags |>
+    left_join(imr_regional, by = c("shapeName" = "Aimag_en"))
+
+# Create choropleth
+imr_map |>
+    ggplot() +
+    geom_sf(aes(fill = value), color = "white", size = 0.2) +
+    scale_fill_viridis_c(
+        option = "magma",
+        direction = -1,
+        name = "IMR per\n1,000",
+        labels = scales::label_number()
+    ) +
+    labs(
+        title = "Infant Mortality Geography (2015)",
+        subtitle = "Spatial distribution of mortality rates",
+        caption = "Source: NSO Mongolia"
+    ) +
+    theme_void() +
+    theme(
+        plot.title = element_text(face = "bold", size = 16),
+        plot.subtitle = element_text(color = "grey40"),
+        legend.position = "right",
+        legend.title = element_text(size = 10, face = "bold")
+    )
+```
+
+## Key Functions Summary
+
+| Function | Purpose | Example |
+|----------|---------|---------|
+| `nso_itms_search()` | Find tables by keyword | `nso_itms_search("mortality")` |
+| `nso_table_meta()` | Get table dimensions | `nso_table_meta("DT_NSO_...")` |
+| `nso_dim_values()` | List dimension values | `nso_dim_values(tbl, "Region")` |
+| `nso_table_periods()` | Check time coverage | `nso_table_periods(tbl)` |
+| `nso_data()` | Fetch data | `nso_data(tbl, selections, labels)` |
+| `mn_boundaries()` | Get geographic boundaries | `mn_boundaries(level = "ADM1")` |
+
+## Best Practices
+
+1. **Always use labels**: Set `labels = "en"` in `nso_data()` for readable output
+2. **Check metadata first**: Use `nso_table_meta()` to understand dimensions before fetching
+3. **Use appropriate selections**: Specify dimensions by their English labels (e.g., `"Total"` not `"0"`)
+4. **Filter carefully**: Exclude total rows (usually code `"0"`) when analyzing subgroups
+5. **Clean labels**: Use `trimws()` to remove leading/trailing spaces from region names before joining
+
+## Common Workflows
+
+### Time Series Analysis
+1. Search for table → Check periods → Fetch years → Plot trend
+
+### Regional Comparison  
+1. Search table → Get all regions → Fetch latest year → Compare rates
+
+### Spatial Epidemiology
+1. Fetch regional data → Get boundaries → Join → Create choropleth
+
+## Next Steps
+
+- **Discover More Data**: See the [Discovery Guide](discovery.html) for advanced search techniques
+- **Create Maps**: Learn spatial analysis in the [Mapping Guide](mapping.html)  
+- **Reference**: Browse all functions in the [Reference](../reference/index.html)
+
+## Quick Reference: Common Health Tables
+
+```{r health-tables, echo=FALSE, eval=TRUE}
+tibble::tribble(
+    ~Indicator, ~Table_ID,
+    "Infant Mortality", "DT_NSO_2800_019V1",
+    "Maternal Mortality", "DT_NSO_2100_050V1",
+    "Under-5 Mortality", "DT_NSO_2100_030V2",
+    "Cancer Incidence", "DT_NSO_2100_012V1",
+    "TB Incidence", "DT_NSO_2800_026V1",
+    "Communicable Diseases", "DT_NSO_2100_020V2"
+) |>
+    knitr::kable()
 ```

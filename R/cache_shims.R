@@ -4,7 +4,7 @@
 # can bind and so that R CMD check does not flag undefined references.
 
 .fetch_itms_raw <- function() {
-  nso_px_tables()
+  .px_index()
 }
 
 .fetch_detail_raw <- function(tbl_id) {
