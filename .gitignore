@@ -10,6 +10,6 @@ pkgdown
 *.html
 *.utf8.md
 .Rlib/
-.claude/
+
 check/
-CLAUDE.md
+

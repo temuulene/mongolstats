@@ -8,9 +8,9 @@
 ^_pkgdown\.yml$
 ^docs$
 ^\.Rlib$
-^CLAUDE\.md$
+
 ^cran-comments\.md$
-^\.claude$
+
 ^agents\.md$
 ^CITATION\.cff$
 ^CODE_OF_CONDUCT\.md$
