@@ -18,7 +18,11 @@ mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2")) {
 }
 
 .gb_gj_url <- function(iso3, level) {
-  api <- sprintf("https://www.geoboundaries.org/api/current/gbOpen/%s/%s", iso3, level)
+  api <- sprintf(
+    "https://www.geoboundaries.org/api/current/gbOpen/%s/%s",
+    iso3,
+    level
+  )
   res <- httr2::request(api) |>
     httr2::req_user_agent(.nso_user_agent()) |>
     .nso_perform() |>

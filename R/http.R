@@ -8,7 +8,10 @@
 }
 
 .nso_user_agent <- function() {
-  ver <- tryCatch(as.character(utils::packageVersion("mongolstats")), error = function(e) "dev")
+  ver <- tryCatch(
+    as.character(utils::packageVersion("mongolstats")),
+    error = function(e) "dev"
+  )
   paste0("mongolstats/", ver)
 }
 
@@ -22,7 +25,10 @@
 
 .nso_retry_backoff <- function() {
   # returns a formula or numeric used by httr2::req_retry backoff
-  getOption("mongolstats.retry_backoff", default = ~ runif(1, 0.25, 0.75) * 2 ^ (..attempt - 1))
+  getOption(
+    "mongolstats.retry_backoff",
+    default = ~ runif(1, 0.25, 0.75) * 2^(..attempt - 1)
+  )
 }
 
 .nso_verbose <- function() {
@@ -40,7 +46,10 @@
     httr2::req_headers(Accept = "application/json, text/json") |>
     httr2::req_url_query(!!!query) |>
     httr2::req_timeout(.nso_timeout()) |>
-    httr2::req_retry(max_tries = .nso_retry_tries(), backoff = .nso_retry_backoff())
+    httr2::req_retry(
+      max_tries = .nso_retry_tries(),
+      backoff = .nso_retry_backoff()
+    )
   if (.nso_verbose()) {
     url <- tryCatch(httr2::req_url(req), error = function(e) NA_character_)
     message("mongolstats: GET/POST setup for ", url)
@@ -50,24 +59,44 @@
 
 .nso_perform <- function(req) {
   if (.nso_offline()) {
-    cond <- structure(list(message = "mongolstats is in offline mode; network requests are disabled.", call = NULL),
-                      class = c("mongolstats_offline_error", "error", "condition"))
+    cond <- structure(
+      list(
+        message = "mongolstats is in offline mode; network requests are disabled.",
+        call = NULL
+      ),
+      class = c("mongolstats_offline_error", "error", "condition")
+    )
     stop(cond)
   }
   # Perform request; raise typed error on HTTP failure
   resp <- tryCatch(httr2::req_perform(req), error = function(e) e)
   if (inherits(resp, "error")) {
-    cond <- structure(list(message = resp$message, call = NULL),
-                      class = c("mongolstats_http_error", "error", "condition"))
+    cond <- structure(
+      list(message = resp$message, call = NULL),
+      class = c("mongolstats_http_error", "error", "condition")
+    )
     stop(cond)
   }
   status <- httr2::resp_status(resp)
   if (!is.null(status) && status >= 400) {
-    desc <- tryCatch(httr2::resp_status_desc(resp), error = function(e) "HTTP error")
-    url  <- tryCatch(httr2::req_url(httr2::resp_request(resp)), error = function(e) NA_character_)
-    msg  <- paste0("mongolstats HTTP ", status, ": ", desc, if (!is.na(url)) paste0(" [", url, "]") else "")
-    cond <- structure(list(message = msg, call = NULL, status = status),
-                      class = c("mongolstats_http_error", "error", "condition"))
+    desc <- tryCatch(httr2::resp_status_desc(resp), error = function(e) {
+      "HTTP error"
+    })
+    url <- tryCatch(
+      httr2::req_url(httr2::resp_request(resp)),
+      error = function(e) NA_character_
+    )
+    msg <- paste0(
+      "mongolstats HTTP ",
+      status,
+      ": ",
+      desc,
+      if (!is.na(url)) paste0(" [", url, "]") else ""
+    )
+    cond <- structure(
+      list(message = msg, call = NULL, status = status),
+      class = c("mongolstats_http_error", "error", "condition")
+    )
     stop(cond)
   }
   resp
@@ -99,8 +128,13 @@
 
 .as_tibble_df <- function(x) {
   # turn a list of records into a tibble (empty safe)
-  if (is.null(x) || length(x) == 0) return(tibble::tibble())
-  tibble::as_tibble(jsonlite::fromJSON(jsonlite::toJSON(x), simplifyVector = TRUE))
+  if (is.null(x) || length(x) == 0) {
+    return(tibble::tibble())
+  }
+  tibble::as_tibble(jsonlite::fromJSON(
+    jsonlite::toJSON(x),
+    simplifyVector = TRUE
+  ))
 }
 
 #' Enable offline mode

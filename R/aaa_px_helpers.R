@@ -9,7 +9,9 @@
 .px_first_nonempty <- function(...) {
   args <- list(...)
   for (a in args) {
-    if (is.null(a) || !length(a)) next
+    if (is.null(a) || !length(a)) {
+      next
+    }
     val <- as.character(a)[1]
     if (!is.na(val) && nzchar(val)) return(val)
   }

@@ -10,4 +10,3 @@
 .fetch_detail_raw <- function(tbl_id) {
   nso_px_variables(tbl_id)
 }
-

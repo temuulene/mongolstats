@@ -1,6 +1,12 @@
 test_that("nso_period_seq builds expected sequences", {
-  expect_equal(nso_period_seq("2018", "2020", by = "Y"), c("2018","2019","2020"))
-  expect_equal(head(nso_period_seq("201801", "201803", by = "M"), 3), c("201801","201802","201803"))
+  expect_equal(
+    nso_period_seq("2018", "2020", by = "Y"),
+    c("2018", "2019", "2020")
+  )
+  expect_equal(
+    head(nso_period_seq("201801", "201803", by = "M"), 3),
+    c("201801", "201802", "201803")
+  )
 })
 
 test_that("nso_table_periods handles unknown tbl_id", {

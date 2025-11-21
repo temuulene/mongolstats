@@ -4,16 +4,23 @@ cat("FULLSITE: starting pkgdown site build\n")
 
 pkg_root <- normalizePath(".")
 user_lib <- file.path(pkg_root, ".Rlib")
-if (!dir.exists(user_lib)) dir.create(user_lib, recursive = TRUE)
+if (!dir.exists(user_lib)) {
+  dir.create(user_lib, recursive = TRUE)
+}
 .libPaths(c(user_lib, .libPaths()))
 cat("FULLSITE: using lib =", .libPaths()[1], "\n")
 
-need <- c("pkgdown","knitr","rmarkdown","roxygen2")
+need <- c("pkgdown", "knitr", "rmarkdown", "roxygen2")
 avail <- rownames(installed.packages(lib.loc = .libPaths()[1]))
 miss <- setdiff(need, intersect(need, avail))
 if (length(miss)) {
-  cat("FULLSITE: installing packages:", paste(miss, collapse=", "), "\n")
-  install.packages(miss, repos = "https://cloud.r-project.org", lib = .libPaths()[1], dependencies = TRUE)
+  cat("FULLSITE: installing packages:", paste(miss, collapse = ", "), "\n")
+  install.packages(
+    miss,
+    repos = "https://cloud.r-project.org",
+    lib = .libPaths()[1],
+    dependencies = TRUE
+  )
 }
 
 ensure_pandoc <- function() {
@@ -38,7 +45,10 @@ ensure_pandoc <- function() {
   }
   info <- rmarkdown::find_pandoc()
   v <- tryCatch(as.character(info$version), error = function(e) NA_character_)
-  d <- tryCatch(if (is.null(info$dir)) "" else as.character(info$dir), error = function(e) "")
+  d <- tryCatch(
+    if (is.null(info$dir)) "" else as.character(info$dir),
+    error = function(e) ""
+  )
   cat("FULLSITE: pandoc version=", v, " dir=", d, "\n", sep = "")
   found
 }
@@ -55,4 +65,3 @@ if (!has_pandoc) {
 cat("FULLSITE: building pkgdown site into ./docs\n")
 pkgdown::build_site(preview = FALSE, install = FALSE)
 cat("FULLSITE: done\n")
-
