@@ -34,21 +34,13 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="articles/getting-started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/getting-started.html">Getting Started with mongolstats</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/discovery.html">Discovering tables and variables</a></li>
-    <li><a class="dropdown-item" href="articles/query-builder.html">Query builder</a></li>
-    <li><a class="dropdown-item" href="articles/fetching-periods.html">Fetching data and periods</a></li>
-    <li><a class="dropdown-item" href="articles/batch-workflows.html">Batch fetching workflows</a></li>
-    <li><a class="dropdown-item" href="articles/parallel-batching.html">Parallel batching</a></li>
-    <li><a class="dropdown-item" href="articles/offline-caching.html">Offline &amp; caching</a></li>
-    <li><a class="dropdown-item" href="articles/mapping.html">Mapping with mongolstats</a></li>
-    <li><a class="dropdown-item" href="articles/fuzzy-joins.html">Fuzzy name joins</a></li>
-    <li><a class="dropdown-item" href="articles/code-joins.html">Code-based joins</a></li>
-    <li><a class="dropdown-item" href="articles/troubleshooting.html">Troubleshooting</a></li>
+<li><a class="dropdown-item" href="articles/discovery.html">Discovering Public Health Data</a></li>
+    <li><a class="dropdown-item" href="articles/mapping.html">Spatial Epidemiology with mongolstats</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -66,98 +58,163 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="mongolstats">mongolstats<a class="anchor" aria-label="anchor" href="#mongolstats"></a>
+<div class="page-header"><h1 id="mongolstats-">mongolstats <img src="reference/figures/logo.png" align="right" height="139" alt=""><a class="anchor" aria-label="anchor" href="#mongolstats-"></a>
 </h1></div>
 <!-- badges: start -->
 
-<p>Tidy access to the National Statistics Office of Mongolia (NSO) statistics via the PXWeb API (data.1212.mn) and Mongolia administrative boundaries, inspired by the ergonomics of tidycensus. Provides a tidyverse-friendly interface for discovering tables, exploring codebooks, fetching data, and working with <code>sf</code> geometries for mapping.</p>
+<p><strong>mongolstats</strong> is your gateway to the <a href="https://data.1212.mn/" class="external-link">National Statistics Office of Mongolia (NSO)</a>. Access official data, analyze economic trends, and map regional statistics—all from within R.</p>
+<div class="section level2">
+<h2 id="why-mongolstats">Why mongolstats?<a class="anchor" aria-label="anchor" href="#why-mongolstats"></a>
+</h2>
+<ul>
+<li>
+<strong>Instant Access:</strong> Query thousands of official datasets directly from
+<ol start="18" style="list-style-type: upper-alpha"><li>
+</li></ol>
+</li>
+<li>
+<strong>Tidy Data:</strong> Analysis-ready <code>tibble</code> format compatible with <code>dplyr</code> and <code>ggplot2</code>.</li>
+<li>
+<strong>Mapping Ready:</strong> Built-in administrative boundaries for effortless geospatial analysis.</li>
+<li>
+<strong>Reliable:</strong> Smart caching and robust error handling for smooth workflows.</li>
+</ul>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p>You can install the development version of mongolstats from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"temuulene/mongolstats"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
+<div class="section level3">
+<h3 id="id_1-the-economic-pulse-gdp-trends">1. The Economic Pulse: GDP Trends<a class="anchor" aria-label="anchor" href="#id_1-the-economic-pulse-gdp-trends"></a>
+</h3>
+<p>Visualize Mongolia’s economic growth in seconds.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://temuulene.github.io/mongolstats/">mongolstats</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Use new PXWeb API (data.1212.mn)</span></span>
+<span><span class="co"># Set language to English</span></span>
 <span><span class="fu"><a href="reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># List available tables</span></span>
-<span><span class="va">itms</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_itms.html">nso_itms</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">itms</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span>, <span class="va">strt_prd</span>, <span class="va">end_prd</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Inspect variables (codebook) for a table</span></span>
-<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_itms_detail.html">nso_variables</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_001V2"</span><span class="op">)</span></span>
-<span><span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">field</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Fetch data</span></span>
-<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_0300_001V2"</span>,</span>
-<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sex <span class="op">=</span> <span class="st">"Total"</span>, Age <span class="op">=</span> <span class="st">"Total"</span>, Year <span class="op">=</span> <span class="st">"2024"</span><span class="op">)</span></span>
+<span><span class="co"># Fetch GDP data - using labels for clarity</span></span>
+<span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_0500_001V1"</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Indicator"</span> <span class="op">=</span> <span class="st">"GDP, at current prices"</span>,</span>
+<span>    <span class="st">"Economic activity"</span> <span class="op">=</span> <span class="st">"Total"</span>,</span>
+<span>    <span class="st">"Year"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>      <span class="st">"2010"</span>, <span class="st">"2011"</span>, <span class="st">"2012"</span>, <span class="st">"2013"</span>, <span class="st">"2014"</span>,</span>
+<span>      <span class="st">"2015"</span>, <span class="st">"2016"</span>, <span class="st">"2017"</span>, <span class="st">"2018"</span>, <span class="st">"2019"</span>,</span>
+<span>      <span class="st">"2020"</span>, <span class="st">"2021"</span>, <span class="st">"2022"</span>, <span class="st">"2023"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  labels <span class="op">=</span> <span class="st">"en"</span> <span class="co"># Get English labels</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">dat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
+<span></span>
+<span><span class="co"># Visualize</span></span>
+<span><span class="va">gdp</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">Year_en</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">value</span> <span class="op">/</span> <span class="fl">1e6</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co"># Convert to Trillions</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_area</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#42b883"</span>, alpha <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#2c3e50"</span>, linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#2c3e50"</span>, size <span class="op">=</span> <span class="fl">3</span>, shape <span class="op">=</span> <span class="fl">21</span>, fill <span class="op">=</span> <span class="st">"white"</span>, stroke <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>suffix <span class="op">=</span> <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/pretty_breaks.html" class="external-link">pretty_breaks</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Mongolia's GDP Growth (2010-2023)"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Gross Domestic Product (in Trillions MNT)"</span>,</span>
+<span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia via mongolstats"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
+<span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="README_files/figure-gfm/gdp-example-1.png"><!-- --></p>
+</div>
 <div class="section level3">
-<h3 id="live-traversal-simple-path">Live traversal (simple path)<a class="anchor" aria-label="anchor" href="#live-traversal-simple-path"></a>
+<h3 id="id_2-mapping-regional-population">2. Mapping Regional Population<a class="anchor" aria-label="anchor" href="#id_2-mapping-regional-population"></a>
 </h3>
+<p>Discover how population is distributed across the country.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Navigate catalog → pick table → fetch</span></span>
-<span><span class="va">secs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_sectors.html">nso_sectors</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">subsecs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_subsectors.html">nso_subsectors</a></span><span class="op">(</span><span class="va">secs</span><span class="op">$</span><span class="va">id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="va">tbls</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_itms_by_sector.html">nso_itms_by_sector</a></span><span class="op">(</span><span class="va">subsecs</span><span class="op">$</span><span class="va">id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_table_meta.html">nso_table_meta</a></span><span class="op">(</span><span class="va">tbls</span><span class="op">$</span><span class="va">tbl_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>  <span class="co"># per-dimension codebooks</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">dat2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>  tbl_id <span class="op">=</span> <span class="va">tbls</span><span class="op">$</span><span class="va">tbl_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2023"</span>, <span class="st">"2024"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  value_name <span class="op">=</span> <span class="st">"Variable"</span>,           <span class="co"># rename value column</span></span>
-<span>  include_raw <span class="op">=</span> <span class="cn">TRUE</span>                  <span class="co"># attach raw PX payload as attr(px_raw)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">dat2</span>, <span class="st">"px_raw"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># 1. Fetch Population by Aimag</span></span>
+<span><span class="co"># Get all region codes first</span></span>
+<span><span class="va">regions</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_002V1"</span>, <span class="st">"Region"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span></span>
+<span></span>
+<span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_0300_002V1"</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Region"</span> <span class="op">=</span> <span class="va">regions</span>,</span>
+<span>    <span class="st">"Year"</span> <span class="op">=</span> <span class="st">"2023"</span> <span class="co"># Use the year label</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  labels <span class="op">=</span> <span class="st">"en"</span> <span class="co"># Get English labels for joining</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Region</span> <span class="op">!=</span> <span class="st">"0"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Exclude National Total (code "0")</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Region_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span><span class="op">)</span> <span class="co"># Clean leading spaces in labels</span></span>
+<span></span>
+<span><span class="co"># 2. Get Administrative Boundaries</span></span>
+<span><span class="va">map</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/mn_boundaries.html">mn_boundaries</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"ADM1"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 3. Join and Map</span></span>
+<span><span class="va">map</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">pop</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shapeName"</span> <span class="op">=</span> <span class="st">"Region_en"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">value</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span></span>
+<span>    option <span class="op">=</span> <span class="st">"magma"</span>,</span>
+<span>    direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,</span>
+<span>    labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>scale_cut <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/number.html" class="external-link">cut_short_scale</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    name <span class="op">=</span> <span class="st">"Population"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Population Distribution (2023)"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Mid-year resident population by Aimag"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
+<span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
+<span>    legend.key.width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="st">"cm"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="README_files/figure-gfm/pop-map-example-1.png"><!-- --></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
+<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
 </h2>
+<p>Full documentation is available at <a href="https://temuulene.github.io/mongolstats/">temuulene.github.io/mongolstats</a>.</p>
 <ul>
-<li>PXWeb client for NSO data (data.1212.mn)</li>
-<li>Discover tables and variables with <code><a href="reference/nso_itms.html">nso_itms()</a></code> / <code><a href="reference/nso_itms_detail.html">nso_itms_detail()</a></code>
-</li>
-<li>Fetch data via <code>nso_data(tbl_id, selections=...)</code>; batch with <code><a href="reference/nso_package.html">nso_package()</a></code>
-</li>
-<li>Optional label columns in English or Mongolian (<code>labels = "en" | "mn" | "both"</code>)</li>
-<li>Category navigation and table search helpers</li>
-<li>Mongolia administrative boundaries (ADM0–ADM2) as <code>sf</code>
-</li>
-<li>Exact and fuzzy name-based boundary joins</li>
-<li>Lightweight on-disk caching for faster table/codebook lookups</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="vignettes">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes"></a>
-</h2>
-<ul>
-<li>Getting started</li>
-<li>Discovering tables and variables</li>
-<li>Fetching data and periods</li>
-<li>Batch fetching workflows</li>
-<li>Mapping, fuzzy joins, and code-based joins</li>
+<li>
+<a href="https://temuulene.github.io/mongolstats/articles/getting-started.html">Getting Started</a> - Your first epidemiological analysis</li>
+<li>
+<a href="https://temuulene.github.io/mongolstats/articles/discovery.html">Discovery Guide</a> - Find and explore tables</li>
+<li>
+<a href="https://temuulene.github.io/mongolstats/articles/mapping.html">Mapping Guide</a> - Work with administrative boundaries</li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
-<p>Issues and pull requests are welcome: <a href="https://github.com/temuulene/mongolstats/issues" class="external-link uri">https://github.com/temuulene/mongolstats/issues</a></p>
+<p>We welcome contributions! Please see the <a href="CONTRIBUTING.html">Contributing Guidelines</a> for details.</p>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>MIT Ac Temuulen Enebish</p>
+<p>MIT</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -178,6 +235,13 @@
 </ul>
 </div>
 
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
+</ul>
+</div>
 
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
@@ -197,10 +261,7 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yaml" class="external-link"><img src="https://github.com/temuulene/mongolstats/actions/workflows/pkgdown.yaml/badge.svg" alt="pkgdown"></a></li>
-<li><a href="https://temuulene.github.io/mongolstats/"><img src="https://img.shields.io/badge/docs-pkgdown-blue.svg" alt="Website"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
 </ul>
 </div>
 

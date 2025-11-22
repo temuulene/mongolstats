@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Discovering tables and variables • mongolstats</title>
+<title>Discovering Public Health Data • mongolstats</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
@@ -13,7 +13,7 @@
 <link href="../deps/Inter_Tight-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Discovering tables and variables">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Discovering Public Health Data">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -32,21 +32,13 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/getting-started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/getting-started.html">Getting Started with mongolstats</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/discovery.html">Discovering tables and variables</a></li>
-    <li><a class="dropdown-item" href="../articles/query-builder.html">Query builder</a></li>
-    <li><a class="dropdown-item" href="../articles/fetching-periods.html">Fetching data and periods</a></li>
-    <li><a class="dropdown-item" href="../articles/batch-workflows.html">Batch fetching workflows</a></li>
-    <li><a class="dropdown-item" href="../articles/parallel-batching.html">Parallel batching</a></li>
-    <li><a class="dropdown-item" href="../articles/offline-caching.html">Offline &amp; caching</a></li>
-    <li><a class="dropdown-item" href="../articles/mapping.html">Mapping with mongolstats</a></li>
-    <li><a class="dropdown-item" href="../articles/fuzzy-joins.html">Fuzzy name joins</a></li>
-    <li><a class="dropdown-item" href="../articles/code-joins.html">Code-based joins</a></li>
-    <li><a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting</a></li>
+<li><a class="dropdown-item" href="../articles/discovery.html">Discovering Public Health Data</a></li>
+    <li><a class="dropdown-item" href="../articles/mapping.html">Spatial Epidemiology with mongolstats</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -69,7 +61,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Discovering tables and variables</h1>
+      <h1>Discovering Public Health Data</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/discovery.Rmd" class="external-link"><code>vignettes/discovery.Rmd</code></a></small>
@@ -81,125 +73,376 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://temuulene.github.io/mongolstats/">mongolstats</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
-<h2 id="discovery-overview">Discovery overview<a class="anchor" aria-label="anchor" href="#discovery-overview"></a>
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>PXWeb exposes a tree of folders (sectors/subsectors) containing
-tables. Discovery functions help you:</p>
-<ul>
-<li>Navigate the catalog with <code><a href="../reference/nso_sectors.html">nso_sectors()</a></code> and
-<code><a href="../reference/nso_subsectors.html">nso_subsectors()</a></code>
-</li>
-<li>List available tables with <code><a href="../reference/nso_itms.html">nso_itms()</a></code>
-</li>
-<li>Search by keyword with <code><a href="../reference/nso_itms_search.html">nso_itms_search()</a></code> /
-<code><a href="../reference/nso_search.html">nso_search()</a></code>
-</li>
-<li>Explore a table’s variables using <code><a href="../reference/nso_itms_detail.html">nso_variables()</a></code>
-</li>
-</ul>
+<p>Mongolia’s National Statistics Office maintains comprehensive public
+health surveillance data. This guide demonstrates how to discover and
+access epidemiological data for research and policy analysis.</p>
 </div>
 <div class="section level2">
-<h2 id="list-available-tables">List available tables<a class="anchor" aria-label="anchor" href="#list-available-tables"></a>
+<h2 id="finding-health-tables">Finding Health Tables<a class="anchor" aria-label="anchor" href="#finding-health-tables"></a>
 </h2>
+<div class="section level3">
+<h3 id="search-by-keyword">Search by Keyword<a class="anchor" aria-label="anchor" href="#search-by-keyword"></a>
+</h3>
+<p>Use <code><a href="../reference/nso_itms_search.html">nso_itms_search()</a></code> to find tables related to specific
+health topics:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">itms</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms.html">nso_itms</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">itms</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span>, <span class="va">strt_prd</span>, <span class="va">end_prd</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 4</span></span></span>
-<span><span class="co">##    tbl_id             tbl_eng_nm                                strt_prd end_prd</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> DT_NSO_0100_001V10 BALANCE OF PAYMENTS, by month             <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> DT_NSO_0300_010V5  WEEKLY PRICES OF MAIN PRODUCTS AND GASOL… 2025-11… 2024-0…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> DT_NSO_0303_07V7   CONSUMER PRICE INDEX IN AIMAGS, compared… 2015=100 2023=1…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> DT_NSO_0303_07V8   CONSUMER PRICE INDEX IN AIMAGS, compared… 2015=100 2023=1…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> DT_NSO_0303_07V9   CONSUMER PRICE INDEX IN AIMAGS, compared… 2015=100 2023=1…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> DT_NSO_0600_001V3  NATIONAL BASE CONSUMER PRICE INDEX, by g… 2015=100 2023=1…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> DT_NSO_0600_001V4  WEEKLY PRICES OF MAIN PRODUCTS AND GASOL… 2025-11… 2021-0…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> DT_NSO_0600_002V1  NATIONAL CONSUMER PRICE INDEX, 1991-1-16… 2024     1991   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> DT_NSO_0600_002V21 CONSUMER PRICE INDEX, by group, compared… 2015=100 2023=1…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> DT_NSO_0600_002V22 CONSUMER PRICE INDEX, by group, compared… 2015=100 2023=1…</span></span></code></pre>
+<code class="sourceCode R"><span><span class="co"># Infant and maternal health</span></span>
+<span><span class="va">mortality</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_search.html">nso_itms_search</a></span><span class="op">(</span><span class="st">"mortality"</span><span class="op">)</span></span>
+<span><span class="va">mortality</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
+<span><span class="co">#&gt;    tbl_id            tbl_eng_nm                                                 </span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> DT_NSO_2100_014V1 NUMBER OF INFANT MORTALITY, aimags and the Capital and by …</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> DT_NSO_2100_014V2 INFANT MORTALITY RATE, per 1000 live births, aimags and th…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> DT_NSO_2100_014V4 INFANT MORTALITY, by sex, by soum, and by year             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> DT_NSO_2100_014V5 INFANT MORTALITY RATE,  per 1000 live births, by sex, by s…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> DT_NSO_2100_015V1 INFANT MORTALITY RATE, per 1000 live births, aimags and th…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> DT_NSO_2100_015V2 INFANT MORTALITY, per 1000 live births, by soum, and by ye…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> DT_NSO_2100_023V1 MATERNAL MORTALITY RATIO,  per 1,000 live births, by soum,…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> DT_NSO_2100_030V2 UNDER-FIVE MORTALITY, per 1000 live births, aimags and the…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> DT_NSO_2100_040V1 NEONATAL MORTALITY, aimags and the Capital and by month    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> DT_NSO_2100_040V2 NEONATAL MORTALITY RATE, per 1000 live births, aimags and …</span></span>
+<span></span>
+<span><span class="co"># Cancer surveillance</span></span>
+<span><span class="va">cancer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_search.html">nso_itms_search</a></span><span class="op">(</span><span class="st">"cancer"</span><span class="op">)</span></span>
+<span><span class="va">cancer</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 2</span></span></span>
+<span><span class="co">#&gt;   tbl_id            tbl_eng_nm                                                  </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> DT_NSO_2100_012V1 NEW CASES OF CANCER, per 10000 population, by type of cancer</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> DT_NSO_2100_013V1 DEATHS OF CANCER, per 10000 population, by year             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> DT_NSO_2100_044V1 NEW CASES OF CANCER, by age group, by year                  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> DT_NSO_2100_045V1 NEW CASES AND MORTALITY OF CANCER, per 10000 population, ai…</span></span>
+<span></span>
+<span><span class="co"># Communicable diseases</span></span>
+<span><span class="va">infectious</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_search.html">nso_itms_search</a></span><span class="op">(</span><span class="st">"tuberculosis"</span><span class="op">)</span></span>
+<span><span class="va">infectious</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 2</span></span></span>
+<span><span class="co">#&gt;   tbl_id            tbl_eng_nm                                                  </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> DT_NSO_2800_025V1 PREVALENCE TUBERCULOSIS PER 100000 PERSON, by aimags and th…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> DT_NSO_2800_026V1 INCIDENCE OF TUBERCULOSIS PER 100000 PERSON, by aimags and …</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> DT_NSO_2800_027V1 DEATH RATES ASSOCIATED WITH TUBERCULOSIS PER 100000 PERSON,…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> DT_NSO_2800_028V1 PROPORTION OF TUBERCULOSIS CASES DETECTED AND CURED UNDER D…</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="browse-by-sector">Browse by Sector<a class="anchor" aria-label="anchor" href="#browse-by-sector"></a>
+</h3>
+<p>Health and education statistics are grouped together:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># View all sectors</span></span>
+<span><span class="va">sectors</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_sectors.html">nso_sectors</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">sectors</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 3</span></span></span>
+<span><span class="co">#&gt;   id                    type  text                 </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Economy, environment  l     Economy, environment </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Education, health     l     Education, health    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Historical data       l     Historical data      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Industry, service     l     Industry, service    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Labour, business      l     Labour, business     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Population, household l     Population, household</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> Regional development  l     Regional development </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> Society, development  l     Society, development</span></span>
+<span></span>
+<span><span class="co"># Find health-related subsectors</span></span>
+<span><span class="va">health_sector</span> <span class="op">&lt;-</span> <span class="va">sectors</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"health"</span>, <span class="va">text</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">health_sector</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">subsectors</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_subsectors.html">nso_subsectors</a></span><span class="op">(</span><span class="va">health_sector</span><span class="op">$</span><span class="va">id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">subsectors</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
+<span><span class="co">#&gt;   id                                type  text                             </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Births, deaths                    l     Births, deaths                   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Disease                           l     Disease                          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> General educational schools       l     General educational schools      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> General indicators for Education  l     General indicators for Education </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Health insurance                  l     Health insurance                 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Main indicators for Health sector l     Main indicators for Health sector</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
-<h2 id="navigate-sectors">Navigate sectors<a class="anchor" aria-label="anchor" href="#navigate-sectors"></a>
+<h2 id="case-study-cancer-epidemiology">Case Study: Cancer Epidemiology<a class="anchor" aria-label="anchor" href="#case-study-cancer-epidemiology"></a>
 </h2>
-<p>Top-level categories (folder-like nodes):</p>
+<div class="section level3">
+<h3 id="exploring-cancer-incidence-data">Exploring Cancer Incidence Data<a class="anchor" aria-label="anchor" href="#exploring-cancer-incidence-data"></a>
+</h3>
+<p>Let’s analyze cancer trends in Mongolia:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">root</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_sectors.html">nso_sectors</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">root</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 8 × 3</span></span></span>
-<span><span class="co">##   id                    type  text                 </span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> Economy, environment  l     Economy, environment </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> Education, health     l     Education, health    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> Historical data       l     Historical data      </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> Industry, service     l     Industry, service    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> Labour, business      l     Labour, business     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> Population, household l     Population, household</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">7</span> Regional development  l     Regional development </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">8</span> Society, development  l     Society, development</span></span></code></pre>
-<p>Children under a category (pass <code>id</code> from above):</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">first_id</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">root</span><span class="op">)</span><span class="op">)</span> <span class="va">root</span><span class="op">$</span><span class="va">id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="kw">else</span> <span class="st">""</span></span>
-<span><span class="va">kids</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_subsectors.html">nso_subsectors</a></span><span class="op">(</span><span class="va">first_id</span><span class="op">)</span></span>
-<span><span class="va">kids</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 3</span></span></span>
-<span><span class="co">##    id                             type  text                          </span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                         </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> Balance of Payments            l     Balance of Payments           </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> Consumer Price Index           l     Consumer Price Index          </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> Environment                    l     Environment                   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> Environmental-Economic Account l     Environmental-Economic Account</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> Foreign Trade                  l     Foreign Trade                 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> Government budget              l     Government budget             </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> Housing price index            l     Housing price index           </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> Investment                     l     Investment                    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> Money and Finance              l     Money and Finance             </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> National Accounts              l     National Accounts</span></span></code></pre>
+<code class="sourceCode R"><span><span class="co"># Find cancer incidence table</span></span>
+<span><span class="va">cancer_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_2100_012V1"</span> <span class="co"># New cases per 10,000 population</span></span>
+<span></span>
+<span><span class="co"># Examine available dimensions</span></span>
+<span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_table_meta.html">nso_table_meta</a></span><span class="op">(</span><span class="va">cancer_tbl</span><span class="op">)</span></span>
+<span><span class="va">meta</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 5</span></span></span>
+<span><span class="co">#&gt;   dim                      code               is_time n_values codes            </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Type malignant neoplasms Хорт хавдрын төрөл FALSE          7 <span style="color: #949494;">&lt;tibble [7 × 3]&gt;</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Annual                   Он                 FALSE         25 <span style="color: #949494;">&lt;tibble [25 × 3]&gt;</span></span></span>
+<span></span>
+<span><span class="co"># View cancer types</span></span>
+<span><span class="va">cancer_types</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">cancer_tbl</span>, <span class="st">"Type malignant neoplasms"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
+<span><span class="va">cancer_types</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 2</span></span></span>
+<span><span class="co">#&gt;   code  label_en       </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 0     <span style="color: #949494;">"</span>Total<span style="color: #949494;">"</span>        </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 1     <span style="color: #949494;">"</span> Liver<span style="color: #949494;">"</span>       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2     <span style="color: #949494;">"</span> Cervix uteri<span style="color: #949494;">"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 3     <span style="color: #949494;">"</span> Stomach<span style="color: #949494;">"</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 4     <span style="color: #949494;">"</span> Lung<span style="color: #949494;">"</span>        </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 5     <span style="color: #949494;">"</span> Oesophagus<span style="color: #949494;">"</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> 6     <span style="color: #949494;">"</span> Other<span style="color: #949494;">"</span></span></span>
+<span></span>
+<span><span class="co"># Check time coverage</span></span>
+<span><span class="co"># Note: "Annual" dimension uses internal codes, so we map labels (years) to codes</span></span>
+<span><span class="va">annual_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">cancer_tbl</span>, <span class="st">"Annual"</span>, labels <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span>
+<span><span class="va">years</span> <span class="op">&lt;-</span> <span class="va">annual_meta</span><span class="op">$</span><span class="va">label_en</span></span>
+<span><span class="va">years</span></span>
+<span><span class="co">#&gt;  [1] "2024" "2023" "2022" "2021" "2020" "2019" "2018" "2017" "2016" "2015"</span></span>
+<span><span class="co">#&gt; [11] "2014" "2013" "2012" "2011" "2010" "2009" "2008" "2007" "2006" "2005"</span></span>
+<span><span class="co">#&gt; [21] "2004" "2003" "2002" "2001" "2000"</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="fetching-and-visualizing-cancer-trends">Fetching and Visualizing Cancer Trends<a class="anchor" aria-label="anchor" href="#fetching-and-visualizing-cancer-trends"></a>
+</h3>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Fetch top cancer types over recent years</span></span>
+<span><span class="co"># Get codes for the last 10 years</span></span>
+<span><span class="va">recent_years</span> <span class="op">&lt;-</span> <span class="va">annual_meta</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">label_en</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">code</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cancer_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="va">cancer_tbl</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Type malignant neoplasms"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span><span class="op">)</span>, <span class="co"># Lung, Liver, Stomach, Cervix</span></span>
+<span>    <span class="st">"Annual"</span> <span class="op">=</span> <span class="va">recent_years</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Visualize trends</span></span>
+<span><span class="va">cancer_data</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">Annual_en</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">value</span>, color <span class="op">=</span> <span class="va">`Type malignant neoplasms_en`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">3</span>, shape <span class="op">=</span> <span class="fl">21</span>, fill <span class="op">=</span> <span class="st">"white"</span>, stroke <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_color_viridis_d</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"plasma"</span>, end <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/pretty_breaks.html" class="external-link">pretty_breaks</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Cancer Incidence Trends in Mongolia"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"New cases per 10,000 population (Recent Trends)"</span>,</span>
+<span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Incidence Rate"</span>,</span>
+<span>    color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    legend.position <span class="op">=</span> <span class="st">"top"</span>,</span>
+<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey40"</span>, margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span>b <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    axis.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey30"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="discovery_files/figure-html/cancer-analysis-1.png" class="r-plt" width="768"></p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="search-by-keyword">Search by keyword<a class="anchor" aria-label="anchor" href="#search-by-keyword"></a>
+<h2 id="case-study-infant-mortality-surveillance">Case Study: Infant Mortality Surveillance<a class="anchor" aria-label="anchor" href="#case-study-infant-mortality-surveillance"></a>
+</h2>
+<div class="section level3">
+<h3 id="regional-disparities">Regional Disparities<a class="anchor" aria-label="anchor" href="#regional-disparities"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Infant mortality by aimag</span></span>
+<span><span class="va">imr_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_2800_019V1"</span> <span class="co"># IMR per 1,000 live births</span></span>
+<span></span>
+<span><span class="co"># Get metadata</span></span>
+<span><span class="va">imr_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_table_meta.html">nso_table_meta</a></span><span class="op">(</span><span class="va">imr_tbl</span><span class="op">)</span></span>
+<span><span class="va">aimags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">imr_tbl</span>, <span class="st">"Aimag"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Fetch recent data for all regions</span></span>
+<span><span class="va">imr_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="va">imr_tbl</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Aimag"</span> <span class="op">=</span> <span class="va">aimags</span><span class="op">$</span><span class="va">code</span>,</span>
+<span>    <span class="st">"Time (Annual)"</span> <span class="op">=</span> <span class="st">"0"</span> <span class="co"># Code for 2015 (checked via metadata)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Aimag</span> <span class="op">!=</span> <span class="st">"0"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Exclude national total</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Aimag_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Aimag_en</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Find regions with highest IMR</span></span>
+<span><span class="va">imr_data</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Aimag_en</span>, <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
+<span><span class="co">#&gt;    Aimag_en       value</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Zavkhan         25.7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Bayan-Ulgii     24.7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Khuvsgul        22.3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Western region  21.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Khovd           20.7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Uvs             20.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Sukhbaatar      18.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Bulgan          17.1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Khentii         17.1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Umnugovi        16.6</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="time-trend-analysis">Time Trend Analysis<a class="anchor" aria-label="anchor" href="#time-trend-analysis"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Analyze national trend</span></span>
+<span><span class="va">imr_national</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="va">imr_tbl</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Aimag"</span> <span class="op">=</span> <span class="st">"0"</span>, <span class="co"># National total (code 0)</span></span>
+<span>    <span class="st">"Time (Annual)"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span> <span class="co"># Codes for 2015-2010 (0=2015, 5=2010 based on debug)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">imr_national</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">`Time (Annual)_en`</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">value</span> <span class="op">*</span> <span class="fl">0.9</span>, ymax <span class="op">=</span> <span class="va">value</span> <span class="op">*</span> <span class="fl">1.1</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"#e74c3c"</span>, alpha <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> <span class="co"># Illustrative CI</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#c0392b"</span>, linewidth <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#c0392b"</span>, size <span class="op">=</span> <span class="fl">4</span>, shape <span class="op">=</span> <span class="fl">21</span>, fill <span class="op">=</span> <span class="st">"white"</span>, stroke <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">value</span><span class="op">)</span>, vjust <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, fontface <span class="op">=</span> <span class="st">"bold"</span>, color <span class="op">=</span> <span class="st">"#c0392b"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/pretty_breaks.html" class="external-link">pretty_breaks</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span>, expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Infant Mortality Rate Decline"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Deaths per 1,000 live births (2010-2015)"</span>,</span>
+<span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"IMR"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
+<span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="discovery_files/figure-html/imr-trends-1.png" class="r-plt" width="768"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="case-study-tuberculosis-burden">Case Study: Tuberculosis Burden<a class="anchor" aria-label="anchor" href="#case-study-tuberculosis-burden"></a>
 </h2>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_search.html">nso_itms_search</a></span><span class="op">(</span><span class="st">"population"</span><span class="op">)</span></span>
-<span><span class="va">pop</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 0 × 2</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ 2 variables: tbl_id &lt;chr&gt;, tbl_eng_nm &lt;chr&gt;</span></span></span></code></pre>
+<code class="sourceCode R"><span><span class="co"># TB incidence</span></span>
+<span><span class="va">tb_incidence</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_2800_026V1"</span>, <span class="co"># TB per 100,000</span></span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Aimag"</span> <span class="op">=</span> <span class="st">"0"</span>, <span class="co"># National Total</span></span>
+<span>    <span class="st">"Time (Annual)"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span> <span class="co"># Codes for recent years (checked via metadata)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># TB mortality</span></span>
+<span><span class="va">tb_mortality</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_2800_027V1"</span>, <span class="co"># TB deaths per 100,000</span></span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Aimag"</span> <span class="op">=</span> <span class="st">"0"</span>, <span class="co"># National Total</span></span>
+<span>    <span class="st">"Time (Annual)"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Combine for case-fatality analysis</span></span>
+<span><span class="va">tb_combined</span> <span class="op">&lt;-</span> <span class="va">tb_incidence</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>time <span class="op">=</span> <span class="va">`Time (Annual)_en`</span>, incidence <span class="op">=</span> <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span></span>
+<span>    <span class="va">tb_mortality</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>time <span class="op">=</span> <span class="va">`Time (Annual)_en`</span>, mortality <span class="op">=</span> <span class="va">value</span><span class="op">)</span>,</span>
+<span>    by <span class="op">=</span> <span class="st">"time"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    case_fatality <span class="op">=</span> <span class="op">(</span><span class="va">mortality</span> <span class="op">/</span> <span class="va">incidence</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>,</span>
+<span>    year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Visualize</span></span>
+<span><span class="va">tb_combined</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">incidence</span>, fill <span class="op">=</span> <span class="st">"Incidence"</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.8</span>, width <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">mortality</span> <span class="op">*</span> <span class="fl">50</span>, color <span class="op">=</span> <span class="st">"Mortality (x50)"</span><span class="op">)</span>, linewidth <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">mortality</span> <span class="op">*</span> <span class="fl">50</span>, color <span class="op">=</span> <span class="st">"Mortality (x50)"</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">3</span>, shape <span class="op">=</span> <span class="fl">21</span>, fill <span class="op">=</span> <span class="st">"white"</span>, stroke <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span></span>
+<span>    name <span class="op">=</span> <span class="st">"Incidence (per 100,000)"</span>,</span>
+<span>    sec.axis <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/sec_axis.html" class="external-link">sec_axis</a></span><span class="op">(</span><span class="op">~</span> <span class="va">.</span> <span class="op">/</span> <span class="fl">50</span>, name <span class="op">=</span> <span class="st">"Mortality (per 100,000)"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Incidence"</span> <span class="op">=</span> <span class="st">"#34495e"</span><span class="op">)</span>, name <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Mortality (x50)"</span> <span class="op">=</span> <span class="st">"#e74c3c"</span><span class="op">)</span>, name <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Tuberculosis Burden in Mongolia"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Incidence vs. Mortality Trends"</span>,</span>
+<span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
+<span>    legend.position <span class="op">=</span> <span class="st">"top"</span>,</span>
+<span>    legend.box <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
+<span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    axis.title.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#e74c3c"</span>, margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span>l <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    axis.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#e74c3c"</span><span class="op">)</span>,</span>
+<span>    axis.title.y.left <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#34495e"</span>, margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span>r <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    axis.text.y.left <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#34495e"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="discovery_files/figure-html/tb-data-1.png" class="r-plt" width="768"></p>
 </div>
 <div class="section level2">
-<h2 id="explore-variables-codebook-for-a-table">Explore variables (codebook) for a table<a class="anchor" aria-label="anchor" href="#explore-variables-codebook-for-a-table"></a>
+<h2 id="tips-for-epidemiological-research">Tips for Epidemiological Research<a class="anchor" aria-label="anchor" href="#tips-for-epidemiological-research"></a>
 </h2>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_detail.html">nso_variables</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_001V2"</span><span class="op">)</span></span>
-<span><span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">field</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
-<span><span class="co">##   field     n</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> Age      88</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> Sex       3</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> Year     25</span></span></code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 6</span></span></span>
-<span><span class="co">##    field itm_id scr_eng scr_mn px_path                                   px_file</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> Sex   0      Total   <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> Sex   1      Male    <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> Sex   2      Female  <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> Age   0      Total   <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> Age   1      0       <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> Age   2      1       <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> Age   3      2       <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> Age   4      3       <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> Age   5      4       <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> Age   6      5       <span style="color: #BB0000;">NA</span>     Population, household/1_Population, hous… DT_NSO…</span></span></code></pre>
-<p>Tips</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Always check time coverage</strong>: Use
+<code><a href="../reference/nso_table_periods.html">nso_table_periods()</a></code> to verify data availability</li>
+<li>
+<strong>Use labels for clarity</strong>: Set
+<code>labels = "en"</code> to get readable dimension names</li>
+<li>
+<strong>Join multiple indicators</strong>: Combine tables to
+calculate derived metrics (e.g., case-fatality rates)</li>
+<li>
+<strong>Account for denominator data</strong>: Link disease counts
+with population data for rate calculations</li>
+<li>
+<strong>Regional analysis</strong>: Most health tables include
+breakdowns by aimag and soum for geographic analysis</li>
+</ol>
+</div>
+<div class="section level2">
+<h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+</h2>
 <ul>
-<li>Use <code>field</code> to identify the dimension names you’ll pass
-in <code>selections</code> when fetching data.</li>
-<li>Each <code>field</code> has codes (<code>itm_id</code>) and
-English/Mongolian labels
-(<code>scr_eng</code>/<code>scr_mn</code>).</li>
+<li>
+<strong>Mapping Health Outcomes</strong>: See the <a href="mapping.html">Mapping Guide</a> for spatial epidemiology</li>
+<li>
+<strong>Reference Documentation</strong>: Explore all available
+functions in the <a href="../reference/index.html">Reference</a>
+</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

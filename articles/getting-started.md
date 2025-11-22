@@ -1,196 +1,327 @@
-# Getting started with mongolstats
+# Getting Started with mongolstats
+
+## Installation
+
+Install from GitHub:
+
+``` r
+# install.packages("devtools")
+# devtools::install_github("temuulene/mongolstats")
+```
+
+## Your First Analysis: Infant Mortality Trends
+
+Let’s walk through a complete workflow using infant mortality data—a key
+indicator of population health and health system performance.
+
+### Step 1: Load Packages
 
 ``` r
 library(mongolstats)
 library(dplyr)
+library(ggplot2)
 
-# Point to new PXWeb API (default set on load)
+# Set language to English for readable output
 nso_options(mongolstats.lang = "en")
 ```
 
-## Overview
+### Step 2: Find the Right Table
 
-This vignette introduces the core workflow for using mongolstats:
-
-- Discover tables and explore their variables (codebooks)
-- Fetch data by selecting values for each table dimension
-- Optionally enrich with English/Mongolian labels for readability
-- Work with period utilities for time series
-
-We’ll keep examples small for clarity; see the other vignettes for
-discovery, periods, mapping, and batch workflows.
-
-## List tables
+Search for infant mortality data:
 
 ``` r
-itms <- nso_itms()
-itms %>% dplyr::select(dplyr::any_of(c("tbl_id", "tbl_eng_nm", "strt_prd", "end_prd"))) %>% dplyr::slice_head(n = 5)
+# Search by keyword
+mortality_tables <- nso_itms_search("infant mortality")
+mortality_tables |>
+    select(tbl_id, tbl_eng_nm) |>
+    head(5)
+#> # A tibble: 5 × 2
+#>   tbl_id            tbl_eng_nm                                                  
+#>   <chr>             <chr>                                                       
+#> 1 DT_NSO_2100_014V1 NUMBER OF INFANT MORTALITY, aimags and the Capital and by m…
+#> 2 DT_NSO_2100_014V2 INFANT MORTALITY RATE, per 1000 live births, aimags and the…
+#> 3 DT_NSO_2100_014V4 INFANT MORTALITY, by sex, by soum, and by year              
+#> 4 DT_NSO_2100_014V5 INFANT MORTALITY RATE,  per 1000 live births, by sex, by so…
+#> 5 DT_NSO_2100_015V1 INFANT MORTALITY RATE, per 1000 live births, aimags and the…
 ```
 
-    ## # A tibble: 5 × 4
-    ##   tbl_id             tbl_eng_nm                                 strt_prd end_prd
-    ##   <chr>              <chr>                                      <chr>    <chr>  
-    ## 1 DT_NSO_0100_001V10 BALANCE OF PAYMENTS, by month              NA       NA     
-    ## 2 DT_NSO_0300_010V5  WEEKLY PRICES OF MAIN PRODUCTS AND GASOLI… 2025-11… 2024-0…
-    ## 3 DT_NSO_0303_07V7   CONSUMER PRICE INDEX IN AIMAGS, compared … 2015=100 2023=1…
-    ## 4 DT_NSO_0303_07V8   CONSUMER PRICE INDEX IN AIMAGS, compared … 2015=100 2023=1…
-    ## 5 DT_NSO_0303_07V9   CONSUMER PRICE INDEX IN AIMAGS, compared … 2015=100 2023=1…
+We’ll use `DT_NSO_2800_019V1` - Infant Mortality Rate per 1,000 live
+births.
 
-## Explore variables (codebook)
+### Step 3: Explore Table Metadata
+
+Before fetching data, check what dimensions are available:
 
 ``` r
-vars <- nso_variables("DT_NSO_0300_001V2")
-vars %>% dplyr::count(field)
+# View table structure
+meta <- nso_table_meta("DT_NSO_2800_019V1")
+meta
+#> # A tibble: 2 × 5
+#>   dim           code  is_time n_values codes            
+#>   <chr>         <chr> <lgl>      <int> <list>           
+#> 1 Aimag         Аймаг FALSE         28 <tibble [28 × 3]>
+#> 2 Time (Annual) ОН    FALSE         26 <tibble [26 × 3]>
+
+# Check available years (data available from 1990-2015)
+time_vals <- nso_dim_values("DT_NSO_2800_019V1", "Time (Annual)", labels = "en")
+head(time_vals, 10)
+#> # A tibble: 10 × 2
+#>    code  label_en
+#>    <chr> <chr>   
+#>  1 0     2015    
+#>  2 1     2014    
+#>  3 2     2013    
+#>  4 3     2012    
+#>  5 4     2011    
+#>  6 5     2010    
+#>  7 6     2009    
+#>  8 7     2008    
+#>  9 8     2007    
+#> 10 9     2006
 ```
 
-    ## # A tibble: 3 × 2
-    ##   field     n
-    ##   <chr> <int>
-    ## 1 Age      88
-    ## 2 Sex       3
-    ## 3 Year     25
+### Step 4: Fetch Data
+
+Get national infant mortality rates for the past two decades:
 
 ``` r
-vars %>% dplyr::filter(field %in% c("Sex","Age","Year")) %>% dplyr::slice_head(n = 10)
-```
-
-    ## # A tibble: 10 × 6
-    ##    field itm_id scr_eng scr_mn px_path                                   px_file
-    ##    <chr> <chr>  <chr>   <chr>  <chr>                                     <chr>  
-    ##  1 Sex   0      Total   NA     Population, household/1_Population, hous… DT_NSO…
-    ##  2 Sex   1      Male    NA     Population, household/1_Population, hous… DT_NSO…
-    ##  3 Sex   2      Female  NA     Population, household/1_Population, hous… DT_NSO…
-    ##  4 Age   0      Total   NA     Population, household/1_Population, hous… DT_NSO…
-    ##  5 Age   1      0       NA     Population, household/1_Population, hous… DT_NSO…
-    ##  6 Age   2      1       NA     Population, household/1_Population, hous… DT_NSO…
-    ##  7 Age   3      2       NA     Population, household/1_Population, hous… DT_NSO…
-    ##  8 Age   4      3       NA     Population, household/1_Population, hous… DT_NSO…
-    ##  9 Age   5      4       NA     Population, household/1_Population, hous… DT_NSO…
-    ## 10 Age   6      5       NA     Population, household/1_Population, hous… DT_NSO…
-
-Notes
-
-- Each PXWeb table has one or more dimensions (e.g., Year, Sex, Age).
-  Use their labels to select values.
-- You can pass values as codes or labels; mongolstats maps labels to
-  codes under the hood for you.
-
-## Fetch data
-
-``` r
-per <- tryCatch(tail(nso_table_periods("DT_NSO_0300_001V2"), 1), error = function(e) "")
-yr <- if (length(per) && nzchar(per[1])) per else "2022"
-dat <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = "Total", Age = "Total", Year = yr)
+imr_national <- nso_data(
+    tbl_id = "DT_NSO_2800_019V1",
+    selections = list(
+        "Aimag" = "Total", # National level
+        "Time (Annual)" = c("2010", "2011", "2012", "2013", "2014", "2015")
+    ),
+    labels = "en" # Get English labels
 )
 
-dat %>% dplyr::slice_head(n = 6)
+# Preview
+imr_national |>
+    head(10)
+#> # A tibble: 6 × 5
+#>   Aimag `Time (Annual)` value Aimag_en `Time (Annual)_en`
+#>   <chr> <chr>           <dbl> <chr>    <chr>             
+#> 1 0     0                15   Total    2015              
+#> 2 0     1                15.1 Total    2014              
+#> 3 0     2                14.6 Total    2013              
+#> 4 0     3                15.5 Total    2012              
+#> 5 0     4                16.5 Total    2011              
+#> 6 0     5                20.2 Total    2010
 ```
 
-    ## # A tibble: 1 × 4
-    ##   Sex   Age   Year    value
-    ##   <chr> <chr> <chr>   <dbl>
-    ## 1 0     0     24    2374617
+### Step 5: Visualize the Trend
 
-## Selecting by label vs code
-
-You can also select using dimension codes. For this table, `Sex` has
-codes `0` (Total), `1` (Male), `2` (Female). Both of the following are
-equivalent:
+Create a publication-ready plot:
 
 ``` r
-yr <- tryCatch(tail(nso_table_periods("DT_NSO_0300_001V2"), 1), error = function(e) "2022")
-dat_lbl <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = "Total", Age = "Total", Year = yr)
-)
-
-dat_code <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = "0", Age = "0", Year = yr)
-)
-
-list(rows_label = nrow(dat_lbl), rows_code = nrow(dat_code))
+imr_national |>
+    mutate(year = as.integer(`Time (Annual)_en`)) |>
+    ggplot(aes(x = year, y = value)) +
+    geom_line(color = "#2c3e50", linewidth = 1.2) +
+    geom_point(color = "#e74c3c", size = 4, shape = 21, fill = "white", stroke = 2) +
+    geom_smooth(method = "loess", se = TRUE, color = "#3498db", fill = "#3498db", alpha = 0.1) +
+    scale_x_continuous(breaks = scales::pretty_breaks()) +
+    labs(
+        title = "Infant Mortality Rate in Mongolia",
+        subtitle = "Deaths per 1,000 live births (National Trend)",
+        x = NULL,
+        y = "IMR",
+        caption = "Source: NSO Mongolia via mongolstats"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+        plot.title = element_text(face = "bold", size = 16),
+        plot.subtitle = element_text(color = "grey40"),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank()
+    )
 ```
 
-    ## $rows_label
-    ## [1] 1
-    ## 
-    ## $rows_code
-    ## [1] 1
+![Line plot showing decline in infant mortality rate from 2010 to
+2015](getting-started_files/figure-html/plot-trend-1.png)
 
-## Adding labels to the result
+## Regional Comparison
 
-Use the `labels` argument to add readable columns for each dimension:
+Compare infant mortality across different regions:
 
 ``` r
-per <- tryCatch(nso_table_periods("DT_NSO_0300_001V2"), error = function(e) character())
-yrs <- if (length(per) >= 2) tail(per, 2) else per
-if (!length(yrs)) yrs <- c("2021","2022")
-dat_labeled <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = c("Male","Female"), Age = "Total", Year = yrs),
-  labels = "en"
-)
+# Get all aimags for most recent year
+imr_regional <- nso_data(
+    tbl_id = "DT_NSO_2800_019V1",
+    selections = list(
+        "Aimag" = nso_dim_values("DT_NSO_2800_019V1", "Aimag")$code,
+        "Time (Annual)" = "2015" # Most recent year in dataset
+    ),
+    labels = "en"
+) |>
+    filter(Aimag != "0") |> # Exclude national total
+    filter(Aimag != "511") |> # Exclude duplicate Ulaanbaatar code
+    mutate(
+        Aimag_en = trimws(Aimag_en),
+        Type = ifelse(Aimag %in% c("1", "2", "3", "4"), "Region", "Aimag")
+    )
 
-dat_labeled %>% dplyr::select(dplyr::any_of(c("Year","Sex","value","Year_en","Sex_en"))) %>% dplyr::slice_head(n = 8)
+# Top 10 highest IMR regions
+imr_regional |>
+    arrange(desc(value)) |>
+    select(Aimag_en, value) |>
+    head(10)
+#> # A tibble: 10 × 2
+#>    Aimag_en       value
+#>    <chr>          <dbl>
+#>  1 Zavkhan         25.7
+#>  2 Bayan-Ulgii     24.7
+#>  3 Khuvsgul        22.3
+#>  4 Western region  21.6
+#>  5 Khovd           20.7
+#>  6 Uvs             20.4
+#>  7 Sukhbaatar      18.6
+#>  8 Bulgan          17.1
+#>  9 Khentii         17.1
+#> 10 Umnugovi        16.6
 ```
 
-    ## # A tibble: 4 × 5
-    ##   Year  Sex     value Year_en Sex_en
-    ##   <chr> <chr>   <dbl> <chr>   <chr> 
-    ## 1 23    1     1176858 2001    Male  
-    ## 2 24    1     1166478 2000    Male  
-    ## 3 23    2     1221849 2001    Female
-    ## 4 24    2     1208139 2000    Female
-
-## Working with periods
-
-Use helpers to discover valid periods for a table and build sequences:
+### Visualize Regional Disparities
 
 ``` r
-periods <- nso_table_periods("DT_NSO_0300_001V2")
-head(periods); tail(periods)
+imr_regional |>
+    arrange(desc(value)) |>
+    mutate(Aimag_en = forcats::fct_reorder(Aimag_en, value)) |>
+    ggplot(aes(x = value, y = Aimag_en)) +
+    # Aimags with gradient
+    geom_col(data = ~ subset(., Type == "Aimag"), aes(fill = value), width = 0.7) +
+    # Regions with distinct color
+    geom_col(data = ~ subset(., Type == "Region"), fill = "#2c3e50", width = 0.7) +
+    geom_text(aes(label = round(value, 1)), hjust = -0.2, color = "grey30", size = 3.5) +
+    scale_fill_gradient2(
+        low = "#27ae60",
+        mid = "#f39c12",
+        high = "#e74c3c",
+        midpoint = median(imr_regional$value[imr_regional$Type == "Aimag"])
+    ) +
+    geom_vline(
+        xintercept = median(imr_regional$value[imr_regional$Type == "Aimag"]),
+        linetype = "dashed",
+        color = "grey50",
+        linewidth = 0.5
+    ) +
+    scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+    labs(
+        title = "Infant Mortality by Aimag (2015)",
+        subtitle = "Dark bars represent Regional Averages",
+        x = "Deaths per 1,000 live births",
+        y = NULL
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(
+        plot.title = element_text(face = "bold", size = 14),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.y = element_text(color = "black")
+    )
 ```
 
-    ## [1] "2024" "2023" "2022" "2021" "2020" "2019"
+![Bar chart comparing infant mortality rates across Mongolia's
+aimags](getting-started_files/figure-html/regional-plot-1.png)
 
-    ## [1] "2005" "2004" "2003" "2002" "2001" "2000"
+## Adding Geographic Context
+
+Combine with mapping for spatial analysis:
 
 ``` r
-# Yearly sequence helper
-nso_period_seq("2018","2022", by = "Y")
+library(sf)
+
+# Get aimag boundaries
+aimags <- mn_boundaries(level = "ADM1")
+
+# Join IMR data to map
+imr_map <- aimags |>
+    left_join(imr_regional, by = c("shapeName" = "Aimag_en"))
+
+# Create choropleth
+imr_map |>
+    ggplot() +
+    geom_sf(aes(fill = value), color = "white", size = 0.2) +
+    scale_fill_viridis_c(
+        option = "magma",
+        direction = -1,
+        name = "IMR per\n1,000",
+        labels = scales::label_number()
+    ) +
+    labs(
+        title = "Infant Mortality Geography (2015)",
+        subtitle = "Spatial distribution of mortality rates",
+        caption = "Source: NSO Mongolia"
+    ) +
+    theme_void() +
+    theme(
+        plot.title = element_text(face = "bold", size = 16),
+        plot.subtitle = element_text(color = "grey40"),
+        legend.position = "right",
+        legend.title = element_text(size = 10, face = "bold")
+    )
 ```
 
-    ## [1] "2018" "2019" "2020" "2021" "2022"
+![Choropleth map of infant mortality rates across
+Mongolia](getting-started_files/figure-html/map-example-1.png)
 
-## Summaries
+## Key Functions Summary
 
-With dplyr, it’s straightforward to summarise values by year or
-category:
+| Function                                                                                        | Purpose                   | Example                             |
+|-------------------------------------------------------------------------------------------------|---------------------------|-------------------------------------|
+| [`nso_itms_search()`](https://temuulene.github.io/mongolstats/reference/nso_itms_search.md)     | Find tables by keyword    | `nso_itms_search("mortality")`      |
+| [`nso_table_meta()`](https://temuulene.github.io/mongolstats/reference/nso_table_meta.md)       | Get table dimensions      | `nso_table_meta("DT_NSO_...")`      |
+| [`nso_dim_values()`](https://temuulene.github.io/mongolstats/reference/nso_dim_values.md)       | List dimension values     | `nso_dim_values(tbl, "Region")`     |
+| [`nso_table_periods()`](https://temuulene.github.io/mongolstats/reference/nso_table_periods.md) | Check time coverage       | `nso_table_periods(tbl)`            |
+| [`nso_data()`](https://temuulene.github.io/mongolstats/reference/nso_data.md)                   | Fetch data                | `nso_data(tbl, selections, labels)` |
+| [`mn_boundaries()`](https://temuulene.github.io/mongolstats/reference/mn_boundaries.md)         | Get geographic boundaries | `mn_boundaries(level = "ADM1")`     |
 
-``` r
-per <- tryCatch(nso_table_periods("DT_NSO_0300_001V2"), error = function(e) character())
-yrs <- if (length(per) >= 5) tail(per, 5) else per
-if (!length(yrs)) yrs <- c("2018","2019","2020","2021","2022")
-dat_year <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = "Total", Age = "Total", Year = yrs)
-)
+## Best Practices
 
-dat_year %>%
-  dplyr::group_by(Year) %>%
-  dplyr::summarise(value = sum(value, na.rm = TRUE)) %>%
-  dplyr::arrange(Year) %>%
-  dplyr::slice_head(n = 10)
-```
+1.  **Always use labels**: Set `labels = "en"` in
+    [`nso_data()`](https://temuulene.github.io/mongolstats/reference/nso_data.md)
+    for readable output
+2.  **Check metadata first**: Use
+    [`nso_table_meta()`](https://temuulene.github.io/mongolstats/reference/nso_table_meta.md)
+    to understand dimensions before fetching
+3.  **Use appropriate selections**: Specify dimensions by their English
+    labels (e.g., `"Total"` not `"0"`)
+4.  **Filter carefully**: Exclude total rows (usually code `"0"`) when
+    analyzing subgroups
+5.  **Clean labels**: Use
+    [`trimws()`](https://rdrr.io/r/base/trimws.html) to remove
+    leading/trailing spaces from region names before joining
 
-    ## # A tibble: 5 × 2
-    ##   Year    value
-    ##   <chr>   <dbl>
-    ## 1 20    2474438
-    ## 2 21    2450790
-    ## 3 22    2425999
-    ## 4 23    2398707
-    ## 5 24    2374617
+## Common Workflows
+
+### Time Series Analysis
+
+1.  Search for table → Check periods → Fetch years → Plot trend
+
+### Regional Comparison
+
+1.  Search table → Get all regions → Fetch latest year → Compare rates
+
+### Spatial Epidemiology
+
+1.  Fetch regional data → Get boundaries → Join → Create choropleth
+
+## Next Steps
+
+- **Discover More Data**: See the [Discovery
+  Guide](https://temuulene.github.io/mongolstats/articles/discovery.md)
+  for advanced search techniques
+- **Create Maps**: Learn spatial analysis in the [Mapping
+  Guide](https://temuulene.github.io/mongolstats/articles/mapping.md)  
+- **Reference**: Browse all functions in the
+  [Reference](https://temuulene.github.io/mongolstats/reference/index.md)
+
+## Quick Reference: Common Health Tables
+
+| Indicator             | Table_ID          |
+|:----------------------|:------------------|
+| Infant Mortality      | DT_NSO_2800_019V1 |
+| Maternal Mortality    | DT_NSO_2100_050V1 |
+| Under-5 Mortality     | DT_NSO_2100_030V2 |
+| Cancer Incidence      | DT_NSO_2100_012V1 |
+| TB Incidence          | DT_NSO_2800_026V1 |
+| Communicable Diseases | DT_NSO_2100_020V2 |

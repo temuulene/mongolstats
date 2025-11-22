@@ -1,90 +1,158 @@
-# mongolstats
+# mongolstats ![](reference/figures/logo.png)
 
-Tidy access to the National Statistics Office of Mongolia (NSO)
-statistics via the PXWeb API (data.1212.mn) and Mongolia administrative
-boundaries, inspired by the ergonomics of tidycensus. Provides a
-tidyverse-friendly interface for discovering tables, exploring
-codebooks, fetching data, and working with `sf` geometries for mapping.
+**mongolstats** is your gateway to the [National Statistics Office of
+Mongolia (NSO)](https://data.1212.mn/). Access official data, analyze
+economic trends, and map regional statistics—all from within R.
+
+## Why mongolstats?
+
+- **Instant Access:** Query thousands of official datasets directly from
+  18. 
+- **Tidy Data:** Analysis-ready `tibble` format compatible with `dplyr`
+  and `ggplot2`.
+- **Mapping Ready:** Built-in administrative boundaries for effortless
+  geospatial analysis.
+- **Reliable:** Smart caching and robust error handling for smooth
+  workflows.
 
 ## Installation
+
+You can install the development version of mongolstats from
+[GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("temuulene/mongolstats")
 ```
 
-## Quick start
+## Quick Start
+
+### 1. The Economic Pulse: GDP Trends
+
+Visualize Mongolia’s economic growth in seconds.
 
 ``` r
 library(mongolstats)
 library(dplyr)
+library(ggplot2)
 
-# Use new PXWeb API (data.1212.mn)
+# Set language to English
 nso_options(mongolstats.lang = "en")
 
-# List available tables
-itms <- nso_itms()
-itms %>% select(tbl_id, tbl_eng_nm, strt_prd, end_prd) %>% slice_head(n = 5)
-
-# Inspect variables (codebook) for a table
-vars <- nso_variables("DT_NSO_0300_001V2")
-vars %>% count(field)
-
-# Fetch data
-dat <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = "Total", Age = "Total", Year = "2024")
+# Fetch GDP data - using labels for clarity
+gdp <- nso_data(
+  tbl_id = "DT_NSO_0500_001V1",
+  selections = list(
+    "Indicator" = "GDP, at current prices",
+    "Economic activity" = "Total",
+    "Year" = c(
+      "2010", "2011", "2012", "2013", "2014",
+      "2015", "2016", "2017", "2018", "2019",
+      "2020", "2021", "2022", "2023"
+    )
+  ),
+  labels = "en" # Get English labels
 )
-dat %>% slice_head(n = 6)
+
+# Visualize
+gdp |>
+  ggplot(aes(x = as.integer(Year_en), y = value / 1e6)) + # Convert to Trillions
+  geom_area(fill = "#42b883", alpha = 0.6) +
+  geom_line(color = "#2c3e50", linewidth = 1.2) +
+  geom_point(color = "#2c3e50", size = 3, shape = 21, fill = "white", stroke = 1.5) +
+  scale_y_continuous(labels = scales::label_number(suffix = "T")) +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  labs(
+    title = "Mongolia's GDP Growth (2010-2023)",
+    subtitle = "Gross Domestic Product (in Trillions MNT)",
+    x = NULL,
+    y = NULL,
+    caption = "Source: NSO Mongolia via mongolstats"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "grey40"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank()
+  )
 ```
 
-### Live traversal (simple path)
+![](README_files/figure-gfm/gdp-example-1.png)
+
+### 2. Mapping Regional Population
+
+Discover how population is distributed across the country.
 
 ``` r
-# Navigate catalog → pick table → fetch
-secs <- nso_sectors()
-subsecs <- nso_subsectors(secs$id[1])
-tbls <- nso_itms_by_sector(subsecs$id[1])
-meta <- nso_table_meta(tbls$tbl_id[1])  # per-dimension codebooks
+library(sf)
 
-dat2 <- nso_data(
-  tbl_id = tbls$tbl_id[1],
-  selections = list(Year = c("2023", "2024")),
-  value_name = "Variable",           # rename value column
-  include_raw = TRUE                  # attach raw PX payload as attr(px_raw)
-)
-attr(dat2, "px_raw") %>% names()
+# 1. Fetch Population by Aimag
+# Get all region codes first
+regions <- nso_dim_values("DT_NSO_0300_002V1", "Region")$code
+
+pop <- nso_data(
+  tbl_id = "DT_NSO_0300_002V1",
+  selections = list(
+    "Region" = regions,
+    "Year" = "2023" # Use the year label
+  ),
+  labels = "en" # Get English labels for joining
+) |>
+  filter(Region != "0") |> # Exclude National Total (code "0")
+  mutate(Region_en = trimws(Region_en)) # Clean leading spaces in labels
+
+# 2. Get Administrative Boundaries
+map <- mn_boundaries(level = "ADM1")
+
+# 3. Join and Map
+map |>
+  left_join(pop, by = c("shapeName" = "Region_en")) |>
+  ggplot() +
+  geom_sf(aes(fill = value), color = "white", size = 0.2) +
+  scale_fill_viridis_c(
+    option = "magma",
+    direction = -1,
+    labels = scales::label_number(scale_cut = scales::cut_short_scale()),
+    name = "Population"
+  ) +
+  labs(
+    title = "Population Distribution (2023)",
+    subtitle = "Mid-year resident population by Aimag",
+    caption = "Source: NSO Mongolia"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "grey40"),
+    legend.position = "bottom",
+    legend.key.width = unit(1.5, "cm")
+  )
 ```
 
-## Features
+![](README_files/figure-gfm/pop-map-example-1.png)
 
-- PXWeb client for NSO data (data.1212.mn)
-- Discover tables and variables with
-  [`nso_itms()`](https://temuulene.github.io/mongolstats/reference/nso_itms.md)
-  /
-  [`nso_itms_detail()`](https://temuulene.github.io/mongolstats/reference/nso_itms_detail.md)
-- Fetch data via `nso_data(tbl_id, selections=...)`; batch with
-  [`nso_package()`](https://temuulene.github.io/mongolstats/reference/nso_package.md)
-- Optional label columns in English or Mongolian
-  (`labels = "en" | "mn" | "both"`)
-- Category navigation and table search helpers
-- Mongolia administrative boundaries (ADM0–ADM2) as `sf`
-- Exact and fuzzy name-based boundary joins
-- Lightweight on-disk caching for faster table/codebook lookups
+## Documentation
 
-## Vignettes
+Full documentation is available at
+[temuulene.github.io/mongolstats](https://temuulene.github.io/mongolstats/).
 
-- Getting started
-- Discovering tables and variables
-- Fetching data and periods
-- Batch fetching workflows
-- Mapping, fuzzy joins, and code-based joins
+- [Getting
+  Started](https://temuulene.github.io/mongolstats/articles/getting-started.html) -
+  Your first epidemiological analysis
+- [Discovery
+  Guide](https://temuulene.github.io/mongolstats/articles/discovery.html) -
+  Find and explore tables
+- [Mapping
+  Guide](https://temuulene.github.io/mongolstats/articles/mapping.html) -
+  Work with administrative boundaries
 
 ## Contributing
 
-Issues and pull requests are welcome:
-<https://github.com/temuulene/mongolstats/issues>
+We welcome contributions! Please see the [Contributing
+Guidelines](https://temuulene.github.io/mongolstats/CONTRIBUTING.md) for
+details.
 
 ## License
 
-MIT Ac Temuulen Enebish
+MIT

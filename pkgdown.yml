@@ -2,18 +2,10 @@ pandoc: 3.1.11
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  batch-workflows: batch-workflows.html
-  code-joins: code-joins.html
   discovery: discovery.html
-  fetching-periods: fetching-periods.html
-  fuzzy-joins: fuzzy-joins.html
   getting-started: getting-started.html
   mapping: mapping.html
-  offline-caching: offline-caching.html
-  parallel-batching: parallel-batching.html
-  query-builder: query-builder.html
-  troubleshooting: troubleshooting.html
-last_built: 2025-11-21T04:46Z
+last_built: 2025-11-22T00:25Z
 urls:
   reference: https://temuulene.github.io/mongolstats/reference
   article: https://temuulene.github.io/mongolstats/articles
