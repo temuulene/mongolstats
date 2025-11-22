@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mongolstats</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,33 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.0" id="mongolstats-010">mongolstats 0.1.0<a class="anchor" aria-label="anchor" href="#mongolstats-010"></a></h2>
+<p>First minor release with improved documentation, data quality fixes, and enhanced visualization.</p>
+<div class="section level3">
+<h3 id="data--maps-0-1-0">Data &amp; Maps<a class="anchor" aria-label="anchor" href="#data--maps-0-1-0"></a></h3>
+<ul><li>
+<strong>Updated Infant Mortality Data</strong>: Switched to monthly table <code>DT_NSO_2100_015V1</code> for more granular trend analysis and up-to-date regional comparisons (2024).</li>
+<li>
+<strong>Map Improvements</strong>:
+<ul><li>Fixed region name mismatches between NSO data and shapefiles (e.g., “Sukhbaatar” vs “Sükhbaatar”).</li>
+<li>Improved population map visualization with log scales and better color palettes.</li>
+<li>Added <code>scale_x_date</code> to time series plots for correct year formatting.</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-1-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-1-0"></a></h3>
+<ul><li>
+<strong>Vignette Overhaul</strong>:
+<ul><li>Updated <code>getting-started</code>, <code>discovery</code>, and <code>mapping</code> vignettes with cleaner examples and better plots.</li>
+<li>Added new “Tips for Epidemiological Research” section.</li>
+</ul></li>
+<li>
+<strong>Package Cleanup</strong>: Removed unused files and streamlined repository structure.</li>
+<li>
+<strong>Logo</strong>: Added new hex sticker.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.0.9000" id="mongolstats-0009000">mongolstats 0.0.0.9000<a class="anchor" aria-label="anchor" href="#mongolstats-0009000"></a></h2>
 <p>Initial development snapshot.</p>
 <ul><li>NSO API wrappers: <code><a href="../reference/nso_itms.html">nso_itms()</a></code>, <code><a href="../reference/nso_itms_detail.html">nso_itms_detail()</a></code>, <code><a href="../reference/nso_data.html">nso_data()</a></code>, <code><a href="../reference/nso_package.html">nso_package()</a></code>
@@ -48,7 +75,8 @@
 <li>Caching for discovery endpoints</li>
 <li>Vignettes for getting started, mapping, fuzzy joins, and code-based joins</li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
