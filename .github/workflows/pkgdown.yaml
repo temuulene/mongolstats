@@ -45,6 +45,10 @@ jobs:
         run: roxygen2::roxygenise()
         shell: Rscript {0}
 
+      - name: Render README
+        run: rmarkdown::render("README.Rmd", output_format = "md_document")
+        shell: Rscript {0}
+
       - name: Build pkgdown site
         run: pkgdown::build_site(preview = FALSE, install = FALSE)
         shell: Rscript {0}
