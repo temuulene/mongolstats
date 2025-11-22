@@ -1,4 +1,4 @@
-# mongolstats ![](reference/figures/logo.png)
+# mongolstats
 
 **mongolstats** is your gateway to the [National Statistics Office of
 Mongolia (NSO)](https://data.1212.mn/). Access official data, analyze
