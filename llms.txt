@@ -48,7 +48,7 @@ gdp <- nso_data(
     "Year" = c(
       "2010", "2011", "2012", "2013", "2014",
       "2015", "2016", "2017", "2018", "2019",
-      "2020", "2021", "2022", "2023"
+      "2020", "2021", "2022", "2023", "2024"
     )
   ),
   labels = "en" # Get English labels
@@ -61,9 +61,9 @@ gdp |>
   geom_line(color = "#2c3e50", linewidth = 1.2) +
   geom_point(color = "#2c3e50", size = 3, shape = 21, fill = "white", stroke = 1.5) +
   scale_y_continuous(labels = scales::label_number(suffix = "T")) +
-  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_x_continuous(breaks = scales::breaks_pretty(n = 10)) +
   labs(
-    title = "Mongolia's GDP Growth (2010-2023)",
+    title = "Mongolia's GDP Growth (2010-2024)",
     subtitle = "Gross Domestic Product (in Trillions MNT)",
     x = NULL,
     y = NULL,
@@ -95,12 +95,24 @@ pop <- nso_data(
   tbl_id = "DT_NSO_0300_002V1",
   selections = list(
     "Region" = regions,
-    "Year" = "2023" # Use the year label
+    "Year" = "2024" # Use the year label
   ),
   labels = "en" # Get English labels for joining
 ) |>
-  filter(Region != "0") |> # Exclude National Total (code "0")
-  mutate(Region_en = trimws(Region_en)) # Clean leading spaces in labels
+  filter(!Region %in% c("0", "1", "2", "3", "4", "511")) |> # Exclude Total, Regions, and duplicate UB
+  mutate(
+    Region_en = trimws(Region_en),
+    Region_en = dplyr::case_match(
+      Region_en,
+      "Bayan-Ulgii" ~ "Bayan-Ölgii",
+      "Uvurkhangai" ~ "Övörkhangai",
+      "Khuvsgul" ~ "Hovsgel",
+      "Umnugovi" ~ "Ömnögovi",
+      "Tuv" ~ "Töv",
+      "Sukhbaatar" ~ "Sükhbaatar",
+      .default = Region_en
+    )
+  )
 
 # 2. Get Administrative Boundaries
 map <- mn_boundaries(level = "ADM1")
@@ -113,11 +125,13 @@ map |>
   scale_fill_viridis_c(
     option = "magma",
     direction = -1,
+    trans = "log10",
+    breaks = c(20000, 50000, 100000, 500000, 1500000),
     labels = scales::label_number(scale_cut = scales::cut_short_scale()),
     name = "Population"
   ) +
   labs(
-    title = "Population Distribution (2023)",
+    title = "Population Distribution (2024)",
     subtitle = "Mid-year resident population by Aimag",
     caption = "Source: NSO Mongolia"
   ) +

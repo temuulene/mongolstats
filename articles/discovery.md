@@ -191,75 +191,91 @@ cancer_data |>
 
 ![](discovery_files/figure-html/cancer-analysis-1.png)
 
-## Case Study: Infant Mortality Surveillance
-
 ### Regional Disparities
 
 ``` r
 # Infant mortality by aimag
-imr_tbl <- "DT_NSO_2800_019V1" # IMR per 1,000 live births
+imr_tbl <- "DT_NSO_2100_015V1" # IMR per 1,000 live births (Monthly)
 
 # Get metadata
 imr_meta <- nso_table_meta(imr_tbl)
-aimags <- nso_dim_values(imr_tbl, "Aimag", labels = "en")
+months <- nso_dim_values(imr_tbl, "Month", labels = "en")
 
-# Fetch recent data for all regions
+# Fetch recent data for all regions (2024 Average)
+months_2024 <- months |>
+  filter(grepl("2024", label_en)) |>
+  pull(code)
+
 imr_data <- nso_data(
   tbl_id = imr_tbl,
   selections = list(
-    "Aimag" = aimags$code,
-    "Time (Annual)" = "0" # Code for 2015 (checked via metadata)
+    "Region" = nso_dim_values(imr_tbl, "Region")$code,
+    "Month" = months_2024
   ),
   labels = "en"
 ) |>
-  filter(Aimag != "0") |> # Exclude national total
-  mutate(Aimag_en = trimws(Aimag_en))
+  filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar
+  mutate(
+    Region_en = trimws(Region_en),
+    Region_en = dplyr::case_match(
+      Region_en,
+      "Bayan-Ulgii" ~ "Bayan-Ölgii",
+      "Uvurkhangai" ~ "Övörkhangai",
+      "Khuvsgul" ~ "Hovsgel",
+      "Umnugovi" ~ "Ömnögovi",
+      "Tuv" ~ "Töv",
+      "Sukhbaatar" ~ "Sükhbaatar",
+      .default = Region_en
+    )
+  ) |>
+  group_by(Region_en) |>
+  summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
 # Find regions with highest IMR
 imr_data |>
   arrange(desc(value)) |>
-  select(Aimag_en, value) |>
+  select(Region_en, value) |>
   head(10)
 #> # A tibble: 10 × 2
-#>    Aimag_en       value
-#>    <chr>          <dbl>
-#>  1 Zavkhan         25.7
-#>  2 Bayan-Ulgii     24.7
-#>  3 Khuvsgul        22.3
-#>  4 Western region  21.6
-#>  5 Khovd           20.7
-#>  6 Uvs             20.4
-#>  7 Sukhbaatar      18.6
-#>  8 Bulgan          17.1
-#>  9 Khentii         17.1
-#> 10 Umnugovi        16.6
+#>    Region_en    value
+#>    <chr>        <dbl>
+#>  1 Hovsgel       27.2
+#>  2 Arkhangai     24.8
+#>  3 Övörkhangai   23.9
+#>  4 Bayankhongor  21.6
+#>  5 Ömnögovi      19.9
+#>  6 Uvs           19.8
+#>  7 Sükhbaatar    17.9
+#>  8 Bayan-Ölgii   17.7
+#>  9 Zavkhan       17.5
+#> 10 Khovd         16.8
 ```
 
 ### Time Trend Analysis
 
 ``` r
-# Analyze national trend
+# Analyze national trend (Monthly)
 imr_national <- nso_data(
   tbl_id = imr_tbl,
   selections = list(
-    "Aimag" = "0", # National total (code 0)
-    "Time (Annual)" = as.character(0:5) # Codes for 2015-2010 (0=2015, 5=2010 based on debug)
+    "Region" = "0", # National total
+    "Month" = months$code
   ),
   labels = "en"
 )
 
 imr_national |>
-  mutate(year = as.integer(`Time (Annual)_en`)) |>
-  ggplot(aes(x = year, y = value)) +
+  mutate(date = as.Date(paste0(Month_en, "-01"))) |>
+  filter(date >= as.Date("2019-01-01") & date <= as.Date("2024-12-31")) |>
+  ggplot(aes(x = date, y = value)) +
   geom_ribbon(aes(ymin = value * 0.9, ymax = value * 1.1), fill = "#e74c3c", alpha = 0.1) + # Illustrative CI
   geom_line(color = "#c0392b", linewidth = 1.5) +
-  geom_point(color = "#c0392b", size = 4, shape = 21, fill = "white", stroke = 2) +
-  geom_text(aes(label = value), vjust = -1.5, fontface = "bold", color = "#c0392b") +
-  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  geom_point(color = "#c0392b", size = 2, shape = 21, fill = "white", stroke = 1) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.2))) +
   labs(
-    title = "Infant Mortality Rate Decline",
-    subtitle = "Deaths per 1,000 live births (2010-2015)",
+    title = "Infant Mortality Rate Trend",
+    subtitle = "Monthly Deaths per 1,000 live births (2019-2024)",
     x = NULL,
     y = "IMR",
     caption = "Source: NSO Mongolia"

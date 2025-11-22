@@ -115,7 +115,7 @@
 <span>    <span class="st">"Year"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>      <span class="st">"2010"</span>, <span class="st">"2011"</span>, <span class="st">"2012"</span>, <span class="st">"2013"</span>, <span class="st">"2014"</span>,</span>
 <span>      <span class="st">"2015"</span>, <span class="st">"2016"</span>, <span class="st">"2017"</span>, <span class="st">"2018"</span>, <span class="st">"2019"</span>,</span>
-<span>      <span class="st">"2020"</span>, <span class="st">"2021"</span>, <span class="st">"2022"</span>, <span class="st">"2023"</span></span>
+<span>      <span class="st">"2020"</span>, <span class="st">"2021"</span>, <span class="st">"2022"</span>, <span class="st">"2023"</span>, <span class="st">"2024"</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span> <span class="co"># Get English labels</span></span>
@@ -128,9 +128,9 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#2c3e50"</span>, linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#2c3e50"</span>, size <span class="op">=</span> <span class="fl">3</span>, shape <span class="op">=</span> <span class="fl">21</span>, fill <span class="op">=</span> <span class="st">"white"</span>, stroke <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>suffix <span class="op">=</span> <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/pretty_breaks.html" class="external-link">pretty_breaks</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/breaks_pretty.html" class="external-link">breaks_pretty</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Mongolia's GDP Growth (2010-2023)"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Mongolia's GDP Growth (2010-2024)"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Gross Domestic Product (in Trillions MNT)"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    y <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -160,12 +160,24 @@
 <span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_0300_002V1"</span>,</span>
 <span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    <span class="st">"Region"</span> <span class="op">=</span> <span class="va">regions</span>,</span>
-<span>    <span class="st">"Year"</span> <span class="op">=</span> <span class="st">"2023"</span> <span class="co"># Use the year label</span></span>
+<span>    <span class="st">"Year"</span> <span class="op">=</span> <span class="st">"2024"</span> <span class="co"># Use the year label</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span> <span class="co"># Get English labels for joining</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Region</span> <span class="op">!=</span> <span class="st">"0"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Exclude National Total (code "0")</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Region_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span><span class="op">)</span> <span class="co"># Clean leading spaces in labels</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">Region</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span>, <span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"511"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Exclude Total, Regions, and duplicate UB</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    Region_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span>,</span>
+<span>    Region_en <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_match.html" class="external-link">case_match</a></span><span class="op">(</span></span>
+<span>      <span class="va">Region_en</span>,</span>
+<span>      <span class="st">"Bayan-Ulgii"</span> <span class="op">~</span> <span class="st">"Bayan-Ölgii"</span>,</span>
+<span>      <span class="st">"Uvurkhangai"</span> <span class="op">~</span> <span class="st">"Övörkhangai"</span>,</span>
+<span>      <span class="st">"Khuvsgul"</span> <span class="op">~</span> <span class="st">"Hovsgel"</span>,</span>
+<span>      <span class="st">"Umnugovi"</span> <span class="op">~</span> <span class="st">"Ömnögovi"</span>,</span>
+<span>      <span class="st">"Tuv"</span> <span class="op">~</span> <span class="st">"Töv"</span>,</span>
+<span>      <span class="st">"Sukhbaatar"</span> <span class="op">~</span> <span class="st">"Sükhbaatar"</span>,</span>
+<span>      .default <span class="op">=</span> <span class="va">Region_en</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 2. Get Administrative Boundaries</span></span>
 <span><span class="va">map</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/mn_boundaries.html">mn_boundaries</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"ADM1"</span><span class="op">)</span></span>
@@ -178,11 +190,13 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span></span>
 <span>    option <span class="op">=</span> <span class="st">"magma"</span>,</span>
 <span>    direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,</span>
+<span>    trans <span class="op">=</span> <span class="st">"log10"</span>,</span>
+<span>    breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20000</span>, <span class="fl">50000</span>, <span class="fl">100000</span>, <span class="fl">500000</span>, <span class="fl">1500000</span><span class="op">)</span>,</span>
 <span>    labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>scale_cut <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/number.html" class="external-link">cut_short_scale</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    name <span class="op">=</span> <span class="st">"Population"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Population Distribution (2023)"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Population Distribution (2024)"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Mid-year resident population by Aimag"</span>,</span>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>

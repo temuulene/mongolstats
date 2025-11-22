@@ -45,8 +45,8 @@ mortality_tables |>
 #> 5 DT_NSO_2100_015V1 INFANT MORTALITY RATE, per 1000 live births, aimags and the…
 ```
 
-We’ll use `DT_NSO_2800_019V1` - Infant Mortality Rate per 1,000 live
-births.
+We’ll use `DT_NSO_2100_015V1` - Infant Mortality Rate per 1,000 live
+births (Monthly).
 
 ### Step 3: Explore Table Metadata
 
@@ -54,30 +54,30 @@ Before fetching data, check what dimensions are available:
 
 ``` r
 # View table structure
-meta <- nso_table_meta("DT_NSO_2800_019V1")
+meta <- nso_table_meta("DT_NSO_2100_015V1")
 meta
 #> # A tibble: 2 × 5
-#>   dim           code  is_time n_values codes            
-#>   <chr>         <chr> <lgl>      <int> <list>           
-#> 1 Aimag         Аймаг FALSE         28 <tibble [28 × 3]>
-#> 2 Time (Annual) ОН    FALSE         26 <tibble [26 × 3]>
+#>   dim    code  is_time n_values codes             
+#>   <chr>  <chr> <lgl>      <int> <list>            
+#> 1 Region Бүс   FALSE         28 <tibble [28 × 3]> 
+#> 2 Month  Сар   FALSE        118 <tibble [118 × 3]>
 
-# Check available years (data available from 1990-2015)
-time_vals <- nso_dim_values("DT_NSO_2800_019V1", "Time (Annual)", labels = "en")
+# Check available months
+time_vals <- nso_dim_values("DT_NSO_2100_015V1", "Month", labels = "en")
 head(time_vals, 10)
 #> # A tibble: 10 × 2
 #>    code  label_en
 #>    <chr> <chr>   
-#>  1 0     2015    
-#>  2 1     2014    
-#>  3 2     2013    
-#>  4 3     2012    
-#>  5 4     2011    
-#>  6 5     2010    
-#>  7 6     2009    
-#>  8 7     2008    
-#>  9 8     2007    
-#> 10 9     2006
+#>  1 0     2025-10 
+#>  2 1     2025-09 
+#>  3 2     2025-08 
+#>  4 3     2016-01 
+#>  5 4     2016-02 
+#>  6 5     2016-03 
+#>  7 6     2016-04 
+#>  8 7     2016-05 
+#>  9 8     2016-06 
+#> 10 9     2016-07
 ```
 
 ### Step 4: Fetch Data
@@ -85,11 +85,14 @@ head(time_vals, 10)
 Get national infant mortality rates for the past two decades:
 
 ``` r
+# Get all month codes
+months <- nso_dim_values("DT_NSO_2100_015V1", "Month", labels = "en")
+
 imr_national <- nso_data(
-    tbl_id = "DT_NSO_2800_019V1",
+    tbl_id = "DT_NSO_2100_015V1",
     selections = list(
-        "Aimag" = "Total", # National level
-        "Time (Annual)" = c("2010", "2011", "2012", "2013", "2014", "2015")
+        "Region" = "0", # National level
+        "Month" = months$code
     ),
     labels = "en" # Get English labels
 )
@@ -97,15 +100,19 @@ imr_national <- nso_data(
 # Preview
 imr_national |>
     head(10)
-#> # A tibble: 6 × 5
-#>   Aimag `Time (Annual)` value Aimag_en `Time (Annual)_en`
-#>   <chr> <chr>           <dbl> <chr>    <chr>             
-#> 1 0     0                15   Total    2015              
-#> 2 0     1                15.1 Total    2014              
-#> 3 0     2                14.6 Total    2013              
-#> 4 0     3                15.5 Total    2012              
-#> 5 0     4                16.5 Total    2011              
-#> 6 0     5                20.2 Total    2010
+#> # A tibble: 10 × 5
+#>    Region Month value Region_en Month_en
+#>    <chr>  <chr> <dbl> <chr>     <chr>   
+#>  1 0      0        11 Total     2025-10 
+#>  2 0      1        14 Total     2025-09 
+#>  3 0      2        16 Total     2025-08 
+#>  4 0      3        12 Total     2016-01 
+#>  5 0      4        13 Total     2016-02 
+#>  6 0      5        14 Total     2016-03 
+#>  7 0      6        15 Total     2016-04 
+#>  8 0      7        15 Total     2016-05 
+#>  9 0      8        14 Total     2016-06 
+#> 10 0      9        14 Total     2016-07
 ```
 
 ### Step 5: Visualize the Trend
@@ -114,14 +121,15 @@ Create a publication-ready plot:
 
 ``` r
 imr_national |>
-    mutate(year = as.integer(`Time (Annual)_en`)) |>
-    ggplot(aes(x = year, y = value)) +
+    mutate(date = as.Date(paste0(Month_en, "-01"))) |>
+    filter(date >= as.Date("2015-01-01") & date <= as.Date("2024-12-31")) |>
+    ggplot(aes(x = date, y = value)) +
     geom_line(color = "#2c3e50", linewidth = 1.2) +
     geom_point(color = "#e74c3c", size = 4, shape = 21, fill = "white", stroke = 2) +
     geom_smooth(method = "loess", se = TRUE, color = "#3498db", fill = "#3498db", alpha = 0.1) +
-    scale_x_continuous(breaks = scales::pretty_breaks()) +
+    scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
     labs(
-        title = "Infant Mortality Rate in Mongolia",
+        title = "Infant Mortality Rate in Mongolia (Monthly)",
         subtitle = "Deaths per 1,000 live births (National Trend)",
         x = NULL,
         y = "IMR",
@@ -145,48 +153,67 @@ Compare infant mortality across different regions:
 
 ``` r
 # Get all aimags for most recent year
+# Get all aimags for most recent year (2024)
+# We'll take the average of monthly rates
+months_2024 <- months |>
+    filter(grepl("2024", label_en)) |>
+    pull(code)
+
 imr_regional <- nso_data(
-    tbl_id = "DT_NSO_2800_019V1",
+    tbl_id = "DT_NSO_2100_015V1",
     selections = list(
-        "Aimag" = nso_dim_values("DT_NSO_2800_019V1", "Aimag")$code,
-        "Time (Annual)" = "2015" # Most recent year in dataset
+        "Region" = nso_dim_values("DT_NSO_2100_015V1", "Region")$code,
+        "Month" = months_2024
     ),
     labels = "en"
 ) |>
-    filter(Aimag != "0") |> # Exclude national total
-    filter(Aimag != "511") |> # Exclude duplicate Ulaanbaatar code
+    filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar
     mutate(
-        Aimag_en = trimws(Aimag_en),
-        Type = ifelse(Aimag %in% c("1", "2", "3", "4"), "Region", "Aimag")
-    )
+        Region_en = trimws(Region_en),
+        Region_en = dplyr::case_match(
+            Region_en,
+            "Bayan-Ulgii" ~ "Bayan-Ölgii",
+            "Uvurkhangai" ~ "Övörkhangai",
+            "Khuvsgul" ~ "Hovsgel",
+            "Umnugovi" ~ "Ömnögovi",
+            "Tuv" ~ "Töv",
+            "Sukhbaatar" ~ "Sükhbaatar",
+            .default = Region_en
+        ),
+        Type = ifelse(Region %in% c("1", "2", "3", "4"), "Region", "Aimag")
+    ) |>
+    # Calculate annual average
+    group_by(Region_en, Type) |>
+    summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
 # Top 10 highest IMR regions
 imr_regional |>
     arrange(desc(value)) |>
-    select(Aimag_en, value) |>
+    select(Region_en, value) |>
     head(10)
 #> # A tibble: 10 × 2
-#>    Aimag_en       value
-#>    <chr>          <dbl>
-#>  1 Zavkhan         25.7
-#>  2 Bayan-Ulgii     24.7
-#>  3 Khuvsgul        22.3
-#>  4 Western region  21.6
-#>  5 Khovd           20.7
-#>  6 Uvs             20.4
-#>  7 Sukhbaatar      18.6
-#>  8 Bulgan          17.1
-#>  9 Khentii         17.1
-#> 10 Umnugovi        16.6
+#>    Region_en    value
+#>    <chr>        <dbl>
+#>  1 Hovsgel       27.2
+#>  2 Arkhangai     24.8
+#>  3 Övörkhangai   23.9
+#>  4 Bayankhongor  21.6
+#>  5 Ömnögovi      19.9
+#>  6 Uvs           19.8
+#>  7 Sükhbaatar    17.9
+#>  8 Bayan-Ölgii   17.7
+#>  9 Zavkhan       17.5
+#> 10 Khovd         16.8
 ```
 
 ### Visualize Regional Disparities
 
 ``` r
 imr_regional |>
+    filter(!is.na(value)) |>
     arrange(desc(value)) |>
-    mutate(Aimag_en = forcats::fct_reorder(Aimag_en, value)) |>
-    ggplot(aes(x = value, y = Aimag_en)) +
+    mutate(Region_en = forcats::fct_reorder(Region_en, value)) |>
+    ggplot(aes(x = value, y = Region_en)) +
     # Aimags with gradient
     geom_col(data = ~ subset(., Type == "Aimag"), aes(fill = value), width = 0.7) +
     # Regions with distinct color
@@ -206,7 +233,7 @@ imr_regional |>
     ) +
     scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
     labs(
-        title = "Infant Mortality by Aimag (2015)",
+        title = "Infant Mortality by Aimag (2024 Average)",
         subtitle = "Dark bars represent Regional Averages",
         x = "Deaths per 1,000 live births",
         y = NULL
@@ -235,7 +262,7 @@ aimags <- mn_boundaries(level = "ADM1")
 
 # Join IMR data to map
 imr_map <- aimags |>
-    left_join(imr_regional, by = c("shapeName" = "Aimag_en"))
+    left_join(imr_regional, by = c("shapeName" = "Region_en"))
 
 # Create choropleth
 imr_map |>
@@ -248,7 +275,7 @@ imr_map |>
         labels = scales::label_number()
     ) +
     labs(
-        title = "Infant Mortality Geography (2015)",
+        title = "Infant Mortality Geography (2024 Average)",
         subtitle = "Spatial distribution of mortality rates",
         caption = "Source: NSO Mongolia"
     ) +
@@ -319,7 +346,7 @@ Mongolia](getting-started_files/figure-html/map-example-1.png)
 
 | Indicator             | Table_ID          |
 |:----------------------|:------------------|
-| Infant Mortality      | DT_NSO_2800_019V1 |
+| Infant Mortality      | DT_NSO_2100_015V1 |
 | Maternal Mortality    | DT_NSO_2100_050V1 |
 | Under-5 Mortality     | DT_NSO_2100_030V2 |
 | Cancer Incidence      | DT_NSO_2100_012V1 |

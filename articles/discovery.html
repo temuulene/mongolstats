@@ -257,78 +257,92 @@ health topics:</p>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="discovery_files/figure-html/cancer-analysis-1.png" class="r-plt" width="768"></p>
 </div>
-</div>
-<div class="section level2">
-<h2 id="case-study-infant-mortality-surveillance">Case Study: Infant Mortality Surveillance<a class="anchor" aria-label="anchor" href="#case-study-infant-mortality-surveillance"></a>
-</h2>
 <div class="section level3">
 <h3 id="regional-disparities">Regional Disparities<a class="anchor" aria-label="anchor" href="#regional-disparities"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Infant mortality by aimag</span></span>
-<span><span class="va">imr_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_2800_019V1"</span> <span class="co"># IMR per 1,000 live births</span></span>
+<span><span class="va">imr_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_2100_015V1"</span> <span class="co"># IMR per 1,000 live births (Monthly)</span></span>
 <span></span>
 <span><span class="co"># Get metadata</span></span>
 <span><span class="va">imr_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_table_meta.html">nso_table_meta</a></span><span class="op">(</span><span class="va">imr_tbl</span><span class="op">)</span></span>
-<span><span class="va">aimags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">imr_tbl</span>, <span class="st">"Aimag"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
+<span><span class="va">months</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">imr_tbl</span>, <span class="st">"Month"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Fetch recent data for all regions</span></span>
+<span><span class="co"># Fetch recent data for all regions (2024 Average)</span></span>
+<span><span class="va">months_2024</span> <span class="op">&lt;-</span> <span class="va">months</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"2024"</span>, <span class="va">label_en</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">code</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">imr_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
 <span>  tbl_id <span class="op">=</span> <span class="va">imr_tbl</span>,</span>
 <span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Aimag"</span> <span class="op">=</span> <span class="va">aimags</span><span class="op">$</span><span class="va">code</span>,</span>
-<span>    <span class="st">"Time (Annual)"</span> <span class="op">=</span> <span class="st">"0"</span> <span class="co"># Code for 2015 (checked via metadata)</span></span>
+<span>    <span class="st">"Region"</span> <span class="op">=</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">imr_tbl</span>, <span class="st">"Region"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span>,</span>
+<span>    <span class="st">"Month"</span> <span class="op">=</span> <span class="va">months_2024</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Aimag</span> <span class="op">!=</span> <span class="st">"0"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Exclude national total</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Aimag_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Aimag_en</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">Region</span><span class="op">)</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Keep only Aimags and Ulaanbaatar</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    Region_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span>,</span>
+<span>    Region_en <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_match.html" class="external-link">case_match</a></span><span class="op">(</span></span>
+<span>      <span class="va">Region_en</span>,</span>
+<span>      <span class="st">"Bayan-Ulgii"</span> <span class="op">~</span> <span class="st">"Bayan-Ölgii"</span>,</span>
+<span>      <span class="st">"Uvurkhangai"</span> <span class="op">~</span> <span class="st">"Övörkhangai"</span>,</span>
+<span>      <span class="st">"Khuvsgul"</span> <span class="op">~</span> <span class="st">"Hovsgel"</span>,</span>
+<span>      <span class="st">"Umnugovi"</span> <span class="op">~</span> <span class="st">"Ömnögovi"</span>,</span>
+<span>      <span class="st">"Tuv"</span> <span class="op">~</span> <span class="st">"Töv"</span>,</span>
+<span>      <span class="st">"Sukhbaatar"</span> <span class="op">~</span> <span class="st">"Sükhbaatar"</span>,</span>
+<span>      .default <span class="op">=</span> <span class="va">Region_en</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">value</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Find regions with highest IMR</span></span>
 <span><span class="va">imr_data</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Aimag_en</span>, <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region_en</span>, <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
-<span><span class="co">#&gt;    Aimag_en       value</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Zavkhan         25.7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Bayan-Ulgii     24.7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Khuvsgul        22.3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Western region  21.6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Khovd           20.7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Uvs             20.4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Sukhbaatar      18.6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Bulgan          17.1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Khentii         17.1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Umnugovi        16.6</span></span></code></pre></div>
+<span><span class="co">#&gt;    Region_en    value</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Hovsgel       27.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Arkhangai     24.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Övörkhangai   23.9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Bayankhongor  21.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Ömnögovi      19.9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Uvs           19.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Sükhbaatar    17.9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Bayan-Ölgii   17.7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Zavkhan       17.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Khovd         16.8</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="time-trend-analysis">Time Trend Analysis<a class="anchor" aria-label="anchor" href="#time-trend-analysis"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Analyze national trend</span></span>
+<code class="sourceCode R"><span><span class="co"># Analyze national trend (Monthly)</span></span>
 <span><span class="va">imr_national</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
 <span>  tbl_id <span class="op">=</span> <span class="va">imr_tbl</span>,</span>
 <span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Aimag"</span> <span class="op">=</span> <span class="st">"0"</span>, <span class="co"># National total (code 0)</span></span>
-<span>    <span class="st">"Time (Annual)"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span> <span class="co"># Codes for 2015-2010 (0=2015, 5=2010 based on debug)</span></span>
+<span>    <span class="st">"Region"</span> <span class="op">=</span> <span class="st">"0"</span>, <span class="co"># National total</span></span>
+<span>    <span class="st">"Month"</span> <span class="op">=</span> <span class="va">months</span><span class="op">$</span><span class="va">code</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">imr_national</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">`Time (Annual)_en`</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">Month_en</span>, <span class="st">"-01"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&gt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2019-01-01"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-12-31"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">value</span> <span class="op">*</span> <span class="fl">0.9</span>, ymax <span class="op">=</span> <span class="va">value</span> <span class="op">*</span> <span class="fl">1.1</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"#e74c3c"</span>, alpha <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> <span class="co"># Illustrative CI</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#c0392b"</span>, linewidth <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#c0392b"</span>, size <span class="op">=</span> <span class="fl">4</span>, shape <span class="op">=</span> <span class="fl">21</span>, fill <span class="op">=</span> <span class="st">"white"</span>, stroke <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">value</span><span class="op">)</span>, vjust <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, fontface <span class="op">=</span> <span class="st">"bold"</span>, color <span class="op">=</span> <span class="st">"#c0392b"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/pretty_breaks.html" class="external-link">pretty_breaks</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#c0392b"</span>, size <span class="op">=</span> <span class="fl">2</span>, shape <span class="op">=</span> <span class="fl">21</span>, fill <span class="op">=</span> <span class="st">"white"</span>, stroke <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"1 year"</span>, date_labels <span class="op">=</span> <span class="st">"%Y"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span>, expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Infant Mortality Rate Decline"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Deaths per 1,000 live births (2010-2015)"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Infant Mortality Rate Trend"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Monthly Deaths per 1,000 live births (2019-2024)"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"IMR"</span>,</span>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia"</span></span>

@@ -51,12 +51,24 @@ mmr_data <- nso_data(
   tbl_id = "DT_NSO_2100_050V1", # MMR per 100,000 live births
   selections = list(
     "Region" = nso_dim_values("DT_NSO_2100_050V1", "Region")$code,
-    "Year" = "2023"
+    "Year" = "2024"
   ),
   labels = "en"
 ) |>
-  filter(Region != "0") |> # Exclude national total
-  mutate(Region_en = trimws(Region_en))
+  filter(!Region %in% c("0", "1", "2", "3", "4", "511")) |> # Exclude Total, Regions, and duplicate UB
+  mutate(
+    Region_en = trimws(Region_en),
+    Region_en = dplyr::case_match(
+      Region_en,
+      "Bayan-Ulgii" ~ "Bayan-Ölgii",
+      "Uvurkhangai" ~ "Övörkhangai",
+      "Khuvsgul" ~ "Hovsgel",
+      "Umnugovi" ~ "Ömnögovi",
+      "Tuv" ~ "Töv",
+      "Sukhbaatar" ~ "Sükhbaatar",
+      .default = Region_en
+    )
+  )
 
 # Preview data
 mmr_data |>
@@ -69,12 +81,12 @@ mmr_data |>
 #>  1 Selenge     1639
 #>  2 Govi-Altai  1538
 #>  3 Selenge     1515
-#>  4 Umnugovi    1460
+#>  4 Ömnögovi    1460
 #>  5 Dornogovi   1389
-#>  6 Tuv         1266
-#>  7 Tuv         1235
+#>  6 Töv         1266
+#>  7 Töv         1235
 #>  8 Selenge     1220
-#>  9 Tuv         1220
+#>  9 Töv         1220
 #> 10 Khentii     1220
 ```
 
@@ -96,7 +108,7 @@ mmr_map |>
     labels = scales::label_number()
   ) +
   labs(
-    title = "Maternal Mortality Ratio by Aimag (2023)",
+    title = "Maternal Mortality Ratio by Aimag (2024)",
     subtitle = "Deaths per 100,000 live births",
     caption = "Source: NSO Mongolia"
   ) +
@@ -117,17 +129,40 @@ mmr_map |>
 
 ``` r
 # Get infant mortality rates
+imr_tbl <- "DT_NSO_2100_015V1" # IMR per 1,000 live births (Monthly)
+
+# Get metadata
+months <- nso_dim_values(imr_tbl, "Month", labels = "en")
+months_2024 <- months |>
+  filter(grepl("2024", label_en)) |>
+  pull(code)
+
 imr_data <- nso_data(
-  tbl_id = "DT_NSO_2800_019V1", # IMR per 1,000 live births
+  tbl_id = imr_tbl,
   selections = list(
-    "Aimag" = nso_dim_values("DT_NSO_2800_019V1", "Aimag")$code,
-    "Time (Annual)" = "2015"
+    "Region" = nso_dim_values(imr_tbl, "Region")$code,
+    "Month" = months_2024
   ),
   labels = "en"
 ) |>
-  filter(Aimag != "0") |>
+  filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar
   mutate(
-    Aimag_en = trimws(Aimag_en),
+    Region_en = trimws(Region_en),
+    Region_en = dplyr::case_match(
+      Region_en,
+      "Bayan-Ulgii" ~ "Bayan-Ölgii",
+      "Uvurkhangai" ~ "Övörkhangai",
+      "Khuvsgul" ~ "Hovsgel",
+      "Umnugovi" ~ "Ömnögovi",
+      "Tuv" ~ "Töv",
+      "Sukhbaatar" ~ "Sükhbaatar",
+      .default = Region_en
+    )
+  ) |>
+  # Calculate annual average
+  group_by(Region_en) |>
+  summarise(value = mean(value, na.rm = TRUE), .groups = "drop") |>
+  mutate(
     # Classify risk levels
     risk_category = case_when(
       value < 10 ~ "Low (<10)",
@@ -143,7 +178,7 @@ imr_data <- nso_data(
 
 # Create risk map
 aimags |>
-  left_join(imr_data, by = c("shapeName" = "Aimag_en")) |>
+  left_join(imr_data, by = c("shapeName" = "Region_en")) |>
   ggplot() +
   geom_sf(aes(fill = risk_category), color = "white", size = 0.2) +
   scale_fill_manual(
@@ -158,7 +193,7 @@ aimags |>
     drop = FALSE
   ) +
   labs(
-    title = "Infant Mortality Risk Categories (2015)",
+    title = "Infant Mortality Risk Categories (2024 Average)",
     subtitle = "Deaths per 1,000 live births",
     caption = "Source: NSO Mongolia"
   ) +
