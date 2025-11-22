@@ -88,7 +88,7 @@ gdp |>
   )
 ```
 
-![](README_files/figure-gfm/gdp-example-1.png)<!-- -->
+<img src="man/figures/README-gdp-example-1.png" width="100%" />
 
 ### 2. Mapping Regional Population
 
@@ -140,7 +140,7 @@ map |>
   )
 ```
 
-![](README_files/figure-gfm/pop-map-example-1.png)<!-- -->
+<img src="man/figures/README-pop-map-example-1.png" width="100%" />
 
 ## Documentation
 
