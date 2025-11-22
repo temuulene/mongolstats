@@ -7,7 +7,7 @@ economic trends, and map regional statistics—all from within R.
 ## Why mongolstats?
 
 - **Instant Access:** Query thousands of official datasets directly from
-  18. 
+  R.
 - **Tidy Data:** Analysis-ready `tibble` format compatible with `dplyr`
   and `ggplot2`.
 - **Mapping Ready:** Built-in administrative boundaries for effortless
@@ -20,7 +20,7 @@ economic trends, and map regional statistics—all from within R.
 You can install the development version of mongolstats from
 [GitHub](https://github.com/) with:
 
-``` r
+``` R
 # install.packages("devtools")
 devtools::install_github("temuulene/mongolstats")
 ```
@@ -31,7 +31,7 @@ devtools::install_github("temuulene/mongolstats")
 
 Visualize Mongolia’s economic growth in seconds.
 
-``` r
+``` R
 library(mongolstats)
 library(dplyr)
 library(ggplot2)
@@ -78,13 +78,13 @@ gdp |>
   )
 ```
 
-![](README_files/figure-gfm/gdp-example-1.png)
+![](README_files/figure-markdown_strict/gdp-example-1.png)
 
 ### 2. Mapping Regional Population
 
 Discover how population is distributed across the country.
 
-``` r
+``` R
 library(sf)
 
 # 1. Fetch Population by Aimag
@@ -130,7 +130,7 @@ map |>
   )
 ```
 
-![](README_files/figure-gfm/pop-map-example-1.png)
+![](README_files/figure-markdown_strict/pop-map-example-1.png)
 
 ## Documentation
 
