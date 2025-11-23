@@ -62,7 +62,7 @@ mmr_data <- nso_data(
   tbl_id = "DT_NSO_2100_050V1", # MMR per 100,000 live births
   selections = list(
     "Region" = nso_dim_values("DT_NSO_2100_050V1", "Region")$code,
-    "Year" = "2024"
+    "Year" = as.character(2020:2024)
   ),
   labels = "en"
 ) |>
@@ -79,7 +79,10 @@ mmr_data <- nso_data(
       "Sukhbaatar" ~ "Sükhbaatar",
       .default = Region_en
     )
-  )
+  ) |>
+  # Calculate 5-year average
+  group_by(Region_en) |>
+  summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
 # Preview data
 mmr_data |>
@@ -106,8 +109,8 @@ mmr_map |>
     labels = scales::label_number()
   ) +
   labs(
-    title = "Maternal Mortality Ratio by Aimag (2024)",
-    subtitle = "Deaths per 100,000 live births",
+    title = "5-Year Average Maternal Mortality Ratio (2020-2024)",
+    subtitle = "Deaths per 100,000 live births (Mean)",
     caption = "Source: NSO Mongolia"
   ) +
   theme_void() +
