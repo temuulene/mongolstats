@@ -101,9 +101,9 @@ imr_national |>
     mutate(date = as.Date(paste0(Month_en, "-01"))) |>
     filter(date >= as.Date("2015-01-01") & date <= as.Date("2024-12-31")) |>
     ggplot(aes(x = date, y = value)) +
-    geom_line(color = "#2c3e50", linewidth = 1.2) +
-    geom_point(color = "#e74c3c", size = 4, shape = 21, fill = "white", stroke = 2) +
-    geom_smooth(method = "loess", se = TRUE, color = "#3498db", fill = "#3498db", alpha = 0.1) +
+    geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) +
+    geom_point(color = "#e74c3c", size = 3, shape = 21, fill = "white", stroke = 1.5, alpha = 0.6) +
+    geom_smooth(method = "loess", se = TRUE, color = "#3498db", fill = "#3498db", alpha = 0.2, linewidth = 1.5) +
     scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
     labs(
         title = "Infant Mortality Rate in Mongolia (Monthly)",
@@ -184,10 +184,10 @@ imr_regional |>
         low = "#27ae60",
         mid = "#f39c12",
         high = "#e74c3c",
-        midpoint = median(imr_regional$value[imr_regional$Type == "Aimag"])
+        midpoint = mean(imr_regional$value[imr_regional$Type == "Aimag"])
     ) +
     geom_vline(
-        xintercept = median(imr_regional$value[imr_regional$Type == "Aimag"]),
+        xintercept = mean(imr_regional$value[imr_regional$Type == "Aimag"]),
         linetype = "dashed",
         color = "grey50",
         linewidth = 0.5
