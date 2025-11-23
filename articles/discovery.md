@@ -169,7 +169,7 @@ cancer_data |>
   geom_line(linewidth = 1.2) +
   geom_point(size = 3, shape = 21, fill = "white", stroke = 1.5) +
   scale_color_viridis_d(option = "plasma", end = 0.9) +
-  scale_x_continuous(breaks = scales::pretty_breaks(n = 5)) +
+  scale_x_continuous(breaks = function(x) seq(ceiling(min(x)), floor(max(x)), by = 1)) +
   labs(
     title = "Cancer Incidence Trends in Mongolia",
     subtitle = "New cases per 10,000 population (Recent Trends)",
@@ -268,9 +268,9 @@ imr_national |>
   mutate(date = as.Date(paste0(Month_en, "-01"))) |>
   filter(date >= as.Date("2019-01-01") & date <= as.Date("2024-12-31")) |>
   ggplot(aes(x = date, y = value)) +
-  geom_ribbon(aes(ymin = value * 0.9, ymax = value * 1.1), fill = "#e74c3c", alpha = 0.1) + # Illustrative CI
-  geom_line(color = "#c0392b", linewidth = 1.5) +
-  geom_point(color = "#c0392b", size = 2, shape = 21, fill = "white", stroke = 1) +
+  geom_line(color = "#c0392b", linewidth = 1, alpha = 0.3) +
+  geom_point(color = "#c0392b", size = 2, shape = 21, fill = "white", stroke = 1, alpha = 0.5) +
+  geom_smooth(method = "loess", se = TRUE, color = "#c0392b", fill = "#c0392b", alpha = 0.2, linewidth = 1.5) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.2))) +
   labs(
@@ -287,78 +287,68 @@ imr_national |>
     panel.grid.minor = element_blank(),
     panel.grid.major.x = element_blank()
   )
+#> `geom_smooth()` using formula = 'y ~ x'
 ```
 
 ![](discovery_files/figure-html/imr-trends-1.png)
 
 ## Case Study: Tuberculosis Burden
 
+Let’s analyze the seasonal trends of Tuberculosis using monthly data.
+
 ``` r
-# TB incidence
-tb_incidence <- nso_data(
-  tbl_id = "DT_NSO_2800_026V1", # TB per 100,000
+# TB cases (Monthly)
+tb_tbl <- "DT_NSO_2100_035V1" # CASES OF COMMUNICABLE DISEASES, by type of selected diseases and by month
+
+# Get metadata to find the code for Tuberculosis
+# Note: Dimensions are "Indicators" and "Month"
+indicators <- nso_dim_values(tb_tbl, "Indicators", labels = "en")
+tb_code <- indicators |>
+  filter(grepl("Tuberculosis", label_en, ignore.case = TRUE)) |>
+  pull(code)
+
+# Fetch monthly data
+tb_data <- nso_data(
+  tbl_id = tb_tbl,
   selections = list(
-    "Aimag" = "0", # National Total
-    "Time (Annual)" = as.character(0:5) # Codes for recent years (checked via metadata)
+    "Indicators" = tb_code,
+    "Month" = nso_dim_values(tb_tbl, "Month")$code
   ),
   labels = "en"
 )
 
-# TB mortality
-tb_mortality <- nso_data(
-  tbl_id = "DT_NSO_2800_027V1", # TB deaths per 100,000
-  selections = list(
-    "Aimag" = "0", # National Total
-    "Time (Annual)" = as.character(0:5)
-  ),
-  labels = "en"
-)
-
-# Combine for case-fatality analysis
-tb_combined <- tb_incidence |>
-  select(time = `Time (Annual)_en`, incidence = value) |>
-  left_join(
-    tb_mortality |> select(time = `Time (Annual)_en`, mortality = value),
-    by = "time"
-  ) |>
-  mutate(
-    case_fatality = (mortality / incidence) * 100,
-    year = as.integer(time)
-  )
-
-# Visualize
-tb_combined |>
-  ggplot(aes(x = year)) +
-  geom_col(aes(y = incidence, fill = "Incidence"), alpha = 0.8, width = 0.7) +
-  geom_line(aes(y = mortality * 50, color = "Mortality (x50)"), linewidth = 1.5) +
-  geom_point(aes(y = mortality * 50, color = "Mortality (x50)"), size = 3, shape = 21, fill = "white", stroke = 2) +
-  scale_y_continuous(
-    name = "Incidence (per 100,000)",
-    sec.axis = sec_axis(~ . / 50, name = "Mortality (per 100,000)")
-  ) +
-  scale_fill_manual(values = c("Incidence" = "#34495e"), name = NULL) +
-  scale_color_manual(values = c("Mortality (x50)" = "#e74c3c"), name = NULL) +
+# Visualize Monthly Trends
+tb_data |>
+  mutate(date = as.Date(paste0(Month_en, "-01"))) |>
+  filter(!is.na(value)) |>
+  ggplot(aes(x = date, y = value)) +
+  geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) +
+  geom_point(color = "#2c3e50", size = 2, alpha = 0.3) +
+  geom_smooth(method = "loess", se = TRUE, color = "#e74c3c", fill = "#e74c3c", alpha = 0.2, linewidth = 1.5) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.2))) +
   labs(
-    title = "Tuberculosis Burden in Mongolia",
-    subtitle = "Incidence vs. Mortality Trends",
+    title = "Tuberculosis Cases in Mongolia",
+    subtitle = "Monthly reported cases",
     x = NULL,
-    caption = "Source: NSO Mongolia"
+    y = "Number of Cases",
+    caption = "Source: NSO Mongolia (DT_NSO_2100_035V1)"
   ) +
   theme_minimal(base_size = 14) +
   theme(
     plot.title = element_text(face = "bold", size = 16),
     plot.subtitle = element_text(color = "grey40"),
-    legend.position = "top",
-    legend.box = "horizontal",
-    panel.grid.minor = element_blank(),
-    axis.title.y.right = element_text(color = "#e74c3c", margin = margin(l = 10)),
-    axis.text.y.right = element_text(color = "#e74c3c"),
-    axis.title.y.left = element_text(color = "#34495e", margin = margin(r = 10)),
-    axis.text.y.left = element_text(color = "#34495e")
+    panel.grid.minor = element_blank()
   )
+#> `geom_smooth()` using formula = 'y ~ x'
 ```
 
 ![](discovery_files/figure-html/tb-data-1.png)
+
+> \[!NOTE\] **Biostatistical Note:** This plot shows the *number* of
+> reported cases, not the incidence *rate*. Trends should be interpreted
+> with caution, as an increase in cases could be due to population
+> growth or improved detection, rather than an increase in disease risk.
 
 ## Tips for Epidemiological Research
 

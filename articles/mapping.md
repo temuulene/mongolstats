@@ -51,7 +51,7 @@ mmr_data <- nso_data(
   tbl_id = "DT_NSO_2100_050V1", # MMR per 100,000 live births
   selections = list(
     "Region" = nso_dim_values("DT_NSO_2100_050V1", "Region")$code,
-    "Year" = "2024"
+    "Year" = as.character(2020:2024)
   ),
   labels = "en"
 ) |>
@@ -68,7 +68,10 @@ mmr_data <- nso_data(
       "Sukhbaatar" ~ "Sükhbaatar",
       .default = Region_en
     )
-  )
+  ) |>
+  # Calculate 5-year average
+  group_by(Region_en) |>
+  summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
 # Preview data
 mmr_data |>
@@ -76,18 +79,18 @@ mmr_data |>
   select(Region_en, value) |>
   head(10)
 #> # A tibble: 10 × 2
-#>    Region_en  value
-#>    <chr>      <dbl>
-#>  1 Selenge     1639
-#>  2 Govi-Altai  1538
-#>  3 Selenge     1515
-#>  4 Ömnögovi    1460
-#>  5 Dornogovi   1389
-#>  6 Töv         1266
-#>  7 Töv         1235
-#>  8 Selenge     1220
-#>  9 Töv         1220
-#> 10 Khentii     1220
+#>    Region_en    value
+#>    <chr>        <dbl>
+#>  1 Khovd         71.0
+#>  2 Arkhangai     66.5
+#>  3 Selenge       61.2
+#>  4 Sükhbaatar    54.4
+#>  5 Hovsgel       48.9
+#>  6 Dornogovi     45.7
+#>  7 Töv           42.2
+#>  8 Ulaanbaatar   40.7
+#>  9 Bayan-Ölgii   39.5
+#> 10 Bayankhongor  38.3
 ```
 
 ### Creating a Choropleth Map
@@ -108,8 +111,8 @@ mmr_map |>
     labels = scales::label_number()
   ) +
   labs(
-    title = "Maternal Mortality Ratio by Aimag (2024)",
-    subtitle = "Deaths per 100,000 live births",
+    title = "5-Year Average Maternal Mortality Ratio (2020-2024)",
+    subtitle = "Deaths per 100,000 live births (Mean)",
     caption = "Source: NSO Mongolia"
   ) +
   theme_void() +

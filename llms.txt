@@ -61,7 +61,7 @@ gdp |>
   geom_line(color = "#2c3e50", linewidth = 1.2) +
   geom_point(color = "#2c3e50", size = 3, shape = 21, fill = "white", stroke = 1.5) +
   scale_y_continuous(labels = scales::label_number(suffix = "T")) +
-  scale_x_continuous(breaks = scales::breaks_pretty(n = 10)) +
+  scale_x_continuous(breaks = function(x) seq(ceiling(min(x)), floor(max(x)), by = 1)) +
   labs(
     title = "Mongolia's GDP Growth (2010-2024)",
     subtitle = "Gross Domestic Product (in Trillions MNT)",
@@ -132,7 +132,7 @@ map |>
   ) +
   labs(
     title = "Population Distribution (2024)",
-    subtitle = "Mid-year resident population by Aimag",
+    subtitle = "Mid-year resident population by Aimag (Log Scale)",
     caption = "Source: NSO Mongolia"
   ) +
   theme_void() +
