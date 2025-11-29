@@ -30,6 +30,10 @@ navbar:
           href: articles/discovery.html
         - text: Spatial Epidemiology with mongolstats
           href: articles/mapping.html
+        - text: Ulaanbaatar District-Level Analysis
+          href: articles/ub-health-environment.html
+        - text: Environmental Data Analysis
+          href: articles/environmental-surveillance.html
     github:
       icon: fab fa-github
       aria-label: GitHub
@@ -54,6 +58,8 @@ articles:
       - getting-started
       - discovery
       - mapping
+      - ub-health-environment
+      - environmental-surveillance
 reference:
   - title: Discover Tables
     contents:
