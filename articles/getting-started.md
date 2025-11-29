@@ -120,10 +120,17 @@ imr_national |>
 Create a publication-ready plot:
 
 ``` r
-imr_national |>
-    mutate(date = as.Date(paste0(Month_en, "-01"))) |>
+# Prepare the data for visualization
+# Step 1: Convert month strings to proper dates for time series plotting
+# Step 2: Filter to recent decade (2015-2024) for clear trend visibility
+
+p <- imr_national |>
+    mutate(date = as.Date(paste0(Month_en, "-01"))) |> # Convert "YYYY-MM" to date
     filter(date >= as.Date("2015-01-01") & date <= as.Date("2024-12-31")) |>
-    ggplot(aes(x = date, y = value)) +
+    ggplot(aes(x = date, y = value,
+               group = 1,
+               text = paste0("<b>Date:</b> ", format(date, "%Y-%m"), "<br>",
+                             "<b>IMR:</b> ", value))) +
     geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) +
     geom_point(color = "#e74c3c", size = 3, shape = 21, fill = "white", stroke = 1.5, alpha = 0.6) +
     geom_smooth(method = "loess", se = TRUE, color = "#3498db", fill = "#3498db", alpha = 0.2, linewidth = 1.5) +
@@ -132,7 +139,7 @@ imr_national |>
         title = "Infant Mortality Rate in Mongolia (Monthly)",
         subtitle = "Deaths per 1,000 live births (National Trend)",
         x = NULL,
-        y = "IMR",
+        y = "IMR (per 1,000)",
         caption = "Source: NSO Mongolia via mongolstats"
     ) +
     theme_minimal(base_size = 14) +
@@ -142,10 +149,9 @@ imr_national |>
         panel.grid.minor = element_blank(),
         panel.grid.major.x = element_blank()
     )
-```
 
-![Line plot showing decline in infant mortality rate from 2010 to
-2015](getting-started_files/figure-html/plot-trend-1.png)
+plotly::ggplotly(p, tooltip = "text")
+```
 
 ## Regional Comparison
 
@@ -159,6 +165,9 @@ months_2024 <- months |>
     filter(grepl("2024", label_en)) |>
     pull(code)
 
+# Fetch IMR data for all regions in 2024
+# We'll calculate the annual average from monthly data
+
 imr_regional <- nso_data(
     tbl_id = "DT_NSO_2100_015V1",
     selections = list(
@@ -167,9 +176,10 @@ imr_regional <- nso_data(
     ),
     labels = "en"
 ) |>
-    filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar
+    filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar (code length = 3)
     mutate(
         Region_en = trimws(Region_en),
+        # Standardize region names to match geographic boundary data
         Region_en = dplyr::case_match(
             Region_en,
             "Bayan-Ulgii" ~ "Bayan-Ölgii",
@@ -182,7 +192,7 @@ imr_regional <- nso_data(
         ),
         Type = ifelse(Region %in% c("1", "2", "3", "4"), "Region", "Aimag")
     ) |>
-    # Calculate annual average
+    # Calculate annual average IMR from monthly data
     group_by(Region_en, Type) |>
     summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
@@ -209,11 +219,13 @@ imr_regional |>
 ### Visualize Regional Disparities
 
 ``` r
-imr_regional |>
+p <- imr_regional |>
     filter(!is.na(value)) |>
     arrange(desc(value)) |>
     mutate(Region_en = forcats::fct_reorder(Region_en, value)) |>
-    ggplot(aes(x = value, y = Region_en)) +
+    ggplot(aes(x = value, y = Region_en,
+               text = paste0("<b>Region:</b> ", Region_en, "<br>",
+                             "<b>IMR:</b> ", round(value, 1)))) +
     # Aimags with gradient
     geom_col(data = ~ subset(., Type == "Aimag"), aes(fill = value), width = 0.7) +
     # Regions with distinct color
@@ -245,10 +257,9 @@ imr_regional |>
         panel.grid.minor = element_blank(),
         axis.text.y = element_text(color = "black")
     )
-```
 
-![Bar chart comparing infant mortality rates across Mongolia's
-aimags](getting-started_files/figure-html/regional-plot-1.png)
+plotly::ggplotly(p, tooltip = "text")
+```
 
 ## Adding Geographic Context
 
@@ -265,13 +276,18 @@ imr_map <- aimags |>
     left_join(imr_regional, by = c("shapeName" = "Region_en"))
 
 # Create choropleth
-imr_map |>
+# Create choropleth
+# Create choropleth
+p <- imr_map |>
     ggplot() +
-    geom_sf(aes(fill = value), color = "white", size = 0.2) +
+    geom_sf(aes(fill = value,
+                text = paste0("<b>Region:</b> ", shapeName, "<br>",
+                              "<b>IMR:</b> ", round(value, 1))),
+            color = "white", size = 0.2) +
     scale_fill_viridis_c(
         option = "magma",
         direction = -1,
-        name = "IMR per\n1,000",
+        name = "IMR\n(per 1,000)",
         labels = scales::label_number()
     ) +
     labs(
@@ -286,10 +302,10 @@ imr_map |>
         legend.position = "right",
         legend.title = element_text(size = 10, face = "bold")
     )
-```
 
-![Choropleth map of infant mortality rates across
-Mongolia](getting-started_files/figure-html/map-example-1.png)
+plotly::ggplotly(p, tooltip = "text") |>
+    plotly::style(hoveron = "fills")
+```
 
 ## Key Functions Summary
 

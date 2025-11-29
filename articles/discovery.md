@@ -17,9 +17,10 @@ access epidemiological data for research and policy analysis.
 
 ### Search by Keyword
 
-Use
+Finding the right data is the first step in any analysis. The
 [`nso_itms_search()`](https://temuulene.github.io/mongolstats/reference/nso_itms_search.md)
-to find tables related to specific health topics:
+function allows you to query the entire NSO catalog using simple
+keywords:
 
 ``` r
 # Infant and maternal health
@@ -105,7 +106,8 @@ if (nrow(health_sector) > 0) {
 
 ### Exploring Cancer Incidence Data
 
-Let’s analyze cancer trends in Mongolia:
+Cancer burden is shifting in Mongolia. To understand these changes, we
+can analyze incidence trends over the last decade:
 
 ``` r
 # Find cancer incidence table
@@ -147,13 +149,17 @@ years
 ### Fetching and Visualizing Cancer Trends
 
 ``` r
-# Fetch top cancer types over recent years
-# Get codes for the last 10 years
+# Fetch cancer incidence data for the most common types
+# We focus on the last 10 years to show recent trends
+# and select 4 major cancer types (Lung, Liver, Stomach, Cervix)
+
+# Step 1: Identify the 10 most recent years
 recent_years <- annual_meta |>
   arrange(label_en) |>
   tail(10) |>
   pull(code)
 
+# Step 2: Fetch data for major cancer types
 cancer_data <- nso_data(
   tbl_id = cancer_tbl,
   selections = list(
@@ -164,8 +170,13 @@ cancer_data <- nso_data(
 )
 
 # Visualize trends
-cancer_data |>
-  ggplot(aes(x = as.integer(Annual_en), y = value, color = `Type malignant neoplasms_en`)) +
+# Visualize trends
+p <- cancer_data |>
+  ggplot(aes(x = as.integer(Annual_en), y = value, color = `Type malignant neoplasms_en`,
+             group = `Type malignant neoplasms_en`,
+             text = paste0("<b>Year:</b> ", Annual_en, "<br>",
+                           "<b>Type:</b> ", `Type malignant neoplasms_en`, "<br>",
+                           "<b>Rate:</b> ", value))) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3, shape = 21, fill = "white", stroke = 1.5) +
   scale_color_viridis_d(option = "plasma", end = 0.9) +
@@ -174,8 +185,8 @@ cancer_data |>
     title = "Cancer Incidence Trends in Mongolia",
     subtitle = "New cases per 10,000 population (Recent Trends)",
     x = NULL,
-    y = "Incidence Rate",
-    color = NULL,
+    y = "Incidence Rate (per 10,000)",
+    color = "Cancer Type",
     caption = "Source: NSO Mongolia"
   ) +
   theme_minimal(base_size = 14) +
@@ -187,9 +198,9 @@ cancer_data |>
     panel.grid.major.x = element_blank(),
     axis.text = element_text(color = "grey30")
   )
-```
 
-![](discovery_files/figure-html/cancer-analysis-1.png)
+plotly::ggplotly(p, tooltip = "text")
+```
 
 ### Regional Disparities
 
@@ -264,20 +275,27 @@ imr_national <- nso_data(
   labels = "en"
 )
 
+# Analyze national infant mortality trend using monthly data
+# We convert the Month_en column (format: "YYYY-MM") to proper dates
+# and filter to the 2019-2024 period for clear recent trends
+
 imr_national |>
-  mutate(date = as.Date(paste0(Month_en, "-01"))) |>
+  mutate(date = as.Date(paste0(Month_en, "-01"))) |> # Convert "YYYY-MM" to date
   filter(date >= as.Date("2019-01-01") & date <= as.Date("2024-12-31")) |>
-  ggplot(aes(x = date, y = value)) +
-  geom_line(color = "#c0392b", linewidth = 1, alpha = 0.3) +
-  geom_point(color = "#c0392b", size = 2, shape = 21, fill = "white", stroke = 1, alpha = 0.5) +
-  geom_smooth(method = "loess", se = TRUE, color = "#c0392b", fill = "#c0392b", alpha = 0.2, linewidth = 1.5) +
+  ggplot(aes(x = date, y = value,
+             group = 1,
+             text = paste0("<b>Date:</b> ", format(date, "%Y-%m"), "<br>",
+                           "<b>IMR:</b> ", value))) +
+  geom_line(color = "#2980b9", linewidth = 1, alpha = 0.3) +
+  geom_point(color = "#2980b9", size = 2, shape = 21, fill = "white", stroke = 1, alpha = 0.5) +
+  geom_smooth(method = "loess", se = TRUE, color = "#2980b9", fill = "#2980b9", alpha = 0.2, linewidth = 1.5) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.2))) +
   labs(
     title = "Infant Mortality Rate Trend",
     subtitle = "Monthly Deaths per 1,000 live births (2019-2024)",
     x = NULL,
-    y = "IMR",
+    y = "IMR (per 1,000 live births)",
     caption = "Source: NSO Mongolia"
   ) +
   theme_minimal(base_size = 14) +
@@ -286,11 +304,16 @@ imr_national |>
     plot.subtitle = element_text(color = "grey40"),
     panel.grid.minor = element_blank(),
     panel.grid.major.x = element_blank()
-  )
-#> `geom_smooth()` using formula = 'y ~ x'
-```
+  ) -> p
 
-![](discovery_files/figure-html/imr-trends-1.png)
+plotly::ggplotly(p, tooltip = "text")
+#> `geom_smooth()` using formula = 'y ~ x'
+#> Warning: The following aesthetics were dropped during statistical transformation: text.
+#> ℹ This can happen when ggplot fails to infer the correct grouping structure in
+#>   the data.
+#> ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+#>   variable into a factor?
+```
 
 ## Case Study: Tuberculosis Burden
 
@@ -318,10 +341,14 @@ tb_data <- nso_data(
 )
 
 # Visualize Monthly Trends
-tb_data |>
+# Visualize Monthly Trends
+p <- tb_data |>
   mutate(date = as.Date(paste0(Month_en, "-01"))) |>
   filter(!is.na(value)) |>
-  ggplot(aes(x = date, y = value)) +
+  ggplot(aes(x = date, y = value,
+             group = 1,
+             text = paste0("<b>Date:</b> ", format(date, "%Y-%m"), "<br>",
+                           "<b>Cases:</b> ", value))) +
   geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) +
   geom_point(color = "#2c3e50", size = 2, alpha = 0.3) +
   geom_smooth(method = "loess", se = TRUE, color = "#e74c3c", fill = "#e74c3c", alpha = 0.2, linewidth = 1.5) +
@@ -331,7 +358,7 @@ tb_data |>
     title = "Tuberculosis Cases in Mongolia",
     subtitle = "Monthly reported cases",
     x = NULL,
-    y = "Number of Cases",
+    y = "Number of Cases (Monthly)",
     caption = "Source: NSO Mongolia (DT_NSO_2100_035V1)"
   ) +
   theme_minimal(base_size = 14) +
@@ -340,15 +367,20 @@ tb_data |>
     plot.subtitle = element_text(color = "grey40"),
     panel.grid.minor = element_blank()
   )
+
+plotly::ggplotly(p, tooltip = "text")
 #> `geom_smooth()` using formula = 'y ~ x'
+#> Warning: The following aesthetics were dropped during statistical transformation: text.
+#> ℹ This can happen when ggplot fails to infer the correct grouping structure in
+#>   the data.
+#> ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+#>   variable into a factor?
 ```
 
-![](discovery_files/figure-html/tb-data-1.png)
-
-> \[!NOTE\] **Biostatistical Note:** This plot shows the *number* of
-> reported cases, not the incidence *rate*. Trends should be interpreted
-> with caution, as an increase in cases could be due to population
-> growth or improved detection, rather than an increase in disease risk.
+> **Biostatistical Note:** This plot shows the *number* of reported
+> cases, not the incidence *rate*. Trends should be interpreted with
+> caution, as an increase in cases could be due to population growth or
+> improved detection, rather than an increase in disease risk.
 
 ## Tips for Epidemiological Research
 

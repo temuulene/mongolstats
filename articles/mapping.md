@@ -46,7 +46,10 @@ Maternal mortality is a critical indicator of health system performance
 and equity.
 
 ``` r
-# Fetch maternal mortality by aimag
+# Fetch maternal mortality data for all aimags (2020-2024)
+# We'll calculate a 5-year average to smooth out year-to-year variability
+# This is important because small populations can have unstable rates
+
 mmr_data <- nso_data(
   tbl_id = "DT_NSO_2100_050V1", # MMR per 100,000 live births
   selections = list(
@@ -58,6 +61,7 @@ mmr_data <- nso_data(
   filter(!Region %in% c("0", "1", "2", "3", "4", "511")) |> # Exclude Total, Regions, and duplicate UB
   mutate(
     Region_en = trimws(Region_en),
+    # Standardize region names to match the geographic boundaries
     Region_en = dplyr::case_match(
       Region_en,
       "Bayan-Ulgii" ~ "Bayan-Ölgii",
@@ -69,7 +73,7 @@ mmr_data <- nso_data(
       .default = Region_en
     )
   ) |>
-  # Calculate 5-year average
+  # Calculate 5-year average to reduce random variation
   group_by(Region_en) |>
   summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
@@ -101,13 +105,18 @@ mmr_map <- aimags |>
   left_join(mmr_data, by = c("shapeName" = "Region_en"))
 
 # Create choropleth
-mmr_map |>
+# Create choropleth
+# Create choropleth
+p <- mmr_map |>
   ggplot() +
-  geom_sf(aes(fill = value), color = "white", size = 0.2) +
+  geom_sf(aes(fill = value,
+              text = paste0("<b>Region:</b> ", shapeName, "<br>",
+                            "<b>MMR:</b> ", round(value, 1))),
+          color = "white", size = 0.2) +
   scale_fill_viridis_c(
     option = "rocket",
     direction = -1,
-    name = "MMR per\n100,000",
+    name = "MMR\n(per 100k)",
     labels = scales::label_number()
   ) +
   labs(
@@ -122,9 +131,12 @@ mmr_map |>
     legend.position = "right", # Moved to right to avoid overlap
     legend.title = element_text(size = 10, face = "bold")
   )
-```
+#> Warning in layer_sf(geom = GeomSf, data = data, mapping = mapping, stat = stat,
+#> : Ignoring unknown aesthetics: text
 
-![](mapping_files/figure-html/maternal-map-1.png)
+plotly::ggplotly(p, tooltip = "text") |>
+  plotly::style(hoveron = "fills")
+```
 
 ## Case Study: Infant Mortality Hot Spots
 
@@ -180,10 +192,16 @@ imr_data <- nso_data(
   )
 
 # Create risk map
-aimags |>
+# Create risk map
+# Create risk map
+p <- aimags |>
   left_join(imr_data, by = c("shapeName" = "Region_en")) |>
   ggplot() +
-  geom_sf(aes(fill = risk_category), color = "white", size = 0.2) +
+  geom_sf(aes(fill = risk_category,
+              text = paste0("<b>Region:</b> ", shapeName, "<br>",
+                            "<b>Risk:</b> ", risk_category, "<br>",
+                            "<b>IMR:</b> ", round(value, 1))),
+          color = "white", size = 0.2) +
   scale_fill_manual(
     values = c(
       "Low (<10)" = "#27ae60",
@@ -192,7 +210,7 @@ aimags |>
       "Very High (≥30)" = "#c0392b"
     ),
     na.value = "grey90",
-    name = "Risk Level",
+    name = "Risk Level\n(IMR)",
     drop = FALSE
   ) +
   labs(
@@ -207,9 +225,12 @@ aimags |>
     legend.position = "right",
     legend.title = element_text(size = 10, face = "bold")
   )
-```
+#> Warning in layer_sf(geom = GeomSf, data = data, mapping = mapping, stat = stat,
+#> : Ignoring unknown aesthetics: text
 
-![](mapping_files/figure-html/imr-hotspots-1.png)
+plotly::ggplotly(p, tooltip = "text") |>
+  plotly::style(hoveron = "fills")
+```
 
 ## Tips for Spatial Epidemiology
 

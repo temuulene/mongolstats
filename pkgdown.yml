@@ -3,9 +3,11 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   discovery: discovery.html
+  environmental-surveillance: environmental-surveillance.html
   getting-started: getting-started.html
   mapping: mapping.html
-last_built: 2025-11-23T06:19Z
+  ub-health-environment: ub-health-environment.html
+last_built: 2025-11-29T06:07Z
 urls:
   reference: https://temuulene.github.io/mongolstats/reference
   article: https://temuulene.github.io/mongolstats/articles
