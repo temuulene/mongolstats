@@ -7,7 +7,9 @@ doc
 docs/
 pkgdown
 *.Rproj
+# Ignore HTML files except in vignettes
 *.html
+!vignettes/*.html
 *.utf8.md
 .Rlib/
 
