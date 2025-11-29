@@ -42,11 +42,12 @@ Suggests:
     styler,
     future,
     future.apply,
-    future.apply,
     cli,
     ggplot2,
     scales,
-    forcats
+    forcats,
+    plotly,
+    tidyr
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
