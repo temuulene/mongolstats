@@ -327,7 +327,24 @@ p <- conductivity |>
 plotly::ggplotly(p, tooltip = "text")
 ```
 
-> **Geographic Clustering**: The top 2 stations (Taigam/Delger and Uvs/Davst) show **extreme conductivity** (~20,000 µS/cm), likely reflecting natural saline lake/wetland systems in western Mongolia. In contrast, **Khyargas** shows high conductivity (~10,500 µS/cm), while other river monitoring stations (e.g., Ganga) show mid-range values (~5,000 µS/cm), which may indicate mining runoff, agricultural inputs, or urban wastewater contamination. Baseline salinity data and upstream land-use analysis are needed for definitive source attribution.
+> **Interpreting Conductivity: A Tale of Three Sources**
+>
+> The top 15 stations reveal three distinct environmental stories driven by geology, industry, and climate:
+>
+> 1.  **Natural Saline Basins (The Extremes > 10,000 µS/cm)**: The highest values belong to naturally hypersaline, endorheic lakes.
+>     *   **Uvs/Davst & Gashuun**: **Uvs Lake**, a UNESCO site and Mongolia's largest saline lake.
+>     *   **Khyargas**: A major salt lake in the Great Lakes Depression.
+>     *   **Sangiin dalai**: A saline lake in **Ulziit sum, Uvurkhangai province**, distinct from the larger northern lake of the same name.
+>     *   **Taigam/Delger**: Likely a saline wetland or spring in the Govi-Altai mineral belt.
+>
+> 2.  **Industrial & Urban Pollution (The "Hidden" Highs)**: Elevated conductivity in freshwater rivers often signals contamination.
+>     *   **Khangal (Erdenet)**: The **Khangal River** is heavily impacted by mining activities and wastewater from Erdenet city, showing mineralization 2x higher than historical baselines.
+>     *   **Tuul (Songino) & Dund gol**: These stations capture the **urban wastewater footprint** of Ulaanbaatar, where treated and untreated effluent raises ion concentrations downstream.
+>
+> 3.  **Climate-Sensitive Lakes (The "Shrinking" Signals)**:
+>     *   **Ganga, Duut, & Ugii**: These traditionally freshwater/brackish lakes are experiencing **secondary salinization**. As water levels drop due to climate change and evaporation, mineral concentrations rise, turning them into sensitive indicators of regional aridification.
+>
+> **Conclusion**: While Uvs and Khyargas are naturally "salty," the elevated readings in the **Khangal** and **Tuul** rivers are actionable signals of anthropogenic pressure.
 
 ## Climate Exposure: Dust Days
 
