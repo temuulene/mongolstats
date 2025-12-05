@@ -32,7 +32,7 @@ Geographic analysis is essential for understanding health disparities and target
 
 Mongolia's administrative boundaries are available at three levels:
 
-```{r boundaries, eval=TRUE}
+```{r boundaries, eval=TRUE, fig.alt="Map showing the 21 aimags (provinces) and Ulaanbaatar capital of Mongolia with white fill and grey borders"}
 # ADM0: National boundary
 country <- mn_boundaries(level = "ADM0")
 
