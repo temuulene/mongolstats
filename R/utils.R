@@ -19,3 +19,8 @@
 .nso_progress <- function() {
   isTRUE(getOption("mongolstats.progress", TRUE))
 }
+
+# Null-coalescing operator - central definition
+#' @keywords internal
+#' @noRd
+`%||%` <- function(x, y) if (is.null(x)) y else x

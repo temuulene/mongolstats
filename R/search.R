@@ -16,8 +16,7 @@ nso_search <- function(
   itms <- nso_itms()
   if (!is.null(sector)) {
     itms <- itms[
-      itms$px_path == sector | itms$list_id == sector,
-      ,
+      itms$px_path == sector | itms$list_id == sector, ,
       drop = FALSE
     ]
   }
@@ -34,5 +33,5 @@ nso_search <- function(
       }
     })
   )
-  itms[isTRUE(pred) %||% FALSE, , drop = FALSE]
+  itms[pred & !is.na(pred), , drop = FALSE]
 }

@@ -9,6 +9,20 @@ nso_itms()
 
 nso_tables()
 }
+\value{
+A tibble with columns: \code{px_path}, \code{px_file}, \code{tbl_id}, \code{tbl_eng_nm},
+\code{tbl_nm}, \code{strt_prd}, \code{end_prd}, \code{list_id}.
+}
 \description{
-List available NSO tables (PXWeb)
+Returns a tibble of all available tables in the NSO PXWeb catalog.
+}
+\examples{
+\dontrun{
+# List all available tables
+tables <- nso_itms()
+head(tables)
+
+# Filter to find specific tables
+tables |> dplyr::filter(grepl("population", tbl_eng_nm, ignore.case = TRUE))
+}
 }

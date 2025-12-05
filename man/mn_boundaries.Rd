@@ -16,3 +16,13 @@ An \code{sf} object with polygons for the requested level.
 Downloads Mongolia boundaries for ADM0/ADM1/ADM2 from the GeoBoundaries API
 and returns an \code{sf} object. Results can be cached by the caller as needed.
 }
+\examples{
+\dontrun{
+# Get aimag (province) boundaries
+aimags <- mn_boundaries("ADM1")
+plot(aimags["shapeName"])
+
+# Get soum (district) boundaries
+soums <- mn_boundaries("ADM2")
+}
+}

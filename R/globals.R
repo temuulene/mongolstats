@@ -1,16 +1,20 @@
+# Global variables used in NSE contexts (e.g., dplyr, ggplot2)
+# These are declared to satisfy R CMD check --as-cran
 utils::globalVariables(c(
-  "TBL_ID",
-  "Indicator_RN",
-  "Period",
-  "PERIOD",
-  "CODE",
-  "CODE1",
-  "CODE2",
-  "SCR_MN",
-  "SCR_ENG",
-  "SCR_MN1",
-  "SCR_ENG1",
-  "SCR_MN2",
-  "SCR_ENG2",
-  "DTVAL_CO"
+  # Columns frequently used in dplyr pipelines
+  "value",
+  "Region",
+  "Region_en",
+  "Month_en",
+  "Type",
+  "shapeName",
+  "name_std",
+  "match_std",
+  "dist",
+  "px_path",
+  "list_id",
+  "tbl_id",
+  "tbl_eng_nm",
+  "tbl_nm",
+  "label_en"
 ))

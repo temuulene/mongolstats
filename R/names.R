@@ -81,8 +81,7 @@ mn_fuzzy_join_by_name <- function(
     dist = as.numeric(best_dst)
   )
   map_df <- map_df[
-    map_df$dist <= max_distance | map_df$name_std == map_df$match_std,
-    ,
+    map_df$dist <= max_distance | map_df$name_std == map_df$match_std, ,
     drop = FALSE
   ]
   d2 <- dplyr::left_join(d, map_df, by = "name_std")

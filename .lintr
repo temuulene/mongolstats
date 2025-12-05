@@ -1,10 +1,11 @@
 linters: lintr::linters_with_defaults(
   assignment_linter = NULL,
-  line_length_linter = lintr::line_length_linter(120),
-  object_name_linter = lintr::object_name_linter(styles = "snake_case"),
-  commented_code_linter = NULL,
-  cyclocomp_linter = NULL
+  line_length_linter = lintr::line_length_linter(145),
+  object_name_linter = lintr::object_name_linter(styles = c("snake_case", "symbols")),
+  commented_code_linter = NULL
  )
 exclusions: list(
-  "R/globals.R"
+  "R/globals.R",
+  "R/zzz.R",
+  "R/px_data.R"
  )

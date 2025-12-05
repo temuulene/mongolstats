@@ -19,6 +19,7 @@ nso_options <- function(...) {
     "mongolstats.retry_tries",
     "mongolstats.retry_backoff",
     "mongolstats.verbose",
+    "mongolstats.offline",
     "mongolstats.default_labels",
     "mongolstats.progress",
     "mongolstats.value_name",

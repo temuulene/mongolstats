@@ -30,4 +30,8 @@
 ^rebuild_index\.R$
 ^test_.*\.R$
 ^test_.*\.sh$
-^\.lintr$
+^.lintr$
+^dev$
+^tools$
+^README\.html$
+^data-raw$
