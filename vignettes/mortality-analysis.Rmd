@@ -1,14 +1,6 @@
 ---
 title: "Mortality Seasonality in Mongolia: An Evidence-Based Analysis"
-output: 
-  html_document:
-    toc: true
-    toc_depth: 3
-    toc_float: 
-      collapsed: false
-      smooth_scroll: true
-    theme: flatly
-    code_folding: show
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Mortality Seasonality in Mongolia: An Evidence-Based Analysis}
   %\VignetteEngine{knitr::rmarkdown}
