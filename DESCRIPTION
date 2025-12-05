@@ -47,7 +47,8 @@ Suggests:
     scales,
     forcats,
     plotly,
-    tidyr
+    tidyr,
+    lubridate
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
