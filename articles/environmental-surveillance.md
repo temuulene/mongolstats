@@ -48,10 +48,10 @@ air_annual <- nso_data(
 
 # Define UB Stations
 ub_stations <- c(
-  "Misheel-Expo center", "West crossroad", "1st micro district", 
-  "13th micro district", "32nd Toirog", "Ofitseruudiin ordon", 
-  "Kharkhorin market", "Urgakh naran micro district", "Dambdarjaa", 
-  "Khailaast", "Tolgoit", "Zuragt", "Amgalan", "Nisekh", 
+  "Misheel-Expo center", "West crossroad", "1st micro district",
+  "13th micro district", "32nd Toirog", "Ofitseruudiin ordon",
+  "Kharkhorin market", "Urgakh naran micro district", "Dambdarjaa",
+  "Khailaast", "Tolgoit", "Zuragt", "Amgalan", "Nisekh",
   "Tavan buudal", "Bayankhoshuu", "Sharkhad", "100 ail"
 )
 
@@ -94,7 +94,7 @@ air_trends <- air_monthly |>
     Measure = case_when(
       str_detect(Pollutant_Raw, "Average") ~ "Average",
       str_detect(Pollutant_Raw, "Maximum") ~ "Maximum",
-      str_detect(Pollutant_Raw, "Minimum") ~ "Minimum", 
+      str_detect(Pollutant_Raw, "Minimum") ~ "Minimum",
       TRUE ~ "Other"
     )
   ) |>
@@ -263,10 +263,14 @@ compliance <- air_annual |>
 
 # 3. Plot
 p_comp <- compliance |>
-  ggplot(aes(x = reorder(Station, Exceedance_Factor), y = Exceedance_Factor, fill = Status,
-             text = paste0("<b>", Station, "</b><br>",
-                           "Pollutant: ", Pollutant_Type, "<br>",
-                           "Factor: ", round(Exceedance_Factor, 1), "x Limit"))) +
+  ggplot(aes(
+    x = reorder(Station, Exceedance_Factor), y = Exceedance_Factor, fill = Status,
+    text = paste0(
+      "<b>", Station, "</b><br>",
+      "Pollutant: ", Pollutant_Type, "<br>",
+      "Factor: ", round(Exceedance_Factor, 1), "x Limit"
+    )
+  )) +
   geom_col() +
   geom_hline(yintercept = 1, linetype = "dashed", color = "black", linewidth = 1) +
   facet_wrap(~Pollutant_Type, scales = "free_x") +
@@ -332,9 +336,13 @@ conductivity <- water |>
 # Plot
 p <- conductivity |>
   mutate(Station = reorder(Station, value)) |>
-  ggplot(aes(x = Station, y = value, fill = value,
-             text = paste0("<b>", Station, "</b><br>",
-                           "Conductivity: ", scales::comma(value), " μS/cm"))) +
+  ggplot(aes(
+    x = Station, y = value, fill = value,
+    text = paste0(
+      "<b>", Station, "</b><br>",
+      "Conductivity: ", scales::comma(value), " μS/cm"
+    )
+  )) +
   geom_col(show.legend = FALSE) +
   coord_flip() +
   scale_y_continuous(labels = scales::comma) +
@@ -427,9 +435,13 @@ dust_annual <- dust |>
 
 p <- dust_annual |>
   mutate(Station = reorder(Station, Total_dust_days)) |>
-  ggplot(aes(x = Station, y = Total_dust_days, fill = Total_dust_days,
-             text = paste0("<b>", Station, "</b><br>",
-                           "Dust Days: ", Total_dust_days))) +
+  ggplot(aes(
+    x = Station, y = Total_dust_days, fill = Total_dust_days,
+    text = paste0(
+      "<b>", Station, "</b><br>",
+      "Dust Days: ", Total_dust_days
+    )
+  )) +
   geom_col(show.legend = FALSE) +
   coord_flip() +
   scale_fill_viridis_c(option = "magma", direction = -1) +

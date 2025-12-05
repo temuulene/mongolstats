@@ -33,8 +33,8 @@ Search for infant mortality data:
 # Search by keyword
 mortality_tables <- nso_itms_search("infant mortality")
 mortality_tables |>
-    select(tbl_id, tbl_eng_nm) |>
-    head(5)
+  select(tbl_id, tbl_eng_nm) |>
+  head(5)
 #> # A tibble: 5 × 2
 #>   tbl_id            tbl_eng_nm                                                  
 #>   <chr>             <chr>                                                       
@@ -89,17 +89,17 @@ Get national infant mortality rates for the past two decades:
 months <- nso_dim_values("DT_NSO_2100_015V1", "Month", labels = "en")
 
 imr_national <- nso_data(
-    tbl_id = "DT_NSO_2100_015V1",
-    selections = list(
-        "Region" = "0", # National level
-        "Month" = months$code
-    ),
-    labels = "en" # Get English labels
+  tbl_id = "DT_NSO_2100_015V1",
+  selections = list(
+    "Region" = "0", # National level
+    "Month" = months$code
+  ),
+  labels = "en" # Get English labels
 )
 
 # Preview
 imr_national |>
-    head(10)
+  head(10)
 #> # A tibble: 10 × 5
 #>    Region Month value Region_en Month_en
 #>    <chr>  <chr> <dbl> <chr>     <chr>   
@@ -125,30 +125,34 @@ Create a publication-ready plot:
 # Step 2: Filter to recent decade (2015-2024) for clear trend visibility
 
 p <- imr_national |>
-    mutate(date = as.Date(paste0(Month_en, "-01"))) |> # Convert "YYYY-MM" to date
-    filter(date >= as.Date("2015-01-01") & date <= as.Date("2024-12-31")) |>
-    ggplot(aes(x = date, y = value,
-               group = 1,
-               text = paste0("<b>Date:</b> ", format(date, "%Y-%m"), "<br>",
-                             "<b>IMR:</b> ", value))) +
-    geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) +
-    geom_point(color = "#e74c3c", size = 3, shape = 21, fill = "white", stroke = 1.5, alpha = 0.6) +
-    geom_smooth(method = "loess", se = TRUE, color = "#3498db", fill = "#3498db", alpha = 0.2, linewidth = 1.5) +
-    scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-    labs(
-        title = "Infant Mortality Rate in Mongolia (Monthly)",
-        subtitle = "Deaths per 1,000 live births (National Trend)",
-        x = NULL,
-        y = "IMR (per 1,000)",
-        caption = "Source: NSO Mongolia via mongolstats"
-    ) +
-    theme_minimal(base_size = 14) +
-    theme(
-        plot.title = element_text(face = "bold", size = 16),
-        plot.subtitle = element_text(color = "grey40"),
-        panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_blank()
+  mutate(date = as.Date(paste0(Month_en, "-01"))) |> # Convert "YYYY-MM" to date
+  filter(date >= as.Date("2015-01-01") & date <= as.Date("2024-12-31")) |>
+  ggplot(aes(
+    x = date, y = value,
+    group = 1,
+    text = paste0(
+      "<b>Date:</b> ", format(date, "%Y-%m"), "<br>",
+      "<b>IMR:</b> ", value
     )
+  )) +
+  geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) +
+  geom_point(color = "#e74c3c", size = 3, shape = 21, fill = "white", stroke = 1.5, alpha = 0.6) +
+  geom_smooth(method = "loess", se = TRUE, color = "#3498db", fill = "#3498db", alpha = 0.2, linewidth = 1.5) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  labs(
+    title = "Infant Mortality Rate in Mongolia (Monthly)",
+    subtitle = "Deaths per 1,000 live births (National Trend)",
+    x = NULL,
+    y = "IMR (per 1,000)",
+    caption = "Source: NSO Mongolia via mongolstats"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "grey40"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank()
+  )
 
 plotly::ggplotly(p, tooltip = "text")
 ```
@@ -162,45 +166,45 @@ Compare infant mortality across different regions:
 # Get all aimags for most recent year (2024)
 # We'll take the average of monthly rates
 months_2024 <- months |>
-    filter(grepl("2024", label_en)) |>
-    pull(code)
+  filter(grepl("2024", label_en)) |>
+  pull(code)
 
 # Fetch IMR data for all regions in 2024
 # We'll calculate the annual average from monthly data
 
 imr_regional <- nso_data(
-    tbl_id = "DT_NSO_2100_015V1",
-    selections = list(
-        "Region" = nso_dim_values("DT_NSO_2100_015V1", "Region")$code,
-        "Month" = months_2024
-    ),
-    labels = "en"
+  tbl_id = "DT_NSO_2100_015V1",
+  selections = list(
+    "Region" = nso_dim_values("DT_NSO_2100_015V1", "Region")$code,
+    "Month" = months_2024
+  ),
+  labels = "en"
 ) |>
-    filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar (code length = 3)
-    mutate(
-        Region_en = trimws(Region_en),
-        # Standardize region names to match geographic boundary data
-        Region_en = dplyr::case_match(
-            Region_en,
-            "Bayan-Ulgii" ~ "Bayan-Ölgii",
-            "Uvurkhangai" ~ "Övörkhangai",
-            "Khuvsgul" ~ "Hovsgel",
-            "Umnugovi" ~ "Ömnögovi",
-            "Tuv" ~ "Töv",
-            "Sukhbaatar" ~ "Sükhbaatar",
-            .default = Region_en
-        ),
-        Type = ifelse(Region %in% c("1", "2", "3", "4"), "Region", "Aimag")
-    ) |>
-    # Calculate annual average IMR from monthly data
-    group_by(Region_en, Type) |>
-    summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
+  filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar (code length = 3)
+  mutate(
+    Region_en = trimws(Region_en),
+    # Standardize region names to match geographic boundary data
+    Region_en = dplyr::case_match(
+      Region_en,
+      "Bayan-Ulgii" ~ "Bayan-Ölgii",
+      "Uvurkhangai" ~ "Övörkhangai",
+      "Khuvsgul" ~ "Hovsgel",
+      "Umnugovi" ~ "Ömnögovi",
+      "Tuv" ~ "Töv",
+      "Sukhbaatar" ~ "Sükhbaatar",
+      .default = Region_en
+    ),
+    Type = ifelse(Region %in% c("1", "2", "3", "4"), "Region", "Aimag")
+  ) |>
+  # Calculate annual average IMR from monthly data
+  group_by(Region_en, Type) |>
+  summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
 # Top 10 highest IMR regions
 imr_regional |>
-    arrange(desc(value)) |>
-    select(Region_en, value) |>
-    head(10)
+  arrange(desc(value)) |>
+  select(Region_en, value) |>
+  head(10)
 #> # A tibble: 10 × 2
 #>    Region_en    value
 #>    <chr>        <dbl>
@@ -220,43 +224,47 @@ imr_regional |>
 
 ``` r
 p <- imr_regional |>
-    filter(!is.na(value)) |>
-    arrange(desc(value)) |>
-    mutate(Region_en = forcats::fct_reorder(Region_en, value)) |>
-    ggplot(aes(x = value, y = Region_en,
-               text = paste0("<b>Region:</b> ", Region_en, "<br>",
-                             "<b>IMR:</b> ", round(value, 1)))) +
-    # Aimags with gradient
-    geom_col(data = ~ subset(., Type == "Aimag"), aes(fill = value), width = 0.7) +
-    # Regions with distinct color
-    geom_col(data = ~ subset(., Type == "Region"), fill = "#2c3e50", width = 0.7) +
-    geom_text(aes(label = round(value, 1)), hjust = -0.2, color = "grey30", size = 3.5) +
-    scale_fill_gradient2(
-        low = "#27ae60",
-        mid = "#f39c12",
-        high = "#e74c3c",
-        midpoint = mean(imr_regional$value[imr_regional$Type == "Aimag"])
-    ) +
-    geom_vline(
-        xintercept = mean(imr_regional$value[imr_regional$Type == "Aimag"]),
-        linetype = "dashed",
-        color = "grey50",
-        linewidth = 0.5
-    ) +
-    scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
-    labs(
-        title = "Infant Mortality by Aimag (2024 Average)",
-        subtitle = "Dark bars represent Regional Averages",
-        x = "Deaths per 1,000 live births",
-        y = NULL
-    ) +
-    theme_minimal(base_size = 12) +
-    theme(
-        plot.title = element_text(face = "bold", size = 14),
-        panel.grid.major.y = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text.y = element_text(color = "black")
+  filter(!is.na(value)) |>
+  arrange(desc(value)) |>
+  mutate(Region_en = forcats::fct_reorder(Region_en, value)) |>
+  ggplot(aes(
+    x = value, y = Region_en,
+    text = paste0(
+      "<b>Region:</b> ", Region_en, "<br>",
+      "<b>IMR:</b> ", round(value, 1)
     )
+  )) +
+  # Aimags with gradient
+  geom_col(data = ~ subset(., Type == "Aimag"), aes(fill = value), width = 0.7) +
+  # Regions with distinct color
+  geom_col(data = ~ subset(., Type == "Region"), fill = "#2c3e50", width = 0.7) +
+  geom_text(aes(label = round(value, 1)), hjust = -0.2, color = "grey30", size = 3.5) +
+  scale_fill_gradient2(
+    low = "#27ae60",
+    mid = "#f39c12",
+    high = "#e74c3c",
+    midpoint = mean(imr_regional$value[imr_regional$Type == "Aimag"])
+  ) +
+  geom_vline(
+    xintercept = mean(imr_regional$value[imr_regional$Type == "Aimag"]),
+    linetype = "dashed",
+    color = "grey50",
+    linewidth = 0.5
+  ) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(
+    title = "Infant Mortality by Aimag (2024 Average)",
+    subtitle = "Dark bars represent Regional Averages",
+    x = "Deaths per 1,000 live births",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_text(color = "black")
+  )
 
 plotly::ggplotly(p, tooltip = "text")
 ```
@@ -273,38 +281,44 @@ aimags <- mn_boundaries(level = "ADM1")
 
 # Join IMR data to map
 imr_map <- aimags |>
-    left_join(imr_regional, by = c("shapeName" = "Region_en"))
+  left_join(imr_regional, by = c("shapeName" = "Region_en"))
 
 # Create choropleth
 # Create choropleth
 # Create choropleth
 p <- imr_map |>
-    ggplot() +
-    geom_sf(aes(fill = value,
-                text = paste0("<b>Region:</b> ", shapeName, "<br>",
-                              "<b>IMR:</b> ", round(value, 1))),
-            color = "white", size = 0.2) +
-    scale_fill_viridis_c(
-        option = "magma",
-        direction = -1,
-        name = "IMR\n(per 1,000)",
-        labels = scales::label_number()
-    ) +
-    labs(
-        title = "Infant Mortality Geography (2024 Average)",
-        subtitle = "Spatial distribution of mortality rates",
-        caption = "Source: NSO Mongolia"
-    ) +
-    theme_void() +
-    theme(
-        plot.title = element_text(face = "bold", size = 16),
-        plot.subtitle = element_text(color = "grey40"),
-        legend.position = "right",
-        legend.title = element_text(size = 10, face = "bold")
-    )
+  ggplot() +
+  geom_sf(
+    aes(
+      fill = value,
+      text = paste0(
+        "<b>Region:</b> ", shapeName, "<br>",
+        "<b>IMR:</b> ", round(value, 1)
+      )
+    ),
+    color = "white", size = 0.2
+  ) +
+  scale_fill_viridis_c(
+    option = "magma",
+    direction = -1,
+    name = "IMR\n(per 1,000)",
+    labels = scales::label_number()
+  ) +
+  labs(
+    title = "Infant Mortality Geography (2024 Average)",
+    subtitle = "Spatial distribution of mortality rates",
+    caption = "Source: NSO Mongolia"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "grey40"),
+    legend.position = "right",
+    legend.title = element_text(size = 10, face = "bold")
+  )
 
 plotly::ggplotly(p, tooltip = "text") |>
-    plotly::style(hoveron = "fills")
+  plotly::style(hoveron = "fills")
 ```
 
 ## Key Functions Summary

@@ -36,7 +36,9 @@ aimags |>
   labs(title = "Mongolia's 21 Aimags + Ulaanbaatar")
 ```
 
-![](mapping_files/figure-html/boundaries-1.png)
+![Map showing the 21 aimags (provinces) and Ulaanbaatar capital of
+Mongolia with white fill and grey
+borders](mapping_files/figure-html/boundaries-1.png)
 
 ## Case Study: Maternal Mortality Geography
 
@@ -109,10 +111,16 @@ mmr_map <- aimags |>
 # Create choropleth
 p <- mmr_map |>
   ggplot() +
-  geom_sf(aes(fill = value,
-              text = paste0("<b>Region:</b> ", shapeName, "<br>",
-                            "<b>MMR:</b> ", round(value, 1))),
-          color = "white", size = 0.2) +
+  geom_sf(
+    aes(
+      fill = value,
+      text = paste0(
+        "<b>Region:</b> ", shapeName, "<br>",
+        "<b>MMR:</b> ", round(value, 1)
+      )
+    ),
+    color = "white", size = 0.2
+  ) +
   scale_fill_viridis_c(
     option = "rocket",
     direction = -1,
@@ -197,11 +205,17 @@ imr_data <- nso_data(
 p <- aimags |>
   left_join(imr_data, by = c("shapeName" = "Region_en")) |>
   ggplot() +
-  geom_sf(aes(fill = risk_category,
-              text = paste0("<b>Region:</b> ", shapeName, "<br>",
-                            "<b>Risk:</b> ", risk_category, "<br>",
-                            "<b>IMR:</b> ", round(value, 1))),
-          color = "white", size = 0.2) +
+  geom_sf(
+    aes(
+      fill = risk_category,
+      text = paste0(
+        "<b>Region:</b> ", shapeName, "<br>",
+        "<b>Risk:</b> ", risk_category, "<br>",
+        "<b>IMR:</b> ", round(value, 1)
+      )
+    ),
+    color = "white", size = 0.2
+  ) +
   scale_fill_manual(
     values = c(
       "Low (<10)" = "#27ae60",

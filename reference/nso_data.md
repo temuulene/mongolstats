@@ -36,3 +36,30 @@ nso_data(
 - include_raw:
 
   If TRUE, attach the raw PX payload as attribute `px_raw`.
+
+## Value
+
+A tibble with one column per dimension and a numeric value column.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Fetch population data for 2024
+pop <- nso_data(
+  tbl_id = "DT_NSO_0300_001V2",
+  selections = list(Sex = "Total", Age = "Total", Year = "2024"),
+  labels = "en"
+)
+
+# Fetch multiple years
+pop_trend <- nso_data(
+  tbl_id = "DT_NSO_0300_001V2",
+  selections = list(
+    Sex = "Total",
+    Age = "Total",
+    Year = c("2020", "2021", "2022", "2023", "2024")
+  )
+)
+} # }
+```

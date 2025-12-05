@@ -172,11 +172,15 @@ cancer_data <- nso_data(
 # Visualize trends
 # Visualize trends
 p <- cancer_data |>
-  ggplot(aes(x = as.integer(Annual_en), y = value, color = `Type malignant neoplasms_en`,
-             group = `Type malignant neoplasms_en`,
-             text = paste0("<b>Year:</b> ", Annual_en, "<br>",
-                           "<b>Type:</b> ", `Type malignant neoplasms_en`, "<br>",
-                           "<b>Rate:</b> ", value))) +
+  ggplot(aes(
+    x = as.integer(Annual_en), y = value, color = `Type malignant neoplasms_en`,
+    group = `Type malignant neoplasms_en`,
+    text = paste0(
+      "<b>Year:</b> ", Annual_en, "<br>",
+      "<b>Type:</b> ", `Type malignant neoplasms_en`, "<br>",
+      "<b>Rate:</b> ", value
+    )
+  )) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3, shape = 21, fill = "white", stroke = 1.5) +
   scale_color_viridis_d(option = "plasma", end = 0.9) +
@@ -282,10 +286,14 @@ imr_national <- nso_data(
 imr_national |>
   mutate(date = as.Date(paste0(Month_en, "-01"))) |> # Convert "YYYY-MM" to date
   filter(date >= as.Date("2019-01-01") & date <= as.Date("2024-12-31")) |>
-  ggplot(aes(x = date, y = value,
-             group = 1,
-             text = paste0("<b>Date:</b> ", format(date, "%Y-%m"), "<br>",
-                           "<b>IMR:</b> ", value))) +
+  ggplot(aes(
+    x = date, y = value,
+    group = 1,
+    text = paste0(
+      "<b>Date:</b> ", format(date, "%Y-%m"), "<br>",
+      "<b>IMR:</b> ", value
+    )
+  )) +
   geom_line(color = "#2980b9", linewidth = 1, alpha = 0.3) +
   geom_point(color = "#2980b9", size = 2, shape = 21, fill = "white", stroke = 1, alpha = 0.5) +
   geom_smooth(method = "loess", se = TRUE, color = "#2980b9", fill = "#2980b9", alpha = 0.2, linewidth = 1.5) +
@@ -345,10 +353,14 @@ tb_data <- nso_data(
 p <- tb_data |>
   mutate(date = as.Date(paste0(Month_en, "-01"))) |>
   filter(!is.na(value)) |>
-  ggplot(aes(x = date, y = value,
-             group = 1,
-             text = paste0("<b>Date:</b> ", format(date, "%Y-%m"), "<br>",
-                           "<b>Cases:</b> ", value))) +
+  ggplot(aes(
+    x = date, y = value,
+    group = 1,
+    text = paste0(
+      "<b>Date:</b> ", format(date, "%Y-%m"), "<br>",
+      "<b>Cases:</b> ", value
+    )
+  )) +
   geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) +
   geom_point(color = "#2c3e50", size = 2, alpha = 0.3) +
   geom_smooth(method = "loess", se = TRUE, color = "#e74c3c", fill = "#e74c3c", alpha = 0.2, linewidth = 1.5) +

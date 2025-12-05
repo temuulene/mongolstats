@@ -55,8 +55,12 @@ gdp <- nso_data(
 )
 
 # Visualize
-gdp |>
-  ggplot(aes(x = as.integer(Year_en), y = value / 1e6)) + # Convert to Trillions
+# Visualize
+p <- gdp |>
+  ggplot(aes(x = as.integer(Year_en), y = value / 1e6,
+             group = 1,
+             text = paste0("<b>Year:</b> ", Year_en, "<br>",
+                           "<b>GDP:</b> ", round(value / 1e6, 2), "T"))) + # Convert to Trillions
   geom_area(fill = "#42b883", alpha = 0.6) +
   geom_line(color = "#2c3e50", linewidth = 1.2) +
   geom_point(color = "#2c3e50", size = 3, shape = 21, fill = "white", stroke = 1.5) +
@@ -66,7 +70,7 @@ gdp |>
     title = "Mongolia's GDP Growth (2010-2024)",
     subtitle = "Gross Domestic Product (in Trillions MNT)",
     x = NULL,
-    y = NULL,
+    y = "GDP (Trillions MNT)",
     caption = "Source: NSO Mongolia via mongolstats"
   ) +
   theme_minimal(base_size = 14) +
@@ -76,9 +80,9 @@ gdp |>
     panel.grid.minor = element_blank(),
     panel.grid.major.x = element_blank()
   )
-```
 
-![](reference/figures/README-gdp-example-1.png)
+plotly::ggplotly(p, tooltip = "text")
+```
 
 ### 2. Mapping Regional Population
 
@@ -118,17 +122,21 @@ pop <- nso_data(
 map <- mn_boundaries(level = "ADM1")
 
 # 3. Join and Map
-map |>
+# 3. Join and Map
+p <- map |>
   left_join(pop, by = c("shapeName" = "Region_en")) |>
   ggplot() +
-  geom_sf(aes(fill = value), color = "white", size = 0.2) +
+  geom_sf(aes(fill = value,
+              text = paste0("<b>Region:</b> ", shapeName, "<br>",
+                            "<b>Pop:</b> ", scales::comma(value))),
+          color = "white", size = 0.2) +
   scale_fill_viridis_c(
     option = "magma",
     direction = -1,
     trans = "log10",
     breaks = c(20000, 50000, 100000, 500000, 1500000),
     labels = scales::label_number(scale_cut = scales::cut_short_scale()),
-    name = "Population"
+    name = "Population\n(Log Scale)"
   ) +
   labs(
     title = "Population Distribution (2024)",
@@ -142,9 +150,10 @@ map |>
     legend.position = "bottom",
     legend.key.width = unit(1.5, "cm")
   )
-```
 
-![](reference/figures/README-pop-map-example-1.png)
+plotly::ggplotly(p, tooltip = "text") |>
+  plotly::style(hoveron = "fills")
+```
 
 ## Documentation
 
