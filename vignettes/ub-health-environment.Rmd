@@ -9,12 +9,12 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>",
-    fig.width = 8,
-    fig.height = 6,
-    warning = FALSE,
-    message = FALSE
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 6,
+  warning = FALSE,
+  message = FALSE
 )
 ```
 
@@ -44,49 +44,49 @@ To analyze UB districts specifically, we employ a spatial filtering approach. We
 # 1. Define UB District Names (Map vs Data standard)
 # Map names (transliterated) -> Data names (English standard)
 ub_name_map <- c(
-    "Baganuur" = "Baganuur",
-    "Bagaxangai" = "Bagakhangai",
-    "Bayangol" = "Bayangol",
-    "Bayanzu'rx" = "Bayanzurkh",
-    "Chingeltei" = "Chingeltei",
-    "Nalaix" = "Nalaikh",
-    "Songinoxairxan" = "Songinokhairkhan",
-    "Su'xbaatar" = "Sukhbaatar",
-    "Xan-Uul" = "Khan-Uul"
+  "Baganuur" = "Baganuur",
+  "Bagaxangai" = "Bagakhangai",
+  "Bayangol" = "Bayangol",
+  "Bayanzu'rx" = "Bayanzurkh",
+  "Chingeltei" = "Chingeltei",
+  "Nalaix" = "Nalaikh",
+  "Songinoxairxan" = "Songinokhairkhan",
+  "Su'xbaatar" = "Sukhbaatar",
+  "Xan-Uul" = "Khan-Uul"
 )
 
 # 2. Get Spatial Boundaries
 # We use a cached version or fetch if needed
 get_ub_shapes <- function() {
-    # Get all soums and UB boundary
-    all_soums <- mn_boundaries(level = "ADM2")
-    aimags <- mn_boundaries(level = "ADM1")
-    ub_boundary <- aimags |> filter(shapeName == "Ulaanbaatar")
-    
-    # Spatial filter (turning off S2 for robustness)
-    sf_use_s2(FALSE)
-    ub_districts <- all_soums |>
-        filter(shapeName %in% names(ub_name_map)) |>
-        st_filter(ub_boundary)
-    
-    # Add standardized name column
-    ub_districts |>
-        mutate(District = ub_name_map[shapeName])
+  # Get all soums and UB boundary
+  all_soums <- mn_boundaries(level = "ADM2")
+  aimags <- mn_boundaries(level = "ADM1")
+  ub_boundary <- aimags |> filter(shapeName == "Ulaanbaatar")
+
+  # Spatial filter (turning off S2 for robustness)
+  sf_use_s2(FALSE)
+  ub_districts <- all_soums |>
+    filter(shapeName %in% names(ub_name_map)) |>
+    st_filter(ub_boundary)
+
+  # Add standardized name column
+  ub_districts |>
+    mutate(District = ub_name_map[shapeName])
 }
 
 ub_shapes <- get_ub_shapes()
 
 # 3. Helper to fetch and filter NSO data for UB
 get_ub_data <- function(tbl_id, ...) {
-    # Fetch data for all regions
-    df <- nso_data(tbl_id, labels = "en", ...)
-    
-    # Filter for UB districts using the "511" prefix code pattern
-    df |>
-        filter(grepl("^511", Region)) |>
-        mutate(District = trimws(Region_en)) |> # Standardize name
-        filter(District %in% ub_name_map) |>
-        select(-Region_en, -Region) # Keep only standardized District
+  # Fetch data for all regions
+  df <- nso_data(tbl_id, labels = "en", ...)
+
+  # Filter for UB districts using the "511" prefix code pattern
+  df |>
+    filter(grepl("^511", Region)) |>
+    mutate(District = trimws(Region_en)) |> # Standardize name
+    filter(District %in% ub_name_map) |>
+    select(-Region_en, -Region) # Keep only standardized District
 }
 ```
 
@@ -100,46 +100,55 @@ We calculate population density using the most recent population data and the di
 
 ```{r demog-density}
 # Fetch Population Data (DT_NSO_0300_002V4)
-pop_data <- get_ub_data("DT_NSO_0300_002V4", 
-                        selections = list(Year = "2024"))
+pop_data <- get_ub_data("DT_NSO_0300_002V4",
+  selections = list(Year = "2024")
+)
 
 # Join population data with district boundaries
 ub_pop_map <- ub_shapes |>
-    left_join(pop_data, by = "District") |>
-    # Project to UTM Zone 48N for accurate area calculation in meters (not degrees)
-    st_transform(32648) |>
-    mutate(
-        Area_km2 = as.numeric(st_area(geometry)) / 1e6,  # Convert m² to km²
-        Density = value / Area_km2  # People per km²
-    ) |>
-    st_transform(4326)  # Back to WGS84 for plotting
+  left_join(pop_data, by = "District") |>
+  # Project to UTM Zone 48N for accurate area calculation in meters (not degrees)
+  st_transform(32648) |>
+  mutate(
+    Area_km2 = as.numeric(st_area(geometry)) / 1e6, # Convert m² to km²
+    Density = value / Area_km2 # People per km²
+  ) |>
+  st_transform(4326) # Back to WGS84 for plotting
 
 # Map Density
 p_dens <- ggplot(ub_pop_map) +
-    geom_sf(aes(fill = Density,
-                text = paste0("<b>", District, "</b><br>",
-                              "Pop: ", scales::comma(value), "<br>",
-                              "Density: ", scales::comma(Density, accuracy = 0.1), "/km²")),
-            color = "white", size = 0.2) +
-    scale_fill_viridis_c(
-        option = "rocket", 
-        direction = -1, 
-        trans = "log10",
-        name = "Population Density\n(People/km²)",
-        labels = scales::comma
-    ) +
-    labs(title = "Population Density by District (2024)",
-         subtitle = "People per square kilometer (Logarithmic Scale)",
-         caption = "Source: NSO Mongolia (DT_NSO_0300_002V4)\nNote: Log scale used to visualize wide range of densities.") +
-    theme_void() +
-    theme(
-        plot.title = element_text(face = "bold", size = 14),
-        plot.subtitle = element_text(color = "grey40"),
-        legend.position = "right"
-    )
+  geom_sf(
+    aes(
+      fill = Density,
+      text = paste0(
+        "<b>", District, "</b><br>",
+        "Pop: ", scales::comma(value), "<br>",
+        "Density: ", scales::comma(Density, accuracy = 0.1), "/km²"
+      )
+    ),
+    color = "white", size = 0.2
+  ) +
+  scale_fill_viridis_c(
+    option = "rocket",
+    direction = -1,
+    trans = "log10",
+    name = "Population Density\n(People/km²)",
+    labels = scales::comma
+  ) +
+  labs(
+    title = "Population Density by District (2024)",
+    subtitle = "People per square kilometer (Logarithmic Scale)",
+    caption = "Source: NSO Mongolia (DT_NSO_0300_002V4)\nNote: Log scale used to visualize wide range of densities."
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(color = "grey40"),
+    legend.position = "right"
+  )
 
 ggplotly(p_dens, tooltip = "text") |>
-    style(hoveron = "fills")
+  style(hoveron = "fills")
 ```
 
 > **Interpretation**: The central districts (Bayangol, Chingeltei, Sukhbaatar) exhibit extremely high density, while the exurban districts (Baganuur, Bagakhangai) remain sparsely populated. This density gradient is a critical factor for infectious disease transmission and environmental exposure.
@@ -150,29 +159,36 @@ Analyzing growth rates helps identify rapidly expanding areas which may strain l
 
 ```{r demog-trend}
 # Fetch historical population data (last 10 years)
-pop_trend <- get_ub_data("DT_NSO_0300_002V4", 
-                         selections = list(Year = as.character(2013:2024)))
+pop_trend <- get_ub_data("DT_NSO_0300_002V4",
+  selections = list(Year = as.character(2013:2024))
+)
 
 p_trend <- pop_trend |>
-    mutate(Year = as.numeric(Year_en)) |> # Use Year_en for correct year
-    arrange(Year) |>
-    ggplot(aes(x = Year, y = value, color = District, group = District,
-               text = paste0("<b>", District, "</b><br>",
-                             "Year: ", Year, "<br>",
-                             "Pop: ", scales::comma(value)))) +
-    geom_line(linewidth = 1) + 
-    geom_point(size = 2) +
-    scale_y_continuous(labels = scales::comma) +
-    scale_x_continuous(breaks = 2013:2024) +
-    labs(title = "Population Growth Trends (2013-2024)",
-         subtitle = "Annual resident population",
-         y = "Population", x = NULL, color = "District",
-         caption = "Source: NSO Mongolia") +
-    theme_minimal() +
-    theme(
-        plot.title = element_text(face = "bold"),
-        legend.position = "bottom"
+  mutate(Year = as.numeric(Year_en)) |> # Use Year_en for correct year
+  arrange(Year) |>
+  ggplot(aes(
+    x = Year, y = value, color = District, group = District,
+    text = paste0(
+      "<b>", District, "</b><br>",
+      "Year: ", Year, "<br>",
+      "Pop: ", scales::comma(value)
     )
+  )) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_continuous(breaks = 2013:2024) +
+  labs(
+    title = "Population Growth Trends (2013-2024)",
+    subtitle = "Annual resident population",
+    y = "Population", x = NULL, color = "District",
+    caption = "Source: NSO Mongolia"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "bottom"
+  )
 
 ggplotly(p_trend, tooltip = "text")
 ```
@@ -190,28 +206,34 @@ We compare the number of students to the number of schools to estimate overcrowd
 ```{r socio-edu}
 # Fetch Schools (DT_NSO_2001_002V2) and Students (DT_NSO_2002_057V2)
 schools <- get_ub_data("DT_NSO_2001_002V2", selections = list(Year = "2024")) |>
-    rename(Schools = value)
+  rename(Schools = value)
 students <- get_ub_data("DT_NSO_2002_057V2", selections = list(Year = "2024")) |>
-    rename(Students = value)
+  rename(Students = value)
 
 edu_load <- left_join(schools, students, by = c("District", "Year")) |>
-    mutate(Students_Per_School = Students / Schools)
+  mutate(Students_Per_School = Students / Schools)
 
-p_edu <- ggplot(edu_load, aes(x = reorder(District, Students_Per_School), 
-                              y = Students_Per_School, fill = District,
-                              text = paste0("<b>", District, "</b><br>",
-                                            "Students/School: ", round(Students_Per_School, 1), "<br>",
-                                            "Total Schools: ", Schools, "<br>",
-                                            "Total Students: ", scales::comma(Students)))) +
-    geom_col(show.legend = FALSE) +
-    coord_flip() +
-    scale_y_continuous(labels = scales::comma) +
-    labs(title = "Educational Load: Students per School (2024)",
-         subtitle = "Average number of students per general educational school",
-         y = "Students per School", x = NULL,
-         caption = "Source: NSO Mongolia") +
-    theme_minimal() +
-    theme(plot.title = element_text(face = "bold"))
+p_edu <- ggplot(edu_load, aes(
+  x = reorder(District, Students_Per_School),
+  y = Students_Per_School, fill = District,
+  text = paste0(
+    "<b>", District, "</b><br>",
+    "Students/School: ", round(Students_Per_School, 1), "<br>",
+    "Total Schools: ", Schools, "<br>",
+    "Total Students: ", scales::comma(Students)
+  )
+)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Educational Load: Students per School (2024)",
+    subtitle = "Average number of students per general educational school",
+    y = "Students per School", x = NULL,
+    caption = "Source: NSO Mongolia"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold"))
 
 ggplotly(p_edu, tooltip = "text")
 ```
@@ -228,38 +250,45 @@ Respiratory diseases are a leading cause of death in UB. We calculate the **Crud
 
 ```{r health-resp}
 # 1. Get Respiratory Deaths (Code found in discovery phase)
-# We need to find the code dynamically or use known one. 
+# We need to find the code dynamically or use known one.
 # For vignette stability, we'll search for it.
 resp_meta <- nso_dim_values("DT_NSO_2100_027V1", "Indicator", labels = "en")
-resp_code <- resp_meta |> 
-    filter(grepl("respiratory", label_en, ignore.case = TRUE)) |> 
-    pull(code)
+resp_code <- resp_meta |>
+  filter(grepl("respiratory", label_en, ignore.case = TRUE)) |>
+  pull(code)
 
-resp_deaths <- get_ub_data("DT_NSO_2100_027V1", 
-                           selections = list(Indicator = resp_code, Year = "2024")) |>
-    rename(Deaths = value)
+resp_deaths <- get_ub_data("DT_NSO_2100_027V1",
+  selections = list(Indicator = resp_code, Year = "2024")
+) |>
+  rename(Deaths = value)
 
 # 2. Calculate Rates using Population data from Demographics section
 health_metrics <- resp_deaths |>
-    left_join(pop_data, by = c("District")) |>
-    rename(Population = value) |>
-    mutate(Resp_Death_Rate = (Deaths / Population) * 10000)
+  left_join(pop_data, by = c("District")) |>
+  rename(Population = value) |>
+  mutate(Resp_Death_Rate = (Deaths / Population) * 10000)
 
-p_resp <- ggplot(health_metrics, aes(x = reorder(District, Resp_Death_Rate), 
-                                     y = Resp_Death_Rate, fill = Resp_Death_Rate,
-                                     text = paste0("<b>", District, "</b><br>",
-                                                   "Rate: ", round(Resp_Death_Rate, 1), " per 10k<br>",
-                                                   "Deaths: ", Deaths, "<br>",
-                                                   "Pop: ", scales::comma(Population)))) +
-    geom_col() +
-    scale_fill_viridis_c(option = "inferno", direction = -1, name = "Rate") +
-    coord_flip() +
-    labs(title = "Respiratory Mortality Rate (2024)",
-         subtitle = "Deaths per 10,000 population",
-         y = "Rate per 10,000", x = NULL,
-         caption = "Source: NSO Mongolia") +
-    theme_minimal() +
-    theme(plot.title = element_text(face = "bold"))
+p_resp <- ggplot(health_metrics, aes(
+  x = reorder(District, Resp_Death_Rate),
+  y = Resp_Death_Rate, fill = Resp_Death_Rate,
+  text = paste0(
+    "<b>", District, "</b><br>",
+    "Rate: ", round(Resp_Death_Rate, 1), " per 10k<br>",
+    "Deaths: ", Deaths, "<br>",
+    "Pop: ", scales::comma(Population)
+  )
+)) +
+  geom_col() +
+  scale_fill_viridis_c(option = "inferno", direction = -1, name = "Rate") +
+  coord_flip() +
+  labs(
+    title = "Respiratory Mortality Rate (2024)",
+    subtitle = "Deaths per 10,000 population",
+    y = "Rate per 10,000", x = NULL,
+    caption = "Source: NSO Mongolia"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold"))
 
 ggplotly(p_resp, tooltip = "text")
 ```
@@ -271,21 +300,28 @@ IMR is a sensitive indicator of maternal health and primary care access.
 ```{r health-imr}
 # Fetch IMR directly (DT_NSO_2100_015V2 is Rate per 1000)
 # Using 2023 as 2024 data appears incomplete for some districts
-imr_data <- get_ub_data("DT_NSO_2100_015V2", 
-                        selections = list(Year = "2023"))
+imr_data <- get_ub_data("DT_NSO_2100_015V2",
+  selections = list(Year = "2023")
+)
 
-p_imr <- ggplot(imr_data, aes(x = reorder(District, value), y = value,
-                              text = paste0("<b>", District, "</b><br>",
-                                            "IMR: ", value, " per 1,000"))) +
-    geom_segment(aes(xend = District, yend = 0), color = "grey") +
-    geom_point(size = 4, color = "steelblue") +
-    coord_flip() +
-    labs(title = "Infant Mortality Rate (2023)",
-         subtitle = "Deaths per 1,000 live births",
-         y = "IMR (per 1,000)", x = NULL,
-         caption = "Source: NSO Mongolia") +
-    theme_minimal() +
-    theme(plot.title = element_text(face = "bold"))
+p_imr <- ggplot(imr_data, aes(
+  x = reorder(District, value), y = value,
+  text = paste0(
+    "<b>", District, "</b><br>",
+    "IMR: ", value, " per 1,000"
+  )
+)) +
+  geom_segment(aes(xend = District, yend = 0), color = "grey") +
+  geom_point(size = 4, color = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Infant Mortality Rate (2023)",
+    subtitle = "Deaths per 1,000 live births",
+    y = "IMR (per 1,000)", x = NULL,
+    caption = "Source: NSO Mongolia"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold"))
 
 ggplotly(p_imr, tooltip = "text")
 ```
@@ -298,40 +334,52 @@ To understand the interplay between these factors, we examine correlations betwe
 # Combine all metrics into one analytical dataset
 # We use inner_join to ensure we only have districts with all data
 analysis_df <- health_metrics |>
-    select(District, Population, Resp_Death_Rate) |>
-    left_join(imr_data |> select(District, IMR = value), by = "District") |>
-    left_join(edu_load |> select(District, Students_Per_School), by = "District") |>
-    left_join(ub_pop_map |> st_drop_geometry() |> select(District, Density), by = "District")
+  select(District, Population, Resp_Death_Rate) |>
+  left_join(imr_data |> select(District, IMR = value), by = "District") |>
+  left_join(edu_load |> select(District, Students_Per_School), by = "District") |>
+  left_join(ub_pop_map |> st_drop_geometry() |> select(District, Density), by = "District")
 
 # Correlation Matrix
 cor_mat <- analysis_df |>
-    select(Density, `Students/School` = Students_Per_School, 
-           `Resp. Rate` = Resp_Death_Rate, IMR) |>
-    cor(use = "complete.obs")
+  select(Density,
+    `Students/School` = Students_Per_School,
+    `Resp. Rate` = Resp_Death_Rate, IMR
+  ) |>
+  cor(use = "complete.obs")
 
 # Reshape for ggplot
 cor_long <- as.data.frame(cor_mat) |>
-    mutate(Var1 = rownames(cor_mat)) |>
-    pivot_longer(-Var1, names_to = "Var2", values_to = "Correlation") |>
-    filter(Var1 != Var2) # Remove diagonal
+  mutate(Var1 = rownames(cor_mat)) |>
+  pivot_longer(-Var1, names_to = "Var2", values_to = "Correlation") |>
+  filter(Var1 != Var2) # Remove diagonal
 
-p_cor <- ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation,
-                              text = paste0(Var1, " vs ", Var2, "<br>",
-                                            "Corr: ", round(Correlation, 2)))) +
-    geom_tile(color = "white") +
-    scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
-                         midpoint = 0, limit = c(-1, 1)) +
-    geom_text(aes(label = round(Correlation, 2),
-                  color = ifelse(abs(Correlation) > 0.5, "white", "black"))) +
-    scale_color_identity() +
-    labs(title = "Correlation of District Indicators", 
-         subtitle = "Pearson correlation coefficients",
-         x = NULL, y = NULL) +
-    theme_minimal() +
-    theme(
-        axis.text.x = element_text(angle = 45, hjust = 1),
-        plot.title = element_text(face = "bold")
-    )
+p_cor <- ggplot(cor_long, aes(
+  x = Var1, y = Var2, fill = Correlation,
+  text = paste0(
+    Var1, " vs ", Var2, "<br>",
+    "Corr: ", round(Correlation, 2)
+  )
+)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(
+    low = "blue", high = "red", mid = "white",
+    midpoint = 0, limit = c(-1, 1)
+  ) +
+  geom_text(aes(
+    label = round(Correlation, 2),
+    color = ifelse(abs(Correlation) > 0.5, "white", "black")
+  )) +
+  scale_color_identity() +
+  labs(
+    title = "Correlation of District Indicators",
+    subtitle = "Pearson correlation coefficients",
+    x = NULL, y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(face = "bold")
+  )
 
 ggplotly(p_cor, tooltip = "text")
 ```
@@ -393,15 +441,23 @@ knitr::kable(station_count, caption = "Air Quality Monitoring Stations by Distri
 ```{r aq-network-map, fig.width=9, fig.height=7}
 # Create map with district boundaries and station locations
 p_map <- ggplot() +
-  geom_sf(data = ub_shapes, aes(text = paste0("<b>", District, "</b>")), 
-          fill = "grey90", color = "white", linewidth = 0.5) +
-  geom_sf(data = ub_stations_sf, 
-          aes(text = paste0("<b>", Station, "</b><br>",
-                            "District: ", District, "<br>",
-                            "Source: ", Source)),
-          color = "#e74c3c", size = 3, alpha = 0.8) +
-  geom_sf_text(data = ub_shapes, aes(label = District), 
-               size = 2.5, color = "grey40") +
+  geom_sf(
+    data = ub_shapes, aes(text = paste0("<b>", District, "</b>")),
+    fill = "grey90", color = "white", linewidth = 0.5
+  ) +
+  geom_sf(
+    data = ub_stations_sf,
+    aes(text = paste0(
+      "<b>", Station, "</b><br>",
+      "District: ", District, "<br>",
+      "Source: ", Source
+    )),
+    color = "#e74c3c", size = 3, alpha = 0.8
+  ) +
+  geom_sf_text(
+    data = ub_shapes, aes(label = District),
+    size = 2.5, color = "grey40"
+  ) +
   labs(
     title = "Air Quality Monitoring Network in Ulaanbaatar",
     subtitle = "18 stations distributed across 6 districts",
@@ -432,19 +488,27 @@ station_coverage <- station_count |>
     )
   )
 
-p_coverage <- ggplot(station_coverage, 
-                     aes(x = reorder(District, Pop_per_Station), 
-                         y = Pop_per_Station / 1000,
-                         fill = Coverage_Score,
-                         text = paste0("<b>", District, "</b><br>",
-                                       "Pop: ", scales::comma(Population), "<br>",
-                                       "Stations: ", Stations, "<br>",
-                                       "Pop/Station: ", scales::comma(Pop_per_Station)))) +
+p_coverage <- ggplot(
+  station_coverage,
+  aes(
+    x = reorder(District, Pop_per_Station),
+    y = Pop_per_Station / 1000,
+    fill = Coverage_Score,
+    text = paste0(
+      "<b>", District, "</b><br>",
+      "Pop: ", scales::comma(Population), "<br>",
+      "Stations: ", Stations, "<br>",
+      "Pop/Station: ", scales::comma(Pop_per_Station)
+    )
+  )
+) +
   geom_col() +
   coord_flip() +
-  scale_fill_manual(values = c("High Coverage" = "#27ae60", 
-                                "Moderate Coverage" = "#f39c12",
-                                "Low Coverage" = "#e74c3c")) +
+  scale_fill_manual(values = c(
+    "High Coverage" = "#27ae60",
+    "Moderate Coverage" = "#f39c12",
+    "Low Coverage" = "#e74c3c"
+  )) +
   labs(
     title = "Air Quality Monitoring Coverage by District",
     subtitle = "Population per monitoring station (thousands)",

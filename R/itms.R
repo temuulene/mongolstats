@@ -1,6 +1,20 @@
 ## Table discovery via PXWeb
 
 #' List available NSO tables (PXWeb)
+#'
+#' Returns a tibble of all available tables in the NSO PXWeb catalog.
+#'
+#' @return A tibble with columns: `px_path`, `px_file`, `tbl_id`, `tbl_eng_nm`,
+#'   `tbl_nm`, `strt_prd`, `end_prd`, `list_id`.
+#' @examples
+#' \dontrun{
+#' # List all available tables
+#' tables <- nso_itms()
+#' head(tables)
+#'
+#' # Filter to find specific tables
+#' tables |> dplyr::filter(grepl("population", tbl_eng_nm, ignore.case = TRUE))
+#' }
 #' @export
 nso_itms <- function() {
   # use cached path when available
@@ -14,7 +28,15 @@ nso_itms <- function() {
 }
 
 #' Get variable codes for a table (PXWeb)
+#'
 #' @param tbl_id Table identifier (e.g., "DT_NSO_0300_001V2").
+#' @return A tibble with variable metadata.
+#' @examples
+#' \dontrun{
+#' # Get variables for population table
+#' vars <- nso_itms_detail("DT_NSO_0300_001V2")
+#' vars
+#' }
 #' @export
 nso_itms_detail <- function(tbl_id) {
   stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
@@ -27,6 +49,15 @@ nso_itms_detail <- function(tbl_id) {
 #' @param query A single keyword string to search for (case-insensitive).
 #' @param fields Character vector of column names to search within
 #'   (defaults to English and Mongolian titles).
+#' @return A tibble of matching tables.
+#' @examples
+#' \dontrun{
+#' # Search for infant mortality tables
+#' nso_itms_search("infant mortality")
+#'
+#' # Search for GDP tables
+#' nso_itms_search("GDP")
+#' }
 #' @export
 nso_itms_search <- function(query, fields = c("tbl_eng_nm", "tbl_nm")) {
   stopifnot(is.character(query), length(query) == 1L)
@@ -58,8 +89,8 @@ nso_itms_by_sector <- function(list_id) {
   itms[itms$px_path == list_id | itms$list_id == list_id, , drop = FALSE]
 }
 
-# null-coalescing helper
-`%||%` <- function(x, y) if (is.null(x)) y else x
+# Note: %||% operator is defined in utils.R
+
 
 # Aliases ---------------------------------------------------------------
 

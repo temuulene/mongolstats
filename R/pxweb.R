@@ -87,29 +87,4 @@
   }
 }
 
-.px_strip_bom <- function(x) {
-  if (is.character(x) && length(x) > 0) {
-    # Remove UTF-8 BOM if present
-    if (startsWith(x, "\uFEFF")) {
-      x <- substring(x, 2)
-    }
-  }
-  x
-}
-
-.px_first_nonempty <- function(...) {
-  args <- list(...)
-  for (a in args) {
-    if (!is.null(a) && length(a) > 0 && nzchar(as.character(a))) {
-      return(as.character(a))
-    }
-  }
-  NULL
-}
-
-.px_chr <- function(x) {
-  if (is.null(x)) {
-    return(character())
-  }
-  as.character(x)
-}
+## Note: .px_strip_bom, .px_first_nonempty, and .px_chr are defined in aaa_px_helpers.R

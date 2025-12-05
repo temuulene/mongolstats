@@ -12,7 +12,9 @@ nso_sectors <- function() {
 }
 
 #' List children for a given path (PXWeb)
-#' @param subid Path id from `nso_sectors()`/`nso_subsectors()` (e.g., 'Population, household' or 'Population, household/1_Population, household')
+#'
+#' @param subid Path id from `nso_sectors()`/`nso_subsectors()`
+#'   (e.g., 'Population, household' or 'Population, household/1_Population, household')
 #' @export
 nso_subsectors <- function(subid) {
   stopifnot(is.character(subid), length(subid) == 1L)

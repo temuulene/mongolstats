@@ -13,7 +13,9 @@
       next
     }
     val <- as.character(a)[1]
-    if (!is.na(val) && nzchar(val)) return(val)
+    if (!is.na(val) && nzchar(val)) {
+      return(val)
+    }
   }
   NULL
 }

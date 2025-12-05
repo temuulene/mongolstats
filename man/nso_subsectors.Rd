@@ -7,7 +7,8 @@
 nso_subsectors(subid)
 }
 \arguments{
-\item{subid}{Path id from \code{nso_sectors()}/\code{nso_subsectors()} (e.g., 'Population, household' or 'Population, household/1_Population, household')}
+\item{subid}{Path id from \code{nso_sectors()}/\code{nso_subsectors()}
+(e.g., 'Population, household' or 'Population, household/1_Population, household')}
 }
 \description{
 List children for a given path (PXWeb)

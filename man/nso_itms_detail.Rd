@@ -12,6 +12,16 @@ nso_variables(tbl_id)
 \arguments{
 \item{tbl_id}{Table identifier (e.g., "DT_NSO_0300_001V2").}
 }
+\value{
+A tibble with variable metadata.
+}
 \description{
 Get variable codes for a table (PXWeb)
+}
+\examples{
+\dontrun{
+# Get variables for population table
+vars <- nso_itms_detail("DT_NSO_0300_001V2")
+vars
+}
 }
