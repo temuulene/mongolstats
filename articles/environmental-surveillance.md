@@ -6,9 +6,20 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(stringr)
-library(plotly)
 
 nso_options(mongolstats.lang = "en")
+
+# Global theme with proper margins to prevent text cutoff
+theme_set(
+  theme_minimal(base_size = 11) +
+    theme(
+      plot.margin = margin(10, 10, 10, 10),
+      plot.title = element_text(size = 13, face = "bold"),
+      plot.subtitle = element_text(size = 10, color = "grey40"),
+      legend.text = element_text(size = 9),
+      legend.title = element_text(size = 10)
+    )
+)
 ```
 
 ## Overview
@@ -139,14 +150,12 @@ mac_pm25 <- 0.025
 p_pm <- air_trends |>
   filter(Pollutant_Type == "PM2.5") |>
   ggplot(aes(x = Date, group = Station)) +
-  # MAC reference line
+  # MAC reference line - regulatory threshold for health protection
   geom_hline(yintercept = mac_pm25, linetype = "dashed", color = "darkred", linewidth = 1) +
-  annotate("text", x = min(air_trends$Date), y = mac_pm25 * 1.2, label = "National Limit (0.025)", hjust = 0, color = "darkred", fontface = "bold") +
-  # Ribbon for range (using 0 as min if actual min not available, or just Max-Avg)
-  # Here we assume Average is the central line and Maximum is the upper bound
+  # Ribbon shows range from average to maximum - captures daily variability
   geom_ribbon(aes(ymin = Average, ymax = Maximum), fill = "red", alpha = 0.2) +
   geom_line(aes(y = Average), color = "firebrick", linewidth = 0.8) +
-  facet_wrap(~Station, ncol = 2, scales = "free_y") +
+  facet_wrap(~Station, ncol = 2, scales = "free_y") +  # each station on its own scale
   scale_x_date(date_breaks = "6 months", date_labels = "%b %Y") +
   labs(
     title = "PM2.5 Trends in Top 10 Polluted UB Stations (2021-2025)",
@@ -154,7 +163,7 @@ p_pm <- air_trends |>
     x = NULL,
     y = "Concentration (mg/m³)"
   ) +
-  scale_y_continuous(limits = c(0, NA)) +
+  scale_y_continuous(limits = c(0, NA)) +  # y-axis starts at 0 for honest comparison
   theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold"),
@@ -163,8 +172,10 @@ p_pm <- air_trends |>
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
 
-plotly::ggplotly(p_pm)
+p_pm  # print static ggplot
 ```
+
+![](environmental-surveillance_files/figure-html/pm25-trends-1.png)
 
 > **Key Findings**: All 10 stations show **systematic winter
 > exceedances**, with peak concentrations reaching 4-10x the MAC limit
@@ -192,7 +203,7 @@ mac_so2 <- 0.020
 p_so2 <- air_trends |>
   filter(Pollutant_Type == "SO2") |>
   ggplot(aes(x = Date, group = Station)) +
-  # MAC reference line
+  # MAC reference line - SO2 threshold for respiratory health
   geom_hline(yintercept = mac_so2, linetype = "dashed", color = "darkorange3", linewidth = 1) +
   geom_ribbon(aes(ymin = Average, ymax = Maximum), fill = "orange", alpha = 0.2) +
   geom_line(aes(y = Average), color = "darkorange", linewidth = 0.8) +
@@ -212,8 +223,10 @@ p_so2 <- air_trends |>
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
 
-plotly::ggplotly(p_so2)
+p_so2  # print static ggplot
 ```
+
+![](environmental-surveillance_files/figure-html/so2-trends-1.png)
 
 > **Critical Pattern**: SO₂ shows **extreme seasonal variation** (20-30x
 > increase in winter vs. summer), far exceeding PM2.5’s seasonal swing.
@@ -261,21 +274,16 @@ compliance <- air_annual |>
     Status = ifelse(Exceedance_Factor > 1, "Non-Compliant", "Compliant")
   )
 
-# 3. Plot
+# 3. Plot regulatory compliance - exceedance factor shows how many times over the limit
 p_comp <- compliance |>
-  ggplot(aes(
-    x = reorder(Station, Exceedance_Factor), y = Exceedance_Factor, fill = Status,
-    text = paste0(
-      "<b>", Station, "</b><br>",
-      "Pollutant: ", Pollutant_Type, "<br>",
-      "Factor: ", round(Exceedance_Factor, 1), "x Limit"
-    )
-  )) +
+  ggplot(aes(x = reorder(Station, Exceedance_Factor), y = Exceedance_Factor, fill = Status)) +
   geom_col() +
-  geom_hline(yintercept = 1, linetype = "dashed", color = "black", linewidth = 1) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "black", linewidth = 1) +  # compliance threshold
+  geom_text(aes(label = round(Exceedance_Factor, 1)), hjust = -0.1, size = 2.5) +  # inline labels
   facet_wrap(~Pollutant_Type, scales = "free_x") +
   coord_flip() +
   scale_fill_manual(values = c("Compliant" = "#27ae60", "Non-Compliant" = "#c0392b")) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
   labs(
     title = "Regulatory Compliance: Exceedance Factors (2024)",
     subtitle = "Ratio of Annual Average to Maximum Allowable Concentration (MAC)",
@@ -289,8 +297,10 @@ p_comp <- compliance |>
     panel.grid.major.y = element_blank()
   )
 
-plotly::ggplotly(p_comp, tooltip = "text")
+p_comp  # print static ggplot
 ```
+
+![](environmental-surveillance_files/figure-html/compliance-check-1.png)
 
 > **Compliance Crisis**: **90% of top stations are non-compliant** for
 > PM2.5, with exceedance factors reaching 2.0-2.5x (equivalent to annual
@@ -333,19 +343,14 @@ conductivity <- water |>
   filter(str_detect(Indicator, "Electrical conductivity")) |>
   slice_max(order_by = value, n = 15)
 
-# Plot
+# Plot water quality - top stations by conductivity
 p <- conductivity |>
   mutate(Station = reorder(Station, value)) |>
-  ggplot(aes(
-    x = Station, y = value, fill = value,
-    text = paste0(
-      "<b>", Station, "</b><br>",
-      "Conductivity: ", scales::comma(value), " μS/cm"
-    )
-  )) +
+  ggplot(aes(x = Station, y = value, fill = value)) +
   geom_col(show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(value)), hjust = -0.1, size = 3) +  # inline labels
   coord_flip() +
-  scale_y_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) +
   scale_fill_viridis_c(option = "viridis") +
   labs(
     title = "Top 15 Water Stations by Conductivity (2023)",
@@ -360,8 +365,10 @@ p <- conductivity |>
     panel.grid.minor = element_blank()
   )
 
-plotly::ggplotly(p, tooltip = "text")
+p  # print static ggplot
 ```
+
+![](environmental-surveillance_files/figure-html/water-quality-1.png)
 
 > **Interpreting Conductivity: A Tale of Three Sources**
 >
@@ -433,18 +440,15 @@ dust_annual <- dust |>
   ) |>
   slice_max(Total_dust_days, n = 10)
 
+# Plot dust exposure by station
 p <- dust_annual |>
   mutate(Station = reorder(Station, Total_dust_days)) |>
-  ggplot(aes(
-    x = Station, y = Total_dust_days, fill = Total_dust_days,
-    text = paste0(
-      "<b>", Station, "</b><br>",
-      "Dust Days: ", Total_dust_days
-    )
-  )) +
+  ggplot(aes(x = Station, y = Total_dust_days, fill = Total_dust_days)) +
   geom_col(show.legend = FALSE) +
+  geom_text(aes(label = Total_dust_days), hjust = -0.2, size = 3.5) +  # inline labels
   coord_flip() +
   scale_fill_viridis_c(option = "magma", direction = -1) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
   labs(
     title = "Top 10 Stations for Dust Exposure (2024)",
     subtitle = "Total annual dust days",
@@ -458,8 +462,10 @@ p <- dust_annual |>
     panel.grid.major.y = element_blank()
   )
 
-plotly::ggplotly(p, tooltip = "text")
+p  # print static ggplot
 ```
+
+![](environmental-surveillance_files/figure-html/dust-days-1.png)
 
 > **Gobi Dust Belt**: **Sainshand** (30 days/year) and **Dalanzadgad**
 > (21 days/year) represent the core of Mongolia’s dust exposure zone.

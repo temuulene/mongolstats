@@ -6,10 +6,21 @@ library(dplyr)
 library(ggplot2)
 library(sf)
 library(tidyr)
-library(plotly)
 library(purrr)
 
 nso_options(mongolstats.lang = "en")
+
+# Global theme with proper margins to prevent text cutoff
+theme_set(
+  theme_minimal(base_size = 11) +
+    theme(
+      plot.margin = margin(10, 10, 10, 10),
+      plot.title = element_text(size = 13, face = "bold"),
+      plot.subtitle = element_text(size = 10, color = "grey40"),
+      legend.text = element_text(size = 9),
+      legend.title = element_text(size = 10)
+    )
+)
 ```
 
 ## Introduction
@@ -108,23 +119,13 @@ ub_pop_map <- ub_shapes |>
   ) |>
   st_transform(4326) # Back to WGS84 for plotting
 
-# Map Density
+# Map population density
 p_dens <- ggplot(ub_pop_map) +
-  geom_sf(
-    aes(
-      fill = Density,
-      text = paste0(
-        "<b>", District, "</b><br>",
-        "Pop: ", scales::comma(value), "<br>",
-        "Density: ", scales::comma(Density, accuracy = 0.1), "/km²"
-      )
-    ),
-    color = "white", size = 0.2
-  ) +
+  geom_sf(aes(fill = Density), color = "white", size = 0.2) +
   scale_fill_viridis_c(
     option = "rocket",
     direction = -1,
-    trans = "log10",
+    trans = "log10",  # log scale because densities span 4 orders of magnitude
     name = "Population Density\n(People/km²)",
     labels = scales::comma
   ) +
@@ -137,12 +138,14 @@ p_dens <- ggplot(ub_pop_map) +
   theme(
     plot.title = element_text(face = "bold", size = 14),
     plot.subtitle = element_text(color = "grey40"),
-    legend.position = "right"
+    legend.position = "bottom",          # bottom legend maximizes map width
+    legend.key.width = unit(1.5, "cm")
   )
 
-ggplotly(p_dens, tooltip = "text") |>
-  style(hoveron = "fills")
+p_dens  # print static ggplot
 ```
+
+![](ub-health-environment_files/figure-html/demog-density-1.png)
 
 > **Interpretation**: The central districts (Bayangol, Chingeltei,
 > Sukhbaatar) exhibit extremely high density, while the exurban
@@ -162,16 +165,9 @@ pop_trend <- get_ub_data("DT_NSO_0300_002V4",
 )
 
 p_trend <- pop_trend |>
-  mutate(Year = as.numeric(Year_en)) |> # Use Year_en for correct year
+  mutate(Year = as.numeric(Year_en)) |>
   arrange(Year) |>
-  ggplot(aes(
-    x = Year, y = value, color = District, group = District,
-    text = paste0(
-      "<b>", District, "</b><br>",
-      "Year: ", Year, "<br>",
-      "Pop: ", scales::comma(value)
-    )
-  )) +
+  ggplot(aes(x = Year, y = value, color = District, group = District)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
   scale_y_continuous(labels = scales::comma) +
@@ -188,8 +184,10 @@ p_trend <- pop_trend |>
     legend.position = "bottom"
   )
 
-ggplotly(p_trend, tooltip = "text")
+p_trend  # print static ggplot
 ```
+
+![](ub-health-environment_files/figure-html/demog-trend-1.png)
 
 The rapid growth in **Songinokhairkhan** and **Bayanzurkh** highlights
 their role as the primary absorption points for rural-to-urban
@@ -219,17 +217,12 @@ edu_load <- left_join(schools, students, by = c("District", "Year")) |>
 
 p_edu <- ggplot(edu_load, aes(
   x = reorder(District, Students_Per_School),
-  y = Students_Per_School, fill = District,
-  text = paste0(
-    "<b>", District, "</b><br>",
-    "Students/School: ", round(Students_Per_School, 1), "<br>",
-    "Total Schools: ", Schools, "<br>",
-    "Total Students: ", scales::comma(Students)
-  )
+  y = Students_Per_School, fill = District
 )) +
   geom_col(show.legend = FALSE) +
+  geom_text(aes(label = round(Students_Per_School)), hjust = -0.1, size = 3) +  # inline labels replace tooltips
   coord_flip() +
-  scale_y_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) +
   labs(
     title = "Educational Load: Students per School (2024)",
     subtitle = "Average number of students per general educational school",
@@ -237,10 +230,15 @@ p_edu <- ggplot(edu_load, aes(
     caption = "Source: NSO Mongolia"
   ) +
   theme_minimal() +
-  theme(plot.title = element_text(face = "bold"))
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.major.y = element_blank()  # horizontal gridlines clutter bar charts
+  )
 
-ggplotly(p_edu, tooltip = "text")
+p_edu  # print static ggplot
 ```
+
+![](ub-health-environment_files/figure-html/socio-edu-1.png)
 
 Districts with higher ratios may indicate infrastructure lags relative
 to population growth, often correlating with lower socioeconomic status
@@ -279,17 +277,13 @@ health_metrics <- resp_deaths |>
 
 p_resp <- ggplot(health_metrics, aes(
   x = reorder(District, Resp_Death_Rate),
-  y = Resp_Death_Rate, fill = Resp_Death_Rate,
-  text = paste0(
-    "<b>", District, "</b><br>",
-    "Rate: ", round(Resp_Death_Rate, 1), " per 10k<br>",
-    "Deaths: ", Deaths, "<br>",
-    "Pop: ", scales::comma(Population)
-  )
+  y = Resp_Death_Rate, fill = Resp_Death_Rate
 )) +
   geom_col() +
+  geom_text(aes(label = round(Resp_Death_Rate, 1)), hjust = -0.1, size = 3) +  # inline labels
   scale_fill_viridis_c(option = "inferno", direction = -1, name = "Rate") +
   coord_flip() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +  # room for labels
   labs(
     title = "Respiratory Mortality Rate (2024)",
     subtitle = "Deaths per 10,000 population",
@@ -297,10 +291,15 @@ p_resp <- ggplot(health_metrics, aes(
     caption = "Source: NSO Mongolia"
   ) +
   theme_minimal() +
-  theme(plot.title = element_text(face = "bold"))
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "none"  # color already encoded in bar height
+  )
 
-ggplotly(p_resp, tooltip = "text")
+p_resp  # print static ggplot
 ```
+
+![](ub-health-environment_files/figure-html/health-resp-1.png)
 
 ### Infant Mortality Rate (IMR)
 
@@ -313,16 +312,12 @@ imr_data <- get_ub_data("DT_NSO_2100_015V2",
   selections = list(Year = "2023")
 )
 
-p_imr <- ggplot(imr_data, aes(
-  x = reorder(District, value), y = value,
-  text = paste0(
-    "<b>", District, "</b><br>",
-    "IMR: ", value, " per 1,000"
-  )
-)) +
-  geom_segment(aes(xend = District, yend = 0), color = "grey") +
-  geom_point(size = 4, color = "steelblue") +
+p_imr <- ggplot(imr_data, aes(x = reorder(District, value), y = value)) +
+  geom_segment(aes(xend = District, yend = 0), color = "grey") +  # lollipop stem
+  geom_point(size = 4, color = "steelblue") +  # lollipop head
+  geom_text(aes(label = round(value, 1)), hjust = -0.3, size = 3) +  # inline labels
   coord_flip() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
   labs(
     title = "Infant Mortality Rate (2023)",
     subtitle = "Deaths per 1,000 live births",
@@ -330,10 +325,15 @@ p_imr <- ggplot(imr_data, aes(
     caption = "Source: NSO Mongolia"
   ) +
   theme_minimal() +
-  theme(plot.title = element_text(face = "bold"))
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.major.y = element_blank()
+  )
 
-ggplotly(p_imr, tooltip = "text")
+p_imr  # print static ggplot
 ```
+
+![](ub-health-environment_files/figure-html/health-imr-1.png)
 
 ## 4. Multivariate Analysis
 
@@ -364,13 +364,7 @@ cor_long <- as.data.frame(cor_mat) |>
   pivot_longer(-Var1, names_to = "Var2", values_to = "Correlation") |>
   filter(Var1 != Var2) # Remove diagonal
 
-p_cor <- ggplot(cor_long, aes(
-  x = Var1, y = Var2, fill = Correlation,
-  text = paste0(
-    Var1, " vs ", Var2, "<br>",
-    "Corr: ", round(Correlation, 2)
-  )
-)) +
+p_cor <- ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation)) +
   geom_tile(color = "white") +
   scale_fill_gradient2(
     low = "blue", high = "red", mid = "white",
@@ -378,7 +372,7 @@ p_cor <- ggplot(cor_long, aes(
   ) +
   geom_text(aes(
     label = round(Correlation, 2),
-    color = ifelse(abs(Correlation) > 0.5, "white", "black")
+    color = ifelse(abs(Correlation) > 0.5, "white", "black")  # contrast for readability
   )) +
   scale_color_identity() +
   labs(
@@ -392,8 +386,10 @@ p_cor <- ggplot(cor_long, aes(
     plot.title = element_text(face = "bold")
   )
 
-ggplotly(p_cor, tooltip = "text")
+p_cor  # print static ggplot
 ```
+
+![](ub-health-environment_files/figure-html/multi-var-1.png)
 
 ### Key Insights
 
@@ -482,23 +478,9 @@ Air Quality Monitoring Stations by District
 ``` r
 # Create map with district boundaries and station locations
 p_map <- ggplot() +
-  geom_sf(
-    data = ub_shapes, aes(text = paste0("<b>", District, "</b>")),
-    fill = "grey90", color = "white", linewidth = 0.5
-  ) +
-  geom_sf(
-    data = ub_stations_sf,
-    aes(text = paste0(
-      "<b>", Station, "</b><br>",
-      "District: ", District, "<br>",
-      "Source: ", Source
-    )),
-    color = "#e74c3c", size = 3, alpha = 0.8
-  ) +
-  geom_sf_text(
-    data = ub_shapes, aes(label = District),
-    size = 2.5, color = "grey40"
-  ) +
+  geom_sf(data = ub_shapes, fill = "grey90", color = "white", linewidth = 0.5) +
+  geom_sf(data = ub_stations_sf, color = "#e74c3c", size = 3, alpha = 0.8) +  # red dots for stations
+  geom_sf_text(data = ub_shapes, aes(label = District), size = 2.5, color = "grey40") +  # district labels
   labs(
     title = "Air Quality Monitoring Network in Ulaanbaatar",
     subtitle = "18 stations distributed across 6 districts",
@@ -511,8 +493,10 @@ p_map <- ggplot() +
     plot.caption = element_text(hjust = 0, size = 9)
   )
 
-ggplotly(p_map, tooltip = "text")
+p_map  # print static ggplot
 ```
+
+![](ub-health-environment_files/figure-html/aq-network-map-1.png)
 
 ### Station Coverage Analysis
 
@@ -534,22 +518,18 @@ p_coverage <- ggplot(
   aes(
     x = reorder(District, Pop_per_Station),
     y = Pop_per_Station / 1000,
-    fill = Coverage_Score,
-    text = paste0(
-      "<b>", District, "</b><br>",
-      "Pop: ", scales::comma(Population), "<br>",
-      "Stations: ", Stations, "<br>",
-      "Pop/Station: ", scales::comma(Pop_per_Station)
-    )
+    fill = Coverage_Score
   )
 ) +
   geom_col() +
+  geom_text(aes(label = scales::comma(Pop_per_Station)), hjust = -0.1, size = 3) +  # inline labels
   coord_flip() +
   scale_fill_manual(values = c(
-    "High Coverage" = "#27ae60",
-    "Moderate Coverage" = "#f39c12",
-    "Low Coverage" = "#e74c3c"
+    "High Coverage" = "#27ae60",     # green = good
+    "Moderate Coverage" = "#f39c12", # yellow = caution
+    "Low Coverage" = "#e74c3c"       # red = concern
   )) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
   labs(
     title = "Air Quality Monitoring Coverage by District",
     subtitle = "Population per monitoring station (thousands)",
@@ -564,8 +544,10 @@ p_coverage <- ggplot(
     panel.grid.major.y = element_blank()
   )
 
-ggplotly(p_coverage, tooltip = "text")
+p_coverage  # print static ggplot
 ```
+
+![](ub-health-environment_files/figure-html/station-coverage-1.png)
 
 > **Coverage Disparities**: Districts like **Bayanzurkh** and
 > **Songinokhairkhan** (despite having multiple stations) still serve

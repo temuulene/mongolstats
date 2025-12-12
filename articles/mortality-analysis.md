@@ -8,6 +8,18 @@ library(ggplot2)
 library(lubridate)
 library(scales)
 nso_options(mongolstats.lang = "en")
+
+# Global theme with proper margins to prevent text cutoff
+theme_set(
+  theme_minimal(base_size = 11) +
+    theme(
+      plot.margin = margin(10, 10, 10, 10),
+      plot.title = element_text(size = 13, face = "bold"),
+      plot.subtitle = element_text(size = 10, color = "grey40"),
+      legend.text = element_text(size = 9),
+      legend.title = element_text(size = 10)
+    )
+)
 ```
 
 ## Overview
@@ -126,9 +138,10 @@ y_range <- range(deaths_monthly$daily_avg, na.rm = TRUE)
 y_min <- y_range[1] * 0.9
 y_max <- y_range[2] * 1.1
 
+# Create time series plot with COVID-19 phase annotations
 p <- deaths_monthly |>
   ggplot(aes(x = date, y = daily_avg)) +
-  # Add COVID-19 background shading with explicit limits
+  # Background shading for COVID-19 phases - provides historical context
   geom_rect(
     data = covid_periods,
     aes(xmin = Start, xmax = End, ymin = y_min, ymax = y_max, fill = Phase),
@@ -136,18 +149,18 @@ p <- deaths_monthly |>
   ) +
   # Main time series line
   geom_line(color = "#2c3e50", linewidth = 0.8, alpha = 0.8) +
-  # Highlight December points
+  # Highlight December points - the focus of our investigation
   geom_point(
     aes(color = Month_Type),
     size = 2.5, alpha = 0.9,
     show.legend = TRUE
   ) +
-  # Custom colors for points
+  # Custom colors for December vs other months
   scale_color_manual(
     values = c("December" = "#e74c3c", "Other Months" = "#3498db"),
     name = "Month Type"
   ) +
-  # Custom colors for background shading
+  # Custom colors for COVID-19 phase shading
   scale_fill_manual(
     values = c(
       "Prevention (No Local Cases)" = "#a5d6a7",
@@ -160,41 +173,31 @@ p <- deaths_monthly |>
   scale_y_continuous(labels = scales::comma, limits = c(y_min, y_max)) +
   labs(
     title = "Daily Average Deaths in Mongolia (2015-2024)",
-    subtitle = "Normalized by days in month; Shaded regions = COVID-19 phases; Red dots = December",
+    subtitle = "Shaded = COVID-19 phases; Red = December",
     x = NULL,
     y = "Daily Average Deaths",
-    caption = "Source: NSO Mongolia"
+    caption = "Source: NSO Mongolia | Normalized by days in month"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(
-    plot.title = element_text(face = "bold", size = 16),
-    plot.subtitle = element_text(color = "grey40"),
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(color = "grey40", size = 10),
+    plot.margin = margin(t = 5, r = 10, b = 5, l = 5),  # extra margin for legends
     legend.position = "bottom",
-    legend.box = "vertical",
+    legend.box = "horizontal",  # horizontal layout prevents cutoff
+    legend.text = element_text(size = 8),
+    legend.title = element_text(size = 9),
     panel.grid.minor = element_blank()
+  ) +
+  guides(
+    color = guide_legend(order = 1, nrow = 2),
+    fill = guide_legend(order = 2, nrow = 2)
   )
 
-# Convert to plotly and clean legend artifacts
-gp <- plotly::ggplotly(p, tooltip = c("x", "y", "color"))
-
-# Fix: Remove ",1" suffix artifacts from legend entries (handles "December,1" format)
-gp$x$data <- lapply(gp$x$data, function(trace) {
-  if (!is.null(trace$name)) {
-    # Remove parentheses and trailing ",1" or just ",1" anywhere
-    trace$name <- gsub("\\(|\\)", "", trace$name)
-    trace$name <- gsub(",1", "", trace$name)
-    trace$name <- trimws(trace$name)
-  }
-  return(trace)
-})
-
-# Layout with horizontal legend at bottom
-gp <- plotly::layout(gp, 
-  legend = list(orientation = "h", x = 0, y = -0.15, xanchor = "left")
-)
-
-gp
+p  # print static ggplot
 ```
+
+![](mortality-analysis_files/figure-html/time-series-plot-1.png)
 
 **Interpretation:**
 
@@ -231,25 +234,19 @@ monthly_stats <- deaths_monthly |>
   ) |>
   arrange(month)
 
+# Seasonal distribution showing COVID outliers
 p <- deaths_monthly |>
   mutate(month_name = factor(month_name, levels = month.abb)) |>
   ggplot(aes(x = month_name, y = daily_avg)) +
-  # Layer jitter FIRST so boxes appear on top
+  # Jitter points FIRST so boxes appear on top for legibility
   geom_jitter(
-    aes(
-      color = ifelse(year == 2021, "COVID-19 Surge (2021)", "Normal Year"),
-      text = paste0(
-        "<b>Year:</b> ", year, "<br>",
-        "<b>Month:</b> ", month_name, "<br>",
-        "<b>Daily Avg Deaths:</b> ", round(daily_avg, 1)
-      )
-    ),
+    aes(color = ifelse(year == 2021, "COVID-19 Surge (2021)", "Normal Year")),
     width = 0.2, alpha = 0.4, size = 1.5
   ) +
-  # Boxes on top of jitter points
+  # Boxplots show typical range by season
   geom_boxplot(
     aes(fill = Season),
-    alpha = 0.7, outlier.shape = NA
+    alpha = 0.7, outlier.shape = NA  # hide outliers since jitter shows them
   ) +
   scale_fill_manual(
     values = c("Winter (Nov-Mar)" = "#e74c3c", "Non-Winter" = "#3498db"),
@@ -266,26 +263,24 @@ p <- deaths_monthly |>
     x = NULL,
     y = "Daily Average Deaths"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(
-    plot.title = element_text(face = "bold"),
-    legend.position = "top"
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 10),
+    plot.margin = margin(t = 5, r = 10, b = 5, l = 5),
+    legend.position = "top",
+    legend.text = element_text(size = 8),
+    legend.title = element_text(size = 9)
+  ) +
+  guides(
+    fill = guide_legend(order = 1),
+    color = guide_legend(order = 2)
   )
 
-# Convert to plotly and clean legend artifacts
-gp <- plotly::ggplotly(p, tooltip = "text")
-
-gp$x$data <- lapply(gp$x$data, function(trace) {
-  if (!is.null(trace$name)) {
-    trace$name <- gsub("\\(|\\)", "", trace$name)
-    trace$name <- gsub(",1", "", trace$name)
-    trace$name <- trimws(trace$name)
-  }
-  return(trace)
-})
-
-gp
+p  # print static ggplot
 ```
+
+![](mortality-analysis_files/figure-html/monthly-boxplot-1.png)
 
 **Lay Interpretation:** The boxplot shows the “typical” range of daily
 average deaths for each month (normalized by days in month).
@@ -315,31 +310,25 @@ month with “confidence intervals” (the error bars).
 peak_month <- monthly_stats |> filter(mean_daily == max(mean_daily))
 trough_month <- monthly_stats |> filter(mean_daily == min(mean_daily))
 
+# Monthly means bar chart with confidence intervals
 p <- monthly_stats |>
   mutate(
     month_name = factor(month_name, levels = month.abb),
     bar_type = ifelse(month_name == peak_month$month_name, "Peak Month", "Other Months")
   ) |>
-  ggplot(aes(
-    x = month_name, y = mean_daily,
-    text = paste0(
-      "<b>Month:</b> ", month_name, "<br>",
-      "<b>Mean Daily Deaths:</b> ", round(mean_daily, 1), "<br>",
-      "<b>95% CI:</b> [", round(ci_lower, 1), ", ", round(ci_upper, 1), "]"
-    )
-  )) +
+  ggplot(aes(x = month_name, y = mean_daily)) +
   geom_col(aes(fill = bar_type), alpha = 0.8) +
   geom_errorbar(
     aes(ymin = ci_lower, ymax = ci_upper),
-    width = 0.3, color = "#2c3e50"
+    width = 0.3, color = "#2c3e50"  # error bars show confidence intervals
   ) +
   geom_hline(
     yintercept = mean(monthly_stats$mean_daily),
-    linetype = "dashed", color = "grey50"
+    linetype = "dashed", color = "grey50"  # reference line for annual average
   ) +
   scale_fill_manual(
     values = c("Other Months" = "#3498db", "Peak Month" = "#e74c3c"),
-    guide = "none"
+    guide = "none"  # legend not needed - peak month is obvious
   ) +
   scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.1))) +
   labs(
@@ -350,14 +339,16 @@ p <- monthly_stats |>
     y = "Mean Daily Deaths",
     caption = "Dashed line = annual average; Normalized by days in month"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold"),
     plot.subtitle = element_text(color = "grey40")
   )
 
-plotly::ggplotly(p, tooltip = "text")
+p  # print static ggplot
 ```
+
+![](mortality-analysis_files/figure-html/monthly-means-plot-1.png)
 
 ------------------------------------------------------------------------
 
@@ -374,20 +365,13 @@ heatmap_data <- deaths_monthly |>
   ) |>
   ungroup()
 
+# Heatmap showing year-by-month mortality patterns
 p <- heatmap_data |>
-  ggplot(aes(
-    x = factor(year), y = month_name, fill = z_score,
-    text = paste0(
-      "<b>Year:</b> ", year, "<br>",
-      "<b>Month:</b> ", month_name, "<br>",
-      "<b>Daily Avg:</b> ", round(daily_avg, 1), "<br>",
-      "<b>Relative Level:</b> ", round(z_score, 2)
-    )
-  )) +
+  ggplot(aes(x = factor(year), y = month_name, fill = z_score)) +
   geom_tile(color = "white", linewidth = 0.5) +
   scale_fill_gradient2(
     low = "#3498db", mid = "white", high = "#e74c3c",
-    midpoint = 0, name = "Relative\nIntensity"
+    midpoint = 0, name = "Relative\nIntensity"  # z-score: positive = above average
   ) +
   labs(
     title = "Mortality Heat Map",
@@ -395,16 +379,19 @@ p <- heatmap_data |>
     x = "Year",
     y = NULL
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold"),
     axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = "right",
-    legend.title = element_text(size = 10)
+    legend.position = "bottom",          # bottom legend gives more horizontal space
+    legend.title = element_text(size = 10),
+    legend.key.width = unit(1.5, "cm")
   )
 
-plotly::ggplotly(p, tooltip = "text")
+p  # print static ggplot
 ```
+
+![](mortality-analysis_files/figure-html/heatmap-1.png)
 
 **Interpretation:**
 
@@ -512,11 +499,17 @@ seasonal_cycle <- data.frame(
 peak_seasonal <- seasonal_cycle |> filter(seasonal_effect == max(seasonal_effect))
 trough_seasonal <- seasonal_cycle |> filter(seasonal_effect == min(seasonal_effect))
 
+# Seasonal pattern bar chart showing above/below average by month
 p <- seasonal_cycle |>
   ggplot(aes(x = month_name, y = seasonal_effect)) +
   geom_col(aes(fill = ifelse(seasonal_effect > 0, "Above Average", "Below Average")), 
            alpha = 0.8) +
-  geom_hline(yintercept = 0, linetype = "solid", color = "grey40") +
+  geom_hline(yintercept = 0, linetype = "solid", color = "grey40") +  # zero line
+  geom_text(
+    aes(label = round(seasonal_effect, 1),
+        vjust = ifelse(seasonal_effect > 0, -0.5, 1.5)),
+    size = 3
+  ) +  # inline labels
   scale_fill_manual(
     values = c("Above Average" = "#e74c3c", "Below Average" = "#3498db"),
     name = "Seasonal Effect"
@@ -527,17 +520,19 @@ p <- seasonal_cycle |>
     subtitle = paste0("Peak: ", peak_seasonal$month_name, " (+", round(peak_seasonal$seasonal_effect, 1), 
                       " deaths/day) | Trough: ", trough_seasonal$month_name, " (", round(trough_seasonal$seasonal_effect, 1), " deaths/day)"),
     x = NULL,
-    y = "Seasonal Effect (daily deaths above/below average)"
+    y = "Daily deaths above/below average"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold"),
     plot.subtitle = element_text(color = "grey40"),
     legend.position = "bottom"
   )
 
-plotly::ggplotly(p, tooltip = c("x", "y"))
+p  # print static ggplot
 ```
+
+![](mortality-analysis_files/figure-html/seasonal-pattern-1.png)
 
 > **Key Finding:** The STL decomposition confirms that **Dec** has the
 > highest seasonal mortality, with approximately **4.4** more deaths per
@@ -650,12 +645,13 @@ cause_deaths <- nso_data(
 ```
 
 ``` r
+# Multi-line trend plot by cause of death
 p <- cause_deaths |>
   filter(year >= 2015) |>
   ggplot(aes(x = year, y = value, color = Cause)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
-  scale_color_brewer(palette = "Set1") +
+  scale_color_brewer(palette = "Set1") +  # distinct colors for each cause
   scale_y_continuous(labels = scales::comma) +
   scale_x_continuous(breaks = 2015:2024) +
   labs(
@@ -664,14 +660,16 @@ p <- cause_deaths |>
     x = NULL,
     y = "Number of Deaths per Year"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold"),
     legend.position = "right"
   )
 
-plotly::ggplotly(p)
+p  # print static ggplot
 ```
+
+![](mortality-analysis_files/figure-html/cause-trends-plot-1.png)
 
 **Interpretation:**
 
@@ -711,6 +709,7 @@ resp_cases <- nso_data(
   ) |>
   filter(!is.na(value))
 
+# Respiratory cases boxplot by month - proxy for seasonal infection pressure
 p <- resp_cases |>
   ggplot(aes(x = month, y = value)) +
   geom_boxplot(fill = "#e74c3c", alpha = 0.6) +
@@ -721,11 +720,13 @@ p <- resp_cases |>
     x = NULL,
     y = "Reported Cases"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(plot.title = element_text(face = "bold"))
 
-plotly::ggplotly(p)
+p  # print static ggplot
 ```
+
+![](mortality-analysis_files/figure-html/respiratory-proxy-1.png)
 
 **Interpretation:**
 
@@ -796,37 +797,35 @@ area_monthly <- area_monthly |>
   ) |>
   ungroup()
 
+# Urban vs Rural seasonality comparison
 p <- area_monthly |>
   mutate(month_name = factor(month_name, levels = month.abb)) |>
-  ggplot(aes(
-    x = month_name, y = pct_of_mean, color = area_type, group = area_type,
-    text = paste0(
-      "<b>Area:</b> ", area_type, "<br>",
-      "<b>Month:</b> ", month_name, "<br>",
-      "<b>Deviation:</b> ", round(pct_of_mean, 1), "%"
-    )
-  )) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  ggplot(aes(x = month_name, y = pct_of_mean, color = area_type, group = area_type)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +  # baseline reference
   geom_line(linewidth = 1.2) +
   geom_point(size = 3) +
+  geom_text(aes(label = round(pct_of_mean, 0)), vjust = -1, size = 2.5) +  # inline labels
   scale_color_manual(
     values = c("Ulaanbaatar" = "#e74c3c", "Rural (Aimags)" = "#3498db"),
     name = NULL
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.2))) +
   labs(
     title = "Urban vs Rural Seasonality",
     subtitle = "Both follow the same winter pattern",
     x = NULL,
     y = "% Deviation from Annual Average"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold"),
     legend.position = "top"
   )
 
-plotly::ggplotly(p, tooltip = "text")
+p  # print static ggplot
 ```
+
+![](mortality-analysis_files/figure-html/urban-rural-comparison-1.png)
 
 ------------------------------------------------------------------------
 
@@ -880,37 +879,35 @@ type_monthly <- comparison_data |>
   ) |>
   ungroup()
 
+# Hospital vs All Deaths seasonality comparison
 p <- type_monthly |>
   mutate(month_name = factor(month_name, levels = month.abb)) |>
-  ggplot(aes(
-    x = month_name, y = pct_of_mean, color = type, group = type,
-    text = paste0(
-      "<b>Type:</b> ", type, "<br>",
-      "<b>Month:</b> ", month_name, "<br>",
-      "<b>Deviation:</b> ", round(pct_of_mean, 1), "%"
-    )
-  )) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  ggplot(aes(x = month_name, y = pct_of_mean, color = type, group = type)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +  # baseline
   geom_line(linewidth = 1.2) +
   geom_point(size = 3) +
+  geom_text(aes(label = round(pct_of_mean, 0)), vjust = -1, size = 2.5) +  # inline labels
   scale_color_manual(
     values = c("All Deaths" = "#2c3e50", "Hospital Deaths" = "#e74c3c"),
     name = NULL
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.2))) +
   labs(
     title = "Hospital vs All Deaths Seasonality",
     subtitle = "Percentage deviation from annual mean",
     x = NULL,
     y = "% Deviation from Annual Average"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold"),
     legend.position = "top"
   )
 
-plotly::ggplotly(p, tooltip = "text")
+p  # print static ggplot
 ```
+
+![](mortality-analysis_files/figure-html/hospital-comparison-1.png)
 
 ------------------------------------------------------------------------
 
@@ -1036,17 +1033,16 @@ sessionInfo()
 #> [5] dplyr_1.1.4       mongolstats_0.1.0
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] rappdirs_0.3.3     plotly_4.11.0      sass_0.4.10        generics_0.1.4    
-#>  [5] digest_0.6.39      magrittr_2.0.4     evaluate_1.0.5     grid_4.5.2        
-#>  [9] timechange_0.3.0   RColorBrewer_1.1-3 fastmap_1.2.0      jsonlite_2.0.0    
-#> [13] httr_1.4.7         purrr_1.2.0        crosstalk_1.2.2    viridisLite_0.4.2 
-#> [17] lazyeval_0.2.2     httr2_1.2.1        textshaping_1.0.4  jquerylib_0.1.4   
-#> [21] cli_3.6.5          rlang_1.1.6        withr_3.0.2        cachem_1.1.0      
-#> [25] yaml_2.3.11        tools_4.5.2        curl_7.0.0         vctrs_0.6.5       
-#> [29] R6_2.6.1           lifecycle_1.0.4    fs_1.6.6           htmlwidgets_1.6.4 
-#> [33] ragg_1.5.0         pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.0     
-#> [37] pillar_1.11.1      bslib_0.9.0        gtable_0.3.6       glue_1.8.0        
-#> [41] data.table_1.17.8  systemfonts_1.3.1  xfun_0.54          tibble_3.3.0      
-#> [45] tidyselect_1.2.1   knitr_1.50         farver_2.1.2       htmltools_0.5.9   
-#> [49] rmarkdown_2.30     labeling_0.4.3     compiler_4.5.2     S7_0.2.1
+#>  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.2     tidyselect_1.2.1  
+#>  [5] jquerylib_0.1.4    systemfonts_1.3.1  textshaping_1.0.4  yaml_2.3.12       
+#>  [9] fastmap_1.2.0      R6_2.6.1           labeling_0.4.3     generics_0.1.4    
+#> [13] curl_7.0.0         httr2_1.2.2        knitr_1.50         htmlwidgets_1.6.4 
+#> [17] tibble_3.3.0       desc_1.4.3         RColorBrewer_1.1-3 bslib_0.9.0       
+#> [21] pillar_1.11.1      rlang_1.1.6        cachem_1.1.0       xfun_0.54         
+#> [25] S7_0.2.1           fs_1.6.6           sass_0.4.10        otel_0.2.0        
+#> [29] timechange_0.3.0   cli_3.6.5          withr_3.0.2        pkgdown_2.2.0     
+#> [33] magrittr_2.0.4     digest_0.6.39      grid_4.5.2         rappdirs_0.3.3    
+#> [37] lifecycle_1.0.4    vctrs_0.6.5        evaluate_1.0.5     glue_1.8.0        
+#> [41] farver_2.1.2       ragg_1.5.0         rmarkdown_2.30     purrr_1.2.0       
+#> [45] tools_4.5.2        pkgconfig_2.0.3    htmltools_0.5.9
 ```

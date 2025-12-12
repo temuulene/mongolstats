@@ -6,6 +6,18 @@ library(sf)
 library(dplyr)
 library(ggplot2)
 nso_options(mongolstats.lang = "en")
+
+# Global theme with proper margins to prevent text cutoff
+theme_set(
+  theme_minimal(base_size = 11) +
+    theme(
+      plot.margin = margin(10, 10, 10, 10),
+      plot.title = element_text(size = 13, face = "bold"),
+      plot.subtitle = element_text(size = 10, color = "grey40"),
+      legend.text = element_text(size = 9),
+      legend.title = element_text(size = 10)
+    )
+)
 ```
 
 ## Overview
@@ -102,28 +114,17 @@ mmr_data |>
 ### Creating a Choropleth Map
 
 ``` r
-# Join health data to geographic boundaries
+# Join health data to geographic boundaries for spatial analysis
 mmr_map <- aimags |>
   left_join(mmr_data, by = c("shapeName" = "Region_en"))
 
-# Create choropleth
-# Create choropleth
-# Create choropleth
+# Create choropleth map
 p <- mmr_map |>
   ggplot() +
-  geom_sf(
-    aes(
-      fill = value,
-      text = paste0(
-        "<b>Region:</b> ", shapeName, "<br>",
-        "<b>MMR:</b> ", round(value, 1)
-      )
-    ),
-    color = "white", size = 0.2
-  ) +
+  geom_sf(aes(fill = value), color = "white", size = 0.2) +
   scale_fill_viridis_c(
     option = "rocket",
-    direction = -1,
+    direction = -1,  # dark = high mortality (concerning)
     name = "MMR\n(per 100k)",
     labels = scales::label_number()
   ) +
@@ -132,19 +133,19 @@ p <- mmr_map |>
     subtitle = "Deaths per 100,000 live births (Mean)",
     caption = "Source: NSO Mongolia"
   ) +
-  theme_void() +
+  theme_void() +  # removes axes for clean map appearance
   theme(
     plot.title = element_text(face = "bold", size = 16),
     plot.subtitle = element_text(color = "grey40"),
-    legend.position = "right", # Moved to right to avoid overlap
-    legend.title = element_text(size = 10, face = "bold")
+    legend.position = "bottom",          # bottom legend maximizes map width
+    legend.title = element_text(size = 10, face = "bold"),
+    legend.key.width = unit(1.5, "cm")   # wider legend key for continuous scale
   )
-#> Warning in layer_sf(geom = GeomSf, data = data, mapping = mapping, stat = stat,
-#> : Ignoring unknown aesthetics: text
 
-plotly::ggplotly(p, tooltip = "text") |>
-  plotly::style(hoveron = "fills")
+p  # print static ggplot
 ```
+
+![](mapping_files/figure-html/maternal-map-1.png)
 
 ## Case Study: Infant Mortality Hot Spots
 
@@ -199,33 +200,21 @@ imr_data <- nso_data(
     )
   )
 
-# Create risk map
-# Create risk map
-# Create risk map
+# Create risk category map
 p <- aimags |>
   left_join(imr_data, by = c("shapeName" = "Region_en")) |>
   ggplot() +
-  geom_sf(
-    aes(
-      fill = risk_category,
-      text = paste0(
-        "<b>Region:</b> ", shapeName, "<br>",
-        "<b>Risk:</b> ", risk_category, "<br>",
-        "<b>IMR:</b> ", round(value, 1)
-      )
-    ),
-    color = "white", size = 0.2
-  ) +
+  geom_sf(aes(fill = risk_category), color = "white", size = 0.2) +
   scale_fill_manual(
     values = c(
-      "Low (<10)" = "#27ae60",
-      "Medium (10-20)" = "#f1c40f",
-      "High (20-30)" = "#e67e22",
-      "Very High (≥30)" = "#c0392b"
+      "Low (<10)" = "#27ae60",       # green = good outcome
+      "Medium (10-20)" = "#f1c40f",  # yellow = caution
+      "High (20-30)" = "#e67e22",    # orange = concerning
+      "Very High (≥30)" = "#c0392b"  # red = critical
     ),
-    na.value = "grey90",
+    na.value = "grey90",  # missing data shown in light grey
     name = "Risk Level\n(IMR)",
-    drop = FALSE
+    drop = FALSE  # show all levels even if not present in data
   ) +
   labs(
     title = "Infant Mortality Risk Categories (2024 Average)",
@@ -236,15 +225,14 @@ p <- aimags |>
   theme(
     plot.title = element_text(face = "bold", size = 16),
     plot.subtitle = element_text(color = "grey40"),
-    legend.position = "right",
+    legend.position = "bottom",          # bottom legend maximizes map width
     legend.title = element_text(size = 10, face = "bold")
   )
-#> Warning in layer_sf(geom = GeomSf, data = data, mapping = mapping, stat = stat,
-#> : Ignoring unknown aesthetics: text
 
-plotly::ggplotly(p, tooltip = "text") |>
-  plotly::style(hoveron = "fills")
+p  # print static ggplot
 ```
+
+![](mapping_files/figure-html/imr-hotspots-1.png)
 
 ## Tips for Spatial Epidemiology
 
