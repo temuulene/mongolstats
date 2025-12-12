@@ -150,7 +150,7 @@ Fine Particulate Matter (PM2.5) poses the greatest health risk among air polluta
 
 **What the dashed line means**: The horizontal dashed red line represents Mongolia's Maximum Allowable Concentration (MAC) for PM2.5 annual average (0.025 mg/m³). Values above this line indicate **non-compliance** with national air quality standards and heightened health risks.
 
-```{r pm25-trends, fig.height=8}
+```{r pm25-trends, fig.height=8, fig.alt="Line plot showing monthly average PM2.5 concentrations for 10 stations from 2021 to 2025. All stations show peaks exceeding the 0.025 mg/m³ dashed regulatory limit line during winter months."}
 # MAC annual average for PM2.5
 mac_pm25 <- 0.025
 
@@ -190,7 +190,7 @@ Sulfur dioxide is a direct tracer of **raw coal combustion** for residential hea
 
 **What the dashed line means**: The horizontal dashed orange line represents Mongolia's MAC for SO₂ annual average (0.020 mg/m³). Exceedances indicate both regulatory non-compliance and respiratory health risks, particularly for vulnerable populations (children, elderly, asthmatics).
 
-```{r so2-trends, fig.height=8}
+```{r so2-trends, fig.height=8, fig.alt="Line plot showing monthly average SO2 concentrations for 10 stations from 2021 to 2025. Peaks significantly exceed the 0.020 mg/m³ limit during winters, dropping to near zero in summers."}
 # MAC annual average for SO2
 mac_so2 <- 0.020
 
@@ -228,7 +228,7 @@ The Exceedance Factor quantifies **how many times** a station's annual average e
 
 To clearly see how much stations exceed safety limits, we calculate the **Exceedance Factor** (Ratio of Annual Average to MAC). A value > 1.0 indicates non-compliance.
 
-```{r compliance-check}
+```{r compliance-check, fig.alt="Bar chart showing exceedance factors for PM2.5, SO2, and NO2. PM2.5 bars are mostly red (non-compliant) reaching 2.5x times the limit. SO2 bars are all red, reaching over 3x the limit."}
 # 1. Get MAC Standards
 mac_so2 <- 0.020 # Annual average mg/m3
 mac_no2 <- 0.030 # Annual average mg/m3
@@ -293,7 +293,7 @@ Electrical conductivity serves as a **proxy for total dissolved solids** and wat
 
 Water quality is monitored at specific river and lake stations across Mongolia's major basins. We focus on the **Top 15 stations** with the highest electrical conductivity.
 
-```{r water-quality}
+```{r water-quality, fig.alt="Bar chart of water conductivity. Uvs Lake and Khyargas Lake show extremely high values (>10,000), while river stations like Khangal and Tuul show elevated values compared to typical freshwater."}
 # Fetch water quality data
 water <- nso_data(
   "DT_NSO_2300_005V12",
@@ -361,7 +361,7 @@ Dust storms pose **respiratory health risks** through coarse particulate (PM10) 
 
 Dust storms are a significant environmental health concern. Here are the **Top 10 stations** with the highest number of dust days in 2024.
 
-```{r dust-days}
+```{r dust-days, fig.alt="Bar chart showing annual dust days for 2024. Sainshand leads with 30 days, followed by Dalanzadgad with 21 days."}
 # Fetch dust day data
 dust <- nso_data(
   "DT_NSO_2400_028V1",
