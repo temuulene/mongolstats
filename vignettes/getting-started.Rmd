@@ -240,38 +240,42 @@ Combine with mapping for spatial analysis:
 ```{r map-example, eval=TRUE, fig.alt="Choropleth map of infant mortality rates across Mongolia"}
 library(sf)
 
-# Get aimag boundaries
-aimags <- mn_boundaries(level = "ADM1")
-
-# Join IMR data to map
-imr_map <- aimags |>
-  left_join(imr_regional, by = c("shapeName" = "Region_en"))
-
-# Create choropleth map
-p <- imr_map |>
-  ggplot() +
-  geom_sf(aes(fill = value), color = "white", size = 0.2) +
-  scale_fill_viridis_c(
-    option = "magma",
-    direction = -1,  # dark = high values (high mortality), light = low
-    name = "IMR\n(per 1,000)",
-    labels = scales::label_number()
-  ) +
-  labs(
-    title = "Infant Mortality Geography (2024 Average)",
-    subtitle = "Spatial distribution of mortality rates",
-    caption = "Source: NSO Mongolia"
-  ) +
-  theme_void() +  # remove axes for cleaner map appearance
-  theme(
-    plot.title = element_text(face = "bold", size = 16),
-    plot.subtitle = element_text(color = "grey40"),
-    legend.position = "bottom",          # bottom legend maximizes map width
-    legend.title = element_text(size = 10, face = "bold"),
-    legend.key.width = unit(1.5, "cm")   # wider legend key for continuous scale
-  )
-
-p  # print static ggplot
+# Graceful degradation if external API is unreachable
+# CRAN policy and CI robustness require handling network failures
+try({
+  # Get aimag boundaries
+  aimags <- mn_boundaries(level = "ADM1")
+  
+  # Join IMR data to map
+  imr_map <- aimags |>
+    left_join(imr_regional, by = c("shapeName" = "Region_en"))
+  
+  # Create choropleth map
+  p <- imr_map |>
+    ggplot() +
+    geom_sf(aes(fill = value), color = "white", size = 0.2) +
+    scale_fill_viridis_c(
+      option = "magma",
+      direction = -1,  # dark = high values (high mortality), light = low
+      name = "IMR\n(per 1,000)",
+      labels = scales::label_number()
+    ) +
+    labs(
+      title = "Infant Mortality Geography (2024 Average)",
+      subtitle = "Spatial distribution of mortality rates",
+      caption = "Source: NSO Mongolia"
+    ) +
+    theme_void() +  # remove axes for cleaner map appearance
+    theme(
+      plot.title = element_text(face = "bold", size = 16),
+      plot.subtitle = element_text(color = "grey40"),
+      legend.position = "bottom",          # bottom legend maximizes map width
+      legend.title = element_text(size = 10, face = "bold"),
+      legend.key.width = unit(1.5, "cm")   # wider legend key for continuous scale
+    )
+  
+  print(p)  # print static ggplot
+}, silent = TRUE)
 ```
 
 ## Key Functions Summary
