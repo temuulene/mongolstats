@@ -42,29 +42,53 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="mongolstats-010">mongolstats 0.1.0<a class="anchor" aria-label="anchor" href="#mongolstats-010"></a></h2>
-<p>First minor release with improved documentation, data quality fixes, and enhanced visualization.</p>
+<p>First minor release containing significant data updates, visualization improvements, and refined documentation.</p>
 <div class="section level3">
-<h3 id="data--maps-0-1-0">Data &amp; Maps<a class="anchor" aria-label="anchor" href="#data--maps-0-1-0"></a></h3>
+<h3 id="data--features-0-1-0">Data &amp; Features<a class="anchor" aria-label="anchor" href="#data--features-0-1-0"></a></h3>
 <ul><li>
-<strong>Updated Infant Mortality Data</strong>: Switched to monthly table <code>DT_NSO_2100_015V1</code> for more granular trend analysis and up-to-date regional comparisons (2024).</li>
+<strong>Monthly Mortality Data</strong>: Switched infant mortality analysis to use monthly data (<code>DT_NSO_2100_015V1</code>) for 2019-2024, enabling more granular trend analysis and up-to-date regional comparisons.</li>
 <li>
-<strong>Map Improvements</strong>:
-<ul><li>Fixed region name mismatches between NSO data and shapefiles (e.g., “Sukhbaatar” vs “Sükhbaatar”).</li>
-<li>Improved population map visualization with log scales and better color palettes.</li>
-<li>Added <code>scale_x_date</code> to time series plots for correct year formatting.</li>
+<strong>UB Air Quality</strong>: Added accurate coordinates for Ulaanbaatar air quality monitoring stations and mapped them to districts.</li>
+<li>
+<strong>Boundaries</strong>: Fixed spatial mismatches in administrative boundary names to ensure seamless joins with NSO data.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="visualization--ui-0-1-0">Visualization &amp; UI<a class="anchor" aria-label="anchor" href="#visualization--ui-0-1-0"></a></h3>
+<ul><li>
+<strong>Plot Polish</strong>: Applied publication-quality styling to all package plots, including:
+<ul><li>Interactive tooltips with formatted units and rounded numbers.</li>
+<li>Trend lines with confidence intervals for mortality rates.</li>
+<li>Log-scaled population maps for better contrast.</li>
+<li>Clean integer breaks on axes.</li>
 </ul></li>
+<li>
+<strong>Standardized Aesthetics</strong>: Consistent plot styling across all vignettes.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-0-1-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-1-0"></a></h3>
 <ul><li>
-<strong>Vignette Overhaul</strong>:
-<ul><li>Updated <code>getting-started</code>, <code>discovery</code>, and <code>mapping</code> vignettes with cleaner examples and better plots.</li>
-<li>Added new “Tips for Epidemiological Research” section.</li>
+<strong>New Vignettes</strong>:
+<ul><li>
+<code>mortality-analysis</code>: In-depth analysis of infant mortality trends and seasonality.</li>
+<li>
+<code>environmental-surveillance</code>: Detailed examination of air and water quality monitoring coverage.</li>
 </ul></li>
 <li>
-<strong>Package Cleanup</strong>: Removed unused files and streamlined repository structure.</li>
+<strong>Vignette Updates</strong>:
+<ul><li>
+<code>getting-started</code>: Renamed and streamlined for new users.</li>
 <li>
-<strong>Logo</strong>: Added new hex sticker.</li>
+<code>discovery</code> &amp; <code>mapping</code>: Updated with new datasets and visualization techniques.</li>
+</ul></li>
+<li>
+<strong>Examples</strong>: Added executable examples to key functions (<code><a href="../reference/nso_data.html">nso_data()</a></code>, <code><a href="../reference/nso_itms.html">nso_itms()</a></code>, <code><a href="../reference/mn_boundaries.html">mn_boundaries()</a></code>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="internal-0-1-0">Internal<a class="anchor" aria-label="anchor" href="#internal-0-1-0"></a></h3>
+<ul><li>
+<strong>Cleanup</strong>: Removed legacy <code>labels.R</code> and unused artifacts.</li>
+<li>
+<strong>Infrastructure</strong>: Fully migrated <code>NAMESPACE</code> management to <code>roxygen2</code> and fixed GitHub Actions workflows.</li>
 </ul></div>
 </div>
     <div class="section level2">
