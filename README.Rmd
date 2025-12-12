@@ -10,7 +10,10 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  fig.width = 7,        # standardized width
+  fig.height = 5,       # default height
+  fig.dpi = 150,        # higher resolution for crisp rendering
+  out.width = "100%"    # constrain to page width
 )
 ```
 
@@ -68,17 +71,13 @@ gdp <- nso_data(
   labels = "en" # Get English labels
 )
 
-# Visualize
-# Visualize
+# Visualize the GDP trend as a static plot
 p <- gdp |>
-  ggplot(aes(x = as.integer(Year_en), y = value / 1e6,
-             group = 1,
-             text = paste0("<b>Year:</b> ", Year_en, "<br>",
-                           "<b>GDP:</b> ", round(value / 1e6, 2), "T"))) + # Convert to Trillions
-  geom_area(fill = "#42b883", alpha = 0.6) +
+  ggplot(aes(x = as.integer(Year_en), y = value / 1e6, group = 1)) +
+  geom_area(fill = "#42b883", alpha = 0.6) +  # shaded area emphasizes cumulative growth
   geom_line(color = "#2c3e50", linewidth = 1.2) +
   geom_point(color = "#2c3e50", size = 3, shape = 21, fill = "white", stroke = 1.5) +
-  scale_y_continuous(labels = scales::label_number(suffix = "T")) +
+  scale_y_continuous(labels = scales::label_number(suffix = "T")) +  # "T" suffix for trillions
   scale_x_continuous(breaks = function(x) seq(ceiling(min(x)), floor(max(x)), by = 1)) +
   labs(
     title = "Mongolia's GDP Growth (2010-2024)",
@@ -87,15 +86,15 @@ p <- gdp |>
     y = "GDP (Trillions MNT)",
     caption = "Source: NSO Mongolia via mongolstats"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold", size = 16),
     plot.subtitle = element_text(color = "grey40"),
     panel.grid.minor = element_blank(),
-    panel.grid.major.x = element_blank()
+    panel.grid.major.x = element_blank()  # vertical gridlines removed for cleaner look
   )
 
-plotly::ggplotly(p, tooltip = "text")
+p  # print static ggplot
 ```
 
 ### 2. Mapping Regional Population
@@ -136,14 +135,12 @@ pop <- nso_data(
 map <- mn_boundaries(level = "ADM1")
 
 # 3. Join and Map
-# 3. Join and Map
-p <- map |>
-  left_join(pop, by = c("shapeName" = "Region_en")) |>
-  ggplot() +
-  geom_sf(aes(fill = value,
-              text = paste0("<b>Region:</b> ", shapeName, "<br>",
-                            "<b>Pop:</b> ", scales::comma(value))),
-          color = "white", size = 0.2) +
+pop_map <- map |>
+  left_join(pop, by = c("shapeName" = "Region_en"))
+
+p <- ggplot(pop_map) +
+  geom_sf(aes(fill = value), color = "white", size = 0.2) +
+  # Log scale because population spans 3 orders of magnitude (20k to 1.5M)
   scale_fill_viridis_c(
     option = "magma",
     direction = -1,
@@ -165,8 +162,7 @@ p <- map |>
     legend.key.width = unit(1.5, "cm")
   )
 
-plotly::ggplotly(p, tooltip = "text") |>
-  plotly::style(hoveron = "fills")
+p  # print static ggplot
 ```
 
 ## Documentation

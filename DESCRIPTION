@@ -46,7 +46,6 @@ Suggests:
     ggplot2,
     scales,
     forcats,
-    plotly,
     tidyr,
     lubridate
 VignetteBuilder: knitr

@@ -11,8 +11,12 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 8,
-  fig.height = 6
+  fig.width = 7,        # standardized width that fits vignette text column
+  fig.height = 5,       # default height, override in individual chunks as needed
+  fig.dpi = 150,        # higher resolution for crisp rendering
+  out.width = "100%",   # constrain to page width, prevents overflow
+  warning = FALSE,
+  message = FALSE
 )
 ```
 
@@ -21,6 +25,18 @@ library(mongolstats)
 library(dplyr)
 library(ggplot2)
 nso_options(mongolstats.lang = "en")
+
+# Global theme with proper margins to prevent text cutoff
+theme_set(
+  theme_minimal(base_size = 11) +
+    theme(
+      plot.margin = margin(10, 10, 10, 10),
+      plot.title = element_text(size = 13, face = "bold"),
+      plot.subtitle = element_text(size = 10, color = "grey40"),
+      legend.text = element_text(size = 9),
+      legend.title = element_text(size = 10)
+    )
+)
 ```
 
 ## Overview
@@ -114,21 +130,15 @@ cancer_data <- nso_data(
   labels = "en"
 )
 
-# Visualize trends
-# Visualize trends
+# Visualize cancer incidence trends as static plot
 p <- cancer_data |>
   ggplot(aes(
     x = as.integer(Annual_en), y = value, color = `Type malignant neoplasms_en`,
-    group = `Type malignant neoplasms_en`,
-    text = paste0(
-      "<b>Year:</b> ", Annual_en, "<br>",
-      "<b>Type:</b> ", `Type malignant neoplasms_en`, "<br>",
-      "<b>Rate:</b> ", value
-    )
+    group = `Type malignant neoplasms_en`
   )) +
   geom_line(linewidth = 1.2) +
-  geom_point(size = 3, shape = 21, fill = "white", stroke = 1.5) +
-  scale_color_viridis_d(option = "plasma", end = 0.9) +
+  geom_point(size = 3, shape = 21, fill = "white", stroke = 1.5) +  # hollow points stand out on lines
+  scale_color_viridis_d(option = "plasma", end = 0.9) +  # colorblind-friendly discrete palette
   scale_x_continuous(breaks = function(x) seq(ceiling(min(x)), floor(max(x)), by = 1)) +
   labs(
     title = "Cancer Incidence Trends in Mongolia",
@@ -138,17 +148,17 @@ p <- cancer_data |>
     color = "Cancer Type",
     caption = "Source: NSO Mongolia"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(
     legend.position = "top",
     plot.title = element_text(face = "bold", size = 16),
     plot.subtitle = element_text(color = "grey40", margin = margin(b = 10)),
     panel.grid.minor = element_blank(),
-    panel.grid.major.x = element_blank(),
+    panel.grid.major.x = element_blank(),  # vertical gridlines clutter multi-line plots
     axis.text = element_text(color = "grey30")
   )
 
-plotly::ggplotly(p, tooltip = "text")
+p  # print static ggplot
 ```
 
 ### Regional Disparities
@@ -212,25 +222,18 @@ imr_national <- nso_data(
 )
 
 # Analyze national infant mortality trend using monthly data
-# We convert the Month_en column (format: "YYYY-MM") to proper dates
-# and filter to the 2019-2024 period for clear recent trends
+# Convert Month_en column (format: "YYYY-MM") to proper dates
+# Filter to 2019-2024 period for clear recent trends
 
 imr_national |>
-  mutate(date = as.Date(paste0(Month_en, "-01"))) |> # Convert "YYYY-MM" to date
+  mutate(date = as.Date(paste0(Month_en, "-01"))) |>
   filter(date >= as.Date("2019-01-01") & date <= as.Date("2024-12-31")) |>
-  ggplot(aes(
-    x = date, y = value,
-    group = 1,
-    text = paste0(
-      "<b>Date:</b> ", format(date, "%Y-%m"), "<br>",
-      "<b>IMR:</b> ", value
-    )
-  )) +
-  geom_line(color = "#2980b9", linewidth = 1, alpha = 0.3) +
+  ggplot(aes(x = date, y = value, group = 1)) +
+  geom_line(color = "#2980b9", linewidth = 1, alpha = 0.3) +  # dim raw data so trend stands out
   geom_point(color = "#2980b9", size = 2, shape = 21, fill = "white", stroke = 1, alpha = 0.5) +
-  geom_smooth(method = "loess", se = TRUE, color = "#2980b9", fill = "#2980b9", alpha = 0.2, linewidth = 1.5) +
+  geom_smooth(method = "loess", se = TRUE, color = "#2980b9", fill = "#2980b9", alpha = 0.2, linewidth = 1.5) +  # LOESS smoother reveals underlying trend
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-  scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.2))) +
+  scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.2))) +  # y-axis starts at 0 to avoid exaggerating changes
   labs(
     title = "Infant Mortality Rate Trend",
     subtitle = "Monthly Deaths per 1,000 live births (2019-2024)",
@@ -238,15 +241,13 @@ imr_national |>
     y = "IMR (per 1,000 live births)",
     caption = "Source: NSO Mongolia"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold", size = 16),
     plot.subtitle = element_text(color = "grey40"),
     panel.grid.minor = element_blank(),
     panel.grid.major.x = element_blank()
-  ) -> p
-
-plotly::ggplotly(p, tooltip = "text")
+  )
 ```
 
 ## Case Study: Tuberculosis Burden
@@ -274,24 +275,16 @@ tb_data <- nso_data(
   labels = "en"
 )
 
-# Visualize Monthly Trends
-# Visualize Monthly Trends
+# Visualize Monthly Tuberculosis Trends
 p <- tb_data |>
   mutate(date = as.Date(paste0(Month_en, "-01"))) |>
   filter(!is.na(value)) |>
-  ggplot(aes(
-    x = date, y = value,
-    group = 1,
-    text = paste0(
-      "<b>Date:</b> ", format(date, "%Y-%m"), "<br>",
-      "<b>Cases:</b> ", value
-    )
-  )) +
-  geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) +
+  ggplot(aes(x = date, y = value, group = 1)) +
+  geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) +  # dim raw data
   geom_point(color = "#2c3e50", size = 2, alpha = 0.3) +
-  geom_smooth(method = "loess", se = TRUE, color = "#e74c3c", fill = "#e74c3c", alpha = 0.2, linewidth = 1.5) +
+  geom_smooth(method = "loess", se = TRUE, color = "#e74c3c", fill = "#e74c3c", alpha = 0.2, linewidth = 1.5) +  # trend line
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-  scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.2))) +
+  scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.2))) +  # start y-axis at 0
   labs(
     title = "Tuberculosis Cases in Mongolia",
     subtitle = "Monthly reported cases",
@@ -299,14 +292,14 @@ p <- tb_data |>
     y = "Number of Cases (Monthly)",
     caption = "Source: NSO Mongolia (DT_NSO_2100_035V1)"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold", size = 16),
     plot.subtitle = element_text(color = "grey40"),
     panel.grid.minor = element_blank()
   )
 
-plotly::ggplotly(p, tooltip = "text")
+p  # print static ggplot
 ```
 
 > **Biostatistical Note:** This plot shows the *number* of reported cases, not the incidence *rate*. Trends should be interpreted with caution, as an increase in cases could be due to population growth or improved detection, rather than an increase in disease risk.
