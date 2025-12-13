@@ -12,8 +12,8 @@
 ^cran-comments\.md$
 
 ^CITATION\.cff$
-^CODE_OF_CONDUCT\.md$
-^CONTRIBUTING\.md$
+
+
 ^check_.*$
 ^CHANGES_SUMMARY\.md$
 ^CRITICAL_FIX\.md$
@@ -37,3 +37,6 @@
 ^vignettes/mortality-analysis\.Rmd$
 ^vignettes/mortality-analysis\.html$
 ^vignettes/mortality-analysis_files$
+^doc$
+^Meta$
+^CRAN-SUBMISSION$
