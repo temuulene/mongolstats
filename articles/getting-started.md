@@ -170,7 +170,6 @@ p  # print static ggplot
 Compare infant mortality across different regions:
 
 ``` r
-# Get all aimags for most recent year
 # Get all aimags for most recent year (2024)
 # We'll take the average of monthly rates
 months_2024 <- months |>

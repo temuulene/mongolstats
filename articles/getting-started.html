@@ -235,8 +235,7 @@ key indicator of population health and health system performance.</p>
 </h2>
 <p>Compare infant mortality across different regions:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get all aimags for most recent year</span></span>
-<span><span class="co"># Get all aimags for most recent year (2024)</span></span>
+<code class="sourceCode R"><span><span class="co"># Get all aimags for most recent year (2024)</span></span>
 <span><span class="co"># We'll take the average of monthly rates</span></span>
 <span><span class="va">months_2024</span> <span class="op">&lt;-</span> <span class="va">months</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"2024"</span>, <span class="va">label_en</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
