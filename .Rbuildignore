@@ -13,8 +13,8 @@
 
 ^agents\.md$
 ^CITATION\.cff$
-
-
+^CODE_OF_CONDUCT\.md$
+^CONTRIBUTING\.md$
 ^check_.*$
 ^CHANGES_SUMMARY\.md$
 ^CRITICAL_FIX\.md$

@@ -180,7 +180,8 @@ Full documentation is available at
 ## Contributing
 
 We welcome contributions! Please see the [Contributing
-Guidelines](CONTRIBUTING.md) for details.
+Guidelines](https://github.com/temuulene/mongolstats/blob/main/CONTRIBUTING.md)
+for details.
 
 ## License
 
