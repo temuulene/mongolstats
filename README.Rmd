@@ -175,7 +175,7 @@ Full documentation is available at [temuulene.github.io/mongolstats](https://tem
 
 ## Contributing
 
-We welcome contributions! Please see the [Contributing Guidelines](CONTRIBUTING.md) for details.
+We welcome contributions! Please see the [Contributing Guidelines](https://github.com/temuulene/mongolstats/blob/main/CONTRIBUTING.md) for details.
 
 ## License
 
