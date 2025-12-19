@@ -19,3 +19,8 @@ check/
 Rplots.pdf
 /doc/
 /Meta/
+
+# CRAN submission artifacts
+CRAN-SUBMISSION
+*.Rcheck
+*.tar.gz
