@@ -72,7 +72,7 @@ meta
 #>   dim    code  is_time n_values codes             
 #>   <chr>  <chr> <lgl>      <int> <list>            
 #> 1 Region Бүс   FALSE         28 <tibble [28 × 3]> 
-#> 2 Month  Сар   FALSE        118 <tibble [118 × 3]>
+#> 2 Month  Сар   FALSE        119 <tibble [119 × 3]>
 
 # Check available months
 time_vals <- nso_dim_values("DT_NSO_2100_015V1", "Month", labels = "en")
@@ -80,16 +80,16 @@ head(time_vals, 10)
 #> # A tibble: 10 × 2
 #>    code  label_en
 #>    <chr> <chr>   
-#>  1 0     2025-10 
-#>  2 1     2025-09 
-#>  3 2     2025-08 
-#>  4 3     2016-01 
-#>  5 4     2016-02 
-#>  6 5     2016-03 
-#>  7 6     2016-04 
-#>  8 7     2016-05 
-#>  9 8     2016-06 
-#> 10 9     2016-07
+#>  1 0     2025-11 
+#>  2 1     2025-10 
+#>  3 2     2025-09 
+#>  4 3     2025-08 
+#>  5 4     2016-01 
+#>  6 5     2016-02 
+#>  7 6     2016-03 
+#>  8 7     2016-04 
+#>  9 8     2016-05 
+#> 10 9     2016-06
 ```
 
 ### Step 4: Fetch Data
@@ -115,16 +115,16 @@ imr_national |>
 #> # A tibble: 10 × 5
 #>    Region Month value Region_en Month_en
 #>    <chr>  <chr> <dbl> <chr>     <chr>   
-#>  1 0      0        11 Total     2025-10 
-#>  2 0      1        14 Total     2025-09 
-#>  3 0      2        16 Total     2025-08 
-#>  4 0      3        12 Total     2016-01 
-#>  5 0      4        13 Total     2016-02 
-#>  6 0      5        14 Total     2016-03 
-#>  7 0      6        15 Total     2016-04 
-#>  8 0      7        15 Total     2016-05 
-#>  9 0      8        14 Total     2016-06 
-#> 10 0      9        14 Total     2016-07
+#>  1 0      0        13 Total     2025-11 
+#>  2 0      1        11 Total     2025-10 
+#>  3 0      2        14 Total     2025-09 
+#>  4 0      3        16 Total     2025-08 
+#>  5 0      4        12 Total     2016-01 
+#>  6 0      5        13 Total     2016-02 
+#>  7 0      6        14 Total     2016-03 
+#>  8 0      7        15 Total     2016-04 
+#>  9 0      8        15 Total     2016-05 
+#> 10 0      9        14 Total     2016-06
 ```
 
 ### Step 5: Visualize the Trend

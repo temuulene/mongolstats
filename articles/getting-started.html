@@ -141,7 +141,7 @@ key indicator of population health and health system performance.</p>
 <span><span class="co">#&gt;   dim    code  is_time n_values codes             </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>            </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Region Бүс   FALSE         28 <span style="color: #949494;">&lt;tibble [28 × 3]&gt;</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Month  Сар   FALSE        118 <span style="color: #949494;">&lt;tibble [118 × 3]&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Month  Сар   FALSE        119 <span style="color: #949494;">&lt;tibble [119 × 3]&gt;</span></span></span>
 <span></span>
 <span><span class="co"># Check available months</span></span>
 <span><span class="va">time_vals</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="st">"DT_NSO_2100_015V1"</span>, <span class="st">"Month"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
@@ -149,16 +149,16 @@ key indicator of population health and health system performance.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
 <span><span class="co">#&gt;    code  label_en</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 0     2025-10 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 1     2025-09 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2     2025-08 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 3     2016-01 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 4     2016-02 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 5     2016-03 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 6     2016-04 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 7     2016-05 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 8     2016-06 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 9     2016-07</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 0     2025-11 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 1     2025-10 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2     2025-09 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 3     2025-08 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 4     2016-01 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 5     2016-02 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 6     2016-03 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 7     2016-04 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 8     2016-05 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 9     2016-06</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="step-4-fetch-data">Step 4: Fetch Data<a class="anchor" aria-label="anchor" href="#step-4-fetch-data"></a>
@@ -183,16 +183,16 @@ key indicator of population health and health system performance.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 5</span></span></span>
 <span><span class="co">#&gt;    Region Month value Region_en Month_en</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 0      0        11 Total     2025-10 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 0      1        14 Total     2025-09 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 0      2        16 Total     2025-08 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 0      3        12 Total     2016-01 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 0      4        13 Total     2016-02 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 0      5        14 Total     2016-03 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 0      6        15 Total     2016-04 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 0      7        15 Total     2016-05 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 0      8        14 Total     2016-06 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 0      9        14 Total     2016-07</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 0      0        13 Total     2025-11 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 0      1        11 Total     2025-10 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 0      2        14 Total     2025-09 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 0      3        16 Total     2025-08 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 0      4        12 Total     2016-01 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 0      5        13 Total     2016-02 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 0      6        14 Total     2016-03 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 0      7        15 Total     2016-04 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 0      8        15 Total     2016-05 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 0      9        14 Total     2016-06</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="step-5-visualize-the-trend">Step 5: Visualize the Trend<a class="anchor" aria-label="anchor" href="#step-5-visualize-the-trend"></a>

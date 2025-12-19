@@ -99,16 +99,16 @@ mmr_data |>
 #> # A tibble: 10 × 2
 #>    Region_en    value
 #>    <chr>        <dbl>
-#>  1 Khovd         71.0
-#>  2 Arkhangai     66.5
-#>  3 Selenge       61.2
-#>  4 Sükhbaatar    54.4
-#>  5 Hovsgel       48.9
-#>  6 Dornogovi     45.7
-#>  7 Töv           42.2
-#>  8 Ulaanbaatar   40.7
-#>  9 Bayan-Ölgii   39.5
-#> 10 Bayankhongor  38.3
+#>  1 Khovd         70.4
+#>  2 Arkhangai     65.9
+#>  3 Selenge       60.7
+#>  4 Sükhbaatar    54.0
+#>  5 Hovsgel       48.4
+#>  6 Dornogovi     45.3
+#>  7 Töv           41.9
+#>  8 Ulaanbaatar   40.4
+#>  9 Bayan-Ölgii   39.1
+#> 10 Bayankhongor  37.9
 ```
 
 ### Creating a Choropleth Map
