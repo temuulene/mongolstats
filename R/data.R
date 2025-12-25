@@ -115,6 +115,8 @@ nso_data <- function(
 #' @param labels Label handling as in `nso_data()`
 #' @param parallel If TRUE, use future.apply to fetch tables in parallel.
 #' @param value_name Name of the numeric value column in the result (default: "value").
+#' @return A tibble combining data from all requested tables, with a `tbl_id` column
+#'   identifying the source table.
 #' @export
 nso_package <- function(
   requests,

@@ -8,7 +8,7 @@ Authors@R:
              role = c("aut", "cre"),
              email = "temuulen@gmail.com"))
 Description: A 'tidyverse'-friendly client for the National Statistics Office of Mongolia
-    'PXWeb' API (data.1212.mn) with helpers to discover tables, variables, and fetch
+    'PXWeb' API <https://data.1212.mn/> with helpers to discover tables, variables, and fetch
     statistical data. Also includes utilities to retrieve Mongolia administrative boundaries
     (ADM0-ADM2) as 'sf' objects from open sources for mapping and spatial analysis.
 Depends: 

@@ -10,6 +10,9 @@ nso_subsectors(subid)
 \item{subid}{Path id from \code{nso_sectors()}/\code{nso_subsectors()}
 (e.g., 'Population, household' or 'Population, household/1_Population, household')}
 }
+\value{
+A tibble with columns: \code{id}, \code{type}, \code{text}.
+}
 \description{
 List children for a given path (PXWeb)
 }

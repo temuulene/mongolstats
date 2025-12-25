@@ -6,6 +6,9 @@
 \usage{
 nso_cache_clear()
 }
+\value{
+No return value, called for side effects.
+}
 \description{
 Clear cached entries
 }

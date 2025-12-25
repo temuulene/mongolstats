@@ -125,16 +125,24 @@ nso_px_tables <- function() {
 }
 
 #' Rebuild PXWeb index and optionally write to a file
-#' @param path Output path for JSON (default 'inst/extdata/px_index.json' in dev trees)
-#' @param write Whether to write JSON to `path` (default TRUE)
-#' @return tibble index
+#'
+#' Crawls the PXWeb API to rebuild the table index. If `path` is provided,
+#' the index is written to that file; otherwise only the in-memory index is
+#' refreshed.
+#'
+#' @param path Output path for JSON. If `NULL` (default), no file is written.
+#'   For package development, use `"inst/extdata/px_index.json"`.
+#' @param write Whether to write JSON to `path`. Defaults to `TRUE` if `path`
+
+#'   is provided, `FALSE` otherwise.
+#' @return A tibble containing the rebuilt table index.
 #' @export
 nso_rebuild_px_index <- function(
-  path = file.path("inst", "extdata", "px_index.json"),
-  write = TRUE
+  path = NULL,
+  write = !is.null(path)
 ) {
   idx <- nso_px_tables()
-  if (isTRUE(write)) {
+  if (isTRUE(write) && !is.null(path)) {
     dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
     jsonlite::write_json(
       idx,

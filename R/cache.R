@@ -69,6 +69,7 @@ nso_cache_enable <- function(dir = NULL, ttl = NULL) {
 }
 
 #' Disable caching
+#' @return No return value, called for side effects.
 #' @export
 nso_cache_disable <- function() {
   .mongolstats_cache_env$enabled <- FALSE
@@ -76,6 +77,7 @@ nso_cache_disable <- function() {
 }
 
 #' Clear cached entries
+#' @return No return value, called for side effects.
 #' @export
 nso_cache_clear <- function() {
   if (!is.null(.mongolstats_cache_env$cache)) {

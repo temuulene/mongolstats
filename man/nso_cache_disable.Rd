@@ -6,6 +6,9 @@
 \usage{
 nso_cache_disable()
 }
+\value{
+No return value, called for side effects.
+}
 \description{
 Disable caching
 }

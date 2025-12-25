@@ -4,19 +4,20 @@
 \alias{nso_rebuild_px_index}
 \title{Rebuild PXWeb index and optionally write to a file}
 \usage{
-nso_rebuild_px_index(
-  path = file.path("inst", "extdata", "px_index.json"),
-  write = TRUE
-)
+nso_rebuild_px_index(path = NULL, write = !is.null(path))
 }
 \arguments{
-\item{path}{Output path for JSON (default 'inst/extdata/px_index.json' in dev trees)}
+\item{path}{Output path for JSON. If \code{NULL} (default), no file is written.
+For package development, use \code{"inst/extdata/px_index.json"}.}
 
-\item{write}{Whether to write JSON to \code{path} (default TRUE)}
+\item{write}{Whether to write JSON to \code{path}. Defaults to \code{TRUE} if \code{path}
+is provided, \code{FALSE} otherwise.}
 }
 \value{
-tibble index
+A tibble containing the rebuilt table index.
 }
 \description{
-Rebuild PXWeb index and optionally write to a file
+Crawls the PXWeb API to rebuild the table index. If \code{path} is provided,
+the index is written to that file; otherwise only the in-memory index is
+refreshed.
 }
