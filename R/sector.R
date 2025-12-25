@@ -15,6 +15,7 @@ nso_sectors <- function() {
 #'
 #' @param subid Path id from `nso_sectors()`/`nso_subsectors()`
 #'   (e.g., 'Population, household' or 'Population, household/1_Population, household')
+#' @return A tibble with columns: `id`, `type`, `text`.
 #' @export
 nso_subsectors <- function(subid) {
   stopifnot(is.character(subid), length(subid) == 1L)

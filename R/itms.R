@@ -83,6 +83,7 @@ nso_itms_search <- function(query, fields = c("tbl_eng_nm", "tbl_nm")) {
 
 #' List tables under a sector or sub-sector (PXWeb path)
 #' @param list_id Path string from `nso_sectors()`/`nso_subsectors()` `id`.
+#' @return A tibble of tables matching the specified sector path.
 #' @export
 nso_itms_by_sector <- function(list_id) {
   itms <- nso_itms()
