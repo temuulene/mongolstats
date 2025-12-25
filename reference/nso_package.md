@@ -31,3 +31,8 @@ nso_package(
 - value_name:
 
   Name of the numeric value column in the result (default: "value").
+
+## Value
+
+A tibble combining data from all requested tables, with a `tbl_id`
+column identifying the source table.

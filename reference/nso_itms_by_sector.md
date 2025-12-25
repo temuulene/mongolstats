@@ -15,3 +15,7 @@ nso_itms_by_sector(list_id)
   Path string from
   [`nso_sectors()`](https://temuulene.github.io/mongolstats/reference/nso_sectors.md)/[`nso_subsectors()`](https://temuulene.github.io/mongolstats/reference/nso_subsectors.md)
   `id`.
+
+## Value
+
+A tibble of tables matching the specified sector path.

@@ -16,3 +16,7 @@ nso_subsectors(subid)
   [`nso_sectors()`](https://temuulene.github.io/mongolstats/reference/nso_sectors.md)/`nso_subsectors()`
   (e.g., 'Population, household' or 'Population, household/1_Population,
   household')
+
+## Value
+
+A tibble with columns: `id`, `type`, `text`.

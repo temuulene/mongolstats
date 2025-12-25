@@ -7,3 +7,7 @@ Clear cached entries
 ``` r
 nso_cache_clear()
 ```
+
+## Value
+
+No return value, called for side effects.

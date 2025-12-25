@@ -1029,14 +1029,14 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] scales_1.4.0      lubridate_1.9.4   ggplot2_4.0.1     tidyr_1.3.1      
+#> [1] scales_1.4.0      lubridate_1.9.4   ggplot2_4.0.1     tidyr_1.3.2      
 #> [5] dplyr_1.1.4       mongolstats_0.1.0
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.2     tidyselect_1.2.1  
 #>  [5] jquerylib_0.1.4    systemfonts_1.3.1  textshaping_1.0.4  yaml_2.3.12       
 #>  [9] fastmap_1.2.0      R6_2.6.1           labeling_0.4.3     generics_0.1.4    
-#> [13] curl_7.0.0         httr2_1.2.2        knitr_1.50         htmlwidgets_1.6.4 
+#> [13] curl_7.0.0         httr2_1.2.2        knitr_1.51         htmlwidgets_1.6.4 
 #> [17] tibble_3.3.0       desc_1.4.3         RColorBrewer_1.1-3 bslib_0.9.0       
 #> [21] pillar_1.11.1      rlang_1.1.6        cachem_1.1.0       xfun_0.55         
 #> [25] S7_0.2.1           fs_1.6.6           sass_0.4.10        otel_0.2.0        
