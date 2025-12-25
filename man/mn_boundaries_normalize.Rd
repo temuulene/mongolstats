@@ -17,3 +17,10 @@ sf with \code{name_std} column added.
 \description{
 Add normalized name columns to boundaries
 }
+\examples{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+aimags <- mn_boundaries("ADM1")
+aimags <- mn_boundaries_normalize(aimags)
+head(aimags$name_std)
+\dontshow{\}) # examplesIf}
+}

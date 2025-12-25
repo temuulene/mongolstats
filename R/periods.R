@@ -8,6 +8,12 @@
 #' @param start,end Start and end periods as character (YYYY or YYYYMM).
 #' @param by 'Y' for yearly or 'M' for monthly.
 #' @return Character vector of period codes.
+#' @examples
+#' # Generate yearly sequence
+#' nso_period_seq("2020", "2024", by = "Y")
+#'
+#' # Generate monthly sequence
+#' nso_period_seq("202401", "202406", by = "M")
 #' @export
 nso_period_seq <- function(start, end, by = c("Y", "M")) {
   by <- match.arg(by)
@@ -32,6 +38,9 @@ nso_period_seq <- function(start, end, by = c("Y", "M")) {
 #' Get valid periods for a table (PXWeb)
 #' @param tbl_id Table identifier.
 #' @return Character vector of period labels (e.g., years)
+#' @examplesIf curl::has_internet()
+#' periods <- nso_table_periods("DT_NSO_0300_001V2")
+#' head(periods)
 #' @export
 nso_table_periods <- function(tbl_id) {
   idx <- .px_index()

@@ -16,6 +16,15 @@
 #' @param ttl Optional TTL in seconds for cached entries (applies to the
 #'   disk cache). If `NULL`, entries persist until cleared.
 #' @return Cache directory path (invisibly).
+#' @examples
+#' # Enable caching in a temporary directory (for demo purposes)
+#' cache_dir <- nso_cache_enable(dir = tempdir())
+#'
+#' # Check status
+#' nso_cache_status()
+#'
+#' # Disable when done
+#' nso_cache_disable()
 #' @export
 nso_cache_enable <- function(dir = NULL, ttl = NULL) {
   if (
@@ -70,6 +79,8 @@ nso_cache_enable <- function(dir = NULL, ttl = NULL) {
 
 #' Disable caching
 #' @return No return value, called for side effects.
+#' @examples
+#' nso_cache_disable()
 #' @export
 nso_cache_disable <- function() {
   .mongolstats_cache_env$enabled <- FALSE
@@ -78,6 +89,8 @@ nso_cache_disable <- function() {
 
 #' Clear cached entries
 #' @return No return value, called for side effects.
+#' @examples
+#' nso_cache_clear()
 #' @export
 nso_cache_clear <- function() {
   if (!is.null(.mongolstats_cache_env$cache)) {
@@ -93,6 +106,8 @@ nso_cache_clear <- function() {
 #' Report current cache configuration and basic stats.
 #'
 #' @return A list with `enabled`, `dir`, and `has_cache`.
+#' @examples
+#' nso_cache_status()
 #' @export
 nso_cache_status <- function() {
   list(

@@ -12,3 +12,6 @@ No return value, called for side effects.
 \description{
 Clear cached entries
 }
+\examples{
+nso_cache_clear()
+}

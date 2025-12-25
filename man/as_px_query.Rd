@@ -17,3 +17,9 @@ A list suitable to send as JSON body to PXWeb.
 \description{
 Convert a query to a PXWeb body
 }
+\examples{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+q <- nso_query("DT_NSO_0300_001V2", list(Year = "2023"))
+body <- as_px_query(q)
+\dontshow{\}) # examplesIf}
+}

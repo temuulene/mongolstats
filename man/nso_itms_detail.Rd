@@ -19,9 +19,8 @@ A tibble with variable metadata.
 Get variable codes for a table (PXWeb)
 }
 \examples{
-\dontrun{
-# Get variables for population table
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
 vars <- nso_itms_detail("DT_NSO_0300_001V2")
 vars
-}
+\dontshow{\}) # examplesIf}
 }

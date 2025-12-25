@@ -12,3 +12,6 @@ A list with \code{enabled}, \code{dir}, and \code{has_cache}.
 \description{
 Report current cache configuration and basic stats.
 }
+\examples{
+nso_cache_status()
+}

@@ -18,3 +18,10 @@ Character vector of period codes.
 Utilities to construct NSO period codes and sequences. For monthly data,
 use YYYYMM; for yearly, use YYYY.
 }
+\examples{
+# Generate yearly sequence
+nso_period_seq("2020", "2024", by = "Y")
+
+# Generate monthly sequence
+nso_period_seq("202401", "202406", by = "M")
+}

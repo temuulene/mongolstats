@@ -67,25 +67,13 @@
 #' @param value_name Name of the numeric value column in the result (default: "value").
 #' @param include_raw If TRUE, attach the raw PX payload as attribute `px_raw`.
 #' @return A tibble with one column per dimension and a numeric value column.
-#' @examples
-#' \dontrun{
-#' # Fetch population data for 2024
+#' @examplesIf curl::has_internet()
+#' # Fetch population data
 #' pop <- nso_data(
 #'   tbl_id = "DT_NSO_0300_001V2",
-#'   selections = list(Sex = "Total", Age = "Total", Year = "2024"),
-#'   labels = "en"
+#'   selections = list(Year = "2023")
 #' )
-#'
-#' # Fetch multiple years
-#' pop_trend <- nso_data(
-#'   tbl_id = "DT_NSO_0300_001V2",
-#'   selections = list(
-#'     Sex = "Total",
-#'     Age = "Total",
-#'     Year = c("2020", "2021", "2022", "2023", "2024")
-#'   )
-#' )
-#' }
+#' head(pop)
 #' @export
 nso_data <- function(
   tbl_id,
@@ -117,6 +105,11 @@ nso_data <- function(
 #' @param value_name Name of the numeric value column in the result (default: "value").
 #' @return A tibble combining data from all requested tables, with a `tbl_id` column
 #'   identifying the source table.
+#' @examplesIf curl::has_internet()
+#' reqs <- list(
+#'   list(tbl_id = "DT_NSO_0300_001V2", selections = list(Year = "2023"))
+#' )
+#' combined <- nso_package(reqs)
 #' @export
 nso_package <- function(
   requests,

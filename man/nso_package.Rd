@@ -27,3 +27,11 @@ identifying the source table.
 \description{
 Fetch multiple tables and bind (PXWeb)
 }
+\examples{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+reqs <- list(
+  list(tbl_id = "DT_NSO_0300_001V2", selections = list(Year = "2023"))
+)
+combined <- nso_package(reqs)
+\dontshow{\}) # examplesIf}
+}

@@ -15,3 +15,9 @@ tibble with key columns from GeoBoundaries and normalized names.
 \description{
 Boundary keys/crosswalk helper
 }
+\examples{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+keys <- mn_boundary_keys("ADM1")
+head(keys)
+\dontshow{\}) # examplesIf}
+}

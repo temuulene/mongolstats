@@ -12,3 +12,9 @@ tibble with \code{id}, \code{type}, \code{text}
 \description{
 List top-level categories (PXWeb NSO root)
 }
+\examples{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+sectors <- nso_sectors()
+head(sectors)
+\dontshow{\}) # examplesIf}
+}

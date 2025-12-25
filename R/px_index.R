@@ -136,6 +136,12 @@ nso_px_tables <- function() {
 
 #'   is provided, `FALSE` otherwise.
 #' @return A tibble containing the rebuilt table index.
+#' @examplesIf curl::has_internet()
+#' # Rebuild in-memory index only (takes time to crawl API)
+#' \donttest{
+#' idx <- nso_rebuild_px_index()
+#' head(idx)
+#' }
 #' @export
 nso_rebuild_px_index <- function(
   path = NULL,

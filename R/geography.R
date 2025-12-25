@@ -7,15 +7,10 @@
 #'
 #' @param level One of "ADM0", "ADM1", "ADM2".
 #' @return An `sf` object with polygons for the requested level.
-#' @examples
-#' \dontrun{
+#' @examplesIf curl::has_internet()
 #' # Get aimag (province) boundaries
 #' aimags <- mn_boundaries("ADM1")
-#' plot(aimags["shapeName"])
-#'
-#' # Get soum (district) boundaries
-#' soums <- mn_boundaries("ADM2")
-#' }
+#' head(aimags)
 #' @export
 mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2")) {
   level <- match.arg(level)

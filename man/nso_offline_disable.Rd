@@ -12,3 +12,6 @@ Invisibly, \code{TRUE}.
 \description{
 Disable offline mode
 }
+\examples{
+nso_offline_disable()
+}

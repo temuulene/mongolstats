@@ -19,3 +19,9 @@ A tibble with at least \code{code}; may include \code{label_en} and/or \code{lab
 \description{
 Returns codes and optional labels for a specific dimension.
 }
+\examples{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+values <- nso_dim_values("DT_NSO_0300_001V2", "Year")
+head(values)
+\dontshow{\}) # examplesIf}
+}

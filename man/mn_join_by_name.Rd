@@ -21,3 +21,9 @@ sf with joined data.
 \description{
 Join data to boundaries by (normalized) names
 }
+\examples{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+pop_data <- data.frame(aimag = c("Ulaanbaatar", "Darkhan-Uul"), pop = c(1500000, 100000))
+sf_joined <- mn_join_by_name(pop_data, "aimag", level = "ADM1")
+\dontshow{\}) # examplesIf}
+}
