@@ -70,6 +70,17 @@ use YYYYMM; for yearly, use YYYY.</p>
     <p>Character vector of period codes.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Generate yearly sequence</span></span></span>
+<span class="r-in"><span><span class="fu">nso_period_seq</span><span class="op">(</span><span class="st">"2020"</span>, <span class="st">"2024"</span>, by <span class="op">=</span> <span class="st">"Y"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2020" "2021" "2022" "2023" "2024"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate monthly sequence</span></span></span>
+<span class="r-in"><span><span class="fu">nso_period_seq</span><span class="op">(</span><span class="st">"202401"</span>, <span class="st">"202406"</span>, by <span class="op">=</span> <span class="st">"M"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "202401" "202402" "202403" "202404" "202405" "202406"</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

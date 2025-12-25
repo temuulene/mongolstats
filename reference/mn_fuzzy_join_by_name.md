@@ -45,3 +45,11 @@ mn_fuzzy_join_by_name(
 ## Value
 
 sf with best fuzzy matches joined.
+
+## Examples
+
+``` r
+# Join even with minor spelling differences
+pop_data <- data.frame(aimag = c("Ulanbatar", "Darhan"), pop = c(1500000, 100000))
+sf_joined <- mn_fuzzy_join_by_name(pop_data, "aimag", level = "ADM1")
+```

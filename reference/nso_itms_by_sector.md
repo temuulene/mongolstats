@@ -19,3 +19,10 @@ nso_itms_by_sector(list_id)
 ## Value
 
 A tibble of tables matching the specified sector path.
+
+## Examples
+
+``` r
+sectors <- nso_sectors()
+tables <- nso_itms_by_sector(sectors$id[1])
+```

@@ -26,3 +26,19 @@ nso_dim_values(tbl_id, dim, labels = c("code", "en", "mn", "both"))
 ## Value
 
 A tibble with at least `code`; may include `label_en` and/or `label_mn`.
+
+## Examples
+
+``` r
+values <- nso_dim_values("DT_NSO_0300_001V2", "Year")
+head(values)
+#> # A tibble: 6 × 1
+#>   code 
+#>   <chr>
+#> 1 0    
+#> 2 1    
+#> 3 2    
+#> 4 3    
+#> 5 4    
+#> 6 5    
+```

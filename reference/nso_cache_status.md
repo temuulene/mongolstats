@@ -11,3 +11,18 @@ nso_cache_status()
 ## Value
 
 A list with `enabled`, `dir`, and `has_cache`.
+
+## Examples
+
+``` r
+nso_cache_status()
+#> $enabled
+#> [1] FALSE
+#> 
+#> $dir
+#> [1] "/tmp/Rtmp1POnSU"
+#> 
+#> $has_cache
+#> [1] TRUE
+#> 
+```

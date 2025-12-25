@@ -44,22 +44,19 @@ A tibble with one column per dimension and a numeric value column.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-# Fetch population data for 2024
+# Fetch population data
 pop <- nso_data(
   tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = "Total", Age = "Total", Year = "2024"),
-  labels = "en"
+  selections = list(Year = "2023")
 )
-
-# Fetch multiple years
-pop_trend <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(
-    Sex = "Total",
-    Age = "Total",
-    Year = c("2020", "2021", "2022", "2023", "2024")
-  )
-)
-} # }
+head(pop)
+#> # A tibble: 6 × 4
+#>   Sex   Age   Year    value
+#>   <chr> <chr> <chr>   <dbl>
+#> 1 0     0     1     3396788
+#> 2 0     1     1       65418
+#> 3 0     2     1       65653
+#> 4 0     3     1       71885
+#> 5 0     4     1       76194
+#> 6 0     5     1       78627
 ```

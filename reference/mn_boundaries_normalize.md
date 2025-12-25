@@ -22,3 +22,13 @@ mn_boundaries_normalize(g, name_col = "shapeName")
 ## Value
 
 sf with `name_std` column added.
+
+## Examples
+
+``` r
+aimags <- mn_boundaries("ADM1")
+aimags <- mn_boundaries_normalize(aimags)
+head(aimags$name_std)
+#> [1] "uvs"         "khovd"       "zavkhan"     "bulgan"      "dornogovi"  
+#> [6] "ulaanbaatar"
+```

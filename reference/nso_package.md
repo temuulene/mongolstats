@@ -36,3 +36,12 @@ nso_package(
 
 A tibble combining data from all requested tables, with a `tbl_id`
 column identifying the source table.
+
+## Examples
+
+``` r
+reqs <- list(
+  list(tbl_id = "DT_NSO_0300_001V2", selections = list(Year = "2023"))
+)
+combined <- nso_package(reqs)
+```

@@ -68,14 +68,28 @@ and returns an <code>sf</code> object. Results can be cached by the caller as ne
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Get aimag (province) boundaries</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get aimag (province) boundaries</span></span></span>
 <span class="r-in"><span><span class="va">aimags</span> <span class="op">&lt;-</span> <span class="fu">mn_boundaries</span><span class="op">(</span><span class="st">"ADM1"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">aimags</span><span class="op">[</span><span class="st">"shapeName"</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Get soum (district) boundaries</span></span></span>
-<span class="r-in"><span><span class="va">soums</span> <span class="op">&lt;-</span> <span class="fu">mn_boundaries</span><span class="op">(</span><span class="st">"ADM2"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">aimags</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 6 features and 5 fields</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTIPOLYGON</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: 90.0023 ymin: 42.39561 xmax: 111.9678 ymax: 50.8851</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Geodetic CRS:  WGS 84</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     shapeName shapeISO                 shapeID shapeGroup shapeType</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         Uvs   MN-046 14279143B81467460095364        MNG      ADM1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       Khovd   MN-043 14279143B22317554045022        MNG      ADM1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     Zavkhan   MN-057 14279143B63368554420497        MNG      ADM1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      Bulgan   MN-067 14279143B49613281560709        MNG      ADM1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   Dornogovi   MN-063 14279143B47638406449643        MNG      ADM1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 Ulaanbaatar     MN-1 14279143B69842940795179        MNG      ADM1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                         geometry</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 MULTIPOLYGON (((95.50543 49...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 MULTIPOLYGON (((91.33829 48...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 MULTIPOLYGON (((93.4295 48....</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 MULTIPOLYGON (((102.6428 50...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 MULTIPOLYGON (((107.6873 44...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 MULTIPOLYGON (((106.3564 48...</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

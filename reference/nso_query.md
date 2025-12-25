@@ -27,3 +27,16 @@ nso_query(tbl_id, selections = list())
 ## Value
 
 An object of class `nso_query`.
+
+## Examples
+
+``` r
+# Create a query object (does not require network)
+q <- nso_query("DT_NSO_0300_001V2", list(Year = "2023", Sex = "Total"))
+print(q)
+#> <nso_query>
+#>   tbl_id    : DT_NSO_0300_001V2
+#>   selections: 2 dimensions
+#>     - Year: 2023
+#>     - Sex: Total
+```

@@ -31,3 +31,10 @@ mn_join_by_name(data, name_col, level = "ADM1", boundaries = NULL)
 ## Value
 
 sf with joined data.
+
+## Examples
+
+``` r
+pop_data <- data.frame(aimag = c("Ulaanbaatar", "Darkhan-Uul"), pop = c(1500000, 100000))
+sf_joined <- mn_join_by_name(pop_data, "aimag", level = "ADM1")
+```

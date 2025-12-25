@@ -74,6 +74,18 @@ to desired codes or labels.</p></dd>
     <p>An object of class <code>nso_query</code>.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create a query object (does not require network)</span></span></span>
+<span class="r-in"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">nso_query</span><span class="op">(</span><span class="st">"DT_NSO_0300_001V2"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="st">"2023"</span>, Sex <span class="op">=</span> <span class="st">"Total"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;nso_query&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   tbl_id    : DT_NSO_0300_001V2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   selections: 2 dimensions</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - Year: 2023</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - Sex: Total</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -14,3 +14,17 @@ nso_offline_enable()
 ## Value
 
 Invisibly, `TRUE`.
+
+## Examples
+
+``` r
+# Enable offline mode
+nso_offline_enable()
+
+# Check the option was set
+getOption("mongolstats.offline")
+#> [1] TRUE
+
+# Disable to restore normal operation
+nso_offline_disable()
+```
