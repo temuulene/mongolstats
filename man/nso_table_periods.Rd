@@ -15,3 +15,9 @@ Character vector of period labels (e.g., years)
 \description{
 Get valid periods for a table (PXWeb)
 }
+\examples{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+periods <- nso_table_periods("DT_NSO_0300_001V2")
+head(periods)
+\dontshow{\}) # examplesIf}
+}

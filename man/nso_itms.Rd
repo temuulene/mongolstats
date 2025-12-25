@@ -17,12 +17,9 @@ A tibble with columns: \code{px_path}, \code{px_file}, \code{tbl_id}, \code{tbl_
 Returns a tibble of all available tables in the NSO PXWeb catalog.
 }
 \examples{
-\dontrun{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
 # List all available tables
 tables <- nso_itms()
 head(tables)
-
-# Filter to find specific tables
-tables |> dplyr::filter(grepl("population", tbl_eng_nm, ignore.case = TRUE))
-}
+\dontshow{\}) # examplesIf}
 }

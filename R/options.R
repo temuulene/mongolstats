@@ -8,6 +8,15 @@
 #'   mongolstats options.
 #' @return Invisibly, the previous values of the options changed, or a list of
 #'   current values when called with no arguments.
+#' @examples
+#' # Get all current mongolstats options
+#' nso_options()
+#'
+#' # Set an option (save old value for restoration)
+#' old <- nso_options(mongolstats.default_labels = "en")
+#'
+#' # Restore original value
+#' options(old)
 #' @export
 nso_options <- function(...) {
   opts_prefix <- c(

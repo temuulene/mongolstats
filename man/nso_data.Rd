@@ -30,22 +30,12 @@ A tibble with one column per dimension and a numeric value column.
 Fetch statistical data for a table (PXWeb)
 }
 \examples{
-\dontrun{
-# Fetch population data for 2024
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+# Fetch population data
 pop <- nso_data(
   tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Sex = "Total", Age = "Total", Year = "2024"),
-  labels = "en"
+  selections = list(Year = "2023")
 )
-
-# Fetch multiple years
-pop_trend <- nso_data(
-  tbl_id = "DT_NSO_0300_001V2",
-  selections = list(
-    Sex = "Total",
-    Age = "Total",
-    Year = c("2020", "2021", "2022", "2023", "2024")
-  )
-)
-}
+head(pop)
+\dontshow{\}) # examplesIf}
 }

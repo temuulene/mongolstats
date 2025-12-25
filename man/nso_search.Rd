@@ -19,3 +19,8 @@ Tibble of matching tables.
 \description{
 Search NSO tables
 }
+\examples{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+nso_search("population")
+\dontshow{\}) # examplesIf}
+}

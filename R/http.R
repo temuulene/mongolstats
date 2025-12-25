@@ -144,6 +144,15 @@
 #' be used if already available via `nso_cache_enable()`.
 #'
 #' @return Invisibly, `TRUE`.
+#' @examples
+#' # Enable offline mode
+#' nso_offline_enable()
+#'
+#' # Check the option was set
+#' getOption("mongolstats.offline")
+#'
+#' # Disable to restore normal operation
+#' nso_offline_disable()
 #' @export
 nso_offline_enable <- function() {
   options(mongolstats.offline = TRUE)
@@ -153,6 +162,8 @@ nso_offline_enable <- function() {
 #' Disable offline mode
 #'
 #' @return Invisibly, `TRUE`.
+#' @examples
+#' nso_offline_disable()
 #' @export
 nso_offline_disable <- function() {
   options(mongolstats.offline = FALSE)

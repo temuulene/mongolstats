@@ -16,3 +16,9 @@ A tibble with columns: \code{id}, \code{type}, \code{text}.
 \description{
 List children for a given path (PXWeb)
 }
+\examples{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+sectors <- nso_sectors()
+nso_subsectors(sectors$id[1])
+\dontshow{\}) # examplesIf}
+}

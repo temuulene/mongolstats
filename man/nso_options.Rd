@@ -17,3 +17,13 @@ current values when called with no arguments.
 \description{
 Convenience wrapper around \code{\link[base:options]{base::options()}} for mongolstats.
 }
+\examples{
+# Get all current mongolstats options
+nso_options()
+
+# Set an option (save old value for restoration)
+old <- nso_options(mongolstats.default_labels = "en")
+
+# Restore original value
+options(old)
+}

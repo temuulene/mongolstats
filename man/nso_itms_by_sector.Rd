@@ -15,3 +15,9 @@ A tibble of tables matching the specified sector path.
 \description{
 List tables under a sector or sub-sector (PXWeb path)
 }
+\examples{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+sectors <- nso_sectors()
+tables <- nso_itms_by_sector(sectors$id[1])
+\dontshow{\}) # examplesIf}
+}

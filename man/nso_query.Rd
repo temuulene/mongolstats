@@ -20,3 +20,8 @@ Builds a lightweight query object that records a table id and selections.
 Use \code{\link[=nso_fetch]{nso_fetch()}} to execute it, or \code{\link[=as_px_query]{as_px_query()}} to inspect the
 underlying PXWeb body.
 }
+\examples{
+# Create a query object (does not require network)
+q <- nso_query("DT_NSO_0300_001V2", list(Year = "2023", Sex = "Total"))
+print(q)
+}

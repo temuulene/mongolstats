@@ -14,3 +14,13 @@ When enabled, HTTP requests are prevented and functions that require
 the network will raise a clear offline error. Cached metadata can still
 be used if already available via \code{nso_cache_enable()}.
 }
+\examples{
+# Enable offline mode
+nso_offline_enable()
+
+# Check the option was set
+getOption("mongolstats.offline")
+
+# Disable to restore normal operation
+nso_offline_disable()
+}

@@ -10,6 +10,10 @@
 #' @param selections Named list mapping dimension labels (e.g., Year, Sex)
 #'   to desired codes or labels.
 #' @return An object of class `nso_query`.
+#' @examples
+#' # Create a query object (does not require network)
+#' q <- nso_query("DT_NSO_0300_001V2", list(Year = "2023", Sex = "Total"))
+#' print(q)
 #' @export
 nso_query <- function(tbl_id, selections = list()) {
   stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
@@ -123,6 +127,9 @@ print.nso_query <- function(x, ...) {
 #' @param x An `nso_query` object.
 #' @param lang PX language: "en" or "mn" (defaults to current option).
 #' @return A list suitable to send as JSON body to PXWeb.
+#' @examplesIf curl::has_internet()
+#' q <- nso_query("DT_NSO_0300_001V2", list(Year = "2023"))
+#' body <- as_px_query(q)
 #' @export
 as_px_query <- function(x, lang = .px_lang()) {
   stopifnot(inherits(x, "nso_query"))
@@ -140,6 +147,10 @@ as_px_query <- function(x, lang = .px_lang()) {
 #' @param value_name Name of the numeric value column in the result (default: "value").
 #' @param include_raw If TRUE, attach the raw PX payload as attribute `px_raw`.
 #' @return A tibble.
+#' @examplesIf curl::has_internet()
+#' q <- nso_query("DT_NSO_0300_001V2", list(Year = "2023"))
+#' data <- nso_fetch(q)
+#' head(data)
 #' @export
 nso_fetch <- function(
   x,

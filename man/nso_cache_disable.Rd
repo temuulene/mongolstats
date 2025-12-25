@@ -12,3 +12,6 @@ No return value, called for side effects.
 \description{
 Disable caching
 }
+\examples{
+nso_cache_disable()
+}

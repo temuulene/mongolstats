@@ -19,11 +19,8 @@ A tibble of matching tables.
 Search tables by keyword (PXWeb)
 }
 \examples{
-\dontrun{
-# Search for infant mortality tables
-nso_itms_search("infant mortality")
-
-# Search for GDP tables
-nso_itms_search("GDP")
-}
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+# Search for population tables
+nso_itms_search("population")
+\dontshow{\}) # examplesIf}
 }

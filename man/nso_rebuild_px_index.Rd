@@ -21,3 +21,12 @@ Crawls the PXWeb API to rebuild the table index. If \code{path} is provided,
 the index is written to that file; otherwise only the in-memory index is
 refreshed.
 }
+\examples{
+\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+# Rebuild in-memory index only (takes time to crawl API)
+\donttest{
+idx <- nso_rebuild_px_index()
+head(idx)
+}
+\dontshow{\}) # examplesIf}
+}

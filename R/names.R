@@ -12,6 +12,10 @@
 #' @param g sf object from `mn_boundaries()`
 #' @param name_col Column with English names (default 'shapeName').
 #' @return sf with `name_std` column added.
+#' @examplesIf curl::has_internet()
+#' aimags <- mn_boundaries("ADM1")
+#' aimags <- mn_boundaries_normalize(aimags)
+#' head(aimags$name_std)
 #' @export
 mn_boundaries_normalize <- function(g, name_col = "shapeName") {
   if (!name_col %in% names(g)) {
@@ -27,6 +31,9 @@ mn_boundaries_normalize <- function(g, name_col = "shapeName") {
 #' @param level Boundary level, passed to `mn_boundaries()` if `boundaries` not provided.
 #' @param boundaries Optional pre-fetched boundaries.
 #' @return sf with joined data.
+#' @examplesIf curl::has_internet()
+#' pop_data <- data.frame(aimag = c("Ulaanbaatar", "Darkhan-Uul"), pop = c(1500000, 100000))
+#' sf_joined <- mn_join_by_name(pop_data, "aimag", level = "ADM1")
 #' @export
 mn_join_by_name <- function(data, name_col, level = "ADM1", boundaries = NULL) {
   if (is.null(boundaries)) {
@@ -46,6 +53,10 @@ mn_join_by_name <- function(data, name_col, level = "ADM1", boundaries = NULL) {
 #' @param max_distance Maximum string distance for a match (default 2).
 #' @param method Distance method passed to `stringdist::stringdist`.
 #' @return sf with best fuzzy matches joined.
+#' @examplesIf curl::has_internet()
+#' # Join even with minor spelling differences
+#' pop_data <- data.frame(aimag = c("Ulanbatar", "Darhan"), pop = c(1500000, 100000))
+#' sf_joined <- mn_fuzzy_join_by_name(pop_data, "aimag", level = "ADM1")
 #' @export
 mn_fuzzy_join_by_name <- function(
   data,
@@ -93,6 +104,9 @@ mn_fuzzy_join_by_name <- function(
 #' Boundary keys/crosswalk helper
 #' @param level Boundary level.
 #' @return tibble with key columns from GeoBoundaries and normalized names.
+#' @examplesIf curl::has_internet()
+#' keys <- mn_boundary_keys("ADM1")
+#' head(keys)
 #' @export
 mn_boundary_keys <- function(level = "ADM1") {
   g <- mn_boundaries(level)
