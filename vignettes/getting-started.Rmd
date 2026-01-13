@@ -311,7 +311,7 @@ try({
 
 - **Discover More Data**: See the [Discovery Guide](discovery.html) for advanced search techniques
 - **Create Maps**: Learn spatial analysis in the [Mapping Guide](mapping.html)  
-- **Reference**: Browse all functions in the [Reference](../reference/index.html)
+- **Reference**: Browse all functions in the [Reference](https://temuulene.github.io/mongolstats/reference/index.html)
 
 ## Quick Reference: Common Health Tables
 

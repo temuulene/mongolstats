@@ -20,3 +20,4 @@ Network-dependent examples use `@examplesIf curl::has_internet()` to ensure they
 
 ## Reverse dependencies
 There are no reverse dependencies to check.
+
