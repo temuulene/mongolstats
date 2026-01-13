@@ -369,7 +369,7 @@ Mongolia](getting-started_files/figure-html/map-example-1.png)
 - **Create Maps**: Learn spatial analysis in the [Mapping
   Guide](https://temuulene.github.io/mongolstats/articles/mapping.md)  
 - **Reference**: Browse all functions in the
-  [Reference](https://temuulene.github.io/mongolstats/reference/index.md)
+  [Reference](https://temuulene.github.io/mongolstats/reference/index.html)
 
 ## Quick Reference: Common Health Tables
 

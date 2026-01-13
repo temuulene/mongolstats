@@ -397,4 +397,4 @@ p  # print static ggplot
   Guide](https://temuulene.github.io/mongolstats/articles/mapping.md)
   for spatial epidemiology
 - **Reference Documentation**: Explore all available functions in the
-  [Reference](https://temuulene.github.io/mongolstats/reference/index.md)
+  [Reference](https://temuulene.github.io/mongolstats/reference/index.html)

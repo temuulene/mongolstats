@@ -252,4 +252,4 @@ p  # print static ggplot
 - **Discover Health Data**: Return to the [Discovery
   Guide](https://temuulene.github.io/mongolstats/articles/discovery.md)
 - **Learn More**: Explore all functions in the
-  [Reference](https://temuulene.github.io/mongolstats/reference/index.md)
+  [Reference](https://temuulene.github.io/mongolstats/reference/index.html)
