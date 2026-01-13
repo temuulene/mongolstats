@@ -241,4 +241,4 @@ p  # print static ggplot
 ## Next Steps
 
 - **Discover Health Data**: Return to the [Discovery Guide](discovery.html)
-- **Learn More**: Explore all functions in the [Reference](../reference/index.html)
+- **Learn More**: Explore all functions in the [Reference](https://temuulene.github.io/mongolstats/reference/index.html)

@@ -315,4 +315,4 @@ p  # print static ggplot
 ## Next Steps
 
 - **Mapping Health Outcomes**: See the [Mapping Guide](mapping.html) for spatial epidemiology
-- **Reference Documentation**: Explore all available functions in the [Reference](../reference/index.html)
+- **Reference Documentation**: Explore all available functions in the [Reference](https://temuulene.github.io/mongolstats/reference/index.html)

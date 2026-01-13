@@ -445,7 +445,7 @@ air_with_location <- air_quality |>
 
 - **Discover More Tables**: See [Discovery Guide](discovery.html) for search techniques
 - **Mapping**: Learn spatial analysis in [Mapping Guide](mapping.html)
-- **Reference**: Browse all functions in the [Reference](../reference/index.html)
+- **Reference**: Browse all functions in the [Reference](https://temuulene.github.io/mongolstats/reference/index.html)
 
 ## Key Environmental Tables
 
