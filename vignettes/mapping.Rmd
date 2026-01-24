@@ -7,6 +7,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r not-cran-check, include = FALSE}
+# Skip code evaluation on CRAN (external API calls will fail)
+NOT_CRAN <- identical(Sys.getenv("NOT_CRAN"), "true")
+knitr::opts_chunk$set(eval = NOT_CRAN, purl = NOT_CRAN)
+```
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -48,7 +54,7 @@ Geographic analysis is essential for understanding health disparities and target
 
 Mongolia's administrative boundaries are available at three levels:
 
-```{r boundaries, eval=TRUE, fig.alt="Map showing the 21 aimags (provinces) and Ulaanbaatar capital of Mongolia with white fill and grey borders"}
+```{r boundaries, fig.alt="Map showing the 21 aimags (provinces) and Ulaanbaatar capital of Mongolia with white fill and grey borders"}
 # ADM0: National boundary
 country <- mn_boundaries(level = "ADM0")
 
@@ -72,7 +78,7 @@ aimags |>
 
 Maternal mortality is a critical indicator of health system performance and equity.
 
-```{r maternal-data, eval=TRUE}
+```{r maternal-data}
 # Fetch maternal mortality data for all aimags (2020-2024)
 # We'll calculate a 5-year average to smooth out year-to-year variability
 # This is important because small populations can have unstable rates
@@ -113,7 +119,7 @@ mmr_data |>
 
 ### Creating a Choropleth Map
 
-```{r maternal-map, eval=TRUE}
+```{r maternal-map}
 # Join health data to geographic boundaries for spatial analysis
 mmr_map <- aimags |>
   left_join(mmr_data, by = c("shapeName" = "Region_en"))
@@ -149,7 +155,7 @@ p  # print static ggplot
 
 ### Identifying High-Risk Regions
 
-```{r imr-hotspots, eval=TRUE}
+```{r imr-hotspots}
 # Get infant mortality rates
 imr_tbl <- "DT_NSO_2100_015V1" # IMR per 1,000 live births (Monthly)
 

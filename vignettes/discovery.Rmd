@@ -7,6 +7,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r not-cran-check, include = FALSE}
+# Skip code evaluation on CRAN (external API calls will fail)
+NOT_CRAN <- identical(Sys.getenv("NOT_CRAN"), "true")
+knitr::opts_chunk$set(eval = NOT_CRAN, purl = NOT_CRAN)
+```
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -49,7 +55,7 @@ Mongolia's National Statistics Office maintains comprehensive public health surv
 
 Finding the right data is the first step in any analysis. The `nso_itms_search()` function allows you to query the entire NSO catalog using simple keywords:
 
-```{r search-examples, eval=TRUE}
+```{r search-examples}
 # Infant and maternal health
 mortality <- nso_itms_search("mortality")
 mortality |>
@@ -69,7 +75,7 @@ infectious |> select(tbl_id, tbl_eng_nm)
 
 Health and education statistics are grouped together:
 
-```{r sectors, eval=TRUE}
+```{r sectors}
 # View all sectors
 sectors <- nso_sectors()
 sectors
@@ -88,7 +94,7 @@ if (nrow(health_sector) > 0) {
 
 Cancer burden is shifting in Mongolia. To understand these changes, we can analyze incidence trends over the last decade:
 
-```{r cancer-metadata, eval=TRUE}
+```{r cancer-metadata}
 # Find cancer incidence table
 cancer_tbl <- "DT_NSO_2100_012V1" # New cases per 10,000 population
 
@@ -109,7 +115,7 @@ years
 
 ### Fetching and Visualizing Cancer Trends
 
-```{r cancer-analysis, eval=TRUE}
+```{r cancer-analysis}
 # Fetch cancer incidence data for the most common types
 # We focus on the last 10 years to show recent trends
 # and select 4 major cancer types (Lung, Liver, Stomach, Cervix)
@@ -163,7 +169,7 @@ p  # print static ggplot
 
 ### Regional Disparities
 
-```{r infant-mortality, eval=TRUE}
+```{r infant-mortality}
 # Infant mortality by aimag
 imr_tbl <- "DT_NSO_2100_015V1" # IMR per 1,000 live births (Monthly)
 
@@ -210,7 +216,7 @@ imr_data |>
 
 ### Time Trend Analysis
 
-```{r imr-trends, eval=TRUE}
+```{r imr-trends}
 # Analyze national trend (Monthly)
 imr_national <- nso_data(
   tbl_id = imr_tbl,
@@ -254,7 +260,7 @@ imr_national |>
 
 Let's analyze the seasonal trends of Tuberculosis using monthly data.
 
-```{r tb-data, eval=TRUE}
+```{r tb-data}
 # TB cases (Monthly)
 tb_tbl <- "DT_NSO_2100_035V1" # CASES OF COMMUNICABLE DISEASES, by type of selected diseases and by month
 
