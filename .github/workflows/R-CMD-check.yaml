@@ -3,13 +3,35 @@ name: R-CMD-check
 on:
   push:
     branches: [ main, master ]
+    paths-ignore:
+      - README.md
+      - README.Rmd
+      - README.html
+      - _pkgdown.yml
+      - NEWS.md
+      - vignettes/**
+      - docs/**
+      - pkgdown/**
+      - man/**
+      - inst/extdata/**
   pull_request:
     branches: [ main, master ]
+    paths-ignore:
+      - README.md
+      - README.Rmd
+      - README.html
+      - _pkgdown.yml
+      - NEWS.md
+      - vignettes/**
+      - docs/**
+      - pkgdown/**
+      - man/**
+      - inst/extdata/**
   workflow_dispatch:
 
 jobs:
   R-CMD-check:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:

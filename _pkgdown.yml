@@ -32,6 +32,12 @@ navbar:
           href: articles/mapping.html
         - text: Mortality Seasonality Analysis
           href: articles/mortality-analysis.html
+        - text: ----
+        - text: Case Studies
+        - text: Environmental Analysis
+          href: articles/environmental-surveillance.html
+        - text: UB District Analysis
+          href: articles/ub-health-environment.html
     github:
       icon: fab fa-github
       aria-label: GitHub
@@ -56,9 +62,11 @@ articles:
       - getting-started
       - discovery
       - mapping
-      # environmental-surveillance and ub-health-environment excluded from website
-      # (require live NSO API access - run locally with `vignette("environmental-surveillance")`)
       - mortality-analysis
+  - title: Case Studies (Requires API)
+    contents:
+      - environmental-surveillance
+      - ub-health-environment
 reference:
   - title: Discover Tables
     contents:
