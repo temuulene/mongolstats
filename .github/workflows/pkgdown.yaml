@@ -46,6 +46,8 @@ jobs:
         shell: Rscript {0}
 
       - name: Build pkgdown site
+        env:
+          NOT_CRAN: ""
         run: pkgdown::build_site(preview = FALSE, install = FALSE, new_process = FALSE)
         shell: Rscript {0}
 
