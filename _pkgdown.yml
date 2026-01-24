@@ -30,10 +30,6 @@ navbar:
           href: articles/discovery.html
         - text: Spatial Epidemiology with mongolstats
           href: articles/mapping.html
-        - text: Ulaanbaatar District-Level Analysis
-          href: articles/ub-health-environment.html
-        - text: Environmental Data Analysis
-          href: articles/environmental-surveillance.html
         - text: Mortality Seasonality Analysis
           href: articles/mortality-analysis.html
     github:
@@ -60,8 +56,8 @@ articles:
       - getting-started
       - discovery
       - mapping
-      - ub-health-environment
-      - environmental-surveillance
+      # environmental-surveillance and ub-health-environment excluded from website
+      # (require live NSO API access - run locally with `vignette("environmental-surveillance")`)
       - mortality-analysis
 reference:
   - title: Discover Tables
