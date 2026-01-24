@@ -39,9 +39,11 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/discovery.html">Discovering Public Health Data</a></li>
     <li><a class="dropdown-item" href="../articles/mapping.html">Spatial Epidemiology with mongolstats</a></li>
-    <li><a class="dropdown-item" href="../articles/ub-health-environment.html">Ulaanbaatar District-Level Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/environmental-surveillance.html">Environmental Data Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/mortality-analysis.html">Mortality Seasonality Analysis</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Case Studies</h6></li>
+    <li><a class="dropdown-item" href="../articles/environmental-surveillance.html">Environmental Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/ub-health-environment.html">UB District Analysis</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -212,6 +214,7 @@ and the district land areas.</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_dens</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
+<p><img src="ub-health-environment_files/figure-html/demog-density-1.png" class="r-plt" alt="" width="100%"></p>
 <blockquote>
 <p><strong>Interpretation</strong>: The central districts (Bayangol,
 Chingeltei, Sukhbaatar) exhibit extremely high density, while the
@@ -252,6 +255,7 @@ may strain local health infrastructure.</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_trend</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
+<p><img src="ub-health-environment_files/figure-html/demog-trend-1.png" class="r-plt" alt="" width="100%"></p>
 <p>The rapid growth in <strong>Songinokhairkhan</strong> and
 <strong>Bayanzurkh</strong> highlights their role as the primary
 absorption points for rural-to-urban migration, often associated with
@@ -300,6 +304,7 @@ estimate overcrowding.</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_edu</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
+<p><img src="ub-health-environment_files/figure-html/socio-edu-1.png" class="r-plt" alt="" width="100%"></p>
 <p>Districts with higher ratios may indicate infrastructure lags
 relative to population growth, often correlating with lower
 socioeconomic status and higher vulnerability.</p>
@@ -358,6 +363,7 @@ the <strong>Crude Death Rate (CDR)</strong> per 10,000 population.</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_resp</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
+<p><img src="ub-health-environment_files/figure-html/health-resp-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="infant-mortality-rate-imr">Infant Mortality Rate (IMR)<a class="anchor" aria-label="anchor" href="#infant-mortality-rate-imr"></a>
@@ -390,6 +396,7 @@ access.</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_imr</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
+<p><img src="ub-health-environment_files/figure-html/health-imr-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 </div>
 <div class="section level2">
@@ -407,13 +414,22 @@ outcomes.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">edu_load</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">District</span>, <span class="va">Students_Per_School</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"District"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">ub_pop_map</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">District</span>, <span class="va">Density</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"District"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Correlation Matrix</span></span>
-<span><span class="va">cor_mat</span> <span class="op">&lt;-</span> <span class="va">analysis_df</span> <span class="op">|&gt;</span></span>
+<span><span class="co"># Correlation Matrix (guard against empty or all-NA data)</span></span>
+<span><span class="va">cor_input</span> <span class="op">&lt;-</span> <span class="va">analysis_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Density</span>,</span>
 <span>    `Students/School` <span class="op">=</span> <span class="va">Students_Per_School</span>,</span>
 <span>    `Resp. Rate` <span class="op">=</span> <span class="va">Resp_Death_Rate</span>, <span class="va">IMR</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span>use <span class="op">=</span> <span class="st">"complete.obs"</span><span class="op">)</span></span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cor_input</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">2</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">cor_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA_real_</span>, nrow <span class="op">=</span> <span class="fl">4</span>, ncol <span class="op">=</span> <span class="fl">4</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Density"</span>, <span class="st">"Students/School"</span>, <span class="st">"Resp. Rate"</span>, <span class="st">"IMR"</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Density"</span>, <span class="st">"Students/School"</span>, <span class="st">"Resp. Rate"</span>, <span class="st">"IMR"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="va">cor_mat</span> <span class="op">&lt;-</span> <span class="va">cor_input</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
 <span><span class="co"># Reshape for ggplot</span></span>
 <span><span class="va">cor_long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">cor_mat</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -444,6 +460,7 @@ outcomes.</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_cor</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
+<p><img src="ub-health-environment_files/figure-html/multi-var-1.png" class="r-plt" alt="" width="100%"></p>
 <div class="section level3">
 <h3 id="key-insights">Key Insights<a class="anchor" aria-label="anchor" href="#key-insights"></a>
 </h3>
@@ -515,6 +532,39 @@ patterns.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">Stations</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">station_count</span>, caption <span class="op">=</span> <span class="st">"Air Quality Monitoring Stations by District"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Air Quality Monitoring Stations by District</caption>
+<thead><tr class="header">
+<th align="left">District</th>
+<th align="right">Stations</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Bayanzurkh</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">Songinokhairkhan</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">Sukhbaatar</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">Chingeltei</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Khan-Uul</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Bayangol</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
 <blockquote>
 <p><strong>Bayanzurkh</strong> has the highest station density (5
 stations), reflecting its large area and population.
@@ -548,6 +598,7 @@ limited monitoring.</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_map</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
+<p><img src="ub-health-environment_files/figure-html/aq-network-map-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="station-coverage-analysis">Station Coverage Analysis<a class="anchor" aria-label="anchor" href="#station-coverage-analysis"></a>
@@ -597,6 +648,7 @@ limited monitoring.</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_coverage</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
+<p><img src="ub-health-environment_files/figure-html/station-coverage-1.png" class="r-plt" alt="" width="100%"></p>
 <blockquote>
 <p><strong>Coverage Disparities</strong>: Districts like
 <strong>Bayanzurkh</strong> and <strong>Songinokhairkhan</strong>

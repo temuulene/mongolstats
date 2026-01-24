@@ -48,6 +48,10 @@ aimags |>
   labs(title = "Mongolia's 21 Aimags + Ulaanbaatar")
 ```
 
+![Map showing the 21 aimags (provinces) and Ulaanbaatar capital of
+Mongolia with white fill and grey
+borders](mapping_files/figure-html/boundaries-1.png)
+
 ## Case Study: Maternal Mortality Geography
 
 ### Understanding Regional Disparities
@@ -92,6 +96,19 @@ mmr_data |>
   arrange(desc(value)) |>
   select(Region_en, value) |>
   head(10)
+#> # A tibble: 10 × 2
+#>    Region_en    value
+#>    <chr>        <dbl>
+#>  1 Khovd         69.8
+#>  2 Arkhangai     65.9
+#>  3 Selenge       60.1
+#>  4 Sükhbaatar    53.5
+#>  5 Hovsgel       48.0
+#>  6 Dornogovi     44.9
+#>  7 Töv           41.9
+#>  8 Ulaanbaatar   40.4
+#>  9 Bayan-Ölgii   39.1
+#> 10 Bayankhongor  37.6
 ```
 
 ### Creating a Choropleth Map
@@ -127,6 +144,8 @@ p <- mmr_map |>
 
 p  # print static ggplot
 ```
+
+![](mapping_files/figure-html/maternal-map-1.png)
 
 ## Case Study: Infant Mortality Hot Spots
 
@@ -212,6 +231,8 @@ p <- aimags |>
 
 p  # print static ggplot
 ```
+
+![](mapping_files/figure-html/imr-hotspots-1.png)
 
 ## Tips for Spatial Epidemiology
 

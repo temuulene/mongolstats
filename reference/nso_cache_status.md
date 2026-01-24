@@ -20,7 +20,7 @@ nso_cache_status()
 #> [1] FALSE
 #> 
 #> $dir
-#> [1] "/tmp/RtmpYSoUtO"
+#> [1] "/tmp/RtmpLf6OzM"
 #> 
 #> $has_cache
 #> [1] TRUE

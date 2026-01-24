@@ -39,9 +39,11 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/discovery.html">Discovering Public Health Data</a></li>
     <li><a class="dropdown-item" href="../articles/mapping.html">Spatial Epidemiology with mongolstats</a></li>
-    <li><a class="dropdown-item" href="../articles/ub-health-environment.html">Ulaanbaatar District-Level Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/environmental-surveillance.html">Environmental Data Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/mortality-analysis.html">Mortality Seasonality Analysis</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Case Studies</h6></li>
+    <li><a class="dropdown-item" href="../articles/environmental-surveillance.html">Environmental Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/ub-health-environment.html">UB District Analysis</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -117,7 +119,15 @@ key indicator of population health and health system performance.</p>
 <span><span class="va">mortality_tables</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_search.html">nso_itms_search</a></span><span class="op">(</span><span class="st">"infant mortality"</span><span class="op">)</span></span>
 <span><span class="va">mortality_tables</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span></span>
+<span><span class="co">#&gt;   tbl_id            tbl_eng_nm                                                  </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> DT_NSO_2100_014V1 NUMBER OF INFANT MORTALITY, aimags and the Capital and by m…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> DT_NSO_2100_014V2 INFANT MORTALITY RATE, per 1000 live births, aimags and the…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> DT_NSO_2100_014V4 INFANT MORTALITY, by sex, by soum, and by year              </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> DT_NSO_2100_014V5 INFANT MORTALITY RATE,  per 1000 live births, by sex, by so…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> DT_NSO_2100_015V1 INFANT MORTALITY RATE, per 1000 live births, aimags and the…</span></span></code></pre></div>
 <p>We’ll use <code>DT_NSO_2100_015V1</code> - Infant Mortality Rate per
 1,000 live births (Monthly).</p>
 </div>
@@ -129,10 +139,28 @@ key indicator of population health and health system performance.</p>
 <code class="sourceCode R"><span><span class="co"># View table structure</span></span>
 <span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_table_meta.html">nso_table_meta</a></span><span class="op">(</span><span class="st">"DT_NSO_2100_015V1"</span><span class="op">)</span></span>
 <span><span class="va">meta</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 5</span></span></span>
+<span><span class="co">#&gt;   dim    code  is_time n_values codes             </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Region Бүс   FALSE         28 <span style="color: #949494;">&lt;tibble [28 × 3]&gt;</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Month  Сар   FALSE        120 <span style="color: #949494;">&lt;tibble [120 × 3]&gt;</span></span></span>
 <span></span>
 <span><span class="co"># Check available months</span></span>
 <span><span class="va">time_vals</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="st">"DT_NSO_2100_015V1"</span>, <span class="st">"Month"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">time_vals</span>, <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">time_vals</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
+<span><span class="co">#&gt;    code  label_en</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 0     2025-12 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 1     2025-11 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2     2025-10 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 3     2025-09 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 4     2025-08 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 5     2016-01 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 6     2016-02 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 7     2016-03 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 8     2016-04 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 9     2016-05</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="step-4-fetch-data">Step 4: Fetch Data<a class="anchor" aria-label="anchor" href="#step-4-fetch-data"></a>
@@ -153,7 +181,20 @@ key indicator of population health and health system performance.</p>
 <span></span>
 <span><span class="co"># Preview</span></span>
 <span><span class="va">imr_national</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 5</span></span></span>
+<span><span class="co">#&gt;    Region Month value Region_en Month_en</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 0      0        13 Total     2025-12 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 0      1        13 Total     2025-11 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 0      2        11 Total     2025-10 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 0      3        14 Total     2025-09 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 0      4        16 Total     2025-08 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 0      5        12 Total     2016-01 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 0      6        13 Total     2016-02 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 0      7        14 Total     2016-03 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 0      8        15 Total     2016-04 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 0      9        15 Total     2016-05</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="step-5-visualize-the-trend">Step 5: Visualize the Trend<a class="anchor" aria-label="anchor" href="#step-5-visualize-the-trend"></a>
@@ -188,6 +229,7 @@ key indicator of population health and health system performance.</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
+<p><img src="getting-started_files/figure-html/plot-trend-1.png" class="r-plt" alt="Line plot showing decline in infant mortality rate from 2010 to 2015" width="100%"></p>
 </div>
 </div>
 <div class="section level2">
@@ -236,7 +278,20 @@ key indicator of population health and health system performance.</p>
 <span><span class="va">imr_regional</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region_en</span>, <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
+<span><span class="co">#&gt;    Region_en    value</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Hovsgel       27.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Arkhangai     24.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Övörkhangai   23.9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Bayankhongor  21.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Ömnögovi      19.9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Uvs           19.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Sükhbaatar    17.9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Bayan-Ölgii   17.7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Zavkhan       17.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Khovd         16.8</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="visualize-regional-disparities">Visualize Regional Disparities<a class="anchor" aria-label="anchor" href="#visualize-regional-disparities"></a>
 </h3>
@@ -278,6 +333,7 @@ key indicator of population health and health system performance.</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
+<p><img src="getting-started_files/figure-html/regional-plot-1.png" class="r-plt" alt="Bar chart comparing infant mortality rates across Mongolia's aimags" width="100%"></p>
 </div>
 </div>
 <div class="section level2">
@@ -287,42 +343,39 @@ key indicator of population health and health system performance.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Graceful degradation if external API is unreachable</span></span>
-<span><span class="co"># CRAN policy and CI robustness require handling network failures</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="op">{</span></span>
-<span>  <span class="co"># Get aimag boundaries</span></span>
-<span>  <span class="va">aimags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_boundaries.html">mn_boundaries</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"ADM1"</span><span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="co"># Join IMR data to map</span></span>
-<span>  <span class="va">imr_map</span> <span class="op">&lt;-</span> <span class="va">aimags</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">imr_regional</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shapeName"</span> <span class="op">=</span> <span class="st">"Region_en"</span><span class="op">)</span><span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="co"># Create choropleth map</span></span>
-<span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="va">imr_map</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">value</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span></span>
-<span>      option <span class="op">=</span> <span class="st">"magma"</span>,</span>
-<span>      direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,  <span class="co"># dark = high values (high mortality), light = low</span></span>
-<span>      name <span class="op">=</span> <span class="st">"IMR\n(per 1,000)"</span>,</span>
-<span>      labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>      title <span class="op">=</span> <span class="st">"Infant Mortality Geography (2024 Average)"</span>,</span>
-<span>      subtitle <span class="op">=</span> <span class="st">"Spatial distribution of mortality rates"</span>,</span>
-<span>      caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia"</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># remove axes for cleaner map appearance</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>      plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span>,</span>
-<span>      plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
-<span>      legend.position <span class="op">=</span> <span class="st">"bottom"</span>,          <span class="co"># bottom legend maximizes map width</span></span>
-<span>      legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
-<span>      legend.key.width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="st">"cm"</span><span class="op">)</span>   <span class="co"># wider legend key for continuous scale</span></span>
-<span>    <span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>  <span class="co"># print static ggplot</span></span>
-<span><span class="op">}</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Get aimag boundaries</span></span>
+<span><span class="va">aimags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_boundaries.html">mn_boundaries</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"ADM1"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Join IMR data to map</span></span>
+<span><span class="va">imr_map</span> <span class="op">&lt;-</span> <span class="va">aimags</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">imr_regional</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shapeName"</span> <span class="op">=</span> <span class="st">"Region_en"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create choropleth map</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">imr_map</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">value</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span></span>
+<span>    option <span class="op">=</span> <span class="st">"magma"</span>,</span>
+<span>    direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,  <span class="co"># dark = high values (high mortality), light = low</span></span>
+<span>    name <span class="op">=</span> <span class="st">"IMR\n(per 1,000)"</span>,</span>
+<span>    labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Infant Mortality Geography (2024 Average)"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Spatial distribution of mortality rates"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># remove axes for cleaner map appearance</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
+<span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span>,          <span class="co"># bottom legend maximizes map width</span></span>
+<span>    legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
+<span>    legend.key.width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="st">"cm"</span><span class="op">)</span>   <span class="co"># wider legend key for continuous scale</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">p</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
+<p><img src="getting-started_files/figure-html/map-example-1.png" class="r-plt" alt="Choropleth map of infant mortality rates across Mongolia" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="key-functions-summary">Key Functions Summary<a class="anchor" aria-label="anchor" href="#key-functions-summary"></a>
@@ -439,6 +492,38 @@ techniques</li>
 <div class="section level2">
 <h2 id="quick-reference-common-health-tables">Quick Reference: Common Health Tables<a class="anchor" aria-label="anchor" href="#quick-reference-common-health-tables"></a>
 </h2>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Indicator</th>
+<th align="left">Table_ID</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Infant Mortality</td>
+<td align="left">DT_NSO_2100_015V1</td>
+</tr>
+<tr class="even">
+<td align="left">Maternal Mortality</td>
+<td align="left">DT_NSO_2100_050V1</td>
+</tr>
+<tr class="odd">
+<td align="left">Under-5 Mortality</td>
+<td align="left">DT_NSO_2100_030V2</td>
+</tr>
+<tr class="even">
+<td align="left">Cancer Incidence</td>
+<td align="left">DT_NSO_2100_012V1</td>
+</tr>
+<tr class="odd">
+<td align="left">TB Incidence</td>
+<td align="left">DT_NSO_2800_026V1</td>
+</tr>
+<tr class="even">
+<td align="left">Communicable Diseases</td>
+<td align="left">DT_NSO_2100_020V2</td>
+</tr>
+</tbody>
+</table>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

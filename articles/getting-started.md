@@ -47,6 +47,14 @@ mortality_tables <- nso_itms_search("infant mortality")
 mortality_tables |>
   select(tbl_id, tbl_eng_nm) |>
   head(5)
+#> # A tibble: 5 × 2
+#>   tbl_id            tbl_eng_nm                                                  
+#>   <chr>             <chr>                                                       
+#> 1 DT_NSO_2100_014V1 NUMBER OF INFANT MORTALITY, aimags and the Capital and by m…
+#> 2 DT_NSO_2100_014V2 INFANT MORTALITY RATE, per 1000 live births, aimags and the…
+#> 3 DT_NSO_2100_014V4 INFANT MORTALITY, by sex, by soum, and by year              
+#> 4 DT_NSO_2100_014V5 INFANT MORTALITY RATE,  per 1000 live births, by sex, by so…
+#> 5 DT_NSO_2100_015V1 INFANT MORTALITY RATE, per 1000 live births, aimags and the…
 ```
 
 We’ll use `DT_NSO_2100_015V1` - Infant Mortality Rate per 1,000 live
@@ -60,10 +68,28 @@ Before fetching data, check what dimensions are available:
 # View table structure
 meta <- nso_table_meta("DT_NSO_2100_015V1")
 meta
+#> # A tibble: 2 × 5
+#>   dim    code  is_time n_values codes             
+#>   <chr>  <chr> <lgl>      <int> <list>            
+#> 1 Region Бүс   FALSE         28 <tibble [28 × 3]> 
+#> 2 Month  Сар   FALSE        120 <tibble [120 × 3]>
 
 # Check available months
 time_vals <- nso_dim_values("DT_NSO_2100_015V1", "Month", labels = "en")
 head(time_vals, 10)
+#> # A tibble: 10 × 2
+#>    code  label_en
+#>    <chr> <chr>   
+#>  1 0     2025-12 
+#>  2 1     2025-11 
+#>  3 2     2025-10 
+#>  4 3     2025-09 
+#>  5 4     2025-08 
+#>  6 5     2016-01 
+#>  7 6     2016-02 
+#>  8 7     2016-03 
+#>  9 8     2016-04 
+#> 10 9     2016-05
 ```
 
 ### Step 4: Fetch Data
@@ -86,6 +112,19 @@ imr_national <- nso_data(
 # Preview
 imr_national |>
   head(10)
+#> # A tibble: 10 × 5
+#>    Region Month value Region_en Month_en
+#>    <chr>  <chr> <dbl> <chr>     <chr>   
+#>  1 0      0        13 Total     2025-12 
+#>  2 0      1        13 Total     2025-11 
+#>  3 0      2        11 Total     2025-10 
+#>  4 0      3        14 Total     2025-09 
+#>  5 0      4        16 Total     2025-08 
+#>  6 0      5        12 Total     2016-01 
+#>  7 0      6        13 Total     2016-02 
+#>  8 0      7        14 Total     2016-03 
+#>  9 0      8        15 Total     2016-04 
+#> 10 0      9        15 Total     2016-05
 ```
 
 ### Step 5: Visualize the Trend
@@ -122,6 +161,9 @@ p <- imr_national |>
 
 p  # print static ggplot
 ```
+
+![Line plot showing decline in infant mortality rate from 2010 to
+2015](getting-started_files/figure-html/plot-trend-1.png)
 
 ## Regional Comparison
 
@@ -170,6 +212,19 @@ imr_regional |>
   arrange(desc(value)) |>
   select(Region_en, value) |>
   head(10)
+#> # A tibble: 10 × 2
+#>    Region_en    value
+#>    <chr>        <dbl>
+#>  1 Hovsgel       27.2
+#>  2 Arkhangai     24.8
+#>  3 Övörkhangai   23.9
+#>  4 Bayankhongor  21.6
+#>  5 Ömnögovi      19.9
+#>  6 Uvs           19.8
+#>  7 Sükhbaatar    17.9
+#>  8 Bayan-Ölgii   17.7
+#>  9 Zavkhan       17.5
+#> 10 Khovd         16.8
 ```
 
 ### Visualize Regional Disparities
@@ -214,6 +269,9 @@ p <- imr_regional |>
 p  # print static ggplot
 ```
 
+![Bar chart comparing infant mortality rates across Mongolia's
+aimags](getting-started_files/figure-html/regional-plot-1.png)
+
 ## Adding Geographic Context
 
 Combine with mapping for spatial analysis:
@@ -221,43 +279,42 @@ Combine with mapping for spatial analysis:
 ``` r
 library(sf)
 
-# Graceful degradation if external API is unreachable
-# CRAN policy and CI robustness require handling network failures
-try({
-  # Get aimag boundaries
-  aimags <- mn_boundaries(level = "ADM1")
-  
-  # Join IMR data to map
-  imr_map <- aimags |>
-    left_join(imr_regional, by = c("shapeName" = "Region_en"))
-  
-  # Create choropleth map
-  p <- imr_map |>
-    ggplot() +
-    geom_sf(aes(fill = value), color = "white", size = 0.2) +
-    scale_fill_viridis_c(
-      option = "magma",
-      direction = -1,  # dark = high values (high mortality), light = low
-      name = "IMR\n(per 1,000)",
-      labels = scales::label_number()
-    ) +
-    labs(
-      title = "Infant Mortality Geography (2024 Average)",
-      subtitle = "Spatial distribution of mortality rates",
-      caption = "Source: NSO Mongolia"
-    ) +
-    theme_void() +  # remove axes for cleaner map appearance
-    theme(
-      plot.title = element_text(face = "bold", size = 16),
-      plot.subtitle = element_text(color = "grey40"),
-      legend.position = "bottom",          # bottom legend maximizes map width
-      legend.title = element_text(size = 10, face = "bold"),
-      legend.key.width = unit(1.5, "cm")   # wider legend key for continuous scale
-    )
-  
-  print(p)  # print static ggplot
-}, silent = TRUE)
+# Get aimag boundaries
+aimags <- mn_boundaries(level = "ADM1")
+
+# Join IMR data to map
+imr_map <- aimags |>
+  left_join(imr_regional, by = c("shapeName" = "Region_en"))
+
+# Create choropleth map
+p <- imr_map |>
+  ggplot() +
+  geom_sf(aes(fill = value), color = "white", size = 0.2) +
+  scale_fill_viridis_c(
+    option = "magma",
+    direction = -1,  # dark = high values (high mortality), light = low
+    name = "IMR\n(per 1,000)",
+    labels = scales::label_number()
+  ) +
+  labs(
+    title = "Infant Mortality Geography (2024 Average)",
+    subtitle = "Spatial distribution of mortality rates",
+    caption = "Source: NSO Mongolia"
+  ) +
+  theme_void() +  # remove axes for cleaner map appearance
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "grey40"),
+    legend.position = "bottom",          # bottom legend maximizes map width
+    legend.title = element_text(size = 10, face = "bold"),
+    legend.key.width = unit(1.5, "cm")   # wider legend key for continuous scale
+  )
+
+p  # print static ggplot
 ```
+
+![Choropleth map of infant mortality rates across
+Mongolia](getting-started_files/figure-html/map-example-1.png)
 
 ## Key Functions Summary
 
@@ -311,3 +368,12 @@ try({
   [Reference](https://temuulene.github.io/mongolstats/reference/index.html)
 
 ## Quick Reference: Common Health Tables
+
+| Indicator             | Table_ID          |
+|:----------------------|:------------------|
+| Infant Mortality      | DT_NSO_2100_015V1 |
+| Maternal Mortality    | DT_NSO_2100_050V1 |
+| Under-5 Mortality     | DT_NSO_2100_030V2 |
+| Cancer Incidence      | DT_NSO_2100_012V1 |
+| TB Incidence          | DT_NSO_2800_026V1 |
+| Communicable Diseases | DT_NSO_2100_020V2 |
