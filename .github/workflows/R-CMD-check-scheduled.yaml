@@ -1,22 +1,21 @@
-name: pkgdown
+name: R-CMD-check-scheduled
 
 on:
-  release:
-    types: [published]
+  schedule:
+    - cron: "0 3 * * 0"
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  pkgdown:
-    runs-on: ubuntu-latest
+  R-CMD-check:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -36,23 +35,18 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, any::roxygen2, local::.
-          needs: website
+          extra-packages: >-
+            any::rcmdcheck,
+            any::roxygen2,
+            local::.
+          needs: check
 
       - name: Regenerate Rd with roxygen2
         run: roxygen2::roxygenise()
         shell: Rscript {0}
 
-      - name: Build pkgdown site
+      - name: Check
         env:
-          NOT_CRAN: "true"
-        run: pkgdown::build_site(preview = FALSE, install = FALSE, new_process = FALSE)
+          NOT_CRAN: ""
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning")
         shell: Rscript {0}
-
-      - name: Deploy to gh-pages branch
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          folder: docs
-          clean: true
