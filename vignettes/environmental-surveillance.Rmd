@@ -68,11 +68,26 @@ The NSO maintains air quality monitoring stations that measure key pollutants. W
 
 ```{r air-quality-data}
 # 1. Identify Top 10 Polluted Stations in UB (using 2024 annual data)
-air_annual <- nso_data(
-  "DT_NSO_2024_135V01",
-  selections = list(Year = "2024"),
-  labels = "en"
-) |>
+air_annual <- tryCatch(
+  {
+    nso_data(
+      "DT_NSO_2024_135V01",
+      selections = list(Year = "2024"),
+      labels = "en"
+    )
+  },
+  error = function(e) NULL
+)
+
+if (is.null(air_annual) || nrow(air_annual) == 0) {
+  air_annual <- utils::read.csv(
+    system.file("extdata", "air_annual_cached.csv", package = "mongolstats"),
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+  )
+}
+
+air_annual <- air_annual |>
   filter(!is.na(value)) |>
   mutate(
     Station = str_trim(`Station location_en`),
@@ -97,13 +112,28 @@ top_10_stations <- air_annual |>
   pull(Station)
 
 # 2. Fetch Monthly Data for Detailed Trends (2023-2025)
-air_monthly <- nso_data(
-  "DT_NSO_2400_015V2",
-  selections = list(
-    Year = as.character(2023:2025)
-  ),
-  labels = "en"
-) |>
+air_monthly <- tryCatch(
+  {
+    nso_data(
+      "DT_NSO_2400_015V2",
+      selections = list(
+        Year = as.character(2023:2025)
+      ),
+      labels = "en"
+    )
+  },
+  error = function(e) NULL
+)
+
+if (is.null(air_monthly) || nrow(air_monthly) == 0) {
+  air_monthly <- utils::read.csv(
+    system.file("extdata", "air_monthly_cached.csv", package = "mongolstats"),
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+  )
+}
+
+air_monthly <- air_monthly |>
   filter(!is.na(value)) |>
   mutate(
     Station = str_trim(Location_en),
