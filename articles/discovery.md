@@ -40,41 +40,14 @@ mortality <- nso_itms_search("mortality")
 mortality |>
   select(tbl_id, tbl_eng_nm) |>
   head(10)
-#> # A tibble: 10 × 2
-#>    tbl_id            tbl_eng_nm                                                 
-#>    <chr>             <chr>                                                      
-#>  1 DT_NSO_2100_014V1 NUMBER OF INFANT MORTALITY, aimags and the Capital and by …
-#>  2 DT_NSO_2100_014V2 INFANT MORTALITY RATE, per 1000 live births, aimags and th…
-#>  3 DT_NSO_2100_014V4 INFANT MORTALITY, by sex, by soum, and by year             
-#>  4 DT_NSO_2100_014V5 INFANT MORTALITY RATE,  per 1000 live births, by sex, by s…
-#>  5 DT_NSO_2100_015V1 INFANT MORTALITY RATE, per 1000 live births, aimags and th…
-#>  6 DT_NSO_2100_015V2 INFANT MORTALITY, per 1000 live births, by soum, and by ye…
-#>  7 DT_NSO_2100_023V1 MATERNAL MORTALITY RATIO,  per 1,000 live births, by soum,…
-#>  8 DT_NSO_2100_030V2 UNDER-FIVE MORTALITY, per 1000 live births, aimags and the…
-#>  9 DT_NSO_2100_040V1 NEONATAL MORTALITY, aimags and the Capital and by month    
-#> 10 DT_NSO_2100_040V2 NEONATAL MORTALITY RATE, per 1000 live births, aimags and …
 
 # Cancer surveillance
 cancer <- nso_itms_search("cancer")
 cancer |> select(tbl_id, tbl_eng_nm)
-#> # A tibble: 4 × 2
-#>   tbl_id            tbl_eng_nm                                                  
-#>   <chr>             <chr>                                                       
-#> 1 DT_NSO_2100_012V1 NEW CASES OF CANCER, per 10000 population, by type of cancer
-#> 2 DT_NSO_2100_013V1 DEATHS OF CANCER, per 10000 population, by year             
-#> 3 DT_NSO_2100_044V1 NEW CASES OF CANCER, by age group, by year                  
-#> 4 DT_NSO_2100_045V1 NEW CASES AND MORTALITY OF CANCER, per 10000 population, ai…
 
 # Communicable diseases
 infectious <- nso_itms_search("tuberculosis")
 infectious |> select(tbl_id, tbl_eng_nm)
-#> # A tibble: 4 × 2
-#>   tbl_id            tbl_eng_nm                                                  
-#>   <chr>             <chr>                                                       
-#> 1 DT_NSO_2800_025V1 PREVALENCE TUBERCULOSIS PER 100000 PERSON, by aimags and th…
-#> 2 DT_NSO_2800_026V1 INCIDENCE OF TUBERCULOSIS PER 100000 PERSON, by aimags and …
-#> 3 DT_NSO_2800_027V1 DEATH RATES ASSOCIATED WITH TUBERCULOSIS PER 100000 PERSON,…
-#> 4 DT_NSO_2800_028V1 PROPORTION OF TUBERCULOSIS CASES DETECTED AND CURED UNDER D…
 ```
 
 ### Browse by Sector
@@ -85,17 +58,6 @@ Health and education statistics are grouped together:
 # View all sectors
 sectors <- nso_sectors()
 sectors
-#> # A tibble: 8 × 3
-#>   id                    type  text                 
-#>   <chr>                 <chr> <chr>                
-#> 1 Economy, environment  l     Economy, environment 
-#> 2 Education, health     l     Education, health    
-#> 3 Historical data       l     Historical data      
-#> 4 Industry, service     l     Industry, service    
-#> 5 Labour, business      l     Labour, business     
-#> 6 Population, household l     Population, household
-#> 7 Regional development  l     Regional development 
-#> 8 Society, development  l     Society, development
 
 # Find health-related subsectors
 health_sector <- sectors |> filter(grepl("health", text, ignore.case = TRUE))
@@ -103,15 +65,6 @@ if (nrow(health_sector) > 0) {
   subsectors <- nso_subsectors(health_sector$id[1])
   subsectors |> head()
 }
-#> # A tibble: 6 × 3
-#>   id                                type  text                             
-#>   <chr>                             <chr> <chr>                            
-#> 1 Births, deaths                    l     Births, deaths                   
-#> 2 Disease                           l     Disease                          
-#> 3 General educational schools       l     General educational schools      
-#> 4 General indicators for Education  l     General indicators for Education 
-#> 5 Health insurance                  l     Health insurance                 
-#> 6 Main indicators for Health sector l     Main indicators for Health sector
 ```
 
 ## Case Study: Cancer Epidemiology
@@ -128,34 +81,16 @@ cancer_tbl <- "DT_NSO_2100_012V1" # New cases per 10,000 population
 # Examine available dimensions
 meta <- nso_table_meta(cancer_tbl)
 meta
-#> # A tibble: 2 × 5
-#>   dim                      code               is_time n_values codes            
-#>   <chr>                    <chr>              <lgl>      <int> <list>           
-#> 1 Type malignant neoplasms Хорт хавдрын төрөл FALSE          7 <tibble [7 × 3]> 
-#> 2 Annual                   Он                 FALSE         25 <tibble [25 × 3]>
 
 # View cancer types
 cancer_types <- nso_dim_values(cancer_tbl, "Type malignant neoplasms", labels = "en")
 cancer_types |> head(10)
-#> # A tibble: 7 × 2
-#>   code  label_en       
-#>   <chr> <chr>          
-#> 1 0     "Total"        
-#> 2 1     " Liver"       
-#> 3 2     " Cervix uteri"
-#> 4 3     " Stomach"     
-#> 5 4     " Lung"        
-#> 6 5     " Oesophagus"  
-#> 7 6     " Other"
 
 # Check time coverage
 # Note: "Annual" dimension uses internal codes, so we map labels (years) to codes
 annual_meta <- nso_dim_values(cancer_tbl, "Annual", labels = "both")
 years <- annual_meta$label_en
 years
-#>  [1] "2024" "2023" "2022" "2021" "2020" "2019" "2018" "2017" "2016" "2015"
-#> [11] "2014" "2013" "2012" "2011" "2010" "2009" "2008" "2007" "2006" "2005"
-#> [21] "2004" "2003" "2002" "2001" "2000"
 ```
 
 ### Fetching and Visualizing Cancer Trends
@@ -212,8 +147,6 @@ p <- cancer_data |>
 p  # print static ggplot
 ```
 
-![](discovery_files/figure-html/cancer-analysis-1.png)
-
 ### Regional Disparities
 
 ``` r
@@ -259,19 +192,6 @@ imr_data |>
   arrange(desc(value)) |>
   select(Region_en, value) |>
   head(10)
-#> # A tibble: 10 × 2
-#>    Region_en    value
-#>    <chr>        <dbl>
-#>  1 Hovsgel       27.2
-#>  2 Arkhangai     24.8
-#>  3 Övörkhangai   23.9
-#>  4 Bayankhongor  21.6
-#>  5 Ömnögovi      19.9
-#>  6 Uvs           19.8
-#>  7 Sükhbaatar    17.9
-#>  8 Bayan-Ölgii   17.7
-#>  9 Zavkhan       17.5
-#> 10 Khovd         16.8
 ```
 
 ### Time Trend Analysis
@@ -315,8 +235,6 @@ imr_national |>
     panel.grid.major.x = element_blank()
   )
 ```
-
-![](discovery_files/figure-html/imr-trends-1.png)
 
 ## Case Study: Tuberculosis Burden
 
@@ -369,8 +287,6 @@ p <- tb_data |>
 
 p  # print static ggplot
 ```
-
-![](discovery_files/figure-html/tb-data-1.png)
 
 > **Biostatistical Note:** This plot shows the *number* of reported
 > cases, not the incidence *rate*. Trends should be interpreted with

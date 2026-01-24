@@ -175,11 +175,6 @@ p_pm <- air_trends |>
 p_pm  # print static ggplot
 ```
 
-![Line plot showing monthly average PM2.5 concentrations for 10 stations
-from 2021 to 2025. All stations show peaks exceeding the 0.025 mg/m³
-dashed regulatory limit line during winter
-months.](environmental-surveillance_files/figure-html/pm25-trends-1.png)
-
 > **Key Findings**: All 10 stations show **systematic winter
 > exceedances**, with peak concentrations reaching 4-10x the MAC limit
 > during heating season (November-February). Even during summer months,
@@ -228,11 +223,6 @@ p_so2 <- air_trends |>
 
 p_so2  # print static ggplot
 ```
-
-![Line plot showing monthly average SO2 concentrations for 10 stations
-from 2021 to 2025. Peaks significantly exceed the 0.020 mg/m³ limit
-during winters, dropping to near zero in
-summers.](environmental-surveillance_files/figure-html/so2-trends-1.png)
 
 > **Critical Pattern**: SO₂ shows **extreme seasonal variation** (20-30x
 > increase in winter vs. summer), far exceeding PM2.5’s seasonal swing.
@@ -306,11 +296,6 @@ p_comp <- compliance |>
 p_comp  # print static ggplot
 ```
 
-![Bar chart showing exceedance factors for PM2.5, SO2, and NO2. PM2.5
-bars are mostly red (non-compliant) reaching 2.5x times the limit. SO2
-bars are all red, reaching over 3x the
-limit.](environmental-surveillance_files/figure-html/compliance-check-1.png)
-
 > **Compliance Crisis**: **90% of top stations are non-compliant** for
 > PM2.5, with exceedance factors reaching 2.0-2.5x (equivalent to annual
 > averages of 0.050-0.063 mg/m³). Only the **13th micro district**
@@ -376,11 +361,6 @@ p <- conductivity |>
 
 p  # print static ggplot
 ```
-
-![Bar chart of water conductivity. Uvs Lake and Khyargas Lake show
-extremely high values (\>10,000), while river stations like Khangal and
-Tuul show elevated values compared to typical
-freshwater.](environmental-surveillance_files/figure-html/water-quality-1.png)
 
 > **Interpreting Conductivity: A Tale of Three Sources**
 >
@@ -477,10 +457,6 @@ p <- dust_annual |>
 p  # print static ggplot
 ```
 
-![Bar chart showing annual dust days for 2024. Sainshand leads with 30
-days, followed by Dalanzadgad with 21
-days.](environmental-surveillance_files/figure-html/dust-days-1.png)
-
 > **Gobi Dust Belt**: **Sainshand** (30 days/year) and **Dalanzadgad**
 > (21 days/year) represent the core of Mongolia’s dust exposure zone.
 > Chronic dust exposure at this frequency (equivalent to ~6-8% of the
@@ -529,11 +505,3 @@ air_with_location <- air_quality |>
   [Reference](https://temuulene.github.io/mongolstats/reference/index.html)
 
 ## Key Environmental Tables
-
-| Indicator                        | Table_ID           | Geographic_Level |
-|:---------------------------------|:-------------------|:-----------------|
-| Air Pollutant Concentrations     | DT_NSO_2024_135V01 | Station          |
-| Maximum Allowable Concentrations | DT_NSO_2400_015V1  | Standard         |
-| Water Quality                    | DT_NSO_2300_005V12 | Station          |
-| Dust Days                        | DT_NSO_2400_028V1  | Station          |
-| Forest Fires                     | DT_NSO_2400_005V1  | Aimag            |

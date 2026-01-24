@@ -1,6 +1,19 @@
 # Changelog
 
+## mongolstats 0.1.1
+
+Patch release to fix CRAN check failures on vignette rebuilding.
+
+### Bug Fixes
+
+- **Vignette CRAN Compliance**: Added `NOT_CRAN` guards to all vignettes
+  to prevent code evaluation during CRAN checks. This fixes HTTP 400
+  errors and data-dependent failures when vignettes are rebuilt on CRAN
+  infrastructure where external API calls may fail.
+
 ## mongolstats 0.1.0
+
+CRAN release: 2026-01-18
 
 First minor release containing significant data updates, visualization
 improvements, and refined documentation.

@@ -145,8 +145,6 @@ p_dens <- ggplot(ub_pop_map) +
 p_dens  # print static ggplot
 ```
 
-![](ub-health-environment_files/figure-html/demog-density-1.png)
-
 > **Interpretation**: The central districts (Bayangol, Chingeltei,
 > Sukhbaatar) exhibit extremely high density, while the exurban
 > districts (Baganuur, Bagakhangai) remain sparsely populated. This
@@ -186,8 +184,6 @@ p_trend <- pop_trend |>
 
 p_trend  # print static ggplot
 ```
-
-![](ub-health-environment_files/figure-html/demog-trend-1.png)
 
 The rapid growth in **Songinokhairkhan** and **Bayanzurkh** highlights
 their role as the primary absorption points for rural-to-urban
@@ -237,8 +233,6 @@ p_edu <- ggplot(edu_load, aes(
 
 p_edu  # print static ggplot
 ```
-
-![](ub-health-environment_files/figure-html/socio-edu-1.png)
 
 Districts with higher ratios may indicate infrastructure lags relative
 to population growth, often correlating with lower socioeconomic status
@@ -299,8 +293,6 @@ p_resp <- ggplot(health_metrics, aes(
 p_resp  # print static ggplot
 ```
 
-![](ub-health-environment_files/figure-html/health-resp-1.png)
-
 ### Infant Mortality Rate (IMR)
 
 IMR is a sensitive indicator of maternal health and primary care access.
@@ -332,8 +324,6 @@ p_imr <- ggplot(imr_data, aes(x = reorder(District, value), y = value)) +
 
 p_imr  # print static ggplot
 ```
-
-![](ub-health-environment_files/figure-html/health-imr-1.png)
 
 ## 4. Multivariate Analysis
 
@@ -388,8 +378,6 @@ p_cor <- ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation)) +
 
 p_cor  # print static ggplot
 ```
-
-![](ub-health-environment_files/figure-html/multi-var-1.png)
 
 ### Key Insights
 
@@ -455,17 +443,6 @@ station_count <- ub_aq_stations |>
 knitr::kable(station_count, caption = "Air Quality Monitoring Stations by District")
 ```
 
-| District         | Stations |
-|:-----------------|---------:|
-| Bayanzurkh       |        5 |
-| Songinokhairkhan |        4 |
-| Sukhbaatar       |        4 |
-| Chingeltei       |        2 |
-| Khan-Uul         |        2 |
-| Bayangol         |        1 |
-
-Air Quality Monitoring Stations by District
-
 > **Bayanzurkh** has the highest station density (5 stations),
 > reflecting its large area and population. **Chingeltei** and
 > **Khan-Uul** have 2-3 stations each, while **Bayangol**,
@@ -495,8 +472,6 @@ p_map <- ggplot() +
 
 p_map  # print static ggplot
 ```
-
-![](ub-health-environment_files/figure-html/aq-network-map-1.png)
 
 ### Station Coverage Analysis
 
@@ -546,8 +521,6 @@ p_coverage <- ggplot(
 
 p_coverage  # print static ggplot
 ```
-
-![](ub-health-environment_files/figure-html/station-coverage-1.png)
 
 > **Coverage Disparities**: Districts like **Bayanzurkh** and
 > **Songinokhairkhan** (despite having multiple stations) still serve

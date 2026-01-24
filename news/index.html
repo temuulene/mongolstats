@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mongolstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,16 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.0" id="mongolstats-010">mongolstats 0.1.0<a class="anchor" aria-label="anchor" href="#mongolstats-010"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.1.1" id="mongolstats-011">mongolstats 0.1.1<a class="anchor" aria-label="anchor" href="#mongolstats-011"></a></h2>
+<p>Patch release to fix CRAN check failures on vignette rebuilding.</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-1-1">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-1"></a></h3>
+<ul><li>
+<strong>Vignette CRAN Compliance</strong>: Added <code>NOT_CRAN</code> guards to all vignettes to prevent code evaluation during CRAN checks. This fixes HTTP 400 errors and data-dependent failures when vignettes are rebuilt on CRAN infrastructure where external API calls may fail.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.0" id="mongolstats-010">mongolstats 0.1.0<a class="anchor" aria-label="anchor" href="#mongolstats-010"></a></h2><p class="text-muted">CRAN release: 2026-01-18</p>
 <p>First minor release containing significant data updates, visualization improvements, and refined documentation.</p>
 <div class="section level3">
 <h3 id="data--features-0-1-0">Data &amp; Features<a class="anchor" aria-label="anchor" href="#data--features-0-1-0"></a></h3>
