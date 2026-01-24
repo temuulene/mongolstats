@@ -7,6 +7,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r not-cran-check, include = FALSE}
+# Skip code evaluation on CRAN (external API calls will fail)
+NOT_CRAN <- identical(Sys.getenv("NOT_CRAN"), "true")
+knitr::opts_chunk$set(eval = NOT_CRAN, purl = NOT_CRAN)
+```
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -24,7 +30,7 @@ knitr::opts_chunk$set(
 
 Install from GitHub:
 
-```{r install, eval=TRUE}
+```{r install}
 # install.packages("devtools")
 # devtools::install_github("temuulene/mongolstats")
 ```
@@ -60,7 +66,7 @@ theme_set(
 
 Search for infant mortality data:
 
-```{r search, eval=TRUE}
+```{r search}
 # Search by keyword
 mortality_tables <- nso_itms_search("infant mortality")
 mortality_tables |>
@@ -74,7 +80,7 @@ We'll use `DT_NSO_2100_015V1` - Infant Mortality Rate per 1,000 live births (Mon
 
 Before fetching data, check what dimensions are available:
 
-```{r metadata, eval=TRUE}
+```{r metadata}
 # View table structure
 meta <- nso_table_meta("DT_NSO_2100_015V1")
 meta
@@ -88,7 +94,7 @@ head(time_vals, 10)
 
 Get national infant mortality rates for the past two decades:
 
-```{r fetch-data, eval=TRUE}
+```{r fetch-data}
 # Get all month codes
 months <- nso_dim_values("DT_NSO_2100_015V1", "Month", labels = "en")
 
@@ -110,7 +116,7 @@ imr_national |>
 
 Create a publication-ready plot:
 
-```{r plot-trend, eval=TRUE, fig.alt="Line plot showing decline in infant mortality rate from 2010 to 2015"}
+```{r plot-trend, fig.alt="Line plot showing decline in infant mortality rate from 2010 to 2015"}
 # Prepare the data for visualization
 # Step 1: Convert month strings to proper dates for time series plotting
 # Step 2: Filter to recent decade (2015-2024) for clear trend visibility
@@ -145,7 +151,7 @@ p  # print static ggplot
 
 Compare infant mortality across different regions:
 
-```{r regional, eval=TRUE}
+```{r regional}
 # Get all aimags for most recent year (2024)
 # We'll take the average of monthly rates
 months_2024 <- months |>
@@ -192,7 +198,7 @@ imr_regional |>
 
 ### Visualize Regional Disparities
 
-```{r regional-plot, eval=TRUE, fig.alt="Bar chart comparing infant mortality rates across Mongolia's aimags", fig.height=7}
+```{r regional-plot, fig.alt="Bar chart comparing infant mortality rates across Mongolia's aimags", fig.height=7}
 # Calculate national aimag average for reference line
 aimag_mean <- mean(imr_regional$value[imr_regional$Type == "Aimag"], na.rm = TRUE)
 
@@ -236,7 +242,7 @@ p  # print static ggplot
 
 Combine with mapping for spatial analysis:
 
-```{r map-example, eval=TRUE, fig.alt="Choropleth map of infant mortality rates across Mongolia"}
+```{r map-example, fig.alt="Choropleth map of infant mortality rates across Mongolia"}
 library(sf)
 
 # Graceful degradation if external API is unreachable
@@ -315,7 +321,7 @@ try({
 
 ## Quick Reference: Common Health Tables
 
-```{r health-tables, echo=FALSE, eval=TRUE}
+```{r health-tables, echo=FALSE}
 tibble::tribble(
   ~Indicator, ~Table_ID,
   "Infant Mortality", "DT_NSO_2100_015V1",

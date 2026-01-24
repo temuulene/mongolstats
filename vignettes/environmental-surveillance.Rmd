@@ -7,6 +7,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r not-cran-check, include = FALSE}
+# Skip code evaluation on CRAN (external API calls will fail)
+NOT_CRAN <- identical(Sys.getenv("NOT_CRAN"), "true")
+knitr::opts_chunk$set(eval = NOT_CRAN, purl = NOT_CRAN)
+```
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
