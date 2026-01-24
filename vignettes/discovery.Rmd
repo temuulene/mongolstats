@@ -9,8 +9,10 @@ vignette: >
 
 ```{r not-cran-check, include = FALSE}
 # Skip code evaluation on CRAN (external API calls will fail)
-NOT_CRAN <- identical(Sys.getenv("NOT_CRAN"), "true")
-knitr::opts_chunk$set(eval = NOT_CRAN, purl = NOT_CRAN)
+RUN_VIGNETTE <- isTRUE(getOption("pkgdown.in_progress")) ||
+  (identical(Sys.getenv("NOT_CRAN"), "true") &&
+    !nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_")))
+knitr::opts_chunk$set(eval = RUN_VIGNETTE, purl = RUN_VIGNETTE)
 ```
 
 ```{r, include = FALSE}

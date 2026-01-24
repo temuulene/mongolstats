@@ -9,8 +9,10 @@ vignette: >
 
 ```{r not-cran-check, include = FALSE}
 # Skip code evaluation on CRAN (external API calls will fail)
-NOT_CRAN <- identical(Sys.getenv("NOT_CRAN"), "true")
-knitr::opts_chunk$set(eval = NOT_CRAN, purl = NOT_CRAN)
+RUN_VIGNETTE <- isTRUE(getOption("pkgdown.in_progress")) ||
+  (identical(Sys.getenv("NOT_CRAN"), "true") &&
+    !nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_")))
+knitr::opts_chunk$set(eval = RUN_VIGNETTE, purl = RUN_VIGNETTE)
 ```
 
 ```{r, include = FALSE}
@@ -337,13 +339,22 @@ analysis_df <- health_metrics |>
   left_join(edu_load |> select(District, Students_Per_School), by = "District") |>
   left_join(ub_pop_map |> st_drop_geometry() |> select(District, Density), by = "District")
 
-# Correlation Matrix
-cor_mat <- analysis_df |>
+# Correlation Matrix (guard against empty or all-NA data)
+cor_input <- analysis_df |>
   select(Density,
     `Students/School` = Students_Per_School,
     `Resp. Rate` = Resp_Death_Rate, IMR
   ) |>
-  cor(use = "complete.obs")
+  tidyr::drop_na()
+
+if (nrow(cor_input) < 2) {
+  cor_mat <- matrix(NA_real_, nrow = 4, ncol = 4, dimnames = list(
+    c("Density", "Students/School", "Resp. Rate", "IMR"),
+    c("Density", "Students/School", "Resp. Rate", "IMR")
+  ))
+} else {
+  cor_mat <- cor_input |> cor()
+}
 
 # Reshape for ggplot
 cor_long <- as.data.frame(cor_mat) |>
