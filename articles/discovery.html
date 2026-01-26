@@ -117,12 +117,12 @@ NSO catalog using simple keywords:</p>
 <span><span class="co">#&gt;    tbl_id            tbl_eng_nm                                                 </span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                      </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> DT_NSO_2100_014V1 NUMBER OF INFANT MORTALITY, aimags and the Capital and by …</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> DT_NSO_2100_014V2 INFANT MORTALITY RATE, per 1000 live births, aimags and th…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> DT_NSO_2100_014V2 NUMBER OF INFANT MORTALITY, by soum, district and by year  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> DT_NSO_2100_014V4 INFANT MORTALITY, by sex, by soum, and by year             </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> DT_NSO_2100_014V5 INFANT MORTALITY RATE,  per 1000 live births, by sex, by s…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> DT_NSO_2100_015V1 INFANT MORTALITY RATE, per 1000 live births, aimags and th…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> DT_NSO_2100_015V2 INFANT MORTALITY, per 1000 live births, by soum, and by ye…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> DT_NSO_2100_023V1 MATERNAL MORTALITY RATIO,  per 1,000 live births, by soum,…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> DT_NSO_2100_023V1 MATERNAL MORTALITY RATIO, per 100000 live births, by soum,…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> DT_NSO_2100_030V2 UNDER-FIVE MORTALITY, per 1000 live births, aimags and the…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> DT_NSO_2100_040V1 NEONATAL MORTALITY, aimags and the Capital and by month    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> DT_NSO_2100_040V2 NEONATAL MORTALITY RATE, per 1000 live births, aimags and …</span></span>
@@ -130,13 +130,12 @@ NSO catalog using simple keywords:</p>
 <span><span class="co"># Cancer surveillance</span></span>
 <span><span class="va">cancer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_search.html">nso_itms_search</a></span><span class="op">(</span><span class="st">"cancer"</span><span class="op">)</span></span>
 <span><span class="va">cancer</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
 <span><span class="co">#&gt;   tbl_id            tbl_eng_nm                                                  </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                       </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> DT_NSO_2100_012V1 NEW CASES OF CANCER, per 10000 population, by type of cancer</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> DT_NSO_2100_013V1 DEATHS OF CANCER, per 10000 population, by year             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> DT_NSO_2100_044V1 NEW CASES OF CANCER, by age group, by year                  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> DT_NSO_2100_045V1 NEW CASES AND MORTALITY OF CANCER, per 10000 population, ai…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> DT_NSO_2100_044V1 NEW CASES OF CANCER, by age group, by year                  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> DT_NSO_2100_045V1 NEW CASES AND MORTALITY OF CANCER, per 10000 population, ai…</span></span>
 <span></span>
 <span><span class="co"># Communicable diseases</span></span>
 <span><span class="va">infectious</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_search.html">nso_itms_search</a></span><span class="op">(</span><span class="st">"tuberculosis"</span><span class="op">)</span></span>

@@ -17,8 +17,14 @@ economic trends, and map regional statistics—all from within R.
 
 ## Installation
 
-You can install the development version of mongolstats from
-[GitHub](https://github.com/) with:
+You can install mongolstats from CRAN with:
+
+``` r
+install.packages("mongolstats")
+```
+
+Or install the development version from [GitHub](https://github.com/)
+with:
 
 ``` r
 # install.packages("devtools")

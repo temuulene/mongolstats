@@ -41,6 +41,18 @@ nso_data(
 
 A tibble with one column per dimension and a numeric value column.
 
+## Table Structure Notes
+
+Some NSO tables have unique dimension structures that affect how
+`selections` should be constructed:
+
+- **Air Quality Monthly Tables** (e.g., `DT_NSO_2400_015V1` to `V6`):
+  These tables do not have a `Year` dimension. Instead, they use a
+  running `Month` dimension with integer codes (e.g., `"0"` for the most
+  recent month). Example:
+  `selections = list(Month = as.character(0:11))` retrieves the last 12
+  months.
+
 ## Examples
 
 ``` r

@@ -2,7 +2,7 @@
 
 ## Authors
 
-- **Temuulen Enebish**. Author, maintainer.
+- **Temuulen Enebish**. Author, maintainer, copyright holder.
 
 ## Citation
 

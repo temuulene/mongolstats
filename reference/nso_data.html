@@ -86,6 +86,16 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tibble with one column per dimension and a numeric value column.</p>
     </div>
+    <div class="section level2">
+    <h2 id="table-structure-notes">Table Structure Notes<a class="anchor" aria-label="anchor" href="#table-structure-notes"></a></h2>
+
+
+<p>Some NSO tables have unique dimension structures that affect how <code>selections</code>
+should be constructed:</p><ul><li><p><strong>Air Quality Monthly Tables</strong> (e.g., <code>DT_NSO_2400_015V1</code> to <code>V6</code>):
+These tables do not have a <code>Year</code> dimension. Instead, they use a running
+<code>Month</code> dimension with integer codes (e.g., <code>"0"</code> for the most recent month).
+Example: <code>selections = list(Month = as.character(0:11))</code> retrieves the last 12 months.</p></li>
+</ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>

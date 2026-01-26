@@ -44,6 +44,23 @@ The NSO maintains air quality monitoring stations that measure key
 pollutants. We’ll focus on the **Top 10 most polluted stations** in
 Ulaanbaatar to understand the severity of exposure.
 
+> **Important: Air Quality Table Structures**
+>
+> The NSO provides two types of air quality tables with different
+> dimension structures:
+>
+> - **Annual table** (`DT_NSO_2024_135V01`): Uses a `Year` dimension for
+>   filtering (e.g., `selections = list(Year = "2024")`)
+> - **Monthly tables** (`DT_NSO_2400_015V1` through `V6`): Use a running
+>   `Month` dimension with codes `0`, `1`, `2`, etc. (where `0` = most
+>   recent month). Filter by month codes, not year labels:
+>   `selections = list(Month = as.character(0:47))` retrieves the last
+>   48 months.
+>
+> The monthly tables are split by pollutant: V1 (SO₂), V2 (NO₂), V3
+> (CO), V4 (PM10), V5 (PM2.5), V6 (O₃). The `Month_en` column returns
+> dates in `"YYYY-MM"` format.
+
 ``` r
 # 1. Identify Top 10 Polluted Stations in UB (using 2024 annual data)
 air_annual <- tryCatch(
@@ -89,13 +106,26 @@ top_10_stations <- air_annual |>
   head(10) |>
   pull(Station)
 
-# 2. Fetch Monthly Data for Detailed Trends (2023-2025)
+# Default to key UB stations if ranking fails to ensure facets are not empty
+if (length(top_10_stations) == 0) {
+  top_10_stations <- c(
+    "Bayankhoshuu", "Tolgoit", "Zuragt", "Khailaast", "Amgalan",
+    "Misheel-Expo center", "West crossroad", "1st micro district", "100 ail", "Nisekh"
+  )
+}
+
+# 2. Fetch Monthly Data for Detailed Trends
+# Monthly tables are pollutant-specific: V1=SO2, V2=NO2, V5=PM2.5.
+# We fetch all three to ensure trends and compliance plots work.
 air_monthly <- tryCatch(
   {
-    nso_data(
-      "DT_NSO_2400_015V2",
-      selections = list(
-        Year = as.character(2023:2025)
+    nso_package(
+      list(
+        list(tbl_id = "DT_NSO_2400_015V1", selections = list(Month = as.character(0:47))), # SO2
+        list(tbl_id = "DT_NSO_2400_015V2", selections = list(Month = as.character(0:47))), # NO2
+        list(tbl_id = "DT_NSO_2400_015V3", selections = list(Month = as.character(0:47))), # CO
+        list(tbl_id = "DT_NSO_2400_015V4", selections = list(Month = as.character(0:47))), # PM10
+        list(tbl_id = "DT_NSO_2400_015V5", selections = list(Month = as.character(0:47)))  # PM2.5
       ),
       labels = "en"
     )
@@ -103,6 +133,7 @@ air_monthly <- tryCatch(
   error = function(e) NULL
 )
 
+# Robust fallback: use cache if API fails, returns no rows, or lacks PM2.5
 if (is.null(air_monthly) || nrow(air_monthly) == 0) {
   air_monthly <- utils::read.csv(
     system.file("extdata", "air_monthly_cached.csv", package = "mongolstats"),
@@ -113,23 +144,26 @@ if (is.null(air_monthly) || nrow(air_monthly) == 0) {
 
 air_monthly <- air_monthly |>
   filter(!is.na(value)) |>
+  # Standardize indicator column name which can vary between live fetch and cache
+  rename_with(~ "Pollutant_Raw", any_of(c("Indicator_en", "Indicator of air pollution_en"))) |>
   mutate(
     Station = str_trim(Location_en),
-    Pollutant_Raw = str_trim(`Indicator of air pollution_en`),
+    Pollutant_Raw = str_trim(Pollutant_Raw),
+    # If Month_en is already YYYY-MM, Date will work, else handle gracefully
     Date = as.Date(paste0(Month_en, "-01"))
   ) |>
-  # Explicit date filter to ensure only 2023-2025 data (Year selection may not work)
+  # Focus on recent years for trends
   filter(Date >= as.Date("2021-01-01"), Date <= as.Date("2025-12-31")) |>
   filter(Station %in% top_10_stations)
 
 
 # Clean and Reshape Data for Ribbons
-# We need Average, Min, and Max for PM2.5 and SO2
 air_trends <- air_monthly |>
   mutate(
     Pollutant_Type = case_when(
       str_detect(Pollutant_Raw, "PM2.5") ~ "PM2.5",
-      str_detect(Pollutant_Raw, "Sulphur dioxide") ~ "SO2",
+      str_detect(Pollutant_Raw, "Sulphur dioxide|SO2") ~ "SO2",
+      str_detect(Pollutant_Raw, "Nitrogen dioxide|NO2") ~ "NO2",
       TRUE ~ NA_character_
     ),
     Measure = case_when(

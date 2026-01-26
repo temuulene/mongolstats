@@ -91,8 +91,11 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of mongolstats from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<p>You can install mongolstats from CRAN with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"mongolstats"</span><span class="op">)</span></span></code></pre></div>
+<p>Or install the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"temuulene/mongolstats"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -103,7 +106,7 @@
 <h3 id="id_1-the-economic-pulse-gdp-trends">1. The Economic Pulse: GDP Trends<a class="anchor" aria-label="anchor" href="#id_1-the-economic-pulse-gdp-trends"></a>
 </h3>
 <p>Visualize Mongolia’s economic growth in seconds.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://temuulene.github.io/mongolstats/">mongolstats</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -150,13 +153,13 @@
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
-<p><img src="reference/figures/README-gdp-example-1.png" width="100%"></p>
+<p><img src="reference/figures/README-gdp-example-1.png" alt="" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="id_2-mapping-regional-population">2. Mapping Regional Population<a class="anchor" aria-label="anchor" href="#id_2-mapping-regional-population"></a>
 </h3>
 <p>Discover how population is distributed across the country.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 1. Fetch Population by Aimag</span></span>
@@ -218,7 +221,7 @@
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
-<p><img src="reference/figures/README-pop-map-example-1.png" width="100%"></p>
+<p><img src="reference/figures/README-pop-map-example-1.png" alt="" width="100%"></p>
 </div>
 </div>
 <div class="section level2">
@@ -282,7 +285,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Temuulen Enebish <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Temuulen Enebish <br><small class="roles"> Author, maintainer, copyright holder </small>   </li>
 </ul>
 </div>
 

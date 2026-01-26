@@ -36,4 +36,5 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Temuulen Enebish <temuulen@gmail.com>
+**Maintainer**: Temuulen Enebish <temuulen@gmail.com> \[copyright
+holder\]

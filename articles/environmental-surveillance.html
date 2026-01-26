@@ -118,6 +118,27 @@ climate-related health risks (dust exposure)</p>
 pollutants. We’ll focus on the <strong>Top 10 most polluted
 stations</strong> in Ulaanbaatar to understand the severity of
 exposure.</p>
+<blockquote>
+<p><strong>Important: Air Quality Table Structures</strong></p>
+<p>The NSO provides two types of air quality tables with different
+dimension structures:</p>
+<ul>
+<li>
+<strong>Annual table</strong> (<code>DT_NSO_2024_135V01</code>):
+Uses a <code>Year</code> dimension for filtering (e.g.,
+<code>selections = list(Year = "2024")</code>)</li>
+<li>
+<strong>Monthly tables</strong> (<code>DT_NSO_2400_015V1</code>
+through <code>V6</code>): Use a running <code>Month</code> dimension
+with codes <code>0</code>, <code>1</code>, <code>2</code>, etc. (where
+<code>0</code> = most recent month). Filter by month codes, not year
+labels: <code>selections = list(Month = as.character(0:47))</code>
+retrieves the last 48 months.</li>
+</ul>
+<p>The monthly tables are split by pollutant: V1 (SO₂), V2 (NO₂), V3
+(CO), V4 (PM10), V5 (PM2.5), V6 (O₃). The <code>Month_en</code> column
+returns dates in <code>"YYYY-MM"</code> format.</p>
+</blockquote>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Identify Top 10 Polluted Stations in UB (using 2024 annual data)</span></span>
 <span><span class="va">air_annual</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
@@ -163,13 +184,26 @@ exposure.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">Station</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 2. Fetch Monthly Data for Detailed Trends (2023-2025)</span></span>
+<span><span class="co"># Default to key UB stations if ranking fails to ensure facets are not empty</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">top_10_stations</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">top_10_stations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Bayankhoshuu"</span>, <span class="st">"Tolgoit"</span>, <span class="st">"Zuragt"</span>, <span class="st">"Khailaast"</span>, <span class="st">"Amgalan"</span>,</span>
+<span>    <span class="st">"Misheel-Expo center"</span>, <span class="st">"West crossroad"</span>, <span class="st">"1st micro district"</span>, <span class="st">"100 ail"</span>, <span class="st">"Nisekh"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># 2. Fetch Monthly Data for Detailed Trends</span></span>
+<span><span class="co"># Monthly tables are pollutant-specific: V1=SO2, V2=NO2, V5=PM2.5.</span></span>
+<span><span class="co"># We fetch all three to ensure trends and compliance plots work.</span></span>
 <span><span class="va">air_monthly</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
 <span>  <span class="op">{</span></span>
-<span>    <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>      <span class="st">"DT_NSO_2400_015V2"</span>,</span>
-<span>      selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>        Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">2023</span><span class="op">:</span><span class="fl">2025</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="../reference/nso_package.html">nso_package</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tbl_id <span class="op">=</span> <span class="st">"DT_NSO_2400_015V1"</span>, selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Month <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">47</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="co"># SO2</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tbl_id <span class="op">=</span> <span class="st">"DT_NSO_2400_015V2"</span>, selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Month <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">47</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="co"># NO2</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tbl_id <span class="op">=</span> <span class="st">"DT_NSO_2400_015V3"</span>, selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Month <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">47</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="co"># CO</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tbl_id <span class="op">=</span> <span class="st">"DT_NSO_2400_015V4"</span>, selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Month <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">47</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="co"># PM10</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tbl_id <span class="op">=</span> <span class="st">"DT_NSO_2400_015V5"</span>, selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Month <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">47</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>  <span class="co"># PM2.5</span></span>
 <span>      <span class="op">)</span>,</span>
 <span>      labels <span class="op">=</span> <span class="st">"en"</span></span>
 <span>    <span class="op">)</span></span>
@@ -177,6 +211,7 @@ exposure.</p>
 <span>  error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Robust fallback: use cache if API fails, returns no rows, or lacks PM2.5</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">air_monthly</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">air_monthly</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">air_monthly</span> <span class="op">&lt;-</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"air_monthly_cached.csv"</span>, package <span class="op">=</span> <span class="st">"mongolstats"</span><span class="op">)</span>,</span>
@@ -187,23 +222,26 @@ exposure.</p>
 <span></span>
 <span><span class="va">air_monthly</span> <span class="op">&lt;-</span> <span class="va">air_monthly</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># Standardize indicator column name which can vary between live fetch and cache</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename_with</a></span><span class="op">(</span><span class="op">~</span> <span class="st">"Pollutant_Raw"</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html" class="external-link">any_of</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Indicator_en"</span>, <span class="st">"Indicator of air pollution_en"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    Station <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html" class="external-link">str_trim</a></span><span class="op">(</span><span class="va">Location_en</span><span class="op">)</span>,</span>
-<span>    Pollutant_Raw <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html" class="external-link">str_trim</a></span><span class="op">(</span><span class="va">`Indicator of air pollution_en`</span><span class="op">)</span>,</span>
+<span>    Pollutant_Raw <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html" class="external-link">str_trim</a></span><span class="op">(</span><span class="va">Pollutant_Raw</span><span class="op">)</span>,</span>
+<span>    <span class="co"># If Month_en is already YYYY-MM, Date will work, else handle gracefully</span></span>
 <span>    Date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">Month_en</span>, <span class="st">"-01"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Explicit date filter to ensure only 2023-2025 data (Year selection may not work)</span></span>
+<span>  <span class="co"># Focus on recent years for trends</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Date</span> <span class="op">&gt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-01-01"</span><span class="op">)</span>, <span class="va">Date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-12-31"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Station</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">top_10_stations</span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span><span class="co"># Clean and Reshape Data for Ribbons</span></span>
-<span><span class="co"># We need Average, Min, and Max for PM2.5 and SO2</span></span>
 <span><span class="va">air_trends</span> <span class="op">&lt;-</span> <span class="va">air_monthly</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    Pollutant_Type <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant_Raw</span>, <span class="st">"PM2.5"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"PM2.5"</span>,</span>
-<span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant_Raw</span>, <span class="st">"Sulphur dioxide"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"SO2"</span>,</span>
+<span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant_Raw</span>, <span class="st">"Sulphur dioxide|SO2"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"SO2"</span>,</span>
+<span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant_Raw</span>, <span class="st">"Nitrogen dioxide|NO2"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"NO2"</span>,</span>
 <span>      <span class="cn">TRUE</span> <span class="op">~</span> <span class="cn">NA_character_</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>    Measure <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
