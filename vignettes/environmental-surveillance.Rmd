@@ -66,6 +66,15 @@ This guide demonstrates how to:
 
 The NSO maintains air quality monitoring stations that measure key pollutants. We'll focus on the **Top 10 most polluted stations** in Ulaanbaatar to understand the severity of exposure.
 
+> **Important: Air Quality Table Structures**
+>
+> The NSO provides two types of air quality tables with different dimension structures:
+>
+> - **Annual table** (`DT_NSO_2024_135V01`): Uses a `Year` dimension for filtering (e.g., `selections = list(Year = "2024")`)
+> - **Monthly tables** (`DT_NSO_2400_015V1` through `V6`): Use a running `Month` dimension with codes `0`, `1`, `2`, etc. (where `0` = most recent month). Filter by month codes, not year labels: `selections = list(Month = as.character(0:47))` retrieves the last 48 months.
+>
+> The monthly tables are split by pollutant: V1 (SO₂), V2 (NO₂), V3 (CO), V4 (PM10), V5 (PM2.5), V6 (O₃). The `Month_en` column returns dates in `"YYYY-MM"` format.
+
 ```{r air-quality-data}
 # 1. Identify Top 10 Polluted Stations in UB (using 2024 annual data)
 air_annual <- tryCatch(
@@ -111,13 +120,15 @@ top_10_stations <- air_annual |>
   head(10) |>
   pull(Station)
 
-# 2. Fetch Monthly Data for Detailed Trends (2023-2025)
+# 2. Fetch Monthly Data for Detailed Trends
+# Monthly tables use a running Month dimension (0 = latest, 1 = previous, etc.)
+# We fetch the last 48 months (4 years) of data.
 air_monthly <- tryCatch(
   {
     nso_data(
       "DT_NSO_2400_015V2",
       selections = list(
-        Year = as.character(2023:2025)
+        Month = as.character(0:47)
       ),
       labels = "en"
     )
@@ -135,6 +146,7 @@ if (is.null(air_monthly) || nrow(air_monthly) == 0) {
 
 air_monthly <- air_monthly |>
   filter(!is.na(value)) |>
+  rename_with(~ "Indicator of air pollution_en", any_of("Indicator_en")) |>
   mutate(
     Station = str_trim(Location_en),
     Pollutant_Raw = str_trim(`Indicator of air pollution_en`),

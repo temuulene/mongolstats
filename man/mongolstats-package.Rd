@@ -32,7 +32,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Temuulen Enebish \email{temuulen@gmail.com}
+\strong{Maintainer}: Temuulen Enebish \email{temuulen@gmail.com} [copyright holder]
 
 }
 \keyword{internal}

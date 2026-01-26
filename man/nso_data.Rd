@@ -29,6 +29,18 @@ A tibble with one column per dimension and a numeric value column.
 \description{
 Fetch statistical data for a table (PXWeb)
 }
+\section{Table Structure Notes}{
+
+Some NSO tables have unique dimension structures that affect how \code{selections}
+should be constructed:
+\itemize{
+\item \strong{Air Quality Monthly Tables} (e.g., \code{DT_NSO_2400_015V1} to \code{V6}):
+These tables do not have a \code{Year} dimension. Instead, they use a running
+\code{Month} dimension with integer codes (e.g., \code{"0"} for the most recent month).
+Example: \code{selections = list(Month = as.character(0:11))} retrieves the last 12 months.
+}
+}
+
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
 # Fetch population data
