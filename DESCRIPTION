@@ -5,7 +5,7 @@ Version: 0.1.1
 Authors@R: 
     c(person(given = "Temuulen",
              family = "Enebish",
-             role = c("aut", "cre"),
+             role = c("aut", "cre", "cph"),
              email = "temuulen@gmail.com"))
 Description: A 'tidyverse'-friendly client for the National Statistics Office of Mongolia
     'PXWeb' API <https://data.1212.mn/> with helpers to discover tables, variables, and fetch

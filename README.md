@@ -27,8 +27,14 @@ economic trends, and map regional statistics—all from within R.
 
 ## Installation
 
-You can install the development version of mongolstats from
-[GitHub](https://github.com/) with:
+You can install mongolstats from CRAN with:
+
+``` r
+install.packages("mongolstats")
+```
+
+Or install the development version from [GitHub](https://github.com/)
+with:
 
 ``` r
 # install.packages("devtools")
@@ -90,7 +96,7 @@ p <- gdp |>
 p  # print static ggplot
 ```
 
-<img src="man/figures/README-gdp-example-1.png" width="100%" />
+<img src="man/figures/README-gdp-example-1.png" alt="" width="100%" />
 
 ### 2. Mapping Regional Population
 
@@ -160,7 +166,7 @@ p <- ggplot(pop_map) +
 p  # print static ggplot
 ```
 
-<img src="man/figures/README-pop-map-example-1.png" width="100%" />
+<img src="man/figures/README-pop-map-example-1.png" alt="" width="100%" />
 
 ## Documentation
 
