@@ -5,7 +5,7 @@
 ## R CMD check results
 0 errors ✔ | 0 warnings ✔ | 0 notes ✔
 
-- This is a new submission
+- Resubmission after fixing CRAN check errors
 
 ## Package purpose
 mongolstats provides convenient access to Mongolia's National Statistics Office (NSO) data through their PXWeb API, with additional utilities for working with administrative boundaries from GeoBoundaries.
