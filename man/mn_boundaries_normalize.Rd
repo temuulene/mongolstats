@@ -7,15 +7,17 @@
 mn_boundaries_normalize(g, name_col = "shapeName")
 }
 \arguments{
-\item{g}{sf object from \code{mn_boundaries()}}
+\item{g}{sf object from \code{mn_boundaries()}.}
 
 \item{name_col}{Column with English names (default 'shapeName').}
 }
 \value{
-sf with \code{name_std} column added.
+An \code{sf} object with an additional \code{name_std} column.
 }
 \description{
-Add normalized name columns to boundaries
+Adds a \code{name_std} column to an \code{sf} boundary object by transliterating,
+lowercasing, and stripping special characters from place names. This
+enables reliable joins between NSO data and administrative boundary polygons.
 }
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}

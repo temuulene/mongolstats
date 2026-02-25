@@ -16,7 +16,8 @@ nso_variables(tbl_id)
 A tibble with variable metadata.
 }
 \description{
-Get variable codes for a table (PXWeb)
+Returns detailed variable metadata for a single table, including field
+names, item IDs, and labels in English and Mongolian when available.
 }
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}

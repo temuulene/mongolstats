@@ -7,10 +7,12 @@
 nso_sectors()
 }
 \value{
-tibble with \code{id}, \code{type}, \code{text}
+A tibble with columns \code{id}, \code{type}, and \code{text}.
 }
 \description{
-List top-level categories (PXWeb NSO root)
+Queries the PXWeb API root to return the top-level statistical sectors
+(e.g., Population, Economy, Environment). Use the returned \code{id} column
+with \code{\link[=nso_subsectors]{nso_subsectors()}} to drill into sub-categories.
 }
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}

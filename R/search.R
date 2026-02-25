@@ -2,6 +2,10 @@
 
 #' Search NSO tables
 #'
+#' Performs a case-insensitive regex search across the table catalogue,
+#' optionally filtered to a specific sector. Searches table names in
+#' English and/or Mongolian by default.
+#'
 #' @param query Search string (regex, case-insensitive).
 #' @param sector Optional sector/subsector `list_id` to filter results.
 #' @param fields Character vector of fields to search within.
@@ -14,7 +18,7 @@ nso_search <- function(
   sector = NULL,
   fields = c("tbl_eng_nm", "tbl_nm")
 ) {
-  stopifnot(is.character(query), length(query) == 1L)
+  check_query(query)
   itms <- nso_itms()
   if (!is.null(sector)) {
     itms <- itms[

@@ -1,22 +1,10 @@
 # Fetch data from a PXWeb table
 # Returns tibble with one column per dimension plus a numeric `value` column.
 nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FALSE, value_name = "value") {
-  stopifnot(is.list(selections))
-  idx <- .px_index()
-  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) {
-    tbl_id
-  } else {
-    paste0(tbl_id, ".px")
-  }
-  row <- idx[idx$px_file == px_file, , drop = FALSE]
-  if (!nrow(row)) {
-    stop("Table not found in PXWeb index: ", tbl_id)
-  }
-  paths <- if (nzchar(row$px_path[1])) {
-    strsplit(row$px_path[1], "/", fixed = TRUE)[[1]]
-  } else {
-    character()
-  }
+  check_selections(selections)
+  resolved <- .px_resolve_table(tbl_id)
+  px_file <- resolved$px_file
+  paths <- resolved$paths
   meta <- .px_meta_cached(paths, px_file, lang = lang)
   vars <- meta$variables
   # Seed cookie if server uses Set-Cookie (e.g., rxid) to accept POST
@@ -60,7 +48,6 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
       # Validate
       if (length(vv) && !all(vals %in% vv)) {
         bad <- unique(setdiff(vals, vv))
-        ex_codes <- paste(utils::head(vv, 5), collapse = ", ")
         ex_labs <- tryCatch(
           {
             labs <- .px_chr(v$valueTexts)
@@ -72,16 +59,12 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
           },
           error = function(e) NA_character_
         )
-        msg <- sprintf(
-          "Invalid selection for '%s': %s. Available codes include: %s",
-          .px_first_nonempty(v$text, v$code, vname),
-          paste(bad, collapse = ", "),
-          ex_codes
-        )
-        if (!is.na(ex_labs)) {
-          msg <- paste0(msg, "; labels include: ", ex_labs)
-        }
-        stop(msg)
+        cli_abort(c(
+          "Invalid selection for {.field {.px_first_nonempty(v$text, v$code, vname)}}:",
+          "x" = "Unknown value{?s}: {.val {bad}}.",
+          "i" = "Available codes: {.val {utils::head(vv, 5)}}.",
+          if (!is.na(ex_labs)) c("i" = "Available labels: {.val {utils::head(.px_chr(v$valueTexts), 5)}}.")
+        ))
       }
       q[[length(q) + 1]] <- list(
         code = v$code,
@@ -133,12 +116,11 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
     req <- req |> httr2::req_body_json(body)
     # Debug: log request details if verbose
     if (.nso_verbose()) {
-      message("mongolstats: POST to ", u)
-      message("mongolstats: Cookie: ", if (is.null(cookie)) "NULL" else cookie)
-      message(
-        "mongolstats: Body: ",
-        substr(jsonlite::toJSON(body, auto_unbox = TRUE), 1, 200)
-      )
+      cli_inform(c(
+        "mongolstats: POST to {.url {u}}",
+        "Cookie: {if (is.null(cookie)) 'NULL' else cookie}",
+        "Body: {substr(jsonlite::toJSON(body, auto_unbox = TRUE), 1, 200)}"
+      ))
     }
     resp <- tryCatch(.nso_perform(req), error = function(e) e)
     ok <- !(inherits(resp, "error") ||
@@ -188,14 +170,15 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
       }
     }
     # If fallback not available or failed, rethrow informative error
-    msg <- sprintf(
-      "PXWeb request failed; tried both .px and extensionless endpoints. %s. If 'pxweb' is installed, verify selections or try smaller subsets.",
-      err_details
+    cli_abort(
+      c(
+        "PXWeb request failed for {.val {tbl_id}}.",
+        "x" = "{err_details}",
+        "i" = "Tried both .px and extensionless endpoints.",
+        "i" = "If {.pkg pxweb} is installed, verify selections or try smaller subsets."
+      ),
+      class = "mongolstats_http_error"
     )
-    stop(structure(
-      list(message = msg, call = NULL),
-      class = c("mongolstats_http_error", "error", "condition")
-    ))
   }
   out <- jsonlite::fromJSON(
     httr2::resp_body_string(resp),

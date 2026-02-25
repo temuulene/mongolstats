@@ -17,7 +17,9 @@ nso_search(query, sector = NULL, fields = c("tbl_eng_nm", "tbl_nm"))
 Tibble of matching tables.
 }
 \description{
-Search NSO tables
+Performs a case-insensitive regex search across the table catalogue,
+optionally filtered to a specific sector. Searches table names in
+English and/or Mongolian by default.
 }
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}

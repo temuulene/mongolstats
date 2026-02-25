@@ -13,7 +13,8 @@ nso_itms_by_sector(list_id)
 A tibble of tables matching the specified sector path.
 }
 \description{
-List tables under a sector or sub-sector (PXWeb path)
+Filters the table catalogue to only those belonging to a given sector
+or sub-sector path, as returned by \code{\link[=nso_sectors]{nso_sectors()}} or \code{\link[=nso_subsectors]{nso_subsectors()}}.
 }
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}

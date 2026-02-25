@@ -14,7 +14,9 @@ A tibble with columns: \code{px_path}, \code{px_file}, \code{tbl_id}, \code{tbl_
 \code{tbl_nm}, \code{strt_prd}, \code{end_prd}, \code{list_id}.
 }
 \description{
-Returns a tibble of all available tables in the NSO PXWeb catalog.
+Retrieves the full catalogue of available statistical tables from the
+National Statistics Office PXWeb API. Uses the embedded index by default
+for fast startup; call \code{\link[=nso_rebuild_px_index]{nso_rebuild_px_index()}} to refresh from the API.
 }
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}

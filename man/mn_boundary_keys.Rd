@@ -10,10 +10,12 @@ mn_boundary_keys(level = "ADM1")
 \item{level}{Boundary level.}
 }
 \value{
-tibble with key columns from GeoBoundaries and normalized names.
+A tibble with key columns from GeoBoundaries and normalized names.
 }
 \description{
-Boundary keys/crosswalk helper
+Returns a lightweight tibble of key columns from the GeoBoundaries data,
+including normalized names, without the full geometry. Useful for building
+custom crosswalks between NSO data and boundary identifiers.
 }
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}

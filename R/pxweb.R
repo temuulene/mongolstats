@@ -31,9 +31,11 @@
 }
 
 #' List PXWeb children under a path
-#' @importFrom utils head tail
-#' @importFrom curl curl_escape
+#' @param paths Character vector of path segments.
+#' @param lang Language code ("en" or "mn").
+#' @return A data frame of child items with columns `id`, `type`, `text`.
 #' @keywords internal
+#' @noRd
 .px_list <- function(paths = character(), lang = .px_lang()) {
   url <- do.call(.px_url, as.list(c(paths, lang = lang)))
   res <- httr2::request(url) |>
@@ -49,7 +51,12 @@
 }
 
 #' Get PXWeb table metadata
+#' @param paths Character vector of path segments.
+#' @param table Table filename (e.g., "DT_NSO_0300_001V2.px").
+#' @param lang Language code ("en" or "mn").
+#' @return A list of table metadata including title and variables.
 #' @keywords internal
+#' @noRd
 .px_meta <- function(paths, table, lang = .px_lang()) {
   url <- .px_url(paths, table, lang = lang)
   res <- httr2::request(url) |>

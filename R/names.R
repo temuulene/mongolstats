@@ -9,9 +9,14 @@
 }
 
 #' Add normalized name columns to boundaries
-#' @param g sf object from `mn_boundaries()`
+#'
+#' Adds a `name_std` column to an `sf` boundary object by transliterating,
+#' lowercasing, and stripping special characters from place names. This
+#' enables reliable joins between NSO data and administrative boundary polygons.
+#'
+#' @param g sf object from `mn_boundaries()`.
 #' @param name_col Column with English names (default 'shapeName').
-#' @return sf with `name_std` column added.
+#' @return An `sf` object with an additional `name_std` column.
 #' @examplesIf curl::has_internet()
 #' aimags <- mn_boundaries("ADM1")
 #' aimags <- mn_boundaries_normalize(aimags)
@@ -26,11 +31,16 @@ mn_boundaries_normalize <- function(g, name_col = "shapeName") {
 }
 
 #' Join data to boundaries by (normalized) names
+#'
+#' Performs an exact join between a data frame and boundary polygons using
+#' normalized place names. Both sides are normalized via transliteration and
+#' lowercasing before joining.
+#'
 #' @param data Data frame with a name column.
 #' @param name_col Column in `data` that contains names to join on.
 #' @param level Boundary level, passed to `mn_boundaries()` if `boundaries` not provided.
 #' @param boundaries Optional pre-fetched boundaries.
-#' @return sf with joined data.
+#' @return An `sf` object with joined data.
 #' @examplesIf curl::has_internet()
 #' pop_data <- data.frame(aimag = c("Ulaanbaatar", "Darkhan-Uul"), pop = c(1500000, 100000))
 #' sf_joined <- mn_join_by_name(pop_data, "aimag", level = "ADM1")
@@ -46,6 +56,11 @@ mn_join_by_name <- function(data, name_col, level = "ADM1", boundaries = NULL) {
 }
 
 #' Fuzzy join data to boundaries by name
+#'
+#' Performs a fuzzy string-distance join between a data frame and boundary
+#' polygons. Useful when place-name spellings differ slightly between
+#' datasets (e.g., "Ulanbatar" vs "Ulaanbaatar").
+#'
 #' @param data Data frame with a name column.
 #' @param name_col Column in `data` containing names.
 #' @param level Boundary level.
@@ -102,8 +117,13 @@ mn_fuzzy_join_by_name <- function(
 }
 
 #' Boundary keys/crosswalk helper
+#'
+#' Returns a lightweight tibble of key columns from the GeoBoundaries data,
+#' including normalized names, without the full geometry. Useful for building
+#' custom crosswalks between NSO data and boundary identifiers.
+#'
 #' @param level Boundary level.
-#' @return tibble with key columns from GeoBoundaries and normalized names.
+#' @return A tibble with key columns from GeoBoundaries and normalized names.
 #' @examplesIf curl::has_internet()
 #' keys <- mn_boundary_keys("ADM1")
 #' head(keys)

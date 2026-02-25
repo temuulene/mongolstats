@@ -16,10 +16,12 @@ mn_join_by_name(data, name_col, level = "ADM1", boundaries = NULL)
 \item{boundaries}{Optional pre-fetched boundaries.}
 }
 \value{
-sf with joined data.
+An \code{sf} object with joined data.
 }
 \description{
-Join data to boundaries by (normalized) names
+Performs an exact join between a data frame and boundary polygons using
+normalized place names. Both sides are normalized via transliteration and
+lowercasing before joining.
 }
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}

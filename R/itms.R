@@ -2,7 +2,9 @@
 
 #' List available NSO tables (PXWeb)
 #'
-#' Returns a tibble of all available tables in the NSO PXWeb catalog.
+#' Retrieves the full catalogue of available statistical tables from the
+#' National Statistics Office PXWeb API. Uses the embedded index by default
+#' for fast startup; call [nso_rebuild_px_index()] to refresh from the API.
 #'
 #' @return A tibble with columns: `px_path`, `px_file`, `tbl_id`, `tbl_eng_nm`,
 #'   `tbl_nm`, `strt_prd`, `end_prd`, `list_id`.
@@ -24,6 +26,9 @@ nso_itms <- function() {
 
 #' Get variable codes for a table (PXWeb)
 #'
+#' Returns detailed variable metadata for a single table, including field
+#' names, item IDs, and labels in English and Mongolian when available.
+#'
 #' @param tbl_id Table identifier (e.g., "DT_NSO_0300_001V2").
 #' @return A tibble with variable metadata.
 #' @examplesIf curl::has_internet()
@@ -31,12 +36,15 @@ nso_itms <- function() {
 #' vars
 #' @export
 nso_itms_detail <- function(tbl_id) {
-  stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
+  check_tbl_id(tbl_id)
   # use cached path when available
   .fetch_detail(tbl_id)
 }
 
 #' Search tables by keyword (PXWeb)
+#'
+#' Performs a case-insensitive keyword search across the table catalogue,
+#' matching `query` against table names in English and/or Mongolian.
 #'
 #' @param query A single keyword string to search for (case-insensitive).
 #' @param fields Character vector of column names to search within
@@ -47,7 +55,7 @@ nso_itms_detail <- function(tbl_id) {
 #' nso_itms_search("population")
 #' @export
 nso_itms_search <- function(query, fields = c("tbl_eng_nm", "tbl_nm")) {
-  stopifnot(is.character(query), length(query) == 1L)
+  check_query(query)
   itms <- nso_itms()
   if (!nrow(itms)) {
     return(itms)
@@ -69,6 +77,10 @@ nso_itms_search <- function(query, fields = c("tbl_eng_nm", "tbl_nm")) {
 }
 
 #' List tables under a sector or sub-sector (PXWeb path)
+#'
+#' Filters the table catalogue to only those belonging to a given sector
+#' or sub-sector path, as returned by [nso_sectors()] or [nso_subsectors()].
+#'
 #' @param list_id Path string from `nso_sectors()`/`nso_subsectors()` `id`.
 #' @return A tibble of tables matching the specified sector path.
 #' @examplesIf curl::has_internet()

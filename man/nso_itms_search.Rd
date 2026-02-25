@@ -16,7 +16,8 @@ nso_itms_search(query, fields = c("tbl_eng_nm", "tbl_nm"))
 A tibble of matching tables.
 }
 \description{
-Search tables by keyword (PXWeb)
+Performs a case-insensitive keyword search across the table catalogue,
+matching \code{query} against table names in English and/or Mongolian.
 }
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}

@@ -3,21 +3,10 @@
 #' @keywords internal
 #' @noRd
 nso_px_variables <- function(tbl_id) {
-  idx <- .px_index()
-  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) {
-    tbl_id
-  } else {
-    paste0(tbl_id, ".px")
-  }
-  row <- idx[idx$px_file == px_file, , drop = FALSE]
-  if (!nrow(row)) {
-    stop("Table not found in PXWeb index: ", tbl_id)
-  }
-  paths <- if (nzchar(row$px_path[1])) {
-    strsplit(row$px_path[1], "/", fixed = TRUE)[[1]]
-  } else {
-    character()
-  }
+  resolved <- .px_resolve_table(tbl_id)
+  px_file <- resolved$px_file
+  row <- resolved$row
+  paths <- resolved$paths
   meta_en <- .px_meta_cached(paths, px_file, lang = "en")
   meta_mn <- tryCatch(
     .px_meta_cached(paths, px_file, lang = "mn"),
@@ -63,22 +52,10 @@ nso_px_variables <- function(tbl_id) {
 #' dims
 #' @export
 nso_dims <- function(tbl_id) {
-  stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
-  idx <- .px_index()
-  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) {
-    tbl_id
-  } else {
-    paste0(tbl_id, ".px")
-  }
-  row <- idx[idx$px_file == px_file, , drop = FALSE]
-  if (!nrow(row)) {
-    stop("Table not found in PXWeb index: ", tbl_id)
-  }
-  paths <- if (nzchar(row$px_path[1])) {
-    strsplit(row$px_path[1], "/", fixed = TRUE)[[1]]
-  } else {
-    character()
-  }
+  check_tbl_id(tbl_id)
+  resolved <- .px_resolve_table(tbl_id)
+  px_file <- resolved$px_file
+  paths <- resolved$paths
   meta_en <- tryCatch(
     .px_meta_cached(paths, px_file, lang = "en"),
     error = function(e) NULL
@@ -120,24 +97,14 @@ nso_dim_values <- function(
   dim,
   labels = c("code", "en", "mn", "both")
 ) {
-  stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
-  stopifnot(is.character(dim), length(dim) == 1L)
+  check_tbl_id(tbl_id)
+  if (!is.character(dim) || length(dim) != 1L) {
+    cli_abort("{.arg dim} must be a single character string.")
+  }
   labels <- match.arg(labels)
-  idx <- .px_index()
-  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) {
-    tbl_id
-  } else {
-    paste0(tbl_id, ".px")
-  }
-  row <- idx[idx$px_file == px_file, , drop = FALSE]
-  if (!nrow(row)) {
-    stop("Table not found in PXWeb index: ", tbl_id)
-  }
-  paths <- if (nzchar(row$px_path[1])) {
-    strsplit(row$px_path[1], "/", fixed = TRUE)[[1]]
-  } else {
-    character()
-  }
+  resolved <- .px_resolve_table(tbl_id)
+  px_file <- resolved$px_file
+  paths <- resolved$paths
   meta_en <- tryCatch(
     .px_meta_cached(paths, px_file, lang = "en"),
     error = function(e) NULL
@@ -180,10 +147,9 @@ nso_dim_values <- function(
       function(v) .px_first_nonempty(v$text, v$code, ""),
       character(1)
     )
-    stop(sprintf(
-      "Dimension '%s' not found. Available: %s",
-      dim,
-      paste(dims, collapse = ", ")
+    cli_abort(c(
+      "Dimension {.val {dim}} not found in table {.val {tbl_id}}.",
+      "i" = "Available dimensions: {.val {dims}}."
     ))
   }
   if (length(idxs) > 1) {
@@ -192,10 +158,9 @@ nso_dim_values <- function(
       function(v) .px_first_nonempty(v$text, v$code, ""),
       character(1)
     )
-    stop(sprintf(
-      "Dimension '%s' is ambiguous. Candidates: %s",
-      dim,
-      paste(dims, collapse = ", ")
+    cli_abort(c(
+      "Dimension {.val {dim}} is ambiguous in table {.val {tbl_id}}.",
+      "i" = "Candidates: {.val {dims}}."
     ))
   }
   v_en <- vars_en[[idxs[1]]]
@@ -251,14 +216,10 @@ nso_dim_values <- function(
 #' meta
 #' @export
 nso_table_meta <- function(tbl_id) {
-  stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
-  idx <- .px_index()
-  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) tbl_id else paste0(tbl_id, ".px")
-  row <- idx[idx$px_file == px_file, , drop = FALSE]
-  if (!nrow(row)) {
-    stop("Table not found in PXWeb index: ", tbl_id)
-  }
-  paths <- if (nzchar(row$px_path[1])) strsplit(row$px_path[1], "/", fixed = TRUE)[[1]] else character()
+  check_tbl_id(tbl_id)
+  resolved <- .px_resolve_table(tbl_id)
+  px_file <- resolved$px_file
+  paths <- resolved$paths
   meta_en <- tryCatch(.px_meta_cached(paths, px_file, lang = "en"), error = function(e) NULL)
   meta_mn <- tryCatch(.px_meta_cached(paths, px_file, lang = "mn"), error = function(e) NULL)
   if (is.null(meta_en) || is.null(meta_en$variables)) {
