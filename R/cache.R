@@ -32,7 +32,10 @@ nso_cache_enable <- function(dir = NULL, ttl = NULL) {
       !requireNamespace("cachem", quietly = TRUE) ||
       !requireNamespace("rappdirs", quietly = TRUE)
   ) {
-    stop("Enable caching requires memoise, cachem, rappdirs packages.")
+    cli_abort(c(
+      "Caching requires {.pkg memoise}, {.pkg cachem}, and {.pkg rappdirs}.",
+      "i" = "Install them with {.code install.packages(c('memoise', 'cachem', 'rappdirs'))}."
+    ))
   }
   if (is.null(dir)) {
     # Namespace under mongolstats and include a cache version for safe upgrades

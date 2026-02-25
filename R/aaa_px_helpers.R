@@ -24,3 +24,24 @@
 .px_chr <- function(x) {
   as.character(unlist(x, use.names = FALSE))
 }
+
+# Resolve a tbl_id to its px_file, index row, and path segments.
+# Returns a list with $px_file, $row (tibble), and $paths (character vector).
+# Raises an error if the table is not found in the index.
+.px_resolve_table <- function(tbl_id, idx = .px_index()) {
+  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) {
+    tbl_id
+  } else {
+    paste0(tbl_id, ".px")
+  }
+  row <- idx[idx$px_file == px_file, , drop = FALSE]
+  if (!nrow(row)) {
+    cli_abort("Table {.val {tbl_id}} not found in PXWeb index.")
+  }
+  paths <- if (nzchar(row$px_path[1])) {
+    strsplit(row$px_path[1], "/", fixed = TRUE)[[1]]
+  } else {
+    character()
+  }
+  list(px_file = px_file, row = row, paths = paths)
+}

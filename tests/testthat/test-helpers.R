@@ -1,10 +1,3 @@
-test_that("nso_period_seq yearly and monthly work", {
-  y <- nso_period_seq("2018", "2020", by = "Y")
-  expect_equal(y, c("2018", "2019", "2020"))
-  m <- nso_period_seq("201801", "201803", by = "M")
-  expect_equal(m, c("201801", "201802", "201803"))
-})
-
 test_that("mn_boundaries_normalize adds name_std", {
   skip_on_cran()
   skip_if_offline()

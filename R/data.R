@@ -95,8 +95,8 @@ nso_data <- function(
     labels <- getOption("mongolstats.default_labels", "none")
   }
   labels <- match.arg(labels)
-  stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
-  stopifnot(is.list(selections))
+  check_tbl_id(tbl_id)
+  check_selections(selections)
   out <- nso_px_data(
     tbl_id,
     selections = selections,
@@ -133,17 +133,19 @@ nso_package <- function(
   if (is.data.frame(requests)) {
     # expect columns: tbl_id (character), selections (list-column)
     if (!("tbl_id" %in% names(requests) && "selections" %in% names(requests))) {
-      stop(
-        "For PXWeb, provide a data frame with columns tbl_id and selections (list-column)"
-      )
+      cli_abort(c(
+        "For PXWeb, provide a data frame with columns {.field tbl_id} and {.field selections} (list-column).",
+        "i" = "Column {.field selections} should be a list-column of named lists."
+      ))
     }
     reqs <- purrr::pmap(requests[, c("tbl_id", "selections")], list)
   } else if (is.list(requests)) {
     reqs <- requests
   } else {
-    stop(
-      "`requests` must be a list of records or a data frame with tbl_id + selections"
-    )
+    cli_abort(c(
+      "{.arg requests} must be a list of records or a data frame with {.field tbl_id} + {.field selections}.",
+      "i" = "Each record should be a list with elements {.field tbl_id} and {.field selections}."
+    ))
   }
   worker <- function(r) {
     tbl <- r$tbl_id
@@ -170,8 +172,7 @@ nso_package <- function(
     if (
       length(reqs) > 1 &&
         .nso_progress() &&
-        interactive() &&
-        requireNamespace("cli", quietly = TRUE)
+        interactive()
     ) {
       cli::cli_progress_bar(name = "Fetching tables", total = length(reqs))
       parts <- vector("list", length(reqs))

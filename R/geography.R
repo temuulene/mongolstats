@@ -23,7 +23,10 @@ mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2")) {
       ),
       class = c("mongolstats_offline_error", "error", "condition")
     )
-    stop(cond)
+    cli_abort(
+      conditionMessage(cond),
+      class = "mongolstats_offline_error"
+    )
   }
   url <- .gb_gj_url("MNG", level)
   tmp <- tempfile(fileext = ".geojson")

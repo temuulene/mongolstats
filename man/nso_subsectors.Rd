@@ -8,13 +8,15 @@ nso_subsectors(subid)
 }
 \arguments{
 \item{subid}{Path id from \code{nso_sectors()}/\code{nso_subsectors()}
-(e.g., 'Population, household' or 'Population, household/1_Population, household')}
+(e.g., 'Population, household' or 'Population, household/1_Population, household').}
 }
 \value{
 A tibble with columns: \code{id}, \code{type}, \code{text}.
 }
 \description{
-List children for a given path (PXWeb)
+Navigates one level deeper in the PXWeb catalogue hierarchy. Pass in a
+path id obtained from \code{\link[=nso_sectors]{nso_sectors()}} or a previous \code{nso_subsectors()}
+call to list its children (sub-sectors or tables).
 }
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}

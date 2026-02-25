@@ -52,7 +52,7 @@
     )
   if (.nso_verbose()) {
     url <- tryCatch(httr2::req_url(req), error = function(e) NA_character_)
-    message("mongolstats: GET/POST setup for ", url)
+    cli_inform("mongolstats: GET/POST setup for {.url {url}}")
   }
   req
 }
@@ -66,7 +66,10 @@
       ),
       class = c("mongolstats_offline_error", "error", "condition")
     )
-    stop(cond)
+    cli_abort(
+      conditionMessage(cond),
+      class = "mongolstats_offline_error"
+    )
   }
   # Perform request; raise typed error on HTTP failure
   resp <- tryCatch(httr2::req_perform(req), error = function(e) e)
@@ -75,7 +78,10 @@
       list(message = resp$message, call = NULL),
       class = c("mongolstats_http_error", "error", "condition")
     )
-    stop(cond)
+    cli_abort(
+      conditionMessage(cond),
+      class = "mongolstats_offline_error"
+    )
   }
   status <- httr2::resp_status(resp)
   if (!is.null(status) && status >= 400) {
@@ -97,7 +103,10 @@
       list(message = msg, call = NULL, status = status),
       class = c("mongolstats_http_error", "error", "condition")
     )
-    stop(cond)
+    cli_abort(
+      conditionMessage(cond),
+      class = "mongolstats_http_error"
+    )
   }
   resp
 }

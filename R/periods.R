@@ -36,6 +36,10 @@ nso_period_seq <- function(start, end, by = c("Y", "M")) {
 }
 
 #' Get valid periods for a table (PXWeb)
+#'
+#' Inspects the table metadata to find the time dimension and returns its
+#' available period labels (e.g., years or year-months).
+#'
 #' @param tbl_id Table identifier.
 #' @return Character vector of period labels (e.g., years)
 #' @examplesIf curl::has_internet()

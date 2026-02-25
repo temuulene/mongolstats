@@ -30,7 +30,9 @@ mn_fuzzy_join_by_name(
 sf with best fuzzy matches joined.
 }
 \description{
-Fuzzy join data to boundaries by name
+Performs a fuzzy string-distance join between a data frame and boundary
+polygons. Useful when place-name spellings differ slightly between
+datasets (e.g., "Ulanbatar" vs "Ulaanbaatar").
 }
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}

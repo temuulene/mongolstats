@@ -13,7 +13,8 @@ nso_table_periods(tbl_id)
 Character vector of period labels (e.g., years)
 }
 \description{
-Get valid periods for a table (PXWeb)
+Inspects the table metadata to find the time dimension and returns its
+available period labels (e.g., years or year-months).
 }
 \examples{
 \dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}

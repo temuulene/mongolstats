@@ -2,7 +2,7 @@ test_that("name normalization produces expected tokens", {
   x <- c("Ulaanbaatar", "Övörkhangai aimag", "  Darkhan-Uul\t")
   norm <- c("ulaanbaatar", "ovorkhangai aimag", "darkhan uul")
   expect_equal(
-    as.character(get(".normalize_str", envir = asNamespace("mongolstats"))(x)),
+    as.character(.normalize_str(x)),
     norm
   )
 })

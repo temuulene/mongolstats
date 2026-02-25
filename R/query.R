@@ -16,13 +16,19 @@
 #' print(q)
 #' @export
 nso_query <- function(tbl_id, selections = list()) {
-  stopifnot(is.character(tbl_id), length(tbl_id) == 1L)
-  if (!is.list(selections)) {
-    stop("`selections` must be a named list of values")
-  }
+  check_tbl_id(tbl_id)
+  check_selections(selections)
   structure(list(tbl_id = tbl_id, selections = selections), class = "nso_query")
 }
 
+#' Print an nso_query object
+#'
+#' Displays a human-readable summary of the query, including the table
+#' identifier and the first few dimension selections.
+#'
+#' @param x An `nso_query` object created by [nso_query()].
+#' @param ... Additional arguments passed to print methods (ignored).
+#' @return `x`, invisibly.
 #' @export
 print.nso_query <- function(x, ...) {
   cat("<nso_query>\n", sep = "")
@@ -132,7 +138,9 @@ print.nso_query <- function(x, ...) {
 #' body <- as_px_query(q)
 #' @export
 as_px_query <- function(x, lang = .px_lang()) {
-  stopifnot(inherits(x, "nso_query"))
+  if (!inherits(x, "nso_query")) {
+    cli_abort("{.arg x} must be an {.cls nso_query} object.")
+  }
   .px_build_body(x$tbl_id, x$selections, lang = lang)
 }
 
@@ -158,7 +166,9 @@ nso_fetch <- function(
   value_name = getOption("mongolstats.value_name", "value"),
   include_raw = getOption("mongolstats.attach_raw", FALSE)
 ) {
-  stopifnot(inherits(x, "nso_query"))
+  if (!inherits(x, "nso_query")) {
+    cli_abort("{.arg x} must be an {.cls nso_query} object.")
+  }
   labels <- match.arg(labels)
   # Map 'code' -> existing 'none' for backwards compatibility
   lab <- if (identical(labels, "code")) "none" else labels

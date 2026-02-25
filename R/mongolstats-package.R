@@ -17,5 +17,7 @@
 #' @importFrom utils head tail
 #' @importFrom curl curl_escape
 #' @importFrom stats setNames
+#' @importFrom rlang %||%
+#' @importFrom cli cli_abort cli_warn cli_inform
 #' @keywords internal
 "_PACKAGE"
