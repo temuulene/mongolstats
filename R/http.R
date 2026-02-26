@@ -51,7 +51,7 @@
       backoff = .nso_retry_backoff()
     )
   if (.nso_verbose()) {
-    url <- tryCatch(httr2::req_url(req), error = function(e) NA_character_)
+    url <- tryCatch(httr2::req_url(req), error = function(e) NA_character_) # nolint object_usage_linter. Used in cli_inform() below.
     cli_inform("mongolstats: GET/POST setup for {.url {url}}")
   }
   req

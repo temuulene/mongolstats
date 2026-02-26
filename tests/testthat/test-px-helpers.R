@@ -1,5 +1,4 @@
 test_that(".px_strip_bom removes BOM", {
-  skip_on_os("windows") # regex \\ufeff doesn't match BOM on Windows
   bom_str <- paste0("\uFEFF", "hello")
   expect_equal(.px_strip_bom(bom_str), "hello")
   expect_equal(.px_strip_bom("hello"), "hello")
