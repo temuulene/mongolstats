@@ -1,6 +1,6 @@
 .px_strip_bom <- function(x) {
   if (is.character(x) && length(x) == 1L) {
-    sub("^\\ufeff", "", x)
+    sub("^\uFEFF", "", x, useBytes = TRUE)
   } else {
     x
   }

@@ -142,7 +142,7 @@ nso_dim_values <- function(
   }
   if (!length(idxs)) {
     # helpful error listing available dimensions
-    dims <- vapply(
+    dims <- vapply( # nolint object_usage_linter. Used in cli_abort() below.
       vars_en,
       function(v) .px_first_nonempty(v$text, v$code, ""),
       character(1)
@@ -153,7 +153,7 @@ nso_dim_values <- function(
     ))
   }
   if (length(idxs) > 1) {
-    dims <- vapply(
+    dims <- vapply( # nolint object_usage_linter. Used in cli_abort() below.
       vars_en[idxs],
       function(v) .px_first_nonempty(v$text, v$code, ""),
       character(1)

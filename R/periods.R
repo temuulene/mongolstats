@@ -20,7 +20,7 @@ nso_period_seq <- function(start, end, by = c("Y", "M")) {
   if (by == "Y") {
     ys <- as.integer(substr(start, 1, 4))
     ye <- as.integer(substr(end, 1, 4))
-    return(as.character(seq.int(ys, ye)))
+    as.character(seq.int(ys, ye))
   } else {
     ys <- as.integer(substr(start, 1, 4))
     ms <- as.integer(substr(start, 5, 6))
@@ -31,7 +31,7 @@ nso_period_seq <- function(start, end, by = c("Y", "M")) {
       as.Date(sprintf("%04d-%02d-01", ye, me)),
       by = "month"
     )
-    return(format(seq_dates, "%Y%m"))
+    format(seq_dates, "%Y%m")
   }
 }
 
