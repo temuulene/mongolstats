@@ -13,6 +13,16 @@
 
 ## Bug fixes
 
+*   **`labels = "mn"` and `labels = "both"` now actually attach Mongolian labels**: label metadata was matched to data columns by display text, but the two languages only share the dimension *code* (the English column is "Sex" while both languages use the code "Хүйс"), so cross-language labels were silently never added. Labels are now routed through a code-to-column map, which also fixes English labels when `mongolstats.lang = "mn"`.
+*   **Offline mode no longer fires the session-cookie GET**: `.px_session_cookie()` bypassed the offline gate, so `nso_data()` with cached metadata still performed one live request in offline mode.
+*   **Retries no longer crash on the first backoff**: the default retry backoff formula referenced `..attempt`, which does not exist in rlang lambdas (the argument is `.x`), so any transient response (429/503) failed with "object '..attempt' not found" instead of retrying.
+*   **HTTP error and verbose messages now include the request URL**: an internal misuse of `httr2::req_url()` as a getter meant the URL always rendered as `NA` and was dropped from messages.
+*   **Time columns typed `"t"` are handled**: the PXWeb response flattener kept only `"d"`-typed columns; a server typing its time column `"t"` (the PXWeb convention; NSO currently uses `"d"`) would have misaligned row keys with column names.
+*   **`nso_fetch()` now honors the `mongolstats.default_labels` option**, matching `nso_data()`.
+*   **`nso_itms_search()` matches its query literally** as documented ("keyword"); regex metacharacters (e.g. `"c++"`) no longer error. `nso_search()` remains a regex search.
+*   **`nso_period_seq()` rejects trailing garbage** after a valid year (e.g. `"2024abc"`, `"2024-06"`); previously the year prefix was silently used.
+*   **`mn_join_by_name()` and `mn_fuzzy_join_by_name()` error clearly** when `name_col` is not a column of `data`, instead of failing with an obscure replacement-length error.
+*   **`nso_table_periods()` finds the time dimension for `lang = "mn"`** by also matching the Mongolian display name.
 *   **Mixed codes and labels**: Selection values are now mapped element-wise, so codes and labels can be mixed in one vector (e.g. `Sex = c("Total", "1")`). Previously this produced an "Unknown value: NA" error. Duplicated labels in table metadata now produce a warning naming the ambiguous label.
 *   **Consistent errors**: `as_px_query()` now raises the same classed errors as `nso_data()` for invalid selections (previously a plain `stop()`).
 *   **Correct error classes**: network failures (DNS, timeout) now signal `mongolstats_http_error`; previously they were misclassified as `mongolstats_offline_error`, so handlers could not tell offline mode from a genuine connection problem.
@@ -24,11 +34,16 @@
 
 ## CRAN compliance
 
+*   The cache test no longer writes to (or clears) the user's real cache directory: it now skips when the cache packages are missing and uses a throwaway directory under `tempdir()`. Previously it ran on CRAN and touched `rappdirs::user_cache_dir("mongolstats")`.
+*   The `nso_cache_enable()` example is now conditional on memoise/cachem/rappdirs being installed.
 *   Network-dependent examples are now guarded with `NOT_CRAN` in addition to `curl::has_internet()`, so they no longer contact the live PXWeb API during CRAN checks. The `nso_rebuild_px_index()` example, which crawls the full catalogue, is wrapped in `\dontrun{}`.
 *   `inst/extdata/air_monthly_cached.csv` is now gzip-compressed (6.4 Mb to 0.3 Mb), bringing the installed package size well under CRAN's threshold. `read.csv()` decompresses it transparently; only the vignette referenced it.
 
 ## Internal
 
+*   Removed the unused legacy HTTP layer (`.nso_req()`, `.nso_get()`, `.nso_post()` and friends) together with the now-inert `mongolstats.base_url` option; all requests go to the PXWeb API base (`mongolstats.px_base_url`).
+*   `nso_search()` and `nso_itms_search()` share one search helper; the PXWeb response flattener was factored into `.px_flatten_response()` and unit-tested; the `mongolstats.parallel` option is now registered and reported by `nso_options()`.
+*   The GeoBoundaries metadata request now uses the same timeout/retry policy as other requests.
 *   Selection mapping and validation consolidated into a single helper (`.px_map_selections()`), removing three divergent copies of the logic.
 *   Table resolution now goes through `.px_resolve_table()` everywhere (`.px_add_labels()`, `nso_table_periods()`, `.px_build_body()`), removing the remaining inlined index lookups.
 *   Integration tests resolve dimension codes from live metadata instead of assuming positional codes, so tests no longer break when NSO adds a new period. Integration and endpoint tests now assert concrete shapes and no longer swallow errors.

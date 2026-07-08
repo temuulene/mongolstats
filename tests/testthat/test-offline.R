@@ -13,3 +13,19 @@ test_that("offline mode blocks network calls but allows object creation", {
   expect_s3_class(res, "tbl_df")
   expect_equal(nrow(res), 0)
 })
+
+test_that("offline mode skips session-cookie seeding entirely", {
+  nso_offline_enable()
+  old <- options(mongolstats.px_base_url = "http://127.0.0.1:9/api/v1")
+  on.exit(
+    {
+      nso_offline_disable()
+      options(old)
+    },
+    add = TRUE
+  )
+  n_before <- length(.mongolstats_px_env$cookies)
+  expect_null(.px_session_cookie(character(), "x.px"))
+  # No entry cached: nothing was seeded, so the next online call reseeds
+  expect_equal(length(.mongolstats_px_env$cookies), n_before)
+})

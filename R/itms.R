@@ -44,9 +44,11 @@ nso_itms_detail <- function(tbl_id) {
 #' Search tables by keyword (PXWeb)
 #'
 #' Performs a case-insensitive keyword search across the table catalogue,
-#' matching `query` against table names in English and/or Mongolian.
+#' matching `query` literally against table names in English and/or
+#' Mongolian. For regex searches use [nso_search()].
 #'
-#' @param query A single keyword string to search for (case-insensitive).
+#' @param query A single keyword string to search for (case-insensitive,
+#'   matched literally).
 #' @param fields Character vector of column names to search within
 #'   (defaults to English and Mongolian titles).
 #' @return A tibble of matching tables.
@@ -56,24 +58,7 @@ nso_itms_detail <- function(tbl_id) {
 #' @export
 nso_itms_search <- function(query, fields = c("tbl_eng_nm", "tbl_nm")) {
   check_query(query)
-  itms <- nso_itms()
-  if (!nrow(itms)) {
-    return(itms)
-  }
-  pred <- Reduce(
-    `|`,
-    lapply(fields, function(f) {
-      if (f %in% names(itms)) {
-        stringr::str_detect(
-          stringr::str_to_lower(itms[[f]] %||% ""),
-          stringr::str_to_lower(query)
-        )
-      } else {
-        FALSE
-      }
-    })
-  )
-  itms[pred & !is.na(pred), , drop = FALSE]
+  .search_index(nso_itms(), query, fields, fixed = TRUE)
 }
 
 #' List tables under a sector or sub-sector (PXWeb path)

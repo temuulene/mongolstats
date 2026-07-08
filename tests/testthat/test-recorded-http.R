@@ -31,3 +31,24 @@ test_that("nso_data works with recorded HTTP", {
     expect_type(res$value, "double")
   })
 })
+
+test_that("nso_fetch honors the mongolstats.default_labels option", {
+  skip_on_cran()
+  if (!requireNamespace("httptest2", quietly = TRUE)) {
+    skip("httptest2 not installed")
+  }
+  skip_if_no_mock_dir("px_data")
+  old <- options(mongolstats.default_labels = "en")
+  on.exit(options(old), add = TRUE)
+  httptest2::with_mock_dir("px_data", {
+    q <- nso_query(
+      "DT_NSO_0300_001V2",
+      list(Sex = "Total", Age = "Total", Year = "2024")
+    )
+    res <- nso_fetch(q)
+    expect_true(any(grepl("_en$", names(res))))
+    # An explicit labels argument still overrides the option
+    res_code <- nso_fetch(q, labels = "code")
+    expect_false(any(grepl("_en$", names(res_code))))
+  })
+})

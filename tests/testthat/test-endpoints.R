@@ -22,6 +22,15 @@ test_that("nso_search matches tables in the embedded index", {
   expect_equal(nrow(none), 0)
 })
 
+test_that("nso_itms_search treats the query as a literal keyword", {
+  hits <- nso_itms_search("population")
+  expect_gte(nrow(hits), 1)
+  # regex metacharacters are matched literally instead of erroring
+  none <- nso_itms_search("c++")
+  expect_s3_class(none, "tbl_df")
+  expect_equal(nrow(none), 0)
+})
+
 test_that("labels argument accepts both vocabularies", {
   # The unknown-table error proves the labels value passed validation
   expect_error(

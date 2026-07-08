@@ -19,7 +19,8 @@ Tibble of matching tables.
 \description{
 Performs a case-insensitive regex search across the table catalogue,
 optionally filtered to a specific sector. Searches table names in
-English and/or Mongolian by default.
+English and/or Mongolian by default. For a literal keyword search use
+\code{\link[=nso_itms_search]{nso_itms_search()}}.
 }
 \examples{
 \dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}

@@ -16,7 +16,7 @@
 #' @param ttl Optional TTL in seconds for cached entries (applies to the
 #'   disk cache). If `NULL`, entries persist until cleared.
 #' @return Cache directory path (invisibly).
-#' @examples
+#' @examplesIf requireNamespace("memoise", quietly = TRUE) && requireNamespace("cachem", quietly = TRUE) && requireNamespace("rappdirs", quietly = TRUE)
 #' # Enable caching in a temporary directory (for demo purposes)
 #' cache_dir <- nso_cache_enable(dir = tempdir())
 #'

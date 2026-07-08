@@ -1,6 +1,10 @@
 # Data retrieval via PXWeb
 
-# Map codes to labels using table metadata in en/mn
+# Map codes to labels using table metadata in en/mn.
+# Data columns are named with the fetch-language display text, while the
+# other language's metadata only shares the dimension *code* (e.g. the en
+# text is "Sex" while the shared code is the Cyrillic word), so labels are
+# attached by mapping code -> data column via the fetch-language metadata.
 .px_add_labels <- function(df, tbl_id, which = c("none", "en", "mn", "both")) {
   which <- match.arg(which)
   if (identical(which, "none")) {
@@ -12,40 +16,64 @@
   }
   px_file <- resolved$px_file
   paths <- resolved$paths
-  meta_en <- tryCatch(
-    .px_meta_cached(paths, px_file, lang = "en"),
-    error = function(e) NULL
-  )
-  meta_mn <- if (which %in% c("mn", "both")) {
-    tryCatch(.px_meta_cached(paths, px_file, lang = "mn"), error = function(e) {
-      NULL
-    })
-  } else {
-    NULL
+  fetch_lang <- .px_lang()
+  get_meta <- function(lang) {
+    tryCatch(
+      .px_meta_cached(paths, px_file, lang = lang),
+      error = function(e) NULL
+    )
   }
+  meta_fetch <- get_meta(fetch_lang)
+  if (is.null(meta_fetch) || !length(meta_fetch$variables)) {
+    return(df)
+  }
+  col_by_code <- stats::setNames(
+    vapply(
+      meta_fetch$variables,
+      function(v) .px_first_nonempty(v$text, v$code, "") %||% "",
+      character(1)
+    ),
+    vapply(
+      meta_fetch$variables,
+      function(v) as.character(v$code %||% ""),
+      character(1)
+    )
+  )
   add_lab <- function(d, vmeta, suffix) {
     if (is.null(vmeta)) {
       return(d)
     }
     for (v in vmeta$variables) {
-      col <- .px_first_nonempty(v$text, v$code)
-      if (is.null(col) || !nzchar(col) || !col %in% names(d)) {
+      col <- unname(col_by_code[as.character(v$code %||% "")])
+      if (is.na(col) || !nzchar(col) || !col %in% names(d)) {
         next
       }
-      map <- tibble::tibble(
-        code = .px_chr(v$values),
-        lbl = .px_chr(v$valueTexts)
-      )
+      codes <- .px_chr(v$values)
+      lbls <- .px_chr(v$valueTexts)
+      if (!length(codes) || length(codes) != length(lbls)) {
+        next
+      }
+      map <- tibble::tibble(code = codes, lbl = lbls)
       names(map) <- c(col, paste0(col, suffix))
       d <- dplyr::left_join(d, map, by = col)
     }
     d
   }
+  metas <- list(
+    en = if (identical(fetch_lang, "en")) meta_fetch else NULL,
+    mn = if (identical(fetch_lang, "mn")) meta_fetch else NULL
+  )
+  if (which %in% c("en", "both") && is.null(metas$en)) {
+    metas$en <- get_meta("en")
+  }
+  if (which %in% c("mn", "both") && is.null(metas$mn)) {
+    metas$mn <- get_meta("mn")
+  }
   if (which %in% c("en", "both")) {
-    df <- add_lab(df, meta_en, "_en")
+    df <- add_lab(df, metas$en, "_en")
   }
   if (which %in% c("mn", "both")) {
-    df <- add_lab(df, meta_mn, "_mn")
+    df <- add_lab(df, metas$mn, "_mn")
   }
   df
 }
@@ -105,6 +133,7 @@ nso_data <- function(
 #' @param requests A list of records, each with `tbl_id` and `selections` (named list)
 #' @param labels Label handling as in `nso_data()`
 #' @param parallel If TRUE, use future.apply to fetch tables in parallel.
+#'   Defaults to the `mongolstats.parallel` option (`FALSE`).
 #' @param value_name Name of the numeric value column in the result (default: "value").
 #' @param strict If TRUE, error when any table fails to fetch. If FALSE
 #'   (default), failed tables are dropped from the result with a warning
