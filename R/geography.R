@@ -35,6 +35,7 @@ mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE) {
   }
   url <- .gb_gj_url("MNG", level)
   tmp <- tempfile(fileext = ".geojson")
+  on.exit(try(unlink(tmp), silent = TRUE), add = TRUE)
   req <- httr2::request(url) |>
     httr2::req_user_agent(.nso_user_agent()) |>
     httr2::req_timeout(.nso_timeout()) |>
@@ -43,7 +44,6 @@ mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE) {
       backoff = .nso_retry_backoff()
     )
   httr2::req_perform(req, path = tmp)
-  on.exit(try(unlink(tmp), silent = TRUE), add = TRUE)
   g <- sf::st_read(tmp, quiet = TRUE)
   .mn_boundaries_env[[level]] <- g
   g
@@ -57,6 +57,11 @@ mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE) {
   )
   res <- httr2::request(api) |>
     httr2::req_user_agent(.nso_user_agent()) |>
+    httr2::req_timeout(.nso_timeout()) |>
+    httr2::req_retry(
+      max_tries = .nso_retry_tries(),
+      backoff = .nso_retry_backoff()
+    ) |>
     .nso_perform() |>
     httr2::resp_body_json()
   res$gjDownloadURL

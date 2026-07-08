@@ -42,3 +42,37 @@ test_that(".px_resolve_table handles .px suffix", {
   expect_equal(result$px_file, "DT_TEST.px")
   expect_equal(result$paths, character())
 })
+
+test_that(".px_flatten_response keeps time columns typed 't'", {
+  out <- list(
+    columns = list(
+      list(code = "SEX", text = "Sex", type = "d"),
+      list(code = "YEAR", text = "Year", type = "t"),
+      list(code = "POP", text = "Population", type = "c")
+    ),
+    data = list(
+      list(key = list("0", "2024"), values = list("100")),
+      list(key = list("1", "2024"), values = list("60"))
+    )
+  )
+  df <- .px_flatten_response(out)
+  expect_named(df, c("Sex", "Year", "value"))
+  expect_equal(df$Year, c("2024", "2024"))
+  expect_equal(df$value, c(100, 60))
+})
+
+test_that(".px_flatten_response handles empty data and custom value_name", {
+  empty <- .px_flatten_response(list(columns = list(), data = list()))
+  expect_s3_class(empty, "tbl_df")
+  expect_equal(nrow(empty), 0)
+
+  out <- list(
+    columns = list(
+      list(code = "A", text = "A", type = "d"),
+      list(code = "V", text = "V", type = "c")
+    ),
+    data = list(list(key = list("x"), values = list("1.5")))
+  )
+  df <- .px_flatten_response(out, value_name = "pop")
+  expect_equal(df$pop, 1.5)
+})

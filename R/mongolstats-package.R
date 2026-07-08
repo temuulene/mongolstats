@@ -14,7 +14,7 @@
 #'   \item{mn_boundaries}{Get administrative boundaries}
 #' }
 #'
-#' @importFrom utils head tail
+#' @importFrom utils head
 #' @importFrom curl curl_escape
 #' @importFrom stats setNames
 #' @importFrom rlang %||%

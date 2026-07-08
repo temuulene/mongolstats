@@ -25,8 +25,19 @@ test_that("mn_fuzzy_join_by_name returns sf with matches", {
 })
 
 test_that("cache can enable and clear", {
-  dir <- NULL
-  expect_silent(dir <- nso_cache_enable())
+  skip_if_not_installed("memoise")
+  skip_if_not_installed("cachem")
+  skip_if_not_installed("rappdirs")
+  # Never touch the user's real cache dir: use a throwaway dir under tempdir()
+  dir <- file.path(tempdir(), "mongolstats-test-cache")
+  on.exit(
+    {
+      nso_cache_disable()
+      unlink(dir, recursive = TRUE)
+    },
+    add = TRUE
+  )
+  expect_silent(dir <- nso_cache_enable(dir = dir))
   expect_true(dir.exists(dir))
   expect_silent(nso_cache_clear())
   expect_silent(nso_cache_disable())

@@ -17,7 +17,8 @@ nso_package(
 
 \item{labels}{Label handling as in \code{nso_data()}}
 
-\item{parallel}{If TRUE, use future.apply to fetch tables in parallel.}
+\item{parallel}{If TRUE, use future.apply to fetch tables in parallel.
+Defaults to the \code{mongolstats.parallel} option (\code{FALSE}).}
 
 \item{value_name}{Name of the numeric value column in the result (default: "value").}
 

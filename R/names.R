@@ -1,5 +1,23 @@
 # Name normalization and joins
 
+.check_name_col <- function(data, name_col, call = rlang::caller_env()) {
+  if (!is.character(name_col) || length(name_col) != 1L) {
+    cli_abort(
+      "{.arg name_col} must be a single character string.",
+      call = call
+    )
+  }
+  if (!name_col %in% names(data)) {
+    cli_abort(
+      c(
+        "Column {.val {name_col}} not found in {.arg data}.",
+        "i" = "Available columns: {.val {names(data)}}."
+      ),
+      call = call
+    )
+  }
+}
+
 .normalize_str <- function(x) {
   x <- stringi::stri_trans_general(x, "Latin-ASCII")
   x <- stringr::str_to_lower(x)
@@ -46,6 +64,7 @@ mn_boundaries_normalize <- function(g, name_col = "shapeName") {
 #' sf_joined <- mn_join_by_name(pop_data, "aimag", level = "ADM1")
 #' @export
 mn_join_by_name <- function(data, name_col, level = "ADM1", boundaries = NULL) {
+  .check_name_col(data, name_col)
   if (is.null(boundaries)) {
     boundaries <- mn_boundaries(level)
   }
@@ -84,6 +103,7 @@ mn_fuzzy_join_by_name <- function(
   method = c("osa", "lv", "jw", "dl")
 ) {
   method <- match.arg(method)
+  .check_name_col(data, name_col)
   if (is.null(boundaries)) {
     boundaries <- mn_boundaries(level)
   }

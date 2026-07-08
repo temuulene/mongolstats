@@ -7,7 +7,8 @@
 nso_itms_search(query, fields = c("tbl_eng_nm", "tbl_nm"))
 }
 \arguments{
-\item{query}{A single keyword string to search for (case-insensitive).}
+\item{query}{A single keyword string to search for (case-insensitive,
+matched literally).}
 
 \item{fields}{Character vector of column names to search within
 (defaults to English and Mongolian titles).}
@@ -17,7 +18,8 @@ A tibble of matching tables.
 }
 \description{
 Performs a case-insensitive keyword search across the table catalogue,
-matching \code{query} against table names in English and/or Mongolian.
+matching \code{query} literally against table names in English and/or
+Mongolian. For regex searches use \code{\link[=nso_search]{nso_search()}}.
 }
 \examples{
 \dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
