@@ -24,7 +24,9 @@ mn_fuzzy_join_by_name(
 
 \item{max_distance}{Maximum string distance for a match (default 2).}
 
-\item{method}{Distance method passed to \code{stringdist::stringdist}.}
+\item{method}{Distance method passed to \code{stringdist::stringdist}. Ignored
+(base Levenshtein distance is used) when the stringdist package is not
+installed.}
 }
 \value{
 sf with best fuzzy matches joined.

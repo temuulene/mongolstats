@@ -86,7 +86,8 @@ nso_dims <- function(tbl_id) {
 #'
 #' @param tbl_id Table identifier (e.g., "DT_NSO_0300_001V2").
 #' @param dim Dimension name or code (case-insensitive; exact match preferred).
-#' @param labels One of "code", "en", "mn", or "both" to control returned label columns.
+#' @param labels One of "code", "en", "mn", or "both" to control returned
+#'   label columns. "none" is accepted as an alias for "code".
 #' @return A tibble with at least `code`; may include `label_en` and/or `label_mn`.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' values <- nso_dim_values("DT_NSO_0300_001V2", "Year")
@@ -101,6 +102,8 @@ nso_dim_values <- function(
   if (!is.character(dim) || length(dim) != 1L) {
     cli_abort("{.arg dim} must be a single character string.")
   }
+  # Accept the nso_data() vocabulary too: "none" is an alias for "code"
+  if (identical(labels, "none")) labels <- "code"
   labels <- match.arg(labels)
   resolved <- .px_resolve_table(tbl_id)
   px_file <- resolved$px_file

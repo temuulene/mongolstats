@@ -66,7 +66,9 @@ mn_join_by_name <- function(data, name_col, level = "ADM1", boundaries = NULL) {
 #' @param level Boundary level.
 #' @param boundaries Optional pre-fetched boundaries.
 #' @param max_distance Maximum string distance for a match (default 2).
-#' @param method Distance method passed to `stringdist::stringdist`.
+#' @param method Distance method passed to `stringdist::stringdist`. Ignored
+#'   (base Levenshtein distance is used) when the stringdist package is not
+#'   installed.
 #' @return sf with best fuzzy matches joined.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' # Join even with minor spelling differences
@@ -94,10 +96,12 @@ mn_fuzzy_join_by_name <- function(
   if (!length(keys_d) || !length(keys_g)) {
     return(dplyr::left_join(boundaries, d, by = "name_std"))
   }
-  mat <- utils::adist(keys_d, keys_g, partial = FALSE, ignore.case = TRUE)
-  # Prefer 'method' via stringdist if available for better control
-  if (requireNamespace("stringdist", quietly = TRUE)) {
-    mat <- stringdist::stringdistmatrix(keys_d, keys_g, method = method)
+  # Prefer 'method' via stringdist when available; otherwise fall back to
+  # base adist (Levenshtein), in which case `method` is ignored.
+  mat <- if (requireNamespace("stringdist", quietly = TRUE)) {
+    stringdist::stringdistmatrix(keys_d, keys_g, method = method)
+  } else {
+    utils::adist(keys_d, keys_g, partial = FALSE, ignore.case = TRUE)
   }
   best_idx <- apply(mat, 1, which.min)
   best_dst <- mapply(function(i, r) mat[r, i], best_idx, seq_along(best_idx))

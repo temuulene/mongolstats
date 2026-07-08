@@ -1,3 +1,62 @@
+# Session cookie helpers -------------------------------------------------
+# Some PXWeb servers require a session cookie (e.g., rxid) before accepting
+# POST requests. Seeding it costs one GET, so cache it per base URL/language
+# for the R session instead of re-seeding on every data fetch.
+
+.px_cookie_key <- function(lang) {
+  paste0(.px_base_url(), "|", lang)
+}
+
+.px_session_cookie <- function(paths, px_file, lang = .px_lang()) {
+  key <- .px_cookie_key(lang)
+  if (is.null(.mongolstats_px_env$cookies)) {
+    .mongolstats_px_env$cookies <- list()
+  }
+  hit <- .mongolstats_px_env$cookies[[key]]
+  if (!is.null(hit)) {
+    # NA_character_ is the cached "server sets no cookie" sentinel
+    return(if (is.na(hit)) NULL else hit)
+  }
+  cookie <- NULL
+  seeded <- FALSE
+  try(
+    {
+      seed <- httr2::request(.px_url(paths, px_file, lang = lang)) |>
+        httr2::req_user_agent(.nso_user_agent()) |>
+        httr2::req_timeout(.nso_timeout()) |>
+        httr2::req_retry(
+          max_tries = .nso_retry_tries(),
+          backoff = .nso_retry_backoff()
+        ) |>
+        httr2::req_perform()
+      seeded <- TRUE
+      setck <- tryCatch(
+        httr2::resp_header(seed, "set-cookie"),
+        error = function(e) NULL
+      )
+      if (!is.null(setck) && is.character(setck) && length(setck)) {
+        rx <- regmatches(setck, regexpr("rxid=[^;]+", setck))
+        if (length(rx) && nzchar(rx[1])) cookie <- rx[1]
+      }
+    },
+    silent = TRUE
+  )
+  # Only cache when the seed request succeeded; a failed GET should not
+  # pin "no cookie" for the whole session.
+  if (seeded) {
+    .mongolstats_px_env$cookies[[key]] <- cookie %||% NA_character_
+  }
+  cookie
+}
+
+.px_clear_session_cookie <- function(lang = .px_lang()) {
+  key <- .px_cookie_key(lang)
+  if (!is.null(.mongolstats_px_env$cookies)) {
+    .mongolstats_px_env$cookies[[key]] <- NULL
+  }
+  invisible(NULL)
+}
+
 # Fetch data from a PXWeb table
 # Returns tibble with one column per dimension plus a numeric `value` column.
 nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FALSE, value_name = "value") {
@@ -10,29 +69,8 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
   # Map selections to codes first; errors on unknown dimensions/values
   # before any further network activity.
   resolved_sel <- .px_map_selections(vars, selections)
-  # Seed cookie if server uses Set-Cookie (e.g., rxid) to accept POST
-  cookie <- NULL
-  try(
-    {
-      seed <- httr2::request(.px_url(paths, px_file, lang = lang)) |>
-        httr2::req_user_agent(.nso_user_agent()) |>
-        httr2::req_timeout(.nso_timeout()) |>
-        httr2::req_retry(
-          max_tries = .nso_retry_tries(),
-          backoff = .nso_retry_backoff()
-        ) |>
-        httr2::req_perform()
-      setck <- tryCatch(
-        httr2::resp_header(seed, "set-cookie"),
-        error = function(e) NULL
-      )
-      if (!is.null(setck) && is.character(setck) && length(setck)) {
-        rx <- regmatches(setck, regexpr("rxid=[^;]+", setck))
-        if (length(rx) && nzchar(rx[1])) cookie <- rx[1]
-      }
-    },
-    silent = TRUE
-  )
+  # Session cookie (e.g., rxid), cached per base URL for the session
+  cookie <- .px_session_cookie(paths, px_file, lang = lang)
   # Build query: every variable in the table is included.
   q <- lapply(vars, function(v) {
     list(
@@ -84,6 +122,9 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
           (inherits(resp, "httr2_response") &&
            !is.null(httr2::resp_status(resp)) &&
            httr2::resp_status(resp) >= 400)) {
+    # Drop the cached session cookie: it may have expired, and the next
+    # call should reseed rather than reuse a stale session.
+    .px_clear_session_cookie(lang)
     # Capture error details for better debugging
     err_details <- if (inherits(resp, "httr2_response")) {
       status <- httr2::resp_status(resp)

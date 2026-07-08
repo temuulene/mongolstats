@@ -14,7 +14,8 @@ nso_fetch(
 \arguments{
 \item{x}{An \code{nso_query} object.}
 
-\item{labels}{One of "code", "en", "mn", or "both" (mapped to internal API).}
+\item{labels}{One of "code", "en", "mn", or "both". "none" is accepted
+as an alias for "code" (matching \code{\link[=nso_data]{nso_data()}}).}
 
 \item{value_name}{Name of the numeric value column in the result (default: "value").}
 

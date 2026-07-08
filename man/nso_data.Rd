@@ -17,7 +17,8 @@ nso_data(
 
 \item{selections}{Named list mapping variable labels (e.g., Year, Sex) to desired codes or labels.}
 
-\item{labels}{Label handling: "none" (codes only), "en", "mn", or "both".}
+\item{labels}{Label handling: "none" (codes only), "en", "mn", or "both".
+"code" is accepted as an alias for "none" (matching \code{\link[=nso_fetch]{nso_fetch()}}).}
 
 \item{value_name}{Name of the numeric value column in the result (default: "value").}
 

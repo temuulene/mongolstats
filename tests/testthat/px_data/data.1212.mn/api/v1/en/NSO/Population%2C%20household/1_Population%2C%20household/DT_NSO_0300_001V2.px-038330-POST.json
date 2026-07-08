@@ -1,0 +1,46 @@
+{
+    "columns": [
+        {
+            "code": "Хүйс",
+            "text": "Sex",
+            "type": "d"
+        },
+        {
+            "code": "Нас",
+            "text": "Age",
+            "type": "d"
+        },
+        {
+            "code": "Он",
+            "text": "Year",
+            "type": "d"
+        },
+        {
+            "code": "RESIDENT POPULATION IN MONGOLIA, by sex, single year of age, and by year",
+            "text": "RESIDENT POPULATION IN MONGOLIA, by sex, single year of age, and by year",
+            "type": "c"
+        }
+    ],
+    "comments": [
+
+    ],
+    "data": [
+        {
+            "key": [
+                "0",
+                "0",
+                "1"
+            ],
+            "values": [
+                "3448838"
+            ]
+        }
+    ],
+    "metadata": [
+        {
+            "updated": "2026-04-09T00:00:00Z",
+            "label": "RESIDENT POPULATION IN MONGOLIA, by sex, single year of age, and by year by Sex, Age and Year",
+            "source": "Population statistics"
+        }
+    ]
+}
