@@ -17,7 +17,7 @@ A tibble with columns: \code{dim} (display name), \code{code} (dimension code),
 Returns one row per dimension with basic metadata.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 dims <- nso_dims("DT_NSO_0300_001V2")
 dims
 \dontshow{\}) # examplesIf}

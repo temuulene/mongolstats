@@ -47,7 +47,7 @@ nso_px_variables <- function(tbl_id) {
 #' @param tbl_id Table identifier (e.g., "DT_NSO_0300_001V2").
 #' @return A tibble with columns: `dim` (display name), `code` (dimension code),
 #'   `is_time` (logical), and `n_values` (number of values for the dimension).
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' dims <- nso_dims("DT_NSO_0300_001V2")
 #' dims
 #' @export
@@ -88,7 +88,7 @@ nso_dims <- function(tbl_id) {
 #' @param dim Dimension name or code (case-insensitive; exact match preferred).
 #' @param labels One of "code", "en", "mn", or "both" to control returned label columns.
 #' @return A tibble with at least `code`; may include `label_en` and/or `label_mn`.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' values <- nso_dim_values("DT_NSO_0300_001V2", "Year")
 #' head(values)
 #' @export
@@ -211,7 +211,7 @@ nso_dim_values <- function(
 #' @param tbl_id Table identifier (e.g., "DT_NSO_0300_001V2").
 #' @return A tibble with columns: `dim` (display name), `code` (dimension code),
 #'   `is_time` (logical), `n_values` (integer), and `codes` (list of tibbles).
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' meta <- nso_table_meta("DT_NSO_0300_001V2")
 #' meta
 #' @export

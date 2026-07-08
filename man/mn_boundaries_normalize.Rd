@@ -20,7 +20,7 @@ lowercasing, and stripping special characters from place names. This
 enables reliable joins between NSO data and administrative boundary polygons.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 aimags <- mn_boundaries("ADM1")
 aimags <- mn_boundaries_normalize(aimags)
 head(aimags$name_std)

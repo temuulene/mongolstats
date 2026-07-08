@@ -60,71 +60,19 @@ print.nso_query <- function(x, ...) {
 
 # Internal: build a PXWeb JSON body from selections
 .px_build_body <- function(tbl_id, selections, lang = .px_lang()) {
-  idx <- .px_index()
-  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) {
-    tbl_id
-  } else {
-    paste0(tbl_id, ".px")
-  }
-  row <- idx[idx$px_file == px_file, , drop = FALSE]
-  if (!nrow(row)) {
-    stop("Table not found in PXWeb index: ", tbl_id)
-  }
-  paths <- if (nzchar(row$px_path[1])) {
-    strsplit(row$px_path[1], "/", fixed = TRUE)[[1]]
-  } else {
-    character()
-  }
-  meta <- .px_meta_cached(paths, px_file, lang = lang)
+  resolved <- .px_resolve_table(tbl_id)
+  meta <- .px_meta_cached(resolved$paths, resolved$px_file, lang = lang)
   vars <- meta$variables
-  q <- list()
-  sel_names <- tolower(names(selections))
-  for (v in vars) {
-    vname <- tolower(.px_first_nonempty(v$text, v$code, ""))
-    vv <- .px_chr(v$values)
-    vt <- .px_chr(v$valueTexts)
-    if (vname %in% sel_names) {
-      vals <- as.character(selections[[which(sel_names == vname)[1]]])
-      if (length(vt) && !all(vals %in% vv) && any(vals %in% vt)) {
-        idxs <- match(vals, vt)
-        vals <- vv[idxs]
-      }
-      if (length(vv) && !all(vals %in% vv)) {
-        bad <- unique(setdiff(vals, vv))
-        ex_codes <- paste(utils::head(vv, 5), collapse = ", ")
-        ex_labs <- tryCatch(
-          {
-            labs <- .px_chr(v$valueTexts)
-            if (length(labs)) {
-              paste(utils::head(labs, 5), collapse = ", ")
-            } else {
-              NA_character_
-            }
-          },
-          error = function(e) NA_character_
-        )
-        msg <- sprintf(
-          "Invalid selection for '%s': %s. Available codes include: %s",
-          .px_first_nonempty(v$text, v$code, vname),
-          paste(bad, collapse = ", "),
-          ex_codes
-        )
-        if (!is.na(ex_labs)) {
-          msg <- paste0(msg, "; labels include: ", ex_labs)
-        }
-        stop(msg)
-      }
-      q[[length(q) + 1]] <- list(
-        code = v$code,
-        selection = list(filter = "item", values = I(as.character(vals)))
+  resolved_sel <- .px_map_selections(vars, selections)
+  q <- lapply(vars, function(v) {
+    list(
+      code = v$code,
+      selection = list(
+        filter = "item",
+        values = I(as.character(resolved_sel[[as.character(v$code)]]))
       )
-    } else {
-      q[[length(q) + 1]] <- list(
-        code = v$code,
-        selection = list(filter = "item", values = I(as.character(vv)))
-      )
-    }
-  }
+    )
+  })
   list(query = q, response = list(format = "json"))
 }
 
@@ -133,7 +81,7 @@ print.nso_query <- function(x, ...) {
 #' @param x An `nso_query` object.
 #' @param lang PX language: "en" or "mn" (defaults to current option).
 #' @return A list suitable to send as JSON body to PXWeb.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' q <- nso_query("DT_NSO_0300_001V2", list(Year = "2023"))
 #' body <- as_px_query(q)
 #' @export
@@ -155,7 +103,7 @@ as_px_query <- function(x, lang = .px_lang()) {
 #' @param value_name Name of the numeric value column in the result (default: "value").
 #' @param include_raw If TRUE, attach the raw PX payload as attribute `px_raw`.
 #' @return A tibble.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' q <- nso_query("DT_NSO_0300_001V2", list(Year = "2023"))
 #' data <- nso_fetch(q)
 #' head(data)

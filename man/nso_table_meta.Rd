@@ -20,7 +20,7 @@ where each element is a tibble of codes and labels (\code{code}, \code{label_en}
 categories per dimension.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 meta <- nso_table_meta("DT_NSO_0300_001V2")
 meta
 \dontshow{\}) # examplesIf}

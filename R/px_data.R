@@ -7,6 +7,9 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
   paths <- resolved$paths
   meta <- .px_meta_cached(paths, px_file, lang = lang)
   vars <- meta$variables
+  # Map selections to codes first; errors on unknown dimensions/values
+  # before any further network activity.
+  resolved_sel <- .px_map_selections(vars, selections)
   # Seed cookie if server uses Set-Cookie (e.g., rxid) to accept POST
   cookie <- NULL
   try(
@@ -30,74 +33,19 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
     },
     silent = TRUE
   )
-  # Build query: ensure every variable in the table is included.
-  q <- list()
-  sel_names <- tolower(names(selections))
-  for (v in vars) {
-    vname <- tolower(.px_first_nonempty(v$text, v$code, ""))
-    vv <- .px_chr(v$values)
-    vt <- .px_chr(v$valueTexts)
-    if (vname %in% sel_names) {
-      # User-provided selection for this variable
-      vals <- as.character(selections[[which(sel_names == vname)[1]]])
-      # If labels provided, map to codes (prioritize codes over labels)
-      if (length(vt) && !all(vals %in% vv) && any(vals %in% vt)) {
-        idxs <- match(vals, vt)
-        vals <- vv[idxs]
-      }
-      # Validate
-      if (length(vv) && !all(vals %in% vv)) {
-        bad <- unique(setdiff(vals, vv))
-        ex_labs <- tryCatch(
-          {
-            labs <- .px_chr(v$valueTexts)
-            if (length(labs)) {
-              paste(utils::head(labs, 5), collapse = ", ")
-            } else {
-              NA_character_
-            }
-          },
-          error = function(e) NA_character_
-        )
-        cli_abort(c(
-          "Invalid selection for {.field {.px_first_nonempty(v$text, v$code, vname)}}:",
-          "x" = "Unknown value{?s}: {.val {bad}}.",
-          "i" = "Available codes: {.val {utils::head(vv, 5)}}.",
-          if (!is.na(ex_labs)) c("i" = "Available labels: {.val {utils::head(.px_chr(v$valueTexts), 5)}}.")
-        ))
-      }
-      q[[length(q) + 1]] <- list(
-        code = v$code,
-        selection = list(filter = "item", values = I(as.character(vals)))
+  # Build query: every variable in the table is included.
+  q <- lapply(vars, function(v) {
+    list(
+      code = v$code,
+      selection = list(
+        filter = "item",
+        values = I(as.character(resolved_sel[[as.character(v$code)]]))
       )
-    } else {
-      # Not specified: select all explicit codes for this variable
-      q[[length(q) + 1]] <- list(
-        code = v$code,
-        selection = list(filter = "item", values = I(as.character(vv)))
-      )
-    }
-  }
+    )
+  })
   body <- list(query = q, response = list(format = "json"))
-  # Build pxweb-style named query for fallback
-  px_query <- stats::setNames(
-    vector("list", length(vars)),
-    vapply(vars, function(v) v$code, character(1))
-  )
-  for (v in vars) {
-    vname <- .px_first_nonempty(v$text, v$code, "")
-    vv <- .px_chr(v$values)
-    vt <- .px_chr(v$valueTexts)
-    if (tolower(vname) %in% sel_names) {
-      vals <- as.character(selections[[which(sel_names == tolower(vname))[1]]])
-      if (length(vt) && !all(vals %in% vv) && any(vals %in% vt)) {
-        vals <- vv[match(vals, vt)]
-      }
-      px_query[[v$code]] <- vals
-    } else {
-      px_query[[v$code]] <- vv
-    }
-  }
+  # pxweb-style named query for fallback: same shape as resolved_sel
+  px_query <- resolved_sel
   url <- .px_url(paths, px_file, lang = lang)
   # Try both with and without the .px suffix as some PXWeb servers differ
   url_variants <- unique(c(url, sub("\\.px$", "", url)))

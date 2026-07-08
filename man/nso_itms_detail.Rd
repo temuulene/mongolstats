@@ -20,7 +20,7 @@ Returns detailed variable metadata for a single table, including field
 names, item IDs, and labels in English and Mongolian when available.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 vars <- nso_itms_detail("DT_NSO_0300_001V2")
 vars
 \dontshow{\}) # examplesIf}

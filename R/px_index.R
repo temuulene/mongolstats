@@ -136,9 +136,9 @@ nso_px_tables <- function() {
 
 #'   is provided, `FALSE` otherwise.
 #' @return A tibble containing the rebuilt table index.
-#' @examplesIf curl::has_internet()
-#' # Rebuild in-memory index only (takes time to crawl API)
-#' \donttest{
+#' @examples
+#' # Crawls the entire PXWeb catalogue; takes several minutes
+#' \dontrun{
 #' idx <- nso_rebuild_px_index()
 #' head(idx)
 #' }

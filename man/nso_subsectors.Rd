@@ -19,7 +19,7 @@ path id obtained from \code{\link[=nso_sectors]{nso_sectors()}} or a previous \c
 call to list its children (sub-sectors or tables).
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 sectors <- nso_sectors()
 nso_subsectors(sectors$id[1])
 \dontshow{\}) # examplesIf}

@@ -34,5 +34,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Temuulen Enebish \email{temuulen@gmail.com} [copyright holder]
 
+Authors:
+\itemize{
+  \item Temuulen Enebish \email{temuulen@gmail.com} [copyright holder]
+}
+
 }
 \keyword{internal}

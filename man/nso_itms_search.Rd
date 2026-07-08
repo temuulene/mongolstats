@@ -20,7 +20,7 @@ Performs a case-insensitive keyword search across the table catalogue,
 matching \code{query} against table names in English and/or Mongolian.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 # Search for population tables
 nso_itms_search("population")
 \dontshow{\}) # examplesIf}

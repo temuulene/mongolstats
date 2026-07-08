@@ -18,7 +18,7 @@ including normalized names, without the full geometry. Useful for building
 custom crosswalks between NSO data and boundary identifiers.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 keys <- mn_boundary_keys("ADM1")
 head(keys)
 \dontshow{\}) # examplesIf}

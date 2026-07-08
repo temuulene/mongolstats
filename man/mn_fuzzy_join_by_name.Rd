@@ -35,7 +35,7 @@ polygons. Useful when place-name spellings differ slightly between
 datasets (e.g., "Ulanbatar" vs "Ulaanbaatar").
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 # Join even with minor spelling differences
 pop_data <- data.frame(aimag = c("Ulanbatar", "Darhan"), pop = c(1500000, 100000))
 sf_joined <- mn_fuzzy_join_by_name(pop_data, "aimag", level = "ADM1")

@@ -19,7 +19,7 @@ National Statistics Office PXWeb API. Uses the embedded index by default
 for fast startup; call \code{\link[=nso_rebuild_px_index]{nso_rebuild_px_index()}} to refresh from the API.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 # List all available tables
 tables <- nso_itms()
 head(tables)

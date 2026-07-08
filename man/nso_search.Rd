@@ -22,7 +22,7 @@ optionally filtered to a specific sector. Searches table names in
 English and/or Mongolian by default.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 nso_search("population")
 \dontshow{\}) # examplesIf}
 }

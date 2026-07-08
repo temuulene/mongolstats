@@ -24,6 +24,30 @@ check_selections <- function(selections, call = rlang::caller_env()) {
       call = call
     )
   }
+  if (length(selections)) {
+    nms <- names(selections)
+    if (is.null(nms) || any(is.na(nms)) || any(!nzchar(nms))) {
+      cli_abort(
+        c(
+          "All elements of {.arg selections} must be named.",
+          "i" = "Use {.code list(Year = \"2023\", Sex = \"Total\")}."
+        ),
+        class = "mongolstats_selection_error",
+        call = call
+      )
+    }
+    dups <- unique(nms[duplicated(tolower(nms))])
+    if (length(dups)) {
+      cli_abort(
+        c(
+          "Duplicated name{?s} in {.arg selections}: {.val {dups}}.",
+          "i" = "Combine values into one vector, e.g. {.code list(Year = c(\"2023\", \"2024\"))}."
+        ),
+        class = "mongolstats_selection_error",
+        call = call
+      )
+    }
+  }
 }
 
 #' @keywords internal

@@ -17,7 +17,7 @@ Filters the table catalogue to only those belonging to a given sector
 or sub-sector path, as returned by \code{\link[=nso_sectors]{nso_sectors()}} or \code{\link[=nso_subsectors]{nso_subsectors()}}.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 sectors <- nso_sectors()
 tables <- nso_itms_by_sector(sectors$id[1])
 \dontshow{\}) # examplesIf}

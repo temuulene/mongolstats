@@ -29,7 +29,7 @@ dimension and a numeric \code{value} column. Use \code{labels} to add \verb{_en}
 columns for each dimension.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 q <- nso_query("DT_NSO_0300_001V2", list(Year = "2023"))
 data <- nso_fetch(q)
 head(data)

@@ -24,7 +24,7 @@ normalized place names. Both sides are normalized via transliteration and
 lowercasing before joining.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 pop_data <- data.frame(aimag = c("Ulaanbaatar", "Darkhan-Uul"), pop = c(1500000, 100000))
 sf_joined <- mn_join_by_name(pop_data, "aimag", level = "ADM1")
 \dontshow{\}) # examplesIf}
