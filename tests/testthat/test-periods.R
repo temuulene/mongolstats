@@ -31,6 +31,13 @@ test_that("nso_period_seq rejects malformed periods", {
   # NA and vectors
   expect_error(nso_period_seq(NA, "2024"), class = "rlang_error")
   expect_error(nso_period_seq(c("2020", "2021"), "2024"), class = "rlang_error")
+  # trailing garbage after a valid year prefix
+  expect_error(nso_period_seq("2024abc", "2025"), class = "rlang_error")
+  expect_error(nso_period_seq("2024-06", "2025"), class = "rlang_error")
+})
+
+test_that("nso_period_seq yearly accepts YYYYMM and uses the year part", {
+  expect_equal(nso_period_seq("202301", "202512"), c("2023", "2024", "2025"))
 })
 
 test_that("nso_table_periods handles unknown tbl_id", {

@@ -1,10 +1,33 @@
 # High-level search utility
 
+# Shared predicate for catalogue searches over selected fields.
+# `fixed = TRUE` treats `query` as a literal keyword; otherwise it is a
+# case-insensitive regex. Rows where every searched field is NA are dropped.
+.search_index <- function(itms, query, fields, fixed = FALSE) {
+  if (!nrow(itms)) {
+    return(itms)
+  }
+  needle <- stringr::str_to_lower(query)
+  pattern <- if (fixed) stringr::fixed(needle) else stringr::regex(needle)
+  pred <- Reduce(
+    `|`,
+    lapply(fields, function(f) {
+      if (f %in% names(itms)) {
+        stringr::str_detect(stringr::str_to_lower(itms[[f]]), pattern)
+      } else {
+        FALSE
+      }
+    })
+  )
+  itms[pred & !is.na(pred), , drop = FALSE]
+}
+
 #' Search NSO tables
 #'
 #' Performs a case-insensitive regex search across the table catalogue,
 #' optionally filtered to a specific sector. Searches table names in
-#' English and/or Mongolian by default.
+#' English and/or Mongolian by default. For a literal keyword search use
+#' [nso_itms_search()].
 #'
 #' @param query Search string (regex, case-insensitive).
 #' @param sector Optional sector/subsector `list_id` to filter results.
@@ -26,18 +49,5 @@ nso_search <- function(
       drop = FALSE
     ]
   }
-  pred <- Reduce(
-    `|`,
-    lapply(fields, function(f) {
-      if (f %in% names(itms)) {
-        stringr::str_detect(
-          stringr::str_to_lower(itms[[f]]),
-          stringr::str_to_lower(query)
-        )
-      } else {
-        FALSE
-      }
-    })
-  )
-  itms[pred & !is.na(pred), , drop = FALSE]
+  .search_index(itms, query, fields, fixed = FALSE)
 }

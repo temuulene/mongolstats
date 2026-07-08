@@ -7,6 +7,14 @@ test_that("name normalization produces expected tokens", {
   )
 })
 
+test_that("join helpers error clearly on a missing name column", {
+  d <- data.frame(aimag = "Ulaanbaatar", pop = 1)
+  # Errors before any boundary download, naming the missing column
+  expect_error(mn_join_by_name(d, "region"), "region")
+  expect_error(mn_fuzzy_join_by_name(d, "region"), "region")
+  expect_error(mn_join_by_name(d, c("a", "b")), "single character")
+})
+
 test_that("fuzzy join falls back gracefully when inputs are empty", {
   skip_on_cran()
   d <- data.frame(name = character(), value = numeric())

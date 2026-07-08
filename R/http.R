@@ -1,11 +1,4 @@
-# Internal HTTP utilities for NSO endpoints (PXWeb/default)
-
-# Base URL and behavior are option-driven to allow overrides
-# Default to HTTPS; users can set options(mongolstats.base_url = "http://...") if needed
-.nso_base_url <- function() {
-  # Default to PXWeb UI base; low-level helpers can be reused for future endpoints
-  getOption("mongolstats.base_url", default = "https://data.1212.mn/pxweb")
-}
+# Internal HTTP utilities for NSO endpoints (PXWeb)
 
 .nso_user_agent <- function() {
   ver <- tryCatch(
@@ -24,10 +17,12 @@
 }
 
 .nso_retry_backoff <- function() {
-  # returns a formula or numeric used by httr2::req_retry backoff
+  # returns a function/formula or numeric used by httr2::req_retry backoff;
+  # as an rlang lambda the attempt number is `.x` (`..attempt` does not
+  # exist and crashed the request on the first retry)
   getOption(
     "mongolstats.retry_backoff",
-    default = ~ runif(1, 0.25, 0.75) * 2^(..attempt - 1)
+    default = ~ runif(1, 0.25, 0.75) * 2^(.x - 1)
   )
 }
 
@@ -39,107 +34,39 @@
   isTRUE(getOption("mongolstats.offline", FALSE))
 }
 
-.nso_req <- function(path, query = list(type = "json")) {
-  req <- httr2::request(.nso_base_url()) |>
-    httr2::req_url_path_append(path) |>
-    httr2::req_user_agent(.nso_user_agent()) |>
-    httr2::req_headers(Accept = "application/json, text/json") |>
-    httr2::req_url_query(!!!query) |>
-    httr2::req_timeout(.nso_timeout()) |>
-    httr2::req_retry(
-      max_tries = .nso_retry_tries(),
-      backoff = .nso_retry_backoff()
-    )
-  if (.nso_verbose()) {
-    url <- tryCatch(httr2::req_url(req), error = function(e) NA_character_) # nolint object_usage_linter. Used in cli_inform() below.
-    cli_inform("mongolstats: GET/POST setup for {.url {url}}")
-  }
-  req
-}
-
 .nso_perform <- function(req) {
   if (.nso_offline()) {
-    cond <- structure(
-      list(
-        message = "mongolstats is in offline mode; network requests are disabled.",
-        call = NULL
-      ),
-      class = c("mongolstats_offline_error", "error", "condition")
-    )
     cli_abort(
-      conditionMessage(cond),
+      "mongolstats is in offline mode; network requests are disabled.",
       class = "mongolstats_offline_error"
     )
   }
-  # Perform request; raise typed error on HTTP failure
+  if (.nso_verbose()) {
+    url <- req$url %||% NA_character_ # nolint object_usage_linter. Used in cli_inform() below.
+    cli_inform("mongolstats: request to {.url {url}}")
+  }
+  # Perform request; raise typed error on failure. httr2 already errors on
+  # HTTP 4xx/5xx, so both transport and HTTP failures land here.
   resp <- tryCatch(httr2::req_perform(req), error = function(e) e)
   if (inherits(resp, "error")) {
-    cli_abort(
-      conditionMessage(resp),
-      class = "mongolstats_http_error"
-    )
-  }
-  status <- httr2::resp_status(resp)
-  if (!is.null(status) && status >= 400) {
-    desc <- tryCatch(httr2::resp_status_desc(resp), error = function(e) {
-      "HTTP error"
-    })
-    url <- tryCatch(
-      httr2::req_url(httr2::resp_request(resp)),
-      error = function(e) NA_character_
-    )
+    status <- if (inherits(resp, "httr2_http")) {
+      tryCatch(httr2::resp_status(resp$resp), error = function(e) NULL)
+    } else {
+      NULL
+    }
     msg <- paste0(
-      "mongolstats HTTP ",
-      status,
+      "mongolstats HTTP error",
+      if (!is.null(status)) paste0(" (status ", status, ")"),
       ": ",
-      desc,
-      if (!is.na(url)) paste0(" [", url, "]") else ""
-    )
-    cond <- structure(
-      list(message = msg, call = NULL, status = status),
-      class = c("mongolstats_http_error", "error", "condition")
+      conditionMessage(resp),
+      if (!is.null(req$url)) paste0(" [", req$url, "]")
     )
     cli_abort(
-      conditionMessage(cond),
+      msg,
       class = "mongolstats_http_error"
     )
   }
   resp
-}
-
-.nso_get <- function(path, query = list(type = "json")) {
-  resp <- .nso_req(path, query = query) |>
-    .nso_perform()
-  txt <- httr2::resp_body_string(resp)
-  jsonlite::fromJSON(txt, simplifyVector = FALSE)
-}
-
-.nso_post <- function(path, body, query = list(type = "json")) {
-  req <- .nso_req(path, query = query) |>
-    httr2::req_body_json(body)
-  resp <- .nso_perform(req)
-  txt <- httr2::resp_body_string(resp)
-  jsonlite::fromJSON(txt, simplifyVector = FALSE)
-}
-
-.compact <- function(x) {
-  # drop NULL elements recursively
-  if (is.list(x)) {
-    x <- x[!vapply(x, is.null, logical(1))]
-    x <- lapply(x, .compact)
-  }
-  x
-}
-
-.as_tibble_df <- function(x) {
-  # turn a list of records into a tibble (empty safe)
-  if (is.null(x) || length(x) == 0) {
-    return(tibble::tibble())
-  }
-  tibble::as_tibble(jsonlite::fromJSON(
-    jsonlite::toJSON(x),
-    simplifyVector = TRUE
-  ))
 }
 
 #' Enable offline mode

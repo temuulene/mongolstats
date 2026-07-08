@@ -8,6 +8,10 @@
 }
 
 .px_session_cookie <- function(paths, px_file, lang = .px_lang()) {
+  # Offline mode must not fire the seeding GET (it bypasses .nso_perform())
+  if (.nso_offline()) {
+    return(NULL)
+  }
   key <- .px_cookie_key(lang)
   if (is.null(.mongolstats_px_env$cookies)) {
     .mongolstats_px_env$cookies <- list()
@@ -173,7 +177,21 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
     httr2::resp_body_string(resp),
     simplifyVector = FALSE
   )
-  # Flatten PXWeb response
+  df <- .px_flatten_response(out, value_name = value_name)
+  # Optionally attach raw PX payload for debugging/advanced use
+  if (isTRUE(include_raw)) {
+    attr(df, "px_raw") <- out
+  }
+  df
+}
+
+# Flatten a PXWeb JSON response (list with $columns and $data) into a tibble
+# with one column per dimension plus a numeric value column. Per the PXWeb
+# convention key columns are typed "d" (dimension) or "t" (time); NSO
+# currently types its time column "d", but both must be kept because each
+# row's $key spans every non-content column; dropping "t" columns would
+# misalign the keys with the column names.
+.px_flatten_response <- function(out, value_name = "value") {
   cols <- out$columns
   dat <- out$data
   if (length(dat) == 0) {
@@ -181,7 +199,10 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
   }
 
   # Filter columns by type (cols is a list, not a data frame)
-  dim_cols <- Filter(function(col) !is.null(col$type) && col$type == "d", cols)
+  dim_cols <- Filter(
+    function(col) !is.null(col$type) && col$type %in% c("d", "t"),
+    cols
+  )
   dim_names <- vapply(
     seq_along(dim_cols),
     function(i) {
@@ -200,7 +221,6 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
   dim_names <- make.unique(dim_names)
 
   # Build data frame of keys and values
-  # OPTIMIZATION: Use dplyr::bind_rows instead of do.call(rbind, lapply(...))
   keys <- dplyr::bind_rows(lapply(dat, function(d) {
     stats::setNames(as.list(unlist(d$key)), dim_names)
   }))
@@ -211,12 +231,7 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
     character(1)
   )
 
-  # Build final tibble with configurable value column name
   df <- tibble::as_tibble(keys)
   df[[value_name]] <- suppressWarnings(as.numeric(vals))
-  # Optionally attach raw PX payload for debugging/advanced use
-  if (isTRUE(include_raw)) {
-    attr(df, "px_raw") <- out
-  }
   df
 }
