@@ -21,7 +21,7 @@ nso_period_seq <- function(start, end, by = c("Y", "M")) {
   end <- as.character(end)
   # Yearly accepts YYYY (or YYYYMM, using the year part); monthly requires
   # YYYYMM with a valid month.
-  pat <- if (by == "Y") "^[0-9]{4}" else "^[0-9]{4}(0[1-9]|1[0-2])$"
+  pat <- if (by == "Y") "^[0-9]{4}([0-9]{2})?$" else "^[0-9]{4}(0[1-9]|1[0-2])$"
   fmt <- if (by == "Y") "YYYY" else "YYYYMM" # nolint object_usage_linter. Used in cli_abort() below.
   check_period <- function(x, arg) {
     if (length(x) != 1L || is.na(x) || !grepl(pat, x)) {
@@ -84,10 +84,14 @@ nso_table_periods <- function(tbl_id) {
   if (is.null(meta) || is.null(meta$variables)) {
     return(character())
   }
-  # Prefer a variable flagged as time or named Year
+  # Prefer a variable flagged as time or named Year (NSO omits the time
+  # flag, so fall back on the display name in either language;
+  # the Cyrillic entry is Mongolian "on" = Year)
   vars <- meta$variables
   vi <- purrr::detect_index(vars, function(v) {
-    isTRUE(v$time) || tolower(v$text %||% "") %in% c("year", "time")
+    isTRUE(v$time) ||
+      stringr::str_to_lower(v$text %||% "") %in%
+        c("year", "time", "\u043e\u043d")
   })
   if (!vi) {
     return(character())

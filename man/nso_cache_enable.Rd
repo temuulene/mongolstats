@@ -20,6 +20,7 @@ Caches table lists and codebooks on disk to speed up repeated calls.
 Optionally set a time-to-live (TTL) for cache entries.
 }
 \examples{
+\dontshow{if (requireNamespace("memoise", quietly = TRUE) && requireNamespace("cachem", quietly = TRUE) && requireNamespace("rappdirs", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 # Enable caching in a temporary directory (for demo purposes)
 cache_dir <- nso_cache_enable(dir = tempdir())
 
@@ -28,4 +29,5 @@ nso_cache_status()
 
 # Disable when done
 nso_cache_disable()
+\dontshow{\}) # examplesIf}
 }

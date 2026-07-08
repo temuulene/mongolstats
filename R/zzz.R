@@ -1,7 +1,6 @@
 .onLoad <- function(libname, pkgname) {
   op <- options()
   op.mongolstats <- list(
-    mongolstats.base_url = "https://data.1212.mn/pxweb",
     mongolstats.px_base_url = "https://data.1212.mn/api/v1",
     mongolstats.lang = "en",
     mongolstats.px_db = "NSO",
@@ -11,6 +10,7 @@
     mongolstats.verbose = FALSE,
     mongolstats.offline = FALSE,
     mongolstats.progress = TRUE,
+    mongolstats.parallel = FALSE,
     mongolstats.default_labels = "none",
     mongolstats.value_name = "value",
     mongolstats.attach_raw = FALSE

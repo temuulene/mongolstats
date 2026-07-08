@@ -20,7 +20,6 @@
 #' @export
 nso_options <- function(...) {
   opts_prefix <- c(
-    "mongolstats.base_url",
     "mongolstats.px_base_url",
     "mongolstats.lang",
     "mongolstats.px_db",
@@ -31,6 +30,7 @@ nso_options <- function(...) {
     "mongolstats.offline",
     "mongolstats.default_labels",
     "mongolstats.progress",
+    "mongolstats.parallel",
     "mongolstats.value_name",
     "mongolstats.attach_raw"
   )

@@ -100,7 +100,8 @@ as_px_query <- function(x, lang = .px_lang()) {
 #'
 #' @param x An `nso_query` object.
 #' @param labels One of "code", "en", "mn", or "both". "none" is accepted
-#'   as an alias for "code" (matching [nso_data()]).
+#'   as an alias for "code" (matching [nso_data()]). Defaults to the
+#'   `mongolstats.default_labels` option, like [nso_data()].
 #' @param value_name Name of the numeric value column in the result (default: "value").
 #' @param include_raw If TRUE, attach the raw PX payload as attribute `px_raw`.
 #' @return A tibble.
@@ -117,6 +118,9 @@ nso_fetch <- function(
 ) {
   if (!inherits(x, "nso_query")) {
     cli_abort("{.arg x} must be an {.cls nso_query} object.")
+  }
+  if (missing(labels)) {
+    labels <- getOption("mongolstats.default_labels", "code")
   }
   # Accept the nso_data() vocabulary too: "none" is an alias for "code"
   if (identical(labels, "none")) labels <- "code"
