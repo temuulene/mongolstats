@@ -8,7 +8,7 @@
 #'
 #' @return A tibble with columns: `px_path`, `px_file`, `tbl_id`, `tbl_eng_nm`,
 #'   `tbl_nm`, `strt_prd`, `end_prd`, `list_id`.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' # List all available tables
 #' tables <- nso_itms()
 #' head(tables)
@@ -31,7 +31,7 @@ nso_itms <- function() {
 #'
 #' @param tbl_id Table identifier (e.g., "DT_NSO_0300_001V2").
 #' @return A tibble with variable metadata.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' vars <- nso_itms_detail("DT_NSO_0300_001V2")
 #' vars
 #' @export
@@ -50,7 +50,7 @@ nso_itms_detail <- function(tbl_id) {
 #' @param fields Character vector of column names to search within
 #'   (defaults to English and Mongolian titles).
 #' @return A tibble of matching tables.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' # Search for population tables
 #' nso_itms_search("population")
 #' @export
@@ -83,7 +83,7 @@ nso_itms_search <- function(query, fields = c("tbl_eng_nm", "tbl_nm")) {
 #'
 #' @param list_id Path string from `nso_sectors()`/`nso_subsectors()` `id`.
 #' @return A tibble of tables matching the specified sector path.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' sectors <- nso_sectors()
 #' tables <- nso_itms_by_sector(sectors$id[1])
 #' @export

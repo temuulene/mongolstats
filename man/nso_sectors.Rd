@@ -15,7 +15,7 @@ Queries the PXWeb API root to return the top-level statistical sectors
 with \code{\link[=nso_subsectors]{nso_subsectors()}} to drill into sub-categories.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 sectors <- nso_sectors()
 head(sectors)
 \dontshow{\}) # examplesIf}

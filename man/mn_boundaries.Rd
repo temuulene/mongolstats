@@ -17,7 +17,7 @@ Downloads Mongolia boundaries for ADM0/ADM1/ADM2 from the GeoBoundaries API
 and returns an \code{sf} object. Results can be cached by the caller as needed.
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 # Get aimag (province) boundaries
 aimags <- mn_boundaries("ADM1")
 head(aimags)

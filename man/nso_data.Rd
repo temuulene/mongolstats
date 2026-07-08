@@ -42,7 +42,7 @@ Example: \code{selections = list(Month = as.character(0:11))} retrieves the last
 }
 
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 # Fetch population data
 pop <- nso_data(
   tbl_id = "DT_NSO_0300_001V2",

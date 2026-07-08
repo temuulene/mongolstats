@@ -76,7 +76,7 @@
 #'     Example: \code{selections = list(Month = as.character(0:11))} retrieves the last 12 months.
 #' }
 #' @return A tibble with one column per dimension and a numeric value column.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' # Fetch population data
 #' pop <- nso_data(
 #'   tbl_id = "DT_NSO_0300_001V2",
@@ -114,7 +114,7 @@ nso_data <- function(
 #' @param value_name Name of the numeric value column in the result (default: "value").
 #' @return A tibble combining data from all requested tables, with a `tbl_id` column
 #'   identifying the source table.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' reqs <- list(
 #'   list(tbl_id = "DT_NSO_0300_001V2", selections = list(Year = "2023"))
 #' )

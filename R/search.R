@@ -10,7 +10,7 @@
 #' @param sector Optional sector/subsector `list_id` to filter results.
 #' @param fields Character vector of fields to search within.
 #' @return Tibble of matching tables.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' nso_search("population")
 #' @export
 nso_search <- function(

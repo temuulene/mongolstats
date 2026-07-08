@@ -7,7 +7,7 @@
 #'
 #' @param level One of "ADM0", "ADM1", "ADM2".
 #' @return An `sf` object with polygons for the requested level.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' # Get aimag (province) boundaries
 #' aimags <- mn_boundaries("ADM1")
 #' head(aimags)

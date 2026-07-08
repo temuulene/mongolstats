@@ -17,7 +17,7 @@ Inspects the table metadata to find the time dimension and returns its
 available period labels (e.g., years or year-months).
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 periods <- nso_table_periods("DT_NSO_0300_001V2")
 head(periods)
 \dontshow{\}) # examplesIf}

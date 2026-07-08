@@ -150,7 +150,9 @@ air_monthly <- tryCatch(
 # Robust fallback: use cache if API fails, returns no rows, or lacks PM2.5
 if (is.null(air_monthly) || nrow(air_monthly) == 0) {
   air_monthly <- utils::read.csv(
-    system.file("extdata", "air_monthly_cached.csv", package = "mongolstats"),
+    # gzip-compressed to keep the installed package small;
+    # read.csv() decompresses transparently
+    system.file("extdata", "air_monthly_cached.csv.gz", package = "mongolstats"),
     check.names = FALSE,
     stringsAsFactors = FALSE
   )

@@ -1,3 +1,24 @@
+# mongolstats (development version)
+
+## Breaking changes
+
+*   **Stricter selection validation**: `nso_data()`, `nso_package()`, `nso_query()`, and `as_px_query()` now error when a selection name does not match any dimension in the table (previously the selection was silently ignored and the full dimension was fetched), when selections are unnamed, or when two selections target the same dimension. This prevents silently fetching wrong-scope data. Errors carry class `mongolstats_selection_error`.
+
+## Bug fixes
+
+*   **Mixed codes and labels**: Selection values are now mapped element-wise, so codes and labels can be mixed in one vector (e.g. `Sex = c("Total", "1")`). Previously this produced an "Unknown value: NA" error. Duplicated labels in table metadata now produce a warning naming the ambiguous label.
+*   **Consistent errors**: `as_px_query()` now raises the same classed errors as `nso_data()` for invalid selections (previously a plain `stop()`).
+
+## CRAN compliance
+
+*   Network-dependent examples are now guarded with `NOT_CRAN` in addition to `curl::has_internet()`, so they no longer contact the live PXWeb API during CRAN checks. The `nso_rebuild_px_index()` example, which crawls the full catalogue, is wrapped in `\dontrun{}`.
+*   `inst/extdata/air_monthly_cached.csv` is now gzip-compressed (6.4 Mb to 0.3 Mb), bringing the installed package size well under CRAN's threshold. `read.csv()` decompresses it transparently; only the vignette referenced it.
+
+## Internal
+
+*   Selection mapping and validation consolidated into a single helper (`.px_map_selections()`), removing three divergent copies of the logic.
+*   Integration tests resolve dimension codes from live metadata instead of assuming positional codes, so tests no longer break when NSO adds a new period.
+
 # mongolstats 0.1.1
 
 Patch release to fix CRAN check failures on vignette rebuilding.

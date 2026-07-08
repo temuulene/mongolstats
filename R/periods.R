@@ -42,7 +42,7 @@ nso_period_seq <- function(start, end, by = c("Y", "M")) {
 #'
 #' @param tbl_id Table identifier.
 #' @return Character vector of period labels (e.g., years)
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' periods <- nso_table_periods("DT_NSO_0300_001V2")
 #' head(periods)
 #' @export

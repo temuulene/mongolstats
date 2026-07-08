@@ -7,7 +7,7 @@
 #' with [nso_subsectors()] to drill into sub-categories.
 #'
 #' @return A tibble with columns `id`, `type`, and `text`.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' sectors <- nso_sectors()
 #' head(sectors)
 #' @export
@@ -28,7 +28,7 @@ nso_sectors <- function() {
 #' @param subid Path id from `nso_sectors()`/`nso_subsectors()`
 #'   (e.g., 'Population, household' or 'Population, household/1_Population, household').
 #' @return A tibble with columns: `id`, `type`, `text`.
-#' @examplesIf curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' sectors <- nso_sectors()
 #' nso_subsectors(sectors$id[1])
 #' @export

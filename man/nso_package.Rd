@@ -28,7 +28,7 @@ identifying the source table.
 Fetch multiple tables and bind (PXWeb)
 }
 \examples{
-\dontshow{if (curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 reqs <- list(
   list(tbl_id = "DT_NSO_0300_001V2", selections = list(Year = "2023"))
 )
