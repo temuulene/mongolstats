@@ -1,30 +1,35 @@
 # Administrative boundaries for Mongolia
 
+# In-memory session cache: boundaries are multi-megabyte downloads and do
+# not change within a session.
+.mn_boundaries_env <- new.env(parent = emptyenv())
+
 #' Mongolia administrative boundaries (sf)
 #'
 #' Downloads Mongolia boundaries for ADM0/ADM1/ADM2 from the GeoBoundaries API
-#' and returns an `sf` object. Results can be cached by the caller as needed.
+#' and returns an `sf` object. Results are cached in memory for the session,
+#' so repeated calls (including via [mn_join_by_name()]) do not re-download.
 #'
 #' @param level One of "ADM0", "ADM1", "ADM2".
+#' @param refresh If TRUE, bypass the session cache and download again.
 #' @return An `sf` object with polygons for the requested level.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' # Get aimag (province) boundaries
 #' aimags <- mn_boundaries("ADM1")
 #' head(aimags)
 #' @export
-mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2")) {
+mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE) {
   level <- match.arg(level)
+  if (!isTRUE(refresh)) {
+    hit <- .mn_boundaries_env[[level]]
+    if (!is.null(hit)) {
+      return(hit)
+    }
+  }
   # Respect offline mode
   if (.nso_offline()) {
-    cond <- structure(
-      list(
-        message = "mn_boundaries() requires network access but mongolstats is in offline mode.",
-        call = NULL
-      ),
-      class = c("mongolstats_offline_error", "error", "condition")
-    )
     cli_abort(
-      conditionMessage(cond),
+      "mn_boundaries() requires network access but mongolstats is in offline mode.",
       class = "mongolstats_offline_error"
     )
   }
@@ -39,7 +44,9 @@ mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2")) {
     )
   httr2::req_perform(req, path = tmp)
   on.exit(try(unlink(tmp), silent = TRUE), add = TRUE)
-  sf::st_read(tmp, quiet = TRUE)
+  g <- sf::st_read(tmp, quiet = TRUE)
+  .mn_boundaries_env[[level]] <- g
+  g
 }
 
 .gb_gj_url <- function(iso3, level) {

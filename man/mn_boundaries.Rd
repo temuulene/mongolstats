@@ -4,17 +4,20 @@
 \alias{mn_boundaries}
 \title{Mongolia administrative boundaries (sf)}
 \usage{
-mn_boundaries(level = c("ADM0", "ADM1", "ADM2"))
+mn_boundaries(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE)
 }
 \arguments{
 \item{level}{One of "ADM0", "ADM1", "ADM2".}
+
+\item{refresh}{If TRUE, bypass the session cache and download again.}
 }
 \value{
 An \code{sf} object with polygons for the requested level.
 }
 \description{
 Downloads Mongolia boundaries for ADM0/ADM1/ADM2 from the GeoBoundaries API
-and returns an \code{sf} object. Results can be cached by the caller as needed.
+and returns an \code{sf} object. Results are cached in memory for the session,
+so repeated calls (including via \code{\link[=mn_join_by_name]{mn_join_by_name()}}) do not re-download.
 }
 \examples{
 \dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}

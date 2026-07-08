@@ -11,7 +11,8 @@ nso_dim_values(tbl_id, dim, labels = c("code", "en", "mn", "both"))
 
 \item{dim}{Dimension name or code (case-insensitive; exact match preferred).}
 
-\item{labels}{One of "code", "en", "mn", or "both" to control returned label columns.}
+\item{labels}{One of "code", "en", "mn", or "both" to control returned
+label columns. "none" is accepted as an alias for "code".}
 }
 \value{
 A tibble with at least \code{code}; may include \code{label_en} and/or \code{label_mn}.

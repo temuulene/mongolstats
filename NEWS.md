@@ -4,10 +4,23 @@
 
 *   **Stricter selection validation**: `nso_data()`, `nso_package()`, `nso_query()`, and `as_px_query()` now error when a selection name does not match any dimension in the table (previously the selection was silently ignored and the full dimension was fetched), when selections are unnamed, or when two selections target the same dimension. This prevents silently fetching wrong-scope data. Errors carry class `mongolstats_selection_error`.
 
+## New features
+
+*   **`nso_package()` no longer fails silently**: tables that fail to fetch are reported in a warning naming each table, and a new `strict = TRUE` argument raises an error instead. Previously failed tables were dropped without any signal.
+*   **Unified `labels` vocabulary**: `nso_data()` and `nso_package()` accept `"code"` as an alias for `"none"`, and `nso_fetch()` and `nso_dim_values()` accept `"none"` as an alias for `"code"`, so either spelling works everywhere.
+*   **`mn_boundaries()` session cache**: boundary downloads are cached in memory for the session (repeated calls, including via `mn_join_by_name()`, no longer re-download multi-megabyte GeoJSON). A `refresh = TRUE` argument bypasses the cache.
+*   **`nso_period_seq()` input validation**: malformed periods (wrong width, month 13, `NA`, vectors) and reversed ranges now error with a clear message instead of silently returning a descending sequence or failing inside `seq.Date()`.
+
 ## Bug fixes
 
 *   **Mixed codes and labels**: Selection values are now mapped element-wise, so codes and labels can be mixed in one vector (e.g. `Sex = c("Total", "1")`). Previously this produced an "Unknown value: NA" error. Duplicated labels in table metadata now produce a warning naming the ambiguous label.
 *   **Consistent errors**: `as_px_query()` now raises the same classed errors as `nso_data()` for invalid selections (previously a plain `stop()`).
+*   **Correct error classes**: network failures (DNS, timeout) now signal `mongolstats_http_error`; previously they were misclassified as `mongolstats_offline_error`, so handlers could not tell offline mode from a genuine connection problem.
+
+## Performance
+
+*   The PXWeb session cookie is now seeded once per base URL per session instead of once per data fetch, removing one GET round trip from every `nso_data()` call after the first.
+*   `mn_fuzzy_join_by_name()` no longer computes a base-R distance matrix that was immediately discarded when stringdist is installed.
 
 ## CRAN compliance
 
@@ -17,7 +30,10 @@
 ## Internal
 
 *   Selection mapping and validation consolidated into a single helper (`.px_map_selections()`), removing three divergent copies of the logic.
-*   Integration tests resolve dimension codes from live metadata instead of assuming positional codes, so tests no longer break when NSO adds a new period.
+*   Table resolution now goes through `.px_resolve_table()` everywhere (`.px_add_labels()`, `nso_table_periods()`, `.px_build_body()`), removing the remaining inlined index lookups.
+*   Integration tests resolve dimension codes from live metadata instead of assuming positional codes, so tests no longer break when NSO adds a new period. Integration and endpoint tests now assert concrete shapes and no longer swallow errors.
+*   Added `tools/record_fixtures.R` to record the httptest2 fixtures used by `test-recorded-*.R`; those tests previously always skipped because the fixture directories were empty.
+*   Removed unused `globalVariables()` declarations, the unused lifecycle Suggests entry, and a stray rendered vignette HTML from the repository.
 
 # mongolstats 0.1.1
 

@@ -74,13 +74,9 @@
   # Perform request; raise typed error on HTTP failure
   resp <- tryCatch(httr2::req_perform(req), error = function(e) e)
   if (inherits(resp, "error")) {
-    cond <- structure(
-      list(message = resp$message, call = NULL),
-      class = c("mongolstats_http_error", "error", "condition")
-    )
     cli_abort(
-      conditionMessage(cond),
-      class = "mongolstats_offline_error"
+      conditionMessage(resp),
+      class = "mongolstats_http_error"
     )
   }
   status <- httr2::resp_status(resp)

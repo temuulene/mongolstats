@@ -34,7 +34,6 @@ Suggests:
     rappdirs,
     pkgdown,
     roxygen2,
-    lifecycle,
     pxweb,
     remotes,
     httptest2,

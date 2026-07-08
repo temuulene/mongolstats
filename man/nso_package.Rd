@@ -8,7 +8,8 @@ nso_package(
   requests,
   labels = c("none", "en", "mn", "both"),
   parallel = getOption("mongolstats.parallel", FALSE),
-  value_name = getOption("mongolstats.value_name", "value")
+  value_name = getOption("mongolstats.value_name", "value"),
+  strict = FALSE
 )
 }
 \arguments{
@@ -19,10 +20,15 @@ nso_package(
 \item{parallel}{If TRUE, use future.apply to fetch tables in parallel.}
 
 \item{value_name}{Name of the numeric value column in the result (default: "value").}
+
+\item{strict}{If TRUE, error when any table fails to fetch. If FALSE
+(default), failed tables are dropped from the result with a warning
+naming them.}
 }
 \value{
 A tibble combining data from all requested tables, with a \code{tbl_id} column
-identifying the source table.
+identifying the source table. Tables that failed to fetch are omitted
+(with a warning) unless \code{strict = TRUE}.
 }
 \description{
 Fetch multiple tables and bind (PXWeb)

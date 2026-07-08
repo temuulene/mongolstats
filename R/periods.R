@@ -17,20 +17,44 @@
 #' @export
 nso_period_seq <- function(start, end, by = c("Y", "M")) {
   by <- match.arg(by)
+  start <- as.character(start)
+  end <- as.character(end)
+  # Yearly accepts YYYY (or YYYYMM, using the year part); monthly requires
+  # YYYYMM with a valid month.
+  pat <- if (by == "Y") "^[0-9]{4}" else "^[0-9]{4}(0[1-9]|1[0-2])$"
+  fmt <- if (by == "Y") "YYYY" else "YYYYMM" # nolint object_usage_linter. Used in cli_abort() below.
+  check_period <- function(x, arg) {
+    if (length(x) != 1L || is.na(x) || !grepl(pat, x)) {
+      cli_abort(
+        "{.arg {arg}} must be a single {fmt} period, not {.val {x}}.",
+        call = rlang::caller_env(2)
+      )
+    }
+  }
+  check_period(start, "start")
+  check_period(end, "end")
   if (by == "Y") {
     ys <- as.integer(substr(start, 1, 4))
     ye <- as.integer(substr(end, 1, 4))
+    if (ys > ye) {
+      cli_abort(
+        "{.arg start} ({.val {start}}) must not be after {.arg end} ({.val {end}})."
+      )
+    }
     as.character(seq.int(ys, ye))
   } else {
     ys <- as.integer(substr(start, 1, 4))
     ms <- as.integer(substr(start, 5, 6))
     ye <- as.integer(substr(end, 1, 4))
     me <- as.integer(substr(end, 5, 6))
-    seq_dates <- seq.Date(
-      as.Date(sprintf("%04d-%02d-01", ys, ms)),
-      as.Date(sprintf("%04d-%02d-01", ye, me)),
-      by = "month"
-    )
+    d_start <- as.Date(sprintf("%04d-%02d-01", ys, ms))
+    d_end <- as.Date(sprintf("%04d-%02d-01", ye, me))
+    if (d_start > d_end) {
+      cli_abort(
+        "{.arg start} ({.val {start}}) must not be after {.arg end} ({.val {end}})."
+      )
+    }
+    seq_dates <- seq.Date(d_start, d_end, by = "month")
     format(seq_dates, "%Y%m")
   }
 }
@@ -47,21 +71,12 @@ nso_period_seq <- function(start, end, by = c("Y", "M")) {
 #' head(periods)
 #' @export
 nso_table_periods <- function(tbl_id) {
-  idx <- .px_index()
-  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) {
-    tbl_id
-  } else {
-    paste0(tbl_id, ".px")
-  }
-  row <- idx[idx$px_file == px_file, , drop = FALSE]
-  if (!nrow(row)) {
+  resolved <- tryCatch(.px_resolve_table(tbl_id), error = function(e) NULL)
+  if (is.null(resolved)) {
     return(character())
   }
-  paths <- if (nzchar(row$px_path[1])) {
-    strsplit(row$px_path[1], "/", fixed = TRUE)[[1]]
-  } else {
-    character()
-  }
+  px_file <- resolved$px_file
+  paths <- resolved$paths
   meta <- tryCatch(
     .px_meta_cached(paths, px_file, lang = .px_lang()),
     error = function(e) NULL

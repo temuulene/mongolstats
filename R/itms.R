@@ -92,7 +92,7 @@ nso_itms_by_sector <- function(list_id) {
   itms[itms$px_path == list_id | itms$list_id == list_id, , drop = FALSE]
 }
 
-# Note: %||% operator is defined in utils.R
+# Note: %||% operator is imported from rlang (see mongolstats-package.R)
 
 
 # Aliases ---------------------------------------------------------------
