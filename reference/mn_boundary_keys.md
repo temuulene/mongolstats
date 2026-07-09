@@ -1,6 +1,8 @@
 # Boundary keys/crosswalk helper
 
-Boundary keys/crosswalk helper
+Returns a lightweight tibble of key columns from the GeoBoundaries data,
+including normalized names, without the full geometry. Useful for
+building custom crosswalks between NSO data and boundary identifiers.
 
 ## Usage
 
@@ -16,7 +18,7 @@ mn_boundary_keys(level = "ADM1")
 
 ## Value
 
-tibble with key columns from GeoBoundaries and normalized names.
+A tibble with key columns from GeoBoundaries and normalized names.
 
 ## Examples
 

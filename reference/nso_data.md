@@ -27,7 +27,9 @@ nso_data(
 
 - labels:
 
-  Label handling: "none" (codes only), "en", "mn", or "both".
+  Label handling: "none" (codes only), "en", "mn", or "both". "code" is
+  accepted as an alias for "none" (matching
+  [`nso_fetch()`](https://temuulene.github.io/mongolstats/reference/nso_fetch.md)).
 
 - value_name:
 
@@ -65,10 +67,10 @@ head(pop)
 #> # A tibble: 6 × 4
 #>   Sex   Age   Year    value
 #>   <chr> <chr> <chr>   <dbl>
-#> 1 0     0     1     3396788
-#> 2 0     1     1       65418
-#> 3 0     2     1       65653
-#> 4 0     3     1       71885
-#> 5 0     4     1       76194
-#> 6 0     5     1       78627
+#> 1 0     0     2     3404028
+#> 2 0     1     2       65418
+#> 3 0     2     2       65653
+#> 4 0     3     2       71885
+#> 5 0     4     2       76194
+#> 6 0     5     2       78627
 ```

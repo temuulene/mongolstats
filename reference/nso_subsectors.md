@@ -1,6 +1,10 @@
 # List children for a given path (PXWeb)
 
-List children for a given path (PXWeb)
+Navigates one level deeper in the PXWeb catalogue hierarchy. Pass in a
+path id obtained from
+[`nso_sectors()`](https://temuulene.github.io/mongolstats/reference/nso_sectors.md)
+or a previous `nso_subsectors()` call to list its children (sub-sectors
+or tables).
 
 ## Usage
 
@@ -15,7 +19,7 @@ nso_subsectors(subid)
   Path id from
   [`nso_sectors()`](https://temuulene.github.io/mongolstats/reference/nso_sectors.md)/`nso_subsectors()`
   (e.g., 'Population, household' or 'Population, household/1_Population,
-  household')
+  household').
 
 ## Value
 

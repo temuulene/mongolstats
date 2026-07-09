@@ -1,6 +1,7 @@
 # Mortality Seasonality in Mongolia: An Evidence-Based Analysis
 
 ``` r
+
 library(mongolstats)
 library(dplyr)
 library(tidyr)
@@ -69,6 +70,7 @@ We use three complementary datasets from NSO:
 ### Fetching and Preparing Data
 
 ``` r
+
 # Get monthly death data for all regions
 death_tbl <- "DT_NSO_2100_027V2"
 
@@ -124,6 +126,7 @@ We overlay the major COVID-19 phases to understand anomalies in the
 trend.
 
 ``` r
+
 # Define COVID-19 Periods for annotation
 covid_periods <- tibble::tribble(
   ~Start, ~End, ~Phase, ~Color,
@@ -219,6 +222,7 @@ p  # print static ggplot
 ### Monthly Distribution (Seasonality)
 
 ``` r
+
 # Calculate monthly statistics using daily averages (normalized)
 monthly_stats <- deaths_monthly |>
   group_by(month, month_name) |>
@@ -306,6 +310,7 @@ month with “confidence intervals” (the error bars).
 > rigorous analysis would produce.
 
 ``` r
+
 # Identify peak month (using daily averages)
 peak_month <- monthly_stats |> filter(mean_daily == max(mean_daily))
 trough_month <- monthly_stats |> filter(mean_daily == min(mean_daily))
@@ -355,6 +360,7 @@ p  # print static ggplot
 ## 2. Heat Map: Year × Month
 
 ``` r
+
 # Create heat map data using daily averages (normalized)
 heatmap_data <- deaths_monthly |>
   mutate(month_name = factor(month_name, levels = rev(month.abb))) |>
@@ -419,6 +425,7 @@ Loess). This method is robust to outliers like the COVID-19 surge and
 provides a cleaner view of the underlying seasonal pattern.
 
 ``` r
+
 # Convert to time series object using daily averages (normalized)
 ts_deaths <- ts(deaths_monthly$daily_avg, start = c(2015, 1), frequency = 12)
 
@@ -488,6 +495,7 @@ print(p)
 Let’s examine the extracted seasonal component more closely:
 
 ``` r
+
 # Extract one complete seasonal cycle (12 months)
 seasonal_cycle <- data.frame(
   month = 1:12,
@@ -552,6 +560,7 @@ overall trend.
 > more reliable for identifying exact peak timing.
 
 ``` r
+
 # Fit harmonic regression with annual cycle (using daily averages)
 deaths_monthly <- deaths_monthly |>
   mutate(
@@ -614,6 +623,7 @@ causes.
 ### Annual Trends by Cause
 
 ``` r
+
 # Fetch deaths by cause (annual data)
 cause_tbl <- "DT_NSO_2100_027V1"
 indicators <- nso_dim_values(cause_tbl, "Indicator", labels = "en")
@@ -645,6 +655,7 @@ cause_deaths <- nso_data(
 ```
 
 ``` r
+
 # Multi-line trend plot by cause of death
 p <- cause_deaths |>
   filter(year >= 2015) |>
@@ -686,19 +697,22 @@ p  # print static ggplot
 - **COVID-19 Impact:** Note the sharp rise in “Respiratory” and other
   categories in 2021.
 
-### Respiratory Infections: A Seasonal Proxy
+### Communicable Disease Cases: A Seasonal Proxy
 
 Since we cannot see monthly respiratory *deaths*, we look at monthly
-respiratory *cases* (e.g., flu, pneumonia) to see the seasonal pressure.
+infection *cases* to see the seasonal pressure. The NSO’s monthly table
+no longer breaks out respiratory infections as a separate category, so
+we use **total communicable disease cases** — a series historically
+dominated by seasonal respiratory outbreaks — as the proxy.
 
 ``` r
-# Fetch monthly respiratory disease cases
+
+# Fetch monthly communicable disease cases (total across categories)
 comm_tbl <- "DT_NSO_2100_035V1"
-# Code 12 is Respiratory infectious diseases
-resp_cases <- nso_data(
+comm_cases <- nso_data(
   tbl_id = comm_tbl,
   selections = list(
-    "Indicators" = "12", 
+    "Indicators" = "Cases of communicable diseases",
     "Month" = months_filtered$code
   ),
   labels = "en"
@@ -709,13 +723,13 @@ resp_cases <- nso_data(
   ) |>
   filter(!is.na(value))
 
-# Respiratory cases boxplot by month - proxy for seasonal infection pressure
-p <- resp_cases |>
+# Case boxplot by month - proxy for seasonal infection pressure
+p <- comm_cases |>
   ggplot(aes(x = month, y = value)) +
   geom_boxplot(fill = "#e74c3c", alpha = 0.6) +
   scale_y_continuous(labels = scales::comma) +
   labs(
-    title = "Seasonality of Respiratory Infections (Cases)",
+    title = "Seasonality of Communicable Disease Cases",
     subtitle = "Monthly distribution of reported cases (2015-2024)",
     x = NULL,
     y = "Reported Cases"
@@ -730,14 +744,13 @@ p  # print static ggplot
 
 **Interpretation:**
 
-- **Complex Seasonality:** Respiratory infections do not follow a simple
-  winter curve. We see high case counts in **December and January**,
-  followed by a notable **dip in February**, and a **resurgence in May**
-  (spring peak).
-- **The Mortality Mismatch:** While the December respiratory spike
-  correlates with the December mortality peak, the **May respiratory
-  spike** does *not* trigger a corresponding mortality spike (deaths are
-  average in May). This suggests that while respiratory illness
+- **Complex Seasonality:** Infections do not follow a simple winter
+  curve. We see high case counts in **December**, followed by a notable
+  **dip in February**, and the **annual peak in May**.
+- **The Mortality Mismatch:** While the December infection spike
+  correlates with the December mortality peak, the **May infection
+  peak** does *not* trigger a corresponding mortality spike (deaths are
+  average in May). This suggests that while infectious illness
   contributes to winter deaths, it is the **combination** of infection
   *plus* extreme cold (Dec/Jan) that is lethal. Infection alone (in
   warmer May) appears less fatal.
@@ -747,6 +760,7 @@ p  # print static ggplot
 ## 5. Regional Comparison
 
 ``` r
+
 # Fetch deaths by region
 regions_meta <- nso_dim_values(death_tbl, "Region", labels = "en")
 
@@ -780,6 +794,7 @@ regional_deaths <- regional_deaths |>
 ```
 
 ``` r
+
 # Aggregate by area type and month
 area_monthly <- regional_deaths |>
   group_by(area_type, month, month_name) |>
@@ -835,6 +850,7 @@ Do hospital deaths show a different pattern? This can reveal healthcare
 access issues.
 
 ``` r
+
 # Fetch hospital deaths
 hospital_tbl <- "DT_NSO_2100_027V3"
 hospital_months <- nso_dim_values(hospital_tbl, "Month", labels = "en")
@@ -868,6 +884,7 @@ comparison_data <- bind_rows(
 ```
 
 ``` r
+
 # Calculate monthly averages by type
 type_monthly <- comparison_data |>
   group_by(type, month, month_name) |>
@@ -914,6 +931,7 @@ p  # print static ggplot
 ## 7. Detailed Summary Statistics
 
 ``` r
+
 # Calculate summary statistics using daily averages
 peak_analysis <- monthly_stats |>
   mutate(
@@ -1007,10 +1025,11 @@ correlation with extreme cold onset is suggestive but not conclusive.
 ## Appendix: Reproducibility
 
 ``` r
+
 sessionInfo()
-#> R version 4.5.2 (2025-10-31)
+#> R version 4.6.1 (2026-06-24)
 #> Platform: x86_64-pc-linux-gnu
-#> Running under: Ubuntu 24.04.3 LTS
+#> Running under: Ubuntu 24.04.4 LTS
 #> 
 #> Matrix products: default
 #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -1029,20 +1048,20 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] scales_1.4.0      lubridate_1.9.4   ggplot2_4.0.1     tidyr_1.3.2      
-#> [5] dplyr_1.1.4       mongolstats_0.1.1
+#> [1] scales_1.4.0      lubridate_1.9.5   ggplot2_4.0.3     tidyr_1.3.2      
+#> [5] dplyr_1.2.1       mongolstats_0.2.0
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.2     tidyselect_1.2.1  
-#>  [5] jquerylib_0.1.4    systemfonts_1.3.1  textshaping_1.0.4  yaml_2.3.12       
+#>  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.6.1     tidyselect_1.2.1  
+#>  [5] jquerylib_0.1.4    systemfonts_1.3.2  textshaping_1.0.5  yaml_2.3.12       
 #>  [9] fastmap_1.2.0      R6_2.6.1           labeling_0.4.3     generics_0.1.4    
-#> [13] curl_7.0.0         httr2_1.2.2        knitr_1.51         htmlwidgets_1.6.4 
-#> [17] tibble_3.3.1       desc_1.4.3         RColorBrewer_1.1-3 bslib_0.9.0       
-#> [21] pillar_1.11.1      rlang_1.1.7        cachem_1.1.0       xfun_0.56         
-#> [25] S7_0.2.1           fs_1.6.6           sass_0.4.10        otel_0.2.0        
-#> [29] timechange_0.3.0   cli_3.6.5          withr_3.0.2        pkgdown_2.2.0     
-#> [33] magrittr_2.0.4     digest_0.6.39      grid_4.5.2         rappdirs_0.3.4    
-#> [37] lifecycle_1.0.5    vctrs_0.7.1        evaluate_1.0.5     glue_1.8.0        
-#> [41] farver_2.1.2       ragg_1.5.0         rmarkdown_2.30     purrr_1.2.1       
-#> [45] tools_4.5.2        pkgconfig_2.0.3    htmltools_0.5.9
+#> [13] curl_7.1.0         httr2_1.2.3        knitr_1.51         tibble_3.3.1      
+#> [17] desc_1.4.3         RColorBrewer_1.1-3 bslib_0.11.0       pillar_1.11.1     
+#> [21] rlang_1.3.0        cachem_1.1.0       xfun_0.59          S7_0.2.2          
+#> [25] fs_2.1.0           sass_0.4.10        otel_0.2.0         timechange_0.4.0  
+#> [29] cli_3.6.6          withr_3.0.3        pkgdown_2.2.1      magrittr_2.0.5    
+#> [33] digest_0.6.39      grid_4.6.1         rappdirs_0.3.4     lifecycle_1.0.5   
+#> [37] vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1         farver_2.1.2      
+#> [41] ragg_1.5.2         rmarkdown_2.31     purrr_1.2.2        tools_4.6.1       
+#> [45] pkgconfig_2.0.3    htmltools_0.5.9
 ```

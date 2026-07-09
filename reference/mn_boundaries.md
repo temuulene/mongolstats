@@ -1,13 +1,15 @@
 # Mongolia administrative boundaries (sf)
 
 Downloads Mongolia boundaries for ADM0/ADM1/ADM2 from the GeoBoundaries
-API and returns an `sf` object. Results can be cached by the caller as
-needed.
+API and returns an `sf` object. Results are cached in memory for the
+session, so repeated calls (including via
+[`mn_join_by_name()`](https://temuulene.github.io/mongolstats/reference/mn_join_by_name.md))
+do not re-download.
 
 ## Usage
 
 ``` r
-mn_boundaries(level = c("ADM0", "ADM1", "ADM2"))
+mn_boundaries(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE)
 ```
 
 ## Arguments
@@ -15,6 +17,10 @@ mn_boundaries(level = c("ADM0", "ADM1", "ADM2"))
 - level:
 
   One of "ADM0", "ADM1", "ADM2".
+
+- refresh:
+
+  If TRUE, bypass the session cache and download again.
 
 ## Value
 

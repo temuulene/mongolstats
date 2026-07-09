@@ -1,6 +1,10 @@
 # List top-level categories (PXWeb NSO root)
 
-List top-level categories (PXWeb NSO root)
+Queries the PXWeb API root to return the top-level statistical sectors
+(e.g., Population, Economy, Environment). Use the returned `id` column
+with
+[`nso_subsectors()`](https://temuulene.github.io/mongolstats/reference/nso_subsectors.md)
+to drill into sub-categories.
 
 ## Usage
 
@@ -10,7 +14,7 @@ nso_sectors()
 
 ## Value
 
-tibble with `id`, `type`, `text`
+A tibble with columns `id`, `type`, and `text`.
 
 ## Examples
 

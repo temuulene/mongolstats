@@ -1,6 +1,7 @@
 # Discovering Public Health Data
 
 ``` r
+
 library(mongolstats)
 library(dplyr)
 library(ggplot2)
@@ -35,6 +36,7 @@ function allows you to query the entire NSO catalog using simple
 keywords:
 
 ``` r
+
 # Infant and maternal health
 mortality <- nso_itms_search("mortality")
 mortality |>
@@ -44,9 +46,9 @@ mortality |>
 #>    tbl_id            tbl_eng_nm                                                 
 #>    <chr>             <chr>                                                      
 #>  1 DT_NSO_2100_014V1 NUMBER OF INFANT MORTALITY, aimags and the Capital and by …
-#>  2 DT_NSO_2100_014V2 NUMBER OF INFANT MORTALITY, by soum, district and by year  
+#>  2 DT_NSO_2100_014V2 NUMBER OF INFANT MORTALITY, by soum and discrict, and by y…
 #>  3 DT_NSO_2100_014V4 INFANT MORTALITY, by sex, by soum, and by year             
-#>  4 DT_NSO_2100_014V5 INFANT MORTALITY RATE,  per 1000 live births, by sex, by s…
+#>  4 DT_NSO_2100_014V5 INFANT MORTALITY RATE, per 1000 live births, by sex, by so…
 #>  5 DT_NSO_2100_015V1 INFANT MORTALITY RATE, per 1000 live births, aimags and th…
 #>  6 DT_NSO_2100_015V2 INFANT MORTALITY, per 1000 live births, by soum, and by ye…
 #>  7 DT_NSO_2100_023V1 MATERNAL MORTALITY RATIO, per 100000 live births, by soum,…
@@ -57,12 +59,14 @@ mortality |>
 # Cancer surveillance
 cancer <- nso_itms_search("cancer")
 cancer |> select(tbl_id, tbl_eng_nm)
-#> # A tibble: 3 × 2
+#> # A tibble: 5 × 2
 #>   tbl_id            tbl_eng_nm                                                  
 #>   <chr>             <chr>                                                       
-#> 1 DT_NSO_2100_012V1 NEW CASES OF CANCER, per 10000 population, by type of cancer
-#> 2 DT_NSO_2100_044V1 NEW CASES OF CANCER, by age group, by year                  
-#> 3 DT_NSO_2100_045V1 NEW CASES AND MORTALITY OF CANCER, per 10000 population, ai…
+#> 1 DT_NSO_2100_012V1 NEW CASES OF CANCER, per 10000 population, by type of cance…
+#> 2 DT_NSO_2100_013V1 DEATHS OF CANCER, per 10000 population, by type of cancer, …
+#> 3 DT_NSO_2100_044V1 NEW CASES OF CANCER, by age group, by year                  
+#> 4 DT_NSO_2100_045V1 NEW CASES AND MORTALITY OF CANCER, per 10000 population, ai…
+#> 5 DT_NSO_2100_045V1 NEW CASES AND MORTALITY OF CANCER, per 10000 population, ai…
 
 # Communicable diseases
 infectious <- nso_itms_search("tuberculosis")
@@ -81,6 +85,7 @@ infectious |> select(tbl_id, tbl_eng_nm)
 Health and education statistics are grouped together:
 
 ``` r
+
 # View all sectors
 sectors <- nso_sectors()
 sectors
@@ -121,6 +126,7 @@ Cancer burden is shifting in Mongolia. To understand these changes, we
 can analyze incidence trends over the last decade:
 
 ``` r
+
 # Find cancer incidence table
 cancer_tbl <- "DT_NSO_2100_012V1" # New cases per 10,000 population
 
@@ -131,7 +137,7 @@ meta
 #>   dim                      code               is_time n_values codes            
 #>   <chr>                    <chr>              <lgl>      <int> <list>           
 #> 1 Type malignant neoplasms Хорт хавдрын төрөл FALSE          7 <tibble [7 × 3]> 
-#> 2 Annual                   Он                 FALSE         25 <tibble [25 × 3]>
+#> 2 Year                     Он                 FALSE         26 <tibble [26 × 3]>
 
 # View cancer types
 cancer_types <- nso_dim_values(cancer_tbl, "Type malignant neoplasms", labels = "en")
@@ -148,18 +154,19 @@ cancer_types |> head(10)
 #> 7 6     " Other"
 
 # Check time coverage
-# Note: "Annual" dimension uses internal codes, so we map labels (years) to codes
-annual_meta <- nso_dim_values(cancer_tbl, "Annual", labels = "both")
+# Note: "Year" dimension uses internal codes, so we map labels (years) to codes
+annual_meta <- nso_dim_values(cancer_tbl, "Year", labels = "both")
 years <- annual_meta$label_en
 years
-#>  [1] "2024" "2023" "2022" "2021" "2020" "2019" "2018" "2017" "2016" "2015"
-#> [11] "2014" "2013" "2012" "2011" "2010" "2009" "2008" "2007" "2006" "2005"
-#> [21] "2004" "2003" "2002" "2001" "2000"
+#>  [1] "2025" "2024" "2023" "2022" "2021" "2020" "2019" "2018" "2017" "2016"
+#> [11] "2015" "2014" "2013" "2012" "2011" "2010" "2009" "2008" "2007" "2006"
+#> [21] "2005" "2004" "2003" "2002" "2001" "2000"
 ```
 
 ### Fetching and Visualizing Cancer Trends
 
 ``` r
+
 # Fetch cancer incidence data for the most common types
 # We focus on the last 10 years to show recent trends
 # and select 4 major cancer types (Lung, Liver, Stomach, Cervix)
@@ -175,7 +182,7 @@ cancer_data <- nso_data(
   tbl_id = cancer_tbl,
   selections = list(
     "Type malignant neoplasms" = c("1", "2", "3", "4"), # Lung, Liver, Stomach, Cervix
-    "Annual" = recent_years
+    "Year" = recent_years
   ),
   labels = "en"
 )
@@ -183,7 +190,7 @@ cancer_data <- nso_data(
 # Visualize cancer incidence trends as static plot
 p <- cancer_data |>
   ggplot(aes(
-    x = as.integer(Annual_en), y = value, color = `Type malignant neoplasms_en`,
+    x = as.integer(Year_en), y = value, color = `Type malignant neoplasms_en`,
     group = `Type malignant neoplasms_en`
   )) +
   geom_line(linewidth = 1.2) +
@@ -216,6 +223,7 @@ p  # print static ggplot
 ### Regional Disparities
 
 ``` r
+
 # Infant mortality by aimag
 imr_tbl <- "DT_NSO_2100_015V1" # IMR per 1,000 live births (Monthly)
 
@@ -276,6 +284,7 @@ imr_data |>
 ### Time Trend Analysis
 
 ``` r
+
 # Analyze national trend (Monthly)
 imr_national <- nso_data(
   tbl_id = imr_tbl,
@@ -322,6 +331,7 @@ imr_national |>
 Let’s analyze the seasonal trends of Tuberculosis using monthly data.
 
 ``` r
+
 # TB cases (Monthly)
 tb_tbl <- "DT_NSO_2100_035V1" # CASES OF COMMUNICABLE DISEASES, by type of selected diseases and by month
 

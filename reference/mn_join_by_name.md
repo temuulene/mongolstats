@@ -1,6 +1,8 @@
 # Join data to boundaries by (normalized) names
 
-Join data to boundaries by (normalized) names
+Performs an exact join between a data frame and boundary polygons using
+normalized place names. Both sides are normalized via transliteration
+and lowercasing before joining.
 
 ## Usage
 
@@ -30,7 +32,7 @@ mn_join_by_name(data, name_col, level = "ADM1", boundaries = NULL)
 
 ## Value
 
-sf with joined data.
+An `sf` object with joined data.
 
 ## Examples
 

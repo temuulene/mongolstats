@@ -20,6 +20,7 @@ economic trends, and map regional statistics—all from within R.
 You can install mongolstats from CRAN with:
 
 ``` r
+
 install.packages("mongolstats")
 ```
 
@@ -27,6 +28,7 @@ Or install the development version from [GitHub](https://github.com/)
 with:
 
 ``` r
+
 # install.packages("devtools")
 devtools::install_github("temuulene/mongolstats")
 ```
@@ -38,6 +40,7 @@ devtools::install_github("temuulene/mongolstats")
 Visualize Mongolia’s economic growth in seconds.
 
 ``` r
+
 library(mongolstats)
 library(dplyr)
 library(ggplot2)
@@ -93,6 +96,7 @@ p  # print static ggplot
 Discover how population is distributed across the country.
 
 ``` r
+
 library(sf)
 
 # 1. Fetch Population by Aimag

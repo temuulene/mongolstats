@@ -1,6 +1,10 @@
 # List tables under a sector or sub-sector (PXWeb path)
 
-List tables under a sector or sub-sector (PXWeb path)
+Filters the table catalogue to only those belonging to a given sector or
+sub-sector path, as returned by
+[`nso_sectors()`](https://temuulene.github.io/mongolstats/reference/nso_sectors.md)
+or
+[`nso_subsectors()`](https://temuulene.github.io/mongolstats/reference/nso_subsectors.md).
 
 ## Usage
 

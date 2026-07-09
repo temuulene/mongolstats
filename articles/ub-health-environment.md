@@ -1,6 +1,7 @@
 # Ulaanbaatar District-Level Analysis
 
 ``` r
+
 library(mongolstats)
 library(dplyr)
 library(ggplot2)
@@ -43,6 +44,7 @@ approach. We retrieve data for all soums and then filter for those
 geometrically contained within the Ulaanbaatar capital region.
 
 ``` r
+
 # 1. Define UB District Names (Map vs Data standard)
 # Map names (transliterated) -> Data names (English standard)
 ub_name_map <- c(
@@ -103,6 +105,7 @@ We calculate population density using the most recent population data
 and the district land areas.
 
 ``` r
+
 # Fetch Population Data (DT_NSO_0300_002V4)
 pop_data <- get_ub_data("DT_NSO_0300_002V4",
   selections = list(Year = "2024")
@@ -159,6 +162,7 @@ Analyzing growth rates helps identify rapidly expanding areas which may
 strain local health infrastructure.
 
 ``` r
+
 # Fetch historical population data (last 10 years)
 pop_trend <- get_ub_data("DT_NSO_0300_002V4",
   selections = list(Year = as.character(2013:2024))
@@ -206,6 +210,7 @@ We compare the number of students to the number of schools to estimate
 overcrowding.
 
 ``` r
+
 # Fetch Schools (DT_NSO_2001_002V2) and Students (DT_NSO_2002_057V2)
 schools <- get_ub_data("DT_NSO_2001_002V2", selections = list(Year = "2024")) |>
   rename(Schools = value)
@@ -256,6 +261,7 @@ Respiratory diseases are a leading cause of death in UB. We calculate
 the **Crude Death Rate (CDR)** per 10,000 population.
 
 ``` r
+
 # 1. Get Respiratory Deaths (Code found in discovery phase)
 # We need to find the code dynamically or use known one.
 # For vignette stability, we'll search for it.
@@ -306,6 +312,7 @@ p_resp  # print static ggplot
 IMR is a sensitive indicator of maternal health and primary care access.
 
 ``` r
+
 # Fetch IMR directly (DT_NSO_2100_015V2 is Rate per 1000)
 # Using 2023 as 2024 data appears incomplete for some districts
 imr_data <- get_ub_data("DT_NSO_2100_015V2",
@@ -342,6 +349,7 @@ correlations between population density, educational load, and health
 outcomes.
 
 ``` r
+
 # Combine all metrics into one analytical dataset
 # We use inner_join to ensure we only have districts with all data
 analysis_df <- health_metrics |>
@@ -427,6 +435,7 @@ distribution is critical for interpreting pollution exposure patterns.
 ### Station-to-District Mapping
 
 ``` r
+
 # Define station-to-district mapping with accurate coordinates
 # Sources: WAQI API (api.waqi.info) and user-provided coordinates
 ub_aq_stations <- tribble(
@@ -473,7 +482,7 @@ knitr::kable(station_count, caption = "Air Quality Monitoring Stations by Distri
 | Khan-Uul         |        2 |
 | Bayangol         |        1 |
 
-Air Quality Monitoring Stations by District
+Air Quality Monitoring Stations by District {.table}
 
 > **Bayanzurkh** has the highest station density (5 stations),
 > reflecting its large area and population. **Chingeltei** and
@@ -485,6 +494,7 @@ Air Quality Monitoring Stations by District
 ### Spatial Distribution Map
 
 ``` r
+
 # Create map with district boundaries and station locations
 p_map <- ggplot() +
   geom_sf(data = ub_shapes, fill = "grey90", color = "white", linewidth = 0.5) +
@@ -510,6 +520,7 @@ p_map  # print static ggplot
 ### Station Coverage Analysis
 
 ``` r
+
 # Join station counts with population data for coverage analysis
 station_coverage <- station_count |>
   left_join(pop_data |> select(District, Population = value), by = "District") |>

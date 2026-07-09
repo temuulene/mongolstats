@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Spatial Epidemiology with mongolstats • mongolstats</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/Inter_Tight-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mongolstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +68,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Spatial Epidemiology with mongolstats</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/mapping.Rmd" class="external-link"><code>vignettes/mapping.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/v0.2.0/vignettes/mapping.Rmd" class="external-link"><code>vignettes/mapping.Rmd</code></a></small>
       <div class="d-none name"><code>mapping.Rmd</code></div>
     </div>
 
@@ -135,11 +135,17 @@ performance and equity.</p>
 <span><span class="co"># We'll calculate a 5-year average to smooth out year-to-year variability</span></span>
 <span><span class="co"># This is important because small populations can have unstable rates</span></span>
 <span></span>
+<span><span class="co"># The table is monthly; map month labels ("YYYY-MM") to codes for 2020-2024</span></span>
+<span><span class="va">mmr_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_2100_050V1"</span> <span class="co"># MMR per 100,000 live births</span></span>
+<span><span class="va">mmr_months</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">mmr_tbl</span>, <span class="st">"Month"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">label_en</span> <span class="op">&gt;=</span> <span class="st">"2020-01"</span>, <span class="va">label_en</span> <span class="op">&lt;=</span> <span class="st">"2024-12"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">code</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">mmr_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_2100_050V1"</span>, <span class="co"># MMR per 100,000 live births</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="va">mmr_tbl</span>,</span>
 <span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Region"</span> <span class="op">=</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="st">"DT_NSO_2100_050V1"</span>, <span class="st">"Region"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span>,</span>
-<span>    <span class="st">"Year"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">2020</span><span class="op">:</span><span class="fl">2024</span><span class="op">)</span></span>
+<span>    <span class="st">"Region"</span> <span class="op">=</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">mmr_tbl</span>, <span class="st">"Region"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span>,</span>
+<span>    <span class="st">"Month"</span> <span class="op">=</span> <span class="va">mmr_months</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -168,18 +174,18 @@ performance and equity.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region_en</span>, <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
-<span><span class="co">#&gt;    Region_en    value</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Khovd         69.8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Arkhangai     65.9</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Selenge       60.1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Sükhbaatar    53.5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Hovsgel       48.0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Dornogovi     44.9</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Töv           41.9</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Ulaanbaatar   40.4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Bayan-Ölgii   39.1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Bayankhongor  37.6</span></span></code></pre></div>
+<span><span class="co">#&gt;    Region_en   value</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Arkhangai    75.9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Dornogovi    67.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Khovd        67.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Bayan-Ölgii  65.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Töv          63.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Dornod       54.1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Hovsgel      53.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Sükhbaatar   50.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Ulaanbaatar  48.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Selenge      48.0</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="creating-a-choropleth-map">Creating a Choropleth Map<a class="anchor" aria-label="anchor" href="#creating-a-choropleth-map"></a>
@@ -260,7 +266,7 @@ performance and equity.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">value</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    <span class="co"># Classify risk levels</span></span>
-<span>    risk_category <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    risk_category <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>      <span class="va">value</span> <span class="op">&lt;</span> <span class="fl">10</span> <span class="op">~</span> <span class="st">"Low (&lt;10)"</span>,</span>
 <span>      <span class="va">value</span> <span class="op">&lt;</span> <span class="fl">20</span> <span class="op">~</span> <span class="st">"Medium (10-20)"</span>,</span>
 <span>      <span class="va">value</span> <span class="op">&lt;</span> <span class="fl">30</span> <span class="op">~</span> <span class="st">"High (20-30)"</span>,</span>
@@ -349,7 +355,7 @@ geographic trends over time</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

@@ -30,5 +30,5 @@ dims
 #>   <chr> <chr> <lgl>      <int>
 #> 1 Sex   Хүйс  FALSE          3
 #> 2 Age   Нас   FALSE         88
-#> 3 Year  Он    FALSE         25
+#> 3 Year  Он    FALSE         26
 ```

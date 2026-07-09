@@ -1,6 +1,9 @@
 # Add normalized name columns to boundaries
 
-Add normalized name columns to boundaries
+Adds a `name_std` column to an `sf` boundary object by transliterating,
+lowercasing, and stripping special characters from place names. This
+enables reliable joins between NSO data and administrative boundary
+polygons.
 
 ## Usage
 
@@ -13,7 +16,7 @@ mn_boundaries_normalize(g, name_col = "shapeName")
 - g:
 
   sf object from
-  [`mn_boundaries()`](https://temuulene.github.io/mongolstats/reference/mn_boundaries.md)
+  [`mn_boundaries()`](https://temuulene.github.io/mongolstats/reference/mn_boundaries.md).
 
 - name_col:
 
@@ -21,7 +24,7 @@ mn_boundaries_normalize(g, name_col = "shapeName")
 
 ## Value
 
-sf with `name_std` column added.
+An `sf` object with an additional `name_std` column.
 
 ## Examples
 

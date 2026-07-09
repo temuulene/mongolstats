@@ -38,3 +38,7 @@ Useful links:
 
 **Maintainer**: Temuulen Enebish <temuulen@gmail.com> \[copyright
 holder\]
+
+Authors:
+
+- Temuulen Enebish <temuulen@gmail.com> \[copyright holder\]

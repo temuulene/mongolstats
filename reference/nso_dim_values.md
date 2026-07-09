@@ -21,7 +21,7 @@ nso_dim_values(tbl_id, dim, labels = c("code", "en", "mn", "both"))
 - labels:
 
   One of "code", "en", "mn", or "both" to control returned label
-  columns.
+  columns. "none" is accepted as an alias for "code".
 
 ## Value
 

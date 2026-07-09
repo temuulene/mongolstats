@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Discovering Public Health Data • mongolstats</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/Inter_Tight-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mongolstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +68,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Discovering Public Health Data</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/discovery.Rmd" class="external-link"><code>vignettes/discovery.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/v0.2.0/vignettes/discovery.Rmd" class="external-link"><code>vignettes/discovery.Rmd</code></a></small>
       <div class="d-none name"><code>discovery.Rmd</code></div>
     </div>
 
@@ -117,9 +117,9 @@ NSO catalog using simple keywords:</p>
 <span><span class="co">#&gt;    tbl_id            tbl_eng_nm                                                 </span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                      </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> DT_NSO_2100_014V1 NUMBER OF INFANT MORTALITY, aimags and the Capital and by …</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> DT_NSO_2100_014V2 NUMBER OF INFANT MORTALITY, by soum, district and by year  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> DT_NSO_2100_014V2 NUMBER OF INFANT MORTALITY, by soum and discrict, and by y…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> DT_NSO_2100_014V4 INFANT MORTALITY, by sex, by soum, and by year             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> DT_NSO_2100_014V5 INFANT MORTALITY RATE,  per 1000 live births, by sex, by s…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> DT_NSO_2100_014V5 INFANT MORTALITY RATE, per 1000 live births, by sex, by so…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> DT_NSO_2100_015V1 INFANT MORTALITY RATE, per 1000 live births, aimags and th…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> DT_NSO_2100_015V2 INFANT MORTALITY, per 1000 live births, by soum, and by ye…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> DT_NSO_2100_023V1 MATERNAL MORTALITY RATIO, per 100000 live births, by soum,…</span></span>
@@ -130,12 +130,14 @@ NSO catalog using simple keywords:</p>
 <span><span class="co"># Cancer surveillance</span></span>
 <span><span class="va">cancer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_search.html">nso_itms_search</a></span><span class="op">(</span><span class="st">"cancer"</span><span class="op">)</span></span>
 <span><span class="va">cancer</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span></span>
 <span><span class="co">#&gt;   tbl_id            tbl_eng_nm                                                  </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                       </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> DT_NSO_2100_012V1 NEW CASES OF CANCER, per 10000 population, by type of cancer</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> DT_NSO_2100_044V1 NEW CASES OF CANCER, by age group, by year                  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> DT_NSO_2100_045V1 NEW CASES AND MORTALITY OF CANCER, per 10000 population, ai…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> DT_NSO_2100_012V1 NEW CASES OF CANCER, per 10000 population, by type of cance…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> DT_NSO_2100_013V1 DEATHS OF CANCER, per 10000 population, by type of cancer, …</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> DT_NSO_2100_044V1 NEW CASES OF CANCER, by age group, by year                  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> DT_NSO_2100_045V1 NEW CASES AND MORTALITY OF CANCER, per 10000 population, ai…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> DT_NSO_2100_045V1 NEW CASES AND MORTALITY OF CANCER, per 10000 population, ai…</span></span>
 <span></span>
 <span><span class="co"># Communicable diseases</span></span>
 <span><span class="va">infectious</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_itms_search.html">nso_itms_search</a></span><span class="op">(</span><span class="st">"tuberculosis"</span><span class="op">)</span></span>
@@ -204,7 +206,7 @@ we can analyze incidence trends over the last decade:</p>
 <span><span class="co">#&gt;   dim                      code               is_time n_values codes            </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>           </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Type malignant neoplasms Хорт хавдрын төрөл FALSE          7 <span style="color: #949494;">&lt;tibble [7 × 3]&gt;</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Annual                   Он                 FALSE         25 <span style="color: #949494;">&lt;tibble [25 × 3]&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Year                     Он                 FALSE         26 <span style="color: #949494;">&lt;tibble [26 × 3]&gt;</span></span></span>
 <span></span>
 <span><span class="co"># View cancer types</span></span>
 <span><span class="va">cancer_types</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">cancer_tbl</span>, <span class="st">"Type malignant neoplasms"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
@@ -221,13 +223,13 @@ we can analyze incidence trends over the last decade:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> 6     <span style="color: #949494;">"</span> Other<span style="color: #949494;">"</span></span></span>
 <span></span>
 <span><span class="co"># Check time coverage</span></span>
-<span><span class="co"># Note: "Annual" dimension uses internal codes, so we map labels (years) to codes</span></span>
-<span><span class="va">annual_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">cancer_tbl</span>, <span class="st">"Annual"</span>, labels <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span>
+<span><span class="co"># Note: "Year" dimension uses internal codes, so we map labels (years) to codes</span></span>
+<span><span class="va">annual_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">cancer_tbl</span>, <span class="st">"Year"</span>, labels <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span>
 <span><span class="va">years</span> <span class="op">&lt;-</span> <span class="va">annual_meta</span><span class="op">$</span><span class="va">label_en</span></span>
 <span><span class="va">years</span></span>
-<span><span class="co">#&gt;  [1] "2024" "2023" "2022" "2021" "2020" "2019" "2018" "2017" "2016" "2015"</span></span>
-<span><span class="co">#&gt; [11] "2014" "2013" "2012" "2011" "2010" "2009" "2008" "2007" "2006" "2005"</span></span>
-<span><span class="co">#&gt; [21] "2004" "2003" "2002" "2001" "2000"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] "2025" "2024" "2023" "2022" "2021" "2020" "2019" "2018" "2017" "2016"</span></span>
+<span><span class="co">#&gt; [11] "2015" "2014" "2013" "2012" "2011" "2010" "2009" "2008" "2007" "2006"</span></span>
+<span><span class="co">#&gt; [21] "2005" "2004" "2003" "2002" "2001" "2000"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="fetching-and-visualizing-cancer-trends">Fetching and Visualizing Cancer Trends<a class="anchor" aria-label="anchor" href="#fetching-and-visualizing-cancer-trends"></a>
@@ -248,7 +250,7 @@ we can analyze incidence trends over the last decade:</p>
 <span>  tbl_id <span class="op">=</span> <span class="va">cancer_tbl</span>,</span>
 <span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    <span class="st">"Type malignant neoplasms"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span><span class="op">)</span>, <span class="co"># Lung, Liver, Stomach, Cervix</span></span>
-<span>    <span class="st">"Annual"</span> <span class="op">=</span> <span class="va">recent_years</span></span>
+<span>    <span class="st">"Year"</span> <span class="op">=</span> <span class="va">recent_years</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
 <span><span class="op">)</span></span>
@@ -256,7 +258,7 @@ we can analyze incidence trends over the last decade:</p>
 <span><span class="co"># Visualize cancer incidence trends as static plot</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">cancer_data</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
-<span>    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">Annual_en</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">value</span>, color <span class="op">=</span> <span class="va">`Type malignant neoplasms_en`</span>,</span>
+<span>    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">Year_en</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">value</span>, color <span class="op">=</span> <span class="va">`Type malignant neoplasms_en`</span>,</span>
 <span>    group <span class="op">=</span> <span class="va">`Type malignant neoplasms_en`</span></span>
 <span>  <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
@@ -492,7 +494,7 @@ functions in the <a href="https://temuulene.github.io/mongolstats/reference/inde
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

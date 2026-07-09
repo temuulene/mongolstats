@@ -33,5 +33,5 @@ meta
 #>   <chr> <chr> <lgl>      <int> <list>           
 #> 1 Sex   Хүйс  FALSE          3 <tibble [3 × 3]> 
 #> 2 Age   Нас   FALSE         88 <tibble [88 × 3]>
-#> 3 Year  Он    FALSE         25 <tibble [25 × 3]>
+#> 3 Year  Он    FALSE         26 <tibble [26 × 3]>
 ```

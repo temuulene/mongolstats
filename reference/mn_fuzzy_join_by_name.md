@@ -1,6 +1,8 @@
 # Fuzzy join data to boundaries by name
 
-Fuzzy join data to boundaries by name
+Performs a fuzzy string-distance join between a data frame and boundary
+polygons. Useful when place-name spellings differ slightly between
+datasets (e.g., "Ulanbatar" vs "Ulaanbaatar").
 
 ## Usage
 
@@ -41,6 +43,8 @@ mn_fuzzy_join_by_name(
 
   Distance method passed to
   [`stringdist::stringdist`](https://rdrr.io/pkg/stringdist/man/stringdist.html).
+  Ignored (base Levenshtein distance is used) when the stringdist
+  package is not installed.
 
 ## Value
 

@@ -1,6 +1,7 @@
 # Environmental Data Analysis
 
 ``` r
+
 library(mongolstats)
 library(dplyr)
 library(ggplot2)
@@ -51,17 +52,21 @@ Ulaanbaatar to understand the severity of exposure.
 >
 > - **Annual table** (`DT_NSO_2024_135V01`): Uses a `Year` dimension for
 >   filtering (e.g., `selections = list(Year = "2024")`)
-> - **Monthly tables** (`DT_NSO_2400_015V1` through `V6`): Use a running
->   `Month` dimension with codes `0`, `1`, `2`, etc. (where `0` = most
->   recent month). Filter by month codes, not year labels:
->   `selections = list(Month = as.character(0:47))` retrieves the last
->   48 months.
+> - **Monthly station tables** (e.g. `DT_NSO_2400_015V2` for NO₂,
+>   `DT_NSO_2400_015V5` for PM2.5): Use a running `Month` dimension with
+>   internal codes. The ordering of the codes is not guaranteed, so map
+>   month labels (`"YYYY-MM"`, returned in `Month_en`) to codes with
+>   [`nso_dim_values()`](https://temuulene.github.io/mongolstats/reference/nso_dim_values.md)
+>   before selecting.
 >
-> The monthly tables are split by pollutant: V1 (SO₂), V2 (NO₂), V3
-> (CO), V4 (PM10), V5 (PM2.5), V6 (O₃). The `Month_en` column returns
-> dates in `"YYYY-MM"` format.
+> The NSO catalogue currently reuses the ids `DT_NSO_2400_015V1` (SO₂),
+> `V3` (CO), and `V4` (PM10) for unrelated annual tables in another
+> folder, so those monthly series cannot be fetched by table id alone
+> (mongolstats warns about the ambiguity). This vignette therefore
+> analyzes live NO₂ and PM2.5 data and uses a bundled snapshot for SO₂.
 
 ``` r
+
 # 1. Identify Top 10 Polluted Stations in UB (using 2024 annual data)
 air_annual <- tryCatch(
   {
@@ -115,17 +120,26 @@ if (length(top_10_stations) == 0) {
 }
 
 # 2. Fetch Monthly Data for Detailed Trends
-# Monthly tables are pollutant-specific: V1=SO2, V2=NO2, V5=PM2.5.
-# We fetch all three to ensure trends and compliance plots work.
+# Monthly station tables: V2 = NO2, V5 = PM2.5 (see the note above on
+# reused table ids). Month codes are not in a guaranteed order, so map
+# month labels ("YYYY-MM") to codes explicitly.
+recent_month_codes <- function(tbl, from = "2021-01") {
+  mv <- nso_dim_values(tbl, "Month", labels = "en")
+  mv$code[!is.na(mv$label_en) & mv$label_en >= from]
+}
+
 air_monthly <- tryCatch(
   {
     nso_package(
       list(
-        list(tbl_id = "DT_NSO_2400_015V1", selections = list(Month = as.character(0:47))), # SO2
-        list(tbl_id = "DT_NSO_2400_015V2", selections = list(Month = as.character(0:47))), # NO2
-        list(tbl_id = "DT_NSO_2400_015V3", selections = list(Month = as.character(0:47))), # CO
-        list(tbl_id = "DT_NSO_2400_015V4", selections = list(Month = as.character(0:47))), # PM10
-        list(tbl_id = "DT_NSO_2400_015V5", selections = list(Month = as.character(0:47)))  # PM2.5
+        list(
+          tbl_id = "DT_NSO_2400_015V2", # NO2
+          selections = list(Month = recent_month_codes("DT_NSO_2400_015V2"))
+        ),
+        list(
+          tbl_id = "DT_NSO_2400_015V5", # PM2.5
+          selections = list(Month = recent_month_codes("DT_NSO_2400_015V5"))
+        )
       ),
       labels = "en"
     )
@@ -133,12 +147,25 @@ air_monthly <- tryCatch(
   error = function(e) NULL
 )
 
-# Robust fallback: use cache if API fails, returns no rows, or lacks PM2.5
+# Bundled snapshot: full fallback if the API fails, and the source for
+# monthly SO2, whose table id is currently ambiguous in the catalogue.
+air_cached <- utils::read.csv(
+  # gzip-compressed to keep the installed package small;
+  # read.csv() decompresses transparently
+  system.file("extdata", "air_monthly_cached.csv.gz", package = "mongolstats"),
+  check.names = FALSE,
+  stringsAsFactors = FALSE
+)
+
 if (is.null(air_monthly) || nrow(air_monthly) == 0) {
-  air_monthly <- utils::read.csv(
-    system.file("extdata", "air_monthly_cached.csv", package = "mongolstats"),
-    check.names = FALSE,
-    stringsAsFactors = FALSE
+  air_monthly <- air_cached
+} else {
+  air_monthly <- bind_rows(
+    air_monthly,
+    air_cached |>
+      filter(str_detect(Indicator_en, "Sulphur dioxide")) |>
+      # code columns come back as integers from read.csv()
+      mutate(across(any_of(c("Indicator", "Location", "Month")), as.character))
   )
 }
 
@@ -208,6 +235,7 @@ annual average (0.025 mg/m³). Values above this line indicate
 health risks.
 
 ``` r
+
 # MAC annual average for PM2.5
 mac_pm25 <- 0.025
 
@@ -264,6 +292,7 @@ health risks, particularly for vulnerable populations (children,
 elderly, asthmatics).
 
 ``` r
+
 # MAC annual average for SO2
 mac_so2 <- 0.020
 
@@ -277,8 +306,8 @@ p_so2 <- air_trends |>
   facet_wrap(~Station, ncol = 2, scales = "free_y") +
   scale_x_date(date_breaks = "6 months", date_labels = "%b %Y") +
   labs(
-    title = "SO₂ Trends in Top 10 Polluted UB Stations (2021-2025)",
-    subtitle = "Monthly Average (Line), Maximum (Ribbon), and MAC Limit (Dashed Line)",
+    title = "SO₂ Trends in Top 10 Polluted UB Stations (2023-2025)",
+    subtitle = "Bundled snapshot: Monthly Average (Line), Maximum (Ribbon), and MAC Limit (Dashed Line)",
     x = NULL,
     y = "Concentration (mg/m³)"
   ) +
@@ -294,7 +323,7 @@ p_so2  # print static ggplot
 ```
 
 ![Line plot showing monthly average SO2 concentrations for 10 stations
-from 2021 to 2025. Peaks significantly exceed the 0.020 mg/m³ limit
+from 2023 to 2025. Peaks significantly exceed the 0.020 mg/m³ limit
 during winters, dropping to near zero in
 summers.](environmental-surveillance_files/figure-html/so2-trends-1.png)
 
@@ -316,6 +345,7 @@ To clearly see how much stations exceed safety limits, we calculate the
 indicates non-compliance.
 
 ``` r
+
 # 1. Get MAC Standards
 mac_so2 <- 0.020 # Annual average mg/m3
 mac_no2 <- 0.030 # Annual average mg/m3
@@ -399,6 +429,7 @@ Mongolia’s major basins. We focus on the **Top 15 stations** with the
 highest electrical conductivity.
 
 ``` r
+
 # Fetch water quality data
 water <- nso_data(
   "DT_NSO_2300_005V12",
@@ -491,6 +522,7 @@ Dust storms are a significant environmental health concern. Here are the
 **Top 10 stations** with the highest number of dust days in 2024.
 
 ``` r
+
 # Fetch dust day data
 dust <- nso_data(
   "DT_NSO_2400_028V1",
@@ -566,6 +598,7 @@ names, a separate lookup table with lat/lon coordinates would enable:
 **Example workflow:**
 
 ``` r
+
 # Hypothetical station metadata table (user would compile this)
 station_metadata <- tribble(
   ~Station_name, ~Latitude, ~Longitude, ~Aimag,

@@ -1,6 +1,7 @@
 # Get variable codes for a table (PXWeb)
 
-Get variable codes for a table (PXWeb)
+Returns detailed variable metadata for a single table, including field
+names, item IDs, and labels in English and Mongolian when available.
 
 ## Usage
 
@@ -25,7 +26,7 @@ A tibble with variable metadata.
 ``` r
 vars <- nso_itms_detail("DT_NSO_0300_001V2")
 vars
-#> # A tibble: 116 × 6
+#> # A tibble: 117 × 6
 #>    field itm_id scr_eng scr_mn px_path                                   px_file
 #>    <chr> <chr>  <chr>   <chr>  <chr>                                     <chr>  
 #>  1 Sex   0      Total   NA     Population, household/1_Population, hous… DT_NSO…
@@ -38,5 +39,5 @@ vars
 #>  8 Age   4      3       NA     Population, household/1_Population, hous… DT_NSO…
 #>  9 Age   5      4       NA     Population, household/1_Population, hous… DT_NSO…
 #> 10 Age   6      5       NA     Population, household/1_Population, hous… DT_NSO…
-#> # ℹ 106 more rows
+#> # ℹ 107 more rows
 ```

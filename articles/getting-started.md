@@ -5,6 +5,7 @@
 Install from GitHub:
 
 ``` r
+
 # install.packages("devtools")
 # devtools::install_github("temuulene/mongolstats")
 ```
@@ -17,6 +18,7 @@ indicator of population health and health system performance.
 ### Step 1: Load Packages
 
 ``` r
+
 library(mongolstats)
 library(dplyr)
 library(ggplot2)
@@ -42,6 +44,7 @@ theme_set(
 Search for infant mortality data:
 
 ``` r
+
 # Search by keyword
 mortality_tables <- nso_itms_search("infant mortality")
 mortality_tables |>
@@ -51,9 +54,9 @@ mortality_tables |>
 #>   tbl_id            tbl_eng_nm                                                  
 #>   <chr>             <chr>                                                       
 #> 1 DT_NSO_2100_014V1 NUMBER OF INFANT MORTALITY, aimags and the Capital and by m…
-#> 2 DT_NSO_2100_014V2 NUMBER OF INFANT MORTALITY, by soum, district and by year   
+#> 2 DT_NSO_2100_014V2 NUMBER OF INFANT MORTALITY, by soum and discrict, and by ye…
 #> 3 DT_NSO_2100_014V4 INFANT MORTALITY, by sex, by soum, and by year              
-#> 4 DT_NSO_2100_014V5 INFANT MORTALITY RATE,  per 1000 live births, by sex, by so…
+#> 4 DT_NSO_2100_014V5 INFANT MORTALITY RATE, per 1000 live births, by sex, by sou…
 #> 5 DT_NSO_2100_015V1 INFANT MORTALITY RATE, per 1000 live births, aimags and the…
 ```
 
@@ -65,6 +68,7 @@ births (Monthly).
 Before fetching data, check what dimensions are available:
 
 ``` r
+
 # View table structure
 meta <- nso_table_meta("DT_NSO_2100_015V1")
 meta
@@ -72,7 +76,7 @@ meta
 #>   dim    code  is_time n_values codes             
 #>   <chr>  <chr> <lgl>      <int> <list>            
 #> 1 Region Бүс   FALSE         28 <tibble [28 × 3]> 
-#> 2 Month  Сар   FALSE        120 <tibble [120 × 3]>
+#> 2 Month  Сар   FALSE        125 <tibble [125 × 3]>
 
 # Check available months
 time_vals <- nso_dim_values("DT_NSO_2100_015V1", "Month", labels = "en")
@@ -80,16 +84,16 @@ head(time_vals, 10)
 #> # A tibble: 10 × 2
 #>    code  label_en
 #>    <chr> <chr>   
-#>  1 0     2025-12 
-#>  2 1     2025-11 
-#>  3 2     2025-10 
-#>  4 3     2025-09 
-#>  5 4     2025-08 
-#>  6 5     2016-01 
-#>  7 6     2016-02 
-#>  8 7     2016-03 
-#>  9 8     2016-04 
-#> 10 9     2016-05
+#>  1 0     2026-05 
+#>  2 1     2026-04 
+#>  3 2     2026-03 
+#>  4 3     2026-02 
+#>  5 4     2026-01 
+#>  6 5     2025-12 
+#>  7 6     2025-11 
+#>  8 7     2025-10 
+#>  9 8     2025-09 
+#> 10 9     2025-08
 ```
 
 ### Step 4: Fetch Data
@@ -97,6 +101,7 @@ head(time_vals, 10)
 Get national infant mortality rates for the past two decades:
 
 ``` r
+
 # Get all month codes
 months <- nso_dim_values("DT_NSO_2100_015V1", "Month", labels = "en")
 
@@ -115,16 +120,16 @@ imr_national |>
 #> # A tibble: 10 × 5
 #>    Region Month value Region_en Month_en
 #>    <chr>  <chr> <dbl> <chr>     <chr>   
-#>  1 0      0        13 Total     2025-12 
-#>  2 0      1        13 Total     2025-11 
-#>  3 0      2        11 Total     2025-10 
-#>  4 0      3        14 Total     2025-09 
-#>  5 0      4        16 Total     2025-08 
-#>  6 0      5        12 Total     2016-01 
-#>  7 0      6        13 Total     2016-02 
-#>  8 0      7        14 Total     2016-03 
-#>  9 0      8        15 Total     2016-04 
-#> 10 0      9        15 Total     2016-05
+#>  1 0      0        11 Total     2026-05 
+#>  2 0      1        11 Total     2026-04 
+#>  3 0      2        17 Total     2026-03 
+#>  4 0      3        11 Total     2026-02 
+#>  5 0      4        13 Total     2026-01 
+#>  6 0      5        13 Total     2025-12 
+#>  7 0      6        13 Total     2025-11 
+#>  8 0      7        11 Total     2025-10 
+#>  9 0      8        14 Total     2025-09 
+#> 10 0      9        16 Total     2025-08
 ```
 
 ### Step 5: Visualize the Trend
@@ -132,6 +137,7 @@ imr_national |>
 Create a publication-ready plot:
 
 ``` r
+
 # Prepare the data for visualization
 # Step 1: Convert month strings to proper dates for time series plotting
 # Step 2: Filter to recent decade (2015-2024) for clear trend visibility
@@ -170,6 +176,7 @@ p  # print static ggplot
 Compare infant mortality across different regions:
 
 ``` r
+
 # Get all aimags for most recent year (2024)
 # We'll take the average of monthly rates
 months_2024 <- months |>
@@ -230,6 +237,7 @@ imr_regional |>
 ### Visualize Regional Disparities
 
 ``` r
+
 # Calculate national aimag average for reference line
 aimag_mean <- mean(imr_regional$value[imr_regional$Type == "Aimag"], na.rm = TRUE)
 
@@ -277,6 +285,7 @@ aimags](getting-started_files/figure-html/regional-plot-1.png)
 Combine with mapping for spatial analysis:
 
 ``` r
+
 library(sf)
 
 # Get aimag boundaries
@@ -318,14 +327,14 @@ Mongolia](getting-started_files/figure-html/map-example-1.png)
 
 ## Key Functions Summary
 
-| Function                                                                                        | Purpose                   | Example                             |
-|-------------------------------------------------------------------------------------------------|---------------------------|-------------------------------------|
-| [`nso_itms_search()`](https://temuulene.github.io/mongolstats/reference/nso_itms_search.md)     | Find tables by keyword    | `nso_itms_search("mortality")`      |
-| [`nso_table_meta()`](https://temuulene.github.io/mongolstats/reference/nso_table_meta.md)       | Get table dimensions      | `nso_table_meta("DT_NSO_...")`      |
-| [`nso_dim_values()`](https://temuulene.github.io/mongolstats/reference/nso_dim_values.md)       | List dimension values     | `nso_dim_values(tbl, "Region")`     |
-| [`nso_table_periods()`](https://temuulene.github.io/mongolstats/reference/nso_table_periods.md) | Check time coverage       | `nso_table_periods(tbl)`            |
-| [`nso_data()`](https://temuulene.github.io/mongolstats/reference/nso_data.md)                   | Fetch data                | `nso_data(tbl, selections, labels)` |
-| [`mn_boundaries()`](https://temuulene.github.io/mongolstats/reference/mn_boundaries.md)         | Get geographic boundaries | `mn_boundaries(level = "ADM1")`     |
+| Function | Purpose | Example |
+|----|----|----|
+| [`nso_itms_search()`](https://temuulene.github.io/mongolstats/reference/nso_itms_search.md) | Find tables by keyword | `nso_itms_search("mortality")` |
+| [`nso_table_meta()`](https://temuulene.github.io/mongolstats/reference/nso_table_meta.md) | Get table dimensions | `nso_table_meta("DT_NSO_...")` |
+| [`nso_dim_values()`](https://temuulene.github.io/mongolstats/reference/nso_dim_values.md) | List dimension values | `nso_dim_values(tbl, "Region")` |
+| [`nso_table_periods()`](https://temuulene.github.io/mongolstats/reference/nso_table_periods.md) | Check time coverage | `nso_table_periods(tbl)` |
+| [`nso_data()`](https://temuulene.github.io/mongolstats/reference/nso_data.md) | Fetch data | `nso_data(tbl, selections, labels)` |
+| [`mn_boundaries()`](https://temuulene.github.io/mongolstats/reference/mn_boundaries.md) | Get geographic boundaries | `mn_boundaries(level = "ADM1")` |
 
 ## Best Practices
 

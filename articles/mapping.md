@@ -1,6 +1,7 @@
 # Spatial Epidemiology with mongolstats
 
 ``` r
+
 library(mongolstats)
 library(sf)
 library(dplyr)
@@ -31,6 +32,7 @@ epidemiology using Mongolia’s aimag-level (provincial) health data.
 Mongolia’s administrative boundaries are available at three levels:
 
 ``` r
+
 # ADM0: National boundary
 country <- mn_boundaries(level = "ADM0")
 
@@ -60,15 +62,22 @@ Maternal mortality is a critical indicator of health system performance
 and equity.
 
 ``` r
+
 # Fetch maternal mortality data for all aimags (2020-2024)
 # We'll calculate a 5-year average to smooth out year-to-year variability
 # This is important because small populations can have unstable rates
 
+# The table is monthly; map month labels ("YYYY-MM") to codes for 2020-2024
+mmr_tbl <- "DT_NSO_2100_050V1" # MMR per 100,000 live births
+mmr_months <- nso_dim_values(mmr_tbl, "Month", labels = "en") |>
+  filter(label_en >= "2020-01", label_en <= "2024-12") |>
+  pull(code)
+
 mmr_data <- nso_data(
-  tbl_id = "DT_NSO_2100_050V1", # MMR per 100,000 live births
+  tbl_id = mmr_tbl,
   selections = list(
-    "Region" = nso_dim_values("DT_NSO_2100_050V1", "Region")$code,
-    "Year" = as.character(2020:2024)
+    "Region" = nso_dim_values(mmr_tbl, "Region")$code,
+    "Month" = mmr_months
   ),
   labels = "en"
 ) |>
@@ -97,23 +106,24 @@ mmr_data |>
   select(Region_en, value) |>
   head(10)
 #> # A tibble: 10 × 2
-#>    Region_en    value
-#>    <chr>        <dbl>
-#>  1 Khovd         69.8
-#>  2 Arkhangai     65.9
-#>  3 Selenge       60.1
-#>  4 Sükhbaatar    53.5
-#>  5 Hovsgel       48.0
-#>  6 Dornogovi     44.9
-#>  7 Töv           41.9
-#>  8 Ulaanbaatar   40.4
-#>  9 Bayan-Ölgii   39.1
-#> 10 Bayankhongor  37.6
+#>    Region_en   value
+#>    <chr>       <dbl>
+#>  1 Arkhangai    75.9
+#>  2 Dornogovi    67.8
+#>  3 Khovd        67.6
+#>  4 Bayan-Ölgii  65.2
+#>  5 Töv          63.8
+#>  6 Dornod       54.1
+#>  7 Hovsgel      53.2
+#>  8 Sükhbaatar   50.6
+#>  9 Ulaanbaatar  48.6
+#> 10 Selenge      48.0
 ```
 
 ### Creating a Choropleth Map
 
 ``` r
+
 # Join health data to geographic boundaries for spatial analysis
 mmr_map <- aimags |>
   left_join(mmr_data, by = c("shapeName" = "Region_en"))
@@ -152,6 +162,7 @@ p  # print static ggplot
 ### Identifying High-Risk Regions
 
 ``` r
+
 # Get infant mortality rates
 imr_tbl <- "DT_NSO_2100_015V1" # IMR per 1,000 live births (Monthly)
 
