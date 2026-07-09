@@ -36,6 +36,28 @@ test_that(".px_resolve_table resolves known table", {
   expect_equal(nrow(result$row), 1L)
 })
 
+test_that(".px_resolve_table warns on ambiguous table id and uses first match", {
+  fake_idx <- tibble::tibble(
+    px_file = c("DT_TEST.px", "DT_TEST.px"),
+    px_path = c("sector/sub", "other/place"),
+    tbl_eng_nm = c("First table", "Second table")
+  )
+  expect_snapshot(result <- .px_resolve_table("DT_TEST", idx = fake_idx))
+  expect_equal(result$paths, c("sector", "sub"))
+  expect_equal(nrow(result$row), 1L)
+})
+
+test_that(".px_resolve_table resolves cross-listed table silently", {
+  fake_idx <- tibble::tibble(
+    px_file = c("DT_TEST.px", "DT_TEST.px"),
+    px_path = c("sector/sub", "other/place"),
+    tbl_eng_nm = c("Same table", "Same table")
+  )
+  expect_no_warning(result <- .px_resolve_table("DT_TEST", idx = fake_idx))
+  expect_equal(result$paths, c("sector", "sub"))
+  expect_equal(nrow(result$row), 1L)
+})
+
 test_that(".px_resolve_table handles .px suffix", {
   fake_idx <- tibble::tibble(px_file = "DT_TEST.px", px_path = "")
   result <- .px_resolve_table("DT_TEST.px", idx = fake_idx)

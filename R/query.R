@@ -29,6 +29,7 @@ nso_query <- function(tbl_id, selections = list()) {
 #' @param x An `nso_query` object created by [nso_query()].
 #' @param ... Additional arguments passed to print methods (ignored).
 #' @return `x`, invisibly.
+#' @keywords internal
 #' @export
 print.nso_query <- function(x, ...) {
   cat("<nso_query>\n", sep = "")
