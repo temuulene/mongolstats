@@ -109,8 +109,8 @@ cancer_types <- nso_dim_values(cancer_tbl, "Type malignant neoplasms", labels = 
 cancer_types |> head(10)
 
 # Check time coverage
-# Note: "Annual" dimension uses internal codes, so we map labels (years) to codes
-annual_meta <- nso_dim_values(cancer_tbl, "Annual", labels = "both")
+# Note: "Year" dimension uses internal codes, so we map labels (years) to codes
+annual_meta <- nso_dim_values(cancer_tbl, "Year", labels = "both")
 years <- annual_meta$label_en
 years
 ```
@@ -133,7 +133,7 @@ cancer_data <- nso_data(
   tbl_id = cancer_tbl,
   selections = list(
     "Type malignant neoplasms" = c("1", "2", "3", "4"), # Lung, Liver, Stomach, Cervix
-    "Annual" = recent_years
+    "Year" = recent_years
   ),
   labels = "en"
 )
@@ -141,7 +141,7 @@ cancer_data <- nso_data(
 # Visualize cancer incidence trends as static plot
 p <- cancer_data |>
   ggplot(aes(
-    x = as.integer(Annual_en), y = value, color = `Type malignant neoplasms_en`,
+    x = as.integer(Year_en), y = value, color = `Type malignant neoplasms_en`,
     group = `Type malignant neoplasms_en`
   )) +
   geom_line(linewidth = 1.2) +

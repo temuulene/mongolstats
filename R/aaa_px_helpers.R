@@ -164,6 +164,23 @@
   if (!nrow(row)) {
     cli_abort("Table {.val {tbl_id}} not found in PXWeb index.")
   }
+  if (nrow(row) > 1) {
+    # The catalogue cross-lists some tables in several folders; that is
+    # harmless. Only warn when the id names genuinely different tables.
+    if (length(unique(row$tbl_eng_nm)) > 1) {
+      cli_warn(
+        c(
+          "Table id {.val {tbl_id}} matches {nrow(row)} different tables in
+           the PXWeb catalogue.",
+          "i" = "Using the first match, in folder {.val {row$px_path[1]}}:
+                 {row$tbl_eng_nm[1]}.",
+          "i" = "Ignored match{?es} in folder{?s}: {.val {row$px_path[-1]}}."
+        ),
+        class = "mongolstats_ambiguous_table"
+      )
+    }
+    row <- row[1, , drop = FALSE]
+  }
   paths <- if (nzchar(row$px_path[1])) {
     strsplit(row$px_path[1], "/", fixed = TRUE)[[1]]
   } else {

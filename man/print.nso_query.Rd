@@ -18,3 +18,4 @@
 Displays a human-readable summary of the query, including the table
 identifier and the first few dimension selections.
 }
+\keyword{internal}

@@ -85,11 +85,17 @@ Maternal mortality is a critical indicator of health system performance and equi
 # We'll calculate a 5-year average to smooth out year-to-year variability
 # This is important because small populations can have unstable rates
 
+# The table is monthly; map month labels ("YYYY-MM") to codes for 2020-2024
+mmr_tbl <- "DT_NSO_2100_050V1" # MMR per 100,000 live births
+mmr_months <- nso_dim_values(mmr_tbl, "Month", labels = "en") |>
+  filter(label_en >= "2020-01", label_en <= "2024-12") |>
+  pull(code)
+
 mmr_data <- nso_data(
-  tbl_id = "DT_NSO_2100_050V1", # MMR per 100,000 live births
+  tbl_id = mmr_tbl,
   selections = list(
-    "Region" = nso_dim_values("DT_NSO_2100_050V1", "Region")$code,
-    "Year" = as.character(2020:2024)
+    "Region" = nso_dim_values(mmr_tbl, "Region")$code,
+    "Month" = mmr_months
   ),
   labels = "en"
 ) |>

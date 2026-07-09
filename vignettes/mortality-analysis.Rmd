@@ -618,18 +618,17 @@ p  # print static ggplot
 *   **Injuries (Purple Line):** While significant (3rd place), the trend is relatively flat. The lack of a massive winter spike in this category argues *against* the theory that New Year's accidents are the primary driver of the December mortality peak.
 *   **COVID-19 Impact:** Note the sharp rise in "Respiratory" and other categories in 2021.
 
-### Respiratory Infections: A Seasonal Proxy
+### Communicable Disease Cases: A Seasonal Proxy
 
-Since we cannot see monthly respiratory *deaths*, we look at monthly respiratory *cases* (e.g., flu, pneumonia) to see the seasonal pressure.
+Since we cannot see monthly respiratory *deaths*, we look at monthly infection *cases* to see the seasonal pressure. The NSO's monthly table no longer breaks out respiratory infections as a separate category, so we use **total communicable disease cases** — a series historically dominated by seasonal respiratory outbreaks — as the proxy.
 
 ```{r respiratory-proxy, fig.height=4}
-# Fetch monthly respiratory disease cases
+# Fetch monthly communicable disease cases (total across categories)
 comm_tbl <- "DT_NSO_2100_035V1"
-# Code 12 is Respiratory infectious diseases
-resp_cases <- nso_data(
+comm_cases <- nso_data(
   tbl_id = comm_tbl,
   selections = list(
-    "Indicators" = "12", 
+    "Indicators" = "Cases of communicable diseases",
     "Month" = months_filtered$code
   ),
   labels = "en"
@@ -640,13 +639,13 @@ resp_cases <- nso_data(
   ) |>
   filter(!is.na(value))
 
-# Respiratory cases boxplot by month - proxy for seasonal infection pressure
-p <- resp_cases |>
+# Case boxplot by month - proxy for seasonal infection pressure
+p <- comm_cases |>
   ggplot(aes(x = month, y = value)) +
   geom_boxplot(fill = "#e74c3c", alpha = 0.6) +
   scale_y_continuous(labels = scales::comma) +
   labs(
-    title = "Seasonality of Respiratory Infections (Cases)",
+    title = "Seasonality of Communicable Disease Cases",
     subtitle = "Monthly distribution of reported cases (2015-2024)",
     x = NULL,
     y = "Reported Cases"
@@ -659,8 +658,8 @@ p  # print static ggplot
 
 **Interpretation:**
 
-*   **Complex Seasonality:** Respiratory infections do not follow a simple winter curve. We see high case counts in **December and January**, followed by a notable **dip in February**, and a **resurgence in May** (spring peak).
-*   **The Mortality Mismatch:** While the December respiratory spike correlates with the December mortality peak, the **May respiratory spike** does *not* trigger a corresponding mortality spike (deaths are average in May). This suggests that while respiratory illness contributes to winter deaths, it is the **combination** of infection *plus* extreme cold (Dec/Jan) that is lethal. Infection alone (in warmer May) appears less fatal.
+*   **Complex Seasonality:** Infections do not follow a simple winter curve. We see high case counts in **December**, followed by a notable **dip in February**, and the **annual peak in May**.
+*   **The Mortality Mismatch:** While the December infection spike correlates with the December mortality peak, the **May infection peak** does *not* trigger a corresponding mortality spike (deaths are average in May). This suggests that while infectious illness contributes to winter deaths, it is the **combination** of infection *plus* extreme cold (Dec/Jan) that is lethal. Infection alone (in warmer May) appears less fatal.
 
 ---
 

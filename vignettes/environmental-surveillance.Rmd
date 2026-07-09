@@ -71,9 +71,9 @@ The NSO maintains air quality monitoring stations that measure key pollutants. W
 > The NSO provides two types of air quality tables with different dimension structures:
 >
 > - **Annual table** (`DT_NSO_2024_135V01`): Uses a `Year` dimension for filtering (e.g., `selections = list(Year = "2024")`)
-> - **Monthly tables** (`DT_NSO_2400_015V1` through `V6`): Use a running `Month` dimension with codes `0`, `1`, `2`, etc. (where `0` = most recent month). Filter by month codes, not year labels: `selections = list(Month = as.character(0:47))` retrieves the last 48 months.
+> - **Monthly station tables** (e.g. `DT_NSO_2400_015V2` for NO₂, `DT_NSO_2400_015V5` for PM2.5): Use a running `Month` dimension with internal codes. The ordering of the codes is not guaranteed, so map month labels (`"YYYY-MM"`, returned in `Month_en`) to codes with `nso_dim_values()` before selecting.
 >
-> The monthly tables are split by pollutant: V1 (SO₂), V2 (NO₂), V3 (CO), V4 (PM10), V5 (PM2.5), V6 (O₃). The `Month_en` column returns dates in `"YYYY-MM"` format.
+> The NSO catalogue currently reuses the ids `DT_NSO_2400_015V1` (SO₂), `V3` (CO), and `V4` (PM10) for unrelated annual tables in another folder, so those monthly series cannot be fetched by table id alone (mongolstats warns about the ambiguity). This vignette therefore analyzes live NO₂ and PM2.5 data and uses a bundled snapshot for SO₂.
 
 ```{r air-quality-data}
 # 1. Identify Top 10 Polluted Stations in UB (using 2024 annual data)
@@ -129,17 +129,26 @@ if (length(top_10_stations) == 0) {
 }
 
 # 2. Fetch Monthly Data for Detailed Trends
-# Monthly tables are pollutant-specific: V1=SO2, V2=NO2, V5=PM2.5.
-# We fetch all three to ensure trends and compliance plots work.
+# Monthly station tables: V2 = NO2, V5 = PM2.5 (see the note above on
+# reused table ids). Month codes are not in a guaranteed order, so map
+# month labels ("YYYY-MM") to codes explicitly.
+recent_month_codes <- function(tbl, from = "2021-01") {
+  mv <- nso_dim_values(tbl, "Month", labels = "en")
+  mv$code[!is.na(mv$label_en) & mv$label_en >= from]
+}
+
 air_monthly <- tryCatch(
   {
     nso_package(
       list(
-        list(tbl_id = "DT_NSO_2400_015V1", selections = list(Month = as.character(0:47))), # SO2
-        list(tbl_id = "DT_NSO_2400_015V2", selections = list(Month = as.character(0:47))), # NO2
-        list(tbl_id = "DT_NSO_2400_015V3", selections = list(Month = as.character(0:47))), # CO
-        list(tbl_id = "DT_NSO_2400_015V4", selections = list(Month = as.character(0:47))), # PM10
-        list(tbl_id = "DT_NSO_2400_015V5", selections = list(Month = as.character(0:47)))  # PM2.5
+        list(
+          tbl_id = "DT_NSO_2400_015V2", # NO2
+          selections = list(Month = recent_month_codes("DT_NSO_2400_015V2"))
+        ),
+        list(
+          tbl_id = "DT_NSO_2400_015V5", # PM2.5
+          selections = list(Month = recent_month_codes("DT_NSO_2400_015V5"))
+        )
       ),
       labels = "en"
     )
@@ -147,14 +156,25 @@ air_monthly <- tryCatch(
   error = function(e) NULL
 )
 
-# Robust fallback: use cache if API fails, returns no rows, or lacks PM2.5
+# Bundled snapshot: full fallback if the API fails, and the source for
+# monthly SO2, whose table id is currently ambiguous in the catalogue.
+air_cached <- utils::read.csv(
+  # gzip-compressed to keep the installed package small;
+  # read.csv() decompresses transparently
+  system.file("extdata", "air_monthly_cached.csv.gz", package = "mongolstats"),
+  check.names = FALSE,
+  stringsAsFactors = FALSE
+)
+
 if (is.null(air_monthly) || nrow(air_monthly) == 0) {
-  air_monthly <- utils::read.csv(
-    # gzip-compressed to keep the installed package small;
-    # read.csv() decompresses transparently
-    system.file("extdata", "air_monthly_cached.csv.gz", package = "mongolstats"),
-    check.names = FALSE,
-    stringsAsFactors = FALSE
+  air_monthly <- air_cached
+} else {
+  air_monthly <- bind_rows(
+    air_monthly,
+    air_cached |>
+      filter(str_detect(Indicator_en, "Sulphur dioxide")) |>
+      # code columns come back as integers from read.csv()
+      mutate(across(any_of(c("Indicator", "Location", "Month")), as.character))
   )
 }
 
@@ -256,7 +276,7 @@ Sulfur dioxide is a direct tracer of **raw coal combustion** for residential hea
 
 **What the dashed line means**: The horizontal dashed orange line represents Mongolia's MAC for SO₂ annual average (0.020 mg/m³). Exceedances indicate both regulatory non-compliance and respiratory health risks, particularly for vulnerable populations (children, elderly, asthmatics).
 
-```{r so2-trends, fig.height=8, fig.alt="Line plot showing monthly average SO2 concentrations for 10 stations from 2021 to 2025. Peaks significantly exceed the 0.020 mg/m³ limit during winters, dropping to near zero in summers."}
+```{r so2-trends, fig.height=8, fig.alt="Line plot showing monthly average SO2 concentrations for 10 stations from 2023 to 2025. Peaks significantly exceed the 0.020 mg/m³ limit during winters, dropping to near zero in summers."}
 # MAC annual average for SO2
 mac_so2 <- 0.020
 
@@ -270,8 +290,8 @@ p_so2 <- air_trends |>
   facet_wrap(~Station, ncol = 2, scales = "free_y") +
   scale_x_date(date_breaks = "6 months", date_labels = "%b %Y") +
   labs(
-    title = "SO₂ Trends in Top 10 Polluted UB Stations (2021-2025)",
-    subtitle = "Monthly Average (Line), Maximum (Ribbon), and MAC Limit (Dashed Line)",
+    title = "SO₂ Trends in Top 10 Polluted UB Stations (2023-2025)",
+    subtitle = "Bundled snapshot: Monthly Average (Line), Maximum (Ribbon), and MAC Limit (Dashed Line)",
     x = NULL,
     y = "Concentration (mg/m³)"
   ) +
