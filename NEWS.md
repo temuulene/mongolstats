@@ -1,4 +1,4 @@
-# mongolstats (development version)
+# mongolstats 0.2.0
 
 ## Breaking changes
 
@@ -12,6 +12,9 @@
 *   **`nso_period_seq()` input validation**: malformed periods (wrong width, month 13, `NA`, vectors) and reversed ranges now error with a clear message instead of silently returning a descending sequence or failing inside `seq.Date()`.
 
 ## Bug fixes
+
+*   Ambiguous table ids now warn: the NSO catalogue can reuse one table id for different tables in different folders (e.g. `DT_NSO_2400_015V1` currently names both the monthly SO2 station table and an annual air-quality-standards table). mongolstats now warns (class `mongolstats_ambiguous_table`) and names the folder it picked instead of silently resolving to an arbitrary table. Tables that are merely cross-listed in several folders under the same name resolve silently.
+*   The embedded PXWeb table index has been refreshed to match the current NSO catalogue. Several tables (e.g. cancer incidence `DT_NSO_2100_012V1` and communicable diseases `DT_NSO_2100_035V1`) moved to different catalogue folders, which made lookups through the stale index return empty results.
 
 *   **`labels = "mn"` and `labels = "both"` now actually attach Mongolian labels**: label metadata was matched to data columns by display text, but the two languages only share the dimension *code* (the English column is "Sex" while both languages use the code "Хүйс"), so cross-language labels were silently never added. Labels are now routed through a code-to-column map, which also fixes English labels when `mongolstats.lang = "mn"`.
 *   **Offline mode no longer fires the session-cookie GET**: `.px_session_cookie()` bypassed the offline gate, so `nso_data()` with cached metadata still performed one live request in offline mode.
