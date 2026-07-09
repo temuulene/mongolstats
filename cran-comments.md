@@ -5,7 +5,10 @@
 ## R CMD check results
 0 errors ✔ | 0 warnings ✔ | 0 notes ✔
 
-- Resubmission after fixing CRAN check errors
+- This is an update release (0.1.1 -> 0.2.0) with bug fixes, stricter input
+  validation, and CRAN-compliance improvements (tests no longer touch the
+  user's cache directory; the bundled vignette data is now compressed).
+  See NEWS.md for details.
 
 ## Package purpose
 mongolstats provides convenient access to Mongolia's National Statistics Office (NSO) data through their PXWeb API, with additional utilities for working with administrative boundaries from GeoBoundaries.
