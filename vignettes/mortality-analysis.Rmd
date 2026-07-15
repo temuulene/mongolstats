@@ -76,6 +76,13 @@ tibble::tribble(
   knitr::kable()
 ```
 
+> **Data caveat — registration vs occurrence:** These are monthly *registered*
+> deaths. Registration can lag the actual death, and year-end administrative
+> processing tends to concentrate records in December and thin them in January.
+> Part of the December-high / January-low pattern below may therefore reflect
+> *reporting* timing rather than true *occurrence* timing. We flag this where it
+> affects interpretation.
+
 ---
 
 ## 1. Monthly Death Patterns
@@ -212,7 +219,7 @@ p  # print static ggplot
 *   **2020 (Green Zone):** Mortality actually *decreased* or remained stable. Strict lockdowns likely reduced accidents and other infectious diseases.
 *   **2021 (Red/Orange Zone):** A massive spike in mortality corresponds to the Delta wave, disrupting normal seasonality.
 *   **December Dominance:** When adjusting for the number of days in the month (Daily Average), **December** emerges as the consistent peak month for mortality intensity.
-*   **The January Dip:** Surprisingly, January frequently appears as a local trough in the daily average data. This suggests a "Harvesting Effect" (mortality displacement), where the sudden onset of extreme cold in December impacts the most vulnerable population immediately, leaving a smaller pool of high-risk individuals in January.
+*   **The January Dip:** Surprisingly, January frequently appears as a local trough in the daily average data. Two explanations are plausible and hard to separate here: (1) a **death-registration artifact**, where year-end processing shifts records into December and out of January, and (2) a genuine **"harvesting effect"** (mortality displacement), where December's cold shock claims the most vulnerable first. Because December and January share the same day count, the days-in-month normalization does not distinguish them—so we treat the drop as suggestive, not established.
 
 ### Monthly Distribution (Seasonality)
 
@@ -283,7 +290,7 @@ The boxplot shows the "typical" range of daily average deaths for each month (no
 
 *   **Winter Highs:** The red boxes (Nov-Mar) are generally higher than the blue boxes.
 *   **December Peak:** December consistently shows the highest mortality intensity when measured as daily average deaths.
-*   **The January Surprise:** January often shows lower daily average deaths than December, suggesting a "harvesting effect" where December's cold shock claims the most vulnerable first.
+*   **The January Surprise:** January often shows lower daily average deaths than December. This is consistent with either a harvesting effect or a year-end registration artifact (see the data caveat above); these data cannot distinguish the two.
 *   **Outliers:** The purple dots high above the boxes represent the COVID-19 surge year (2021).
 
 ### Monthly Averages with Confidence Intervals
@@ -897,7 +904,7 @@ Based on the evidence, we can address the social media claim:
     *   **The data supports a strong early-winter peak.** After normalizing for the number of days in each month (which corrects the artificially low count for 28-day February), mortality intensity peaks in **`r summary_results$peak_month_name`** (`r summary_results$peak_deaths` deaths/day). Note that December and January both have 31 days, so day-count normalization does not by itself separate them—the ordering between the two rests on the counts themselves. To the extent the peak month is December, the social media claim is consistent with the data.
 
 2.  **The Winter "Shock-and-Drop" Pattern:**
-    *   We observe a surprising pattern: mortality spikes sharply in December as temperatures plummet, followed by a dip in January (`r summary_results$trough_deaths` deaths/day—often the annual trough in daily averages). This contradicts the assumption that the entire winter is a sustained plateau; rather, the *onset* of extreme winter appears to be the deadliest phase. This is consistent with a "harvesting effect" where December's cold shock claims the most vulnerable individuals first.
+    *   We observe a surprising pattern: mortality spikes sharply in December, followed by a dip in January (`r summary_results$trough_deaths` deaths/day—often the annual trough in daily averages). Taken at face value this suggests the *onset* of extreme winter is the deadliest phase rather than a sustained plateau. But the pattern is also consistent with a year-end **registration artifact**, and because December and January share the same day count we cannot firmly attribute it to a biological "harvesting effect" from these data alone.
 
 3.  **Is it because of New Year parties?**
     *   **We cannot determine this definitively.** The NSO public API only provides **annual** death counts by cause—not monthly breakdowns. Without monthly cause-of-death data, we cannot confirm whether the December spike is driven by cardiovascular stress, respiratory illness, injuries, or some combination. While injuries appear to be a smaller fraction of *annual* deaths compared to cardiovascular disease, we lack the seasonal granularity to rule out a significant holiday-related injury spike in December specifically.

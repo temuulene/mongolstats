@@ -193,19 +193,9 @@ imr_data <- nso_data(
   labels = "en"
 ) |>
   filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar
-  mutate(
-    Region_en = trimws(Region_en),
-    Region_en = dplyr::case_match(
-      Region_en,
-      "Bayan-Ulgii" ~ "Bayan-Ölgii",
-      "Uvurkhangai" ~ "Övörkhangai",
-      "Khuvsgul" ~ "Hovsgel",
-      "Umnugovi" ~ "Ömnögovi",
-      "Tuv" ~ "Töv",
-      "Sukhbaatar" ~ "Sükhbaatar",
-      .default = Region_en
-    )
-  ) |>
+  mutate(Region_en = trimws(Region_en)) |>
+  # Mean of monthly IMR values: an indicative annual level, not a
+  # births-weighted annual rate (total infant deaths / total live births).
   group_by(Region_en) |>
   summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
