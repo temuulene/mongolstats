@@ -174,20 +174,11 @@ imr_regional <- nso_data(
   filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar (code length = 3)
   mutate(
     Region_en = trimws(Region_en),
-    # Standardize region names to match geographic boundary data
-    Region_en = dplyr::case_match(
-      Region_en,
-      "Bayan-Ulgii" ~ "Bayan-Ölgii",
-      "Uvurkhangai" ~ "Övörkhangai",
-      "Khuvsgul" ~ "Hovsgel",
-      "Umnugovi" ~ "Ömnögovi",
-      "Tuv" ~ "Töv",
-      "Sukhbaatar" ~ "Sükhbaatar",
-      .default = Region_en
-    ),
     Type = ifelse(Region %in% c("1", "2", "3", "4"), "Region", "Aimag")
   ) |>
-  # Calculate annual average IMR from monthly data
+  # Calculate annual average IMR from monthly data.
+  # Caveat: a mean of monthly rates approximates, but is not identical to, the
+  # true annual IMR (total infant deaths / total live births x 1,000).
   group_by(Region_en, Type) |>
   summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
@@ -247,12 +238,9 @@ Combine with mapping for spatial analysis:
 ```{r map-example, fig.alt="Choropleth map of infant mortality rates across Mongolia"}
 library(sf)
 
-# Get aimag boundaries
-aimags <- mn_boundaries(level = "ADM1")
-
-# Join IMR data to map
-imr_map <- aimags |>
-  left_join(imr_regional, by = c("shapeName" = "Region_en"))
+# Join IMR data to boundaries with the package's fuzzy name matcher, which
+# reconciles transliteration differences without a hand-maintained crosswalk.
+imr_map <- mn_fuzzy_join_by_name(imr_regional, name_col = "Region_en", level = "ADM1")
 
 # Create choropleth map
 p <- imr_map |>
