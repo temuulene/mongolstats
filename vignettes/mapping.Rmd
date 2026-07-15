@@ -125,7 +125,12 @@ mmr_data |>
 # NSO English names and the boundary spellings automatically (normalize +
 # fuzzy match), so we don't maintain a hand-written name crosswalk that would
 # silently drop provinces to grey when a spelling doesn't match exactly.
-mmr_map <- mn_fuzzy_join_by_name(mmr_data, name_col = "Region_en", level = "ADM1")
+# max_distance = 3 is needed because NSO's "Khuvsgul" is string distance 3
+# from the boundary spelling "Hovsgel"; all other pairs match at <= 2.
+mmr_map <- mn_fuzzy_join_by_name(
+  mmr_data,
+  name_col = "Region_en", level = "ADM1", max_distance = 3
+)
 
 # Create choropleth map
 p <- mmr_map |>
@@ -176,7 +181,11 @@ imr_data <- nso_data(
   ),
   labels = "en"
 ) |>
-  filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar
+  # Exclude Total ("0"), regional aggregates ("1"-"4"), and "511" -- a
+  # duplicate Ulaanbaatar entry whose values are all missing in this table.
+  # Ulaanbaatar's actual data lives under code "5", so filtering by
+  # nchar(Region) == 3 would keep the empty duplicate and drop the real one.
+  filter(!Region %in% c("0", "1", "2", "3", "4", "511")) |>
   mutate(Region_en = trimws(Region_en)) |>
   # Average the monthly rates for 2024. Caveat: a mean of monthly IMR values
   # is not the true annual IMR (total infant deaths / total live births x
@@ -198,8 +207,12 @@ imr_data <- nso_data(
     )
   )
 
-# Create risk category map (fuzzy name join reconciles spelling differences)
-p <- mn_fuzzy_join_by_name(imr_data, name_col = "Region_en", level = "ADM1") |>
+# Create risk category map (fuzzy name join reconciles spelling differences;
+# max_distance = 3 covers the Khuvsgul/Hovsgel spelling gap)
+p <- mn_fuzzy_join_by_name(
+  imr_data,
+  name_col = "Region_en", level = "ADM1", max_distance = 3
+) |>
   ggplot() +
   geom_sf(aes(fill = risk_category), color = "white", size = 0.2) +
   scale_fill_manual(
