@@ -192,7 +192,10 @@ imr_data <- nso_data(
   ),
   labels = "en"
 ) |>
-  filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar
+  # Exclude Total ("0"), regional aggregates ("1"-"4"), and "511" -- a
+  # duplicate Ulaanbaatar entry with all-missing values (the real Ulaanbaatar
+  # data is under code "5").
+  filter(!Region %in% c("0", "1", "2", "3", "4", "511")) |>
   mutate(Region_en = trimws(Region_en)) |>
   # Mean of monthly IMR values: an indicative annual level, not a
   # births-weighted annual rate (total infant deaths / total live births).
