@@ -390,8 +390,30 @@ p  # print static ggplot
 To rigorously separate the **trend**, **seasonality**, and **noise** in mortality data, we use STL (Seasonal and Trend decomposition using Loess). This method is robust to outliers like the COVID-19 surge and provides a cleaner view of the underlying seasonal pattern.
 
 ```{r stl-decomposition, fig.height=7}
-# Convert to time series object using daily averages (normalized)
-ts_deaths <- ts(deaths_monthly$daily_avg, start = c(2015, 1), frequency = 12)
+# Build a gap-free monthly series before constructing the ts object.
+# ts() assigns observations to consecutive months by position, so a single
+# missing month would shift every later value and corrupt the seasonal
+# decomposition. We fill out the complete monthly grid and linearly
+# interpolate any gaps (stl() cannot accept NA). In practice the NSO series
+# is complete, so this is usually a no-op that simply guards against silent
+# misalignment. The ts start is taken from the first observed month rather
+# than hard-coded, so the decomposition stays correct if coverage changes.
+ts_input <- deaths_monthly |>
+  dplyr::select(date, daily_avg) |>
+  tidyr::complete(date = seq(min(date), max(date), by = "month")) |>
+  dplyr::arrange(date)
+ts_input$daily_avg <- stats::approx(
+  x = as.numeric(ts_input$date),
+  y = ts_input$daily_avg,
+  xout = as.numeric(ts_input$date),
+  rule = 2
+)$y
+
+ts_deaths <- ts(
+  ts_input$daily_avg,
+  start = c(year(min(ts_input$date)), month(min(ts_input$date))),
+  frequency = 12
+)
 
 # Perform STL decomposition
 # s.window = "periodic" assumes seasonality is constant across years
@@ -399,7 +421,7 @@ decomp <- stl(ts_deaths, s.window = "periodic", robust = TRUE)
 
 # Extract components for plotting
 decomp_df <- data.frame(
-  date = deaths_monthly$date,
+  date = ts_input$date,
   observed = as.numeric(ts_deaths),
   trend = as.numeric(decomp$time.series[, "trend"]),
   seasonal = as.numeric(decomp$time.series[, "seasonal"]),
@@ -444,7 +466,7 @@ print(p)
 **Interpretation:**
 
 *   **Trend:** Shows the overall long-term pattern. Notice the sharp spike in 2021 (COVID-19 Delta wave) and gradual increase over time (population growth).
-*   **Seasonal Pattern:** A clean, repeating annual cycle emerges. Deaths peak in winter (Jan-Feb) and trough in summer (Jun-Aug). This pattern is consistent across all years.
+*   **Seasonal Pattern:** A clean, repeating annual cycle emerges. Deaths peak in the winter months (December–February) and trough in summer (Jun-Aug). This pattern is consistent across all years. (The exact peak month extracted by the decomposition is reported in the next section.)
 *   **Remainder:** Random noise plus anomalies. The large spikes in 2021 represent COVID-19 mortality that exceeded even the elevated trend.
 
 ### Seasonal Pattern Analysis
@@ -524,8 +546,12 @@ phase <- atan2(coef_sin, coef_cos) * 12 / (2 * pi)
 peak_month_harmonic <- if (phase < 0) phase + 12 else phase
 
 # Store results for display
+# Map the continuous peak position in [0, 12) to a month index in 1:12.
+# Guard the wrap-around: a peak near January can round to 0 (or 12), which
+# would index month.name out of bounds, so fold it back with modular arithmetic.
+peak_month_index <- ((round(peak_month_harmonic) - 1) %% 12) + 1
 harmonic_results <- list(
-  peak_month = month.name[round(peak_month_harmonic)],
+  peak_month = month.name[peak_month_index],
   amplitude = round(amplitude, 1),
   r_squared = round(summary(harmonic_model)$r.squared * 100, 1)
 )
@@ -868,7 +894,7 @@ summary_results <- list(
 Based on the evidence, we can address the social media claim:
 
 1.  **Does December have the highest deaths?**
-    *   **Yes, the data supports this.** Unlike raw counts (where January's 31 days inflate its ranking), the **Daily Average** analysis confirms that mortality intensity peaks in **December** (`r summary_results$peak_deaths` deaths/day). The social media claim is statistically accurate regarding the timing.
+    *   **The data supports a strong early-winter peak.** After normalizing for the number of days in each month (which corrects the artificially low count for 28-day February), mortality intensity peaks in **`r summary_results$peak_month_name`** (`r summary_results$peak_deaths` deaths/day). Note that December and January both have 31 days, so day-count normalization does not by itself separate them—the ordering between the two rests on the counts themselves. To the extent the peak month is December, the social media claim is consistent with the data.
 
 2.  **The Winter "Shock-and-Drop" Pattern:**
     *   We observe a surprising pattern: mortality spikes sharply in December as temperatures plummet, followed by a dip in January (`r summary_results$trough_deaths` deaths/day—often the annual trough in daily averages). This contradicts the assumption that the entire winter is a sustained plateau; rather, the *onset* of extreme winter appears to be the deadliest phase. This is consistent with a "harvesting effect" where December's cold shock claims the most vulnerable individuals first.

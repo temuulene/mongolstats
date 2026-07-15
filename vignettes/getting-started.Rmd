@@ -118,7 +118,7 @@ imr_national |>
 
 Create a publication-ready plot:
 
-```{r plot-trend, fig.alt="Line plot showing decline in infant mortality rate from 2010 to 2015"}
+```{r plot-trend, fig.alt="Line plot showing the trend in Mongolia's monthly infant mortality rate from 2015 to 2024, with a LOESS smoother highlighting the overall direction"}
 # Prepare the data for visualization
 # Step 1: Convert month strings to proper dates for time series plotting
 # Step 2: Filter to recent decade (2015-2024) for clear trend visibility
