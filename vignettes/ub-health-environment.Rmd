@@ -84,8 +84,10 @@ get_ub_shapes <- function() {
   aimags <- mn_boundaries(level = "ADM1")
   ub_boundary <- aimags |> filter(shapeName == "Ulaanbaatar")
 
-  # Spatial filter (turning off S2 for robustness)
-  sf_use_s2(FALSE)
+  # Spatial filter (turn off S2 for robustness, then restore the caller's
+  # setting on exit so this helper does not leave a global side effect behind)
+  old_s2 <- sf_use_s2(FALSE)
+  on.exit(suppressMessages(sf_use_s2(old_s2)), add = TRUE)
   ub_districts <- all_soums |>
     filter(shapeName %in% names(ub_name_map)) |>
     st_filter(ub_boundary)
@@ -389,13 +391,21 @@ p_cor  # print static ggplot
 
 ### Key Insights
 
-1.  **Density & Infant Mortality**: There is a **strong positive correlation (0.85)** between population density and Infant Mortality Rate (IMR). This suggests that denser districts, which often include crowded ger areas with limited infrastructure, face significantly higher risks to infant health.
-2.  **Respiratory Health**: Surprisingly, respiratory mortality shows a weak negative correlation with density (-0.14) and no correlation with IMR (0.05). This might indicate that respiratory issues are widespread across all districts regardless of density (due to city-wide pollution) or that mortality data captures only the most severe outcomes, masking broader morbidity trends.
-3.  **Infrastructure Load**: The student-per-school ratio shows weak to moderate negative correlations with other indicators, suggesting it may not be a primary driver of the observed health disparities in this specific dataset.
+> **Read these correlations with caution.** They are computed across only
+> `r nrow(cor_input)` districts with complete data. With so few observations
+> and no significance testing, the coefficients are statistically unstable—a
+> single district can swing them substantially—and confidence intervals would
+> be very wide. They also describe *district-level averages*, so they cannot be
+> used to infer individual-level risk (the ecological fallacy). Treat the
+> patterns below as hypothesis-generating, not confirmatory.
 
-## 4. Air Quality Monitoring Network
+1.  **Density & Infant Mortality**: Population density and Infant Mortality Rate (IMR) show a positive correlation (r = `r round(cor_mat["Density", "IMR"], 2)`) in this small sample. Denser districts, which often include crowded ger areas with limited infrastructure, *may* face higher infant-health risks—but the caveat above should temper any causal reading.
+2.  **Respiratory Health**: Respiratory mortality correlates only weakly with density (r = `r round(cor_mat["Resp. Rate", "Density"], 2)`) and with IMR (r = `r round(cor_mat["Resp. Rate", "IMR"], 2)`). This may reflect city-wide pollution exposure that is relatively uniform across districts, or that mortality data captures only the most severe outcomes, masking broader morbidity.
+3.  **Infrastructure Load**: The student-per-school ratio shows weak correlations with the other indicators, suggesting it is not a primary driver of the observed differences in this dataset.
 
-Ulaanbaatar's air quality monitoring network consists of 18 stations distributed across all districts. Understanding their spatial distribution is critical for interpreting pollution exposure patterns.
+## 5. Air Quality Monitoring Network
+
+Ulaanbaatar's air quality monitoring network consists of 18 stations spread across 6 of the city's 9 districts. Understanding their spatial distribution is critical for interpreting pollution exposure patterns.
 
 ### Station-to-District Mapping
 
@@ -437,7 +447,7 @@ station_count <- ub_aq_stations |>
 knitr::kable(station_count, caption = "Air Quality Monitoring Stations by District")
 ```
 
-> **Bayanzurkh** has the highest station density (5 stations), reflecting its large area and population. **Chingeltei** and **Khan-Uul** have 2-3 stations each, while **Bayangol**, **Sukhbaatar**, and **Songinokhairkhan** have 2-3 stations. This distribution provides reasonable spatial coverage across the capital, though some peripheral ger districts may have limited monitoring.
+> **Bayanzurkh** has the most stations (5), reflecting its large area and population, followed by **Songinokhairkhan** and **Sukhbaatar** (4 each). **Khan-Uul** and **Chingeltei** have 2 stations each, and **Bayangol** has a single station. Three of Ulaanbaatar's nine districts—**Baganuur**, **Bagakhangai**, and **Nalaikh**—have no station in this network at all. This uneven distribution leaves clear spatial gaps, particularly in the sparsely monitored peripheral ger districts where exposure may be highest.
 
 ### Spatial Distribution Map
 
