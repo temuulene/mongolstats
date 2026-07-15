@@ -68,7 +68,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Spatial Epidemiology with mongolstats</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/v0.2.0/vignettes/mapping.Rmd" class="external-link"><code>vignettes/mapping.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/mapping.Rmd" class="external-link"><code>vignettes/mapping.Rmd</code></a></small>
       <div class="d-none name"><code>mapping.Rmd</code></div>
     </div>
 
@@ -150,21 +150,13 @@ performance and equity.</p>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">Region</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span>, <span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"511"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Exclude Total, Regions, and duplicate UB</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    Region_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span>,</span>
-<span>    <span class="co"># Standardize region names to match the geographic boundaries</span></span>
-<span>    Region_en <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_match.html" class="external-link">case_match</a></span><span class="op">(</span></span>
-<span>      <span class="va">Region_en</span>,</span>
-<span>      <span class="st">"Bayan-Ulgii"</span> <span class="op">~</span> <span class="st">"Bayan-Ölgii"</span>,</span>
-<span>      <span class="st">"Uvurkhangai"</span> <span class="op">~</span> <span class="st">"Övörkhangai"</span>,</span>
-<span>      <span class="st">"Khuvsgul"</span> <span class="op">~</span> <span class="st">"Hovsgel"</span>,</span>
-<span>      <span class="st">"Umnugovi"</span> <span class="op">~</span> <span class="st">"Ömnögovi"</span>,</span>
-<span>      <span class="st">"Tuv"</span> <span class="op">~</span> <span class="st">"Töv"</span>,</span>
-<span>      <span class="st">"Sukhbaatar"</span> <span class="op">~</span> <span class="st">"Sükhbaatar"</span>,</span>
-<span>      .default <span class="op">=</span> <span class="va">Region_en</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Calculate 5-year average to reduce random variation</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Region_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># Average the monthly values across 2020-2024 to reduce random variation.</span></span>
+<span>  <span class="co"># Caveat: maternal deaths are rare events, so monthly "MMR per 100,000" is</span></span>
+<span>  <span class="co"># extremely noisy at the aimag level. A mean of monthly ratios is a</span></span>
+<span>  <span class="co"># smoothing device, not a true pooled 5-year ratio (which would be total</span></span>
+<span>  <span class="co"># maternal deaths / total live births x 100,000). Read the map as relative,</span></span>
+<span>  <span class="co"># not as exact rates.</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">value</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
 <span></span>
@@ -179,11 +171,11 @@ performance and equity.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Arkhangai    75.9</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Dornogovi    67.8</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Khovd        67.6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Bayan-Ölgii  65.2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Töv          63.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Bayan-Ulgii  65.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Tuv          63.8</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Dornod       54.1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Hovsgel      53.2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Sükhbaatar   50.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Khuvsgul     53.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Sukhbaatar   50.6</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Ulaanbaatar  48.6</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Selenge      48.0</span></span></code></pre></div>
 </div>
@@ -191,9 +183,17 @@ performance and equity.</p>
 <h3 id="creating-a-choropleth-map">Creating a Choropleth Map<a class="anchor" aria-label="anchor" href="#creating-a-choropleth-map"></a>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Join health data to geographic boundaries for spatial analysis</span></span>
-<span><span class="va">mmr_map</span> <span class="op">&lt;-</span> <span class="va">aimags</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">mmr_data</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shapeName"</span> <span class="op">=</span> <span class="st">"Region_en"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Join health data to geographic boundaries for spatial analysis.</span></span>
+<span><span class="co"># mn_fuzzy_join_by_name() reconciles transliteration differences between the</span></span>
+<span><span class="co"># NSO English names and the boundary spellings automatically (normalize +</span></span>
+<span><span class="co"># fuzzy match), so we don't maintain a hand-written name crosswalk that would</span></span>
+<span><span class="co"># silently drop provinces to grey when a spelling doesn't match exactly.</span></span>
+<span><span class="co"># max_distance = 3 is needed because NSO's "Khuvsgul" is string distance 3</span></span>
+<span><span class="co"># from the boundary spelling "Hovsgel"; all other pairs match at &lt;= 2.</span></span>
+<span><span class="va">mmr_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_fuzzy_join_by_name.html">mn_fuzzy_join_by_name</a></span><span class="op">(</span></span>
+<span>  <span class="va">mmr_data</span>,</span>
+<span>  name_col <span class="op">=</span> <span class="st">"Region_en"</span>, level <span class="op">=</span> <span class="st">"ADM1"</span>, max_distance <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create choropleth map</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">mmr_map</span> <span class="op">|&gt;</span></span>
@@ -247,21 +247,16 @@ performance and equity.</p>
 <span>  <span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">Region</span><span class="op">)</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Keep only Aimags and Ulaanbaatar</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    Region_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span>,</span>
-<span>    Region_en <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_match.html" class="external-link">case_match</a></span><span class="op">(</span></span>
-<span>      <span class="va">Region_en</span>,</span>
-<span>      <span class="st">"Bayan-Ulgii"</span> <span class="op">~</span> <span class="st">"Bayan-Ölgii"</span>,</span>
-<span>      <span class="st">"Uvurkhangai"</span> <span class="op">~</span> <span class="st">"Övörkhangai"</span>,</span>
-<span>      <span class="st">"Khuvsgul"</span> <span class="op">~</span> <span class="st">"Hovsgel"</span>,</span>
-<span>      <span class="st">"Umnugovi"</span> <span class="op">~</span> <span class="st">"Ömnögovi"</span>,</span>
-<span>      <span class="st">"Tuv"</span> <span class="op">~</span> <span class="st">"Töv"</span>,</span>
-<span>      <span class="st">"Sukhbaatar"</span> <span class="op">~</span> <span class="st">"Sükhbaatar"</span>,</span>
-<span>      .default <span class="op">=</span> <span class="va">Region_en</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Calculate annual average</span></span>
+<span>  <span class="co"># Exclude Total ("0"), regional aggregates ("1"-"4"), and "511" -- a</span></span>
+<span>  <span class="co"># duplicate Ulaanbaatar entry whose values are all missing in this table.</span></span>
+<span>  <span class="co"># Ulaanbaatar's actual data lives under code "5", so filtering by</span></span>
+<span>  <span class="co"># nchar(Region) == 3 would keep the empty duplicate and drop the real one.</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">Region</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span>, <span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"511"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Region_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># Average the monthly rates for 2024. Caveat: a mean of monthly IMR values</span></span>
+<span>  <span class="co"># is not the true annual IMR (total infant deaths / total live births x</span></span>
+<span>  <span class="co"># 1,000); for small aimags a month with few births can produce an extreme</span></span>
+<span>  <span class="co"># ratio, so treat these as indicative rather than exact.</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">value</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
@@ -278,9 +273,12 @@ performance and equity.</p>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Create risk category map</span></span>
-<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">aimags</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">imr_data</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shapeName"</span> <span class="op">=</span> <span class="st">"Region_en"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span><span class="co"># Create risk category map (fuzzy name join reconciles spelling differences;</span></span>
+<span><span class="co"># max_distance = 3 covers the Khuvsgul/Hovsgel spelling gap)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_fuzzy_join_by_name.html">mn_fuzzy_join_by_name</a></span><span class="op">(</span></span>
+<span>  <span class="va">imr_data</span>,</span>
+<span>  name_col <span class="op">=</span> <span class="st">"Region_en"</span>, level <span class="op">=</span> <span class="st">"ADM1"</span>, max_distance <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">risk_category</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span></span>

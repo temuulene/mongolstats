@@ -63,6 +63,14 @@ We use three complementary datasets from NSO:
 | DT_NSO_2100_027V3 | Hospital deaths by aimag and month    | Monthly     |
 | DT_NSO_2100_027V1 | Deaths by leading cause, region, year | Annual      |
 
+> **Data caveat — registration vs occurrence:** These are monthly
+> *registered* deaths. Registration can lag the actual death, and
+> year-end administrative processing tends to concentrate records in
+> December and thin them in January. Part of the December-high /
+> January-low pattern below may therefore reflect *reporting* timing
+> rather than true *occurrence* timing. We flag this where it affects
+> interpretation.
+
 ------------------------------------------------------------------------
 
 ## 1. Monthly Death Patterns
@@ -214,10 +222,14 @@ p  # print static ggplot
   month (Daily Average), **December** emerges as the consistent peak
   month for mortality intensity.
 - **The January Dip:** Surprisingly, January frequently appears as a
-  local trough in the daily average data. This suggests a “Harvesting
-  Effect” (mortality displacement), where the sudden onset of extreme
-  cold in December impacts the most vulnerable population immediately,
-  leaving a smaller pool of high-risk individuals in January.
+  local trough in the daily average data. Two explanations are plausible
+  and hard to separate here: (1) a **death-registration artifact**,
+  where year-end processing shifts records into December and out of
+  January, and (2) a genuine **“harvesting effect”** (mortality
+  displacement), where December’s cold shock claims the most vulnerable
+  first. Because December and January share the same day count, the
+  days-in-month normalization does not distinguish them—so we treat the
+  drop as suggestive, not established.
 
 ### Monthly Distribution (Seasonality)
 
@@ -294,8 +306,9 @@ average deaths for each month (normalized by days in month).
 - **December Peak:** December consistently shows the highest mortality
   intensity when measured as daily average deaths.
 - **The January Surprise:** January often shows lower daily average
-  deaths than December, suggesting a “harvesting effect” where
-  December’s cold shock claims the most vulnerable first.
+  deaths than December. This is consistent with either a harvesting
+  effect or a year-end registration artifact (see the data caveat
+  above); these data cannot distinguish the two.
 - **Outliers:** The purple dots high above the boxes represent the
   COVID-19 surge year (2021).
 
@@ -426,8 +439,30 @@ provides a cleaner view of the underlying seasonal pattern.
 
 ``` r
 
-# Convert to time series object using daily averages (normalized)
-ts_deaths <- ts(deaths_monthly$daily_avg, start = c(2015, 1), frequency = 12)
+# Build a gap-free monthly series before constructing the ts object.
+# ts() assigns observations to consecutive months by position, so a single
+# missing month would shift every later value and corrupt the seasonal
+# decomposition. We fill out the complete monthly grid and linearly
+# interpolate any gaps (stl() cannot accept NA). In practice the NSO series
+# is complete, so this is usually a no-op that simply guards against silent
+# misalignment. The ts start is taken from the first observed month rather
+# than hard-coded, so the decomposition stays correct if coverage changes.
+ts_input <- deaths_monthly |>
+  dplyr::select(date, daily_avg) |>
+  tidyr::complete(date = seq(min(date), max(date), by = "month")) |>
+  dplyr::arrange(date)
+ts_input$daily_avg <- stats::approx(
+  x = as.numeric(ts_input$date),
+  y = ts_input$daily_avg,
+  xout = as.numeric(ts_input$date),
+  rule = 2
+)$y
+
+ts_deaths <- ts(
+  ts_input$daily_avg,
+  start = c(year(min(ts_input$date)), month(min(ts_input$date))),
+  frequency = 12
+)
 
 # Perform STL decomposition
 # s.window = "periodic" assumes seasonality is constant across years
@@ -435,7 +470,7 @@ decomp <- stl(ts_deaths, s.window = "periodic", robust = TRUE)
 
 # Extract components for plotting
 decomp_df <- data.frame(
-  date = deaths_monthly$date,
+  date = ts_input$date,
   observed = as.numeric(ts_deaths),
   trend = as.numeric(decomp$time.series[, "trend"]),
   seasonal = as.numeric(decomp$time.series[, "seasonal"]),
@@ -485,8 +520,10 @@ print(p)
   in 2021 (COVID-19 Delta wave) and gradual increase over time
   (population growth).
 - **Seasonal Pattern:** A clean, repeating annual cycle emerges. Deaths
-  peak in winter (Jan-Feb) and trough in summer (Jun-Aug). This pattern
-  is consistent across all years.
+  peak in the winter months (December–February) and trough in summer
+  (Jun-Aug). This pattern is consistent across all years. (The exact
+  peak month extracted by the decomposition is reported in the next
+  section.)
 - **Remainder:** Random noise plus anomalies. The large spikes in 2021
   represent COVID-19 mortality that exceeded even the elevated trend.
 
@@ -580,8 +617,12 @@ phase <- atan2(coef_sin, coef_cos) * 12 / (2 * pi)
 peak_month_harmonic <- if (phase < 0) phase + 12 else phase
 
 # Store results for display
+# Map the continuous peak position in [0, 12) to a month index in 1:12.
+# Guard the wrap-around: a peak near January can round to 0 (or 12), which
+# would index month.name out of bounds, so fold it back with modular arithmetic.
+peak_month_index <- ((round(peak_month_harmonic) - 1) %% 12) + 1
 harmonic_results <- list(
-  peak_month = month.name[round(peak_month_harmonic)],
+  peak_month = month.name[peak_month_index],
   amplitude = round(amplitude, 1),
   r_squared = round(summary(harmonic_model)$r.squared * 100, 1)
 )
@@ -973,20 +1014,24 @@ summary_results <- list(
 Based on the evidence, we can address the social media claim:
 
 1.  **Does December have the highest deaths?**
-    - **Yes, the data supports this.** Unlike raw counts (where
-      January’s 31 days inflate its ranking), the **Daily Average**
-      analysis confirms that mortality intensity peaks in **December**
-      (50.4 deaths/day). The social media claim is statistically
-      accurate regarding the timing.
+    - **The data supports a strong early-winter peak.** After
+      normalizing for the number of days in each month (which corrects
+      the artificially low count for 28-day February), mortality
+      intensity peaks in **Dec** (50.4 deaths/day). Note that December
+      and January both have 31 days, so day-count normalization does not
+      by itself separate them—the ordering between the two rests on the
+      counts themselves. To the extent the peak month is December, the
+      social media claim is consistent with the data.
 2.  **The Winter “Shock-and-Drop” Pattern:**
     - We observe a surprising pattern: mortality spikes sharply in
-      December as temperatures plummet, followed by a dip in January
-      (44.8 deaths/day—often the annual trough in daily averages). This
-      contradicts the assumption that the entire winter is a sustained
-      plateau; rather, the *onset* of extreme winter appears to be the
-      deadliest phase. This is consistent with a “harvesting effect”
-      where December’s cold shock claims the most vulnerable individuals
-      first.
+      December, followed by a dip in January (44.8 deaths/day—often the
+      annual trough in daily averages). Taken at face value this
+      suggests the *onset* of extreme winter is the deadliest phase
+      rather than a sustained plateau. But the pattern is also
+      consistent with a year-end **registration artifact**, and because
+      December and January share the same day count we cannot firmly
+      attribute it to a biological “harvesting effect” from these data
+      alone.
 3.  **Is it because of New Year parties?**
     - **We cannot determine this definitively.** The NSO public API only
       provides **annual** death counts by cause—not monthly breakdowns.
@@ -1055,13 +1100,13 @@ sessionInfo()
 #>  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.6.1     tidyselect_1.2.1  
 #>  [5] jquerylib_0.1.4    systemfonts_1.3.2  textshaping_1.0.5  yaml_2.3.12       
 #>  [9] fastmap_1.2.0      R6_2.6.1           labeling_0.4.3     generics_0.1.4    
-#> [13] curl_7.1.0         httr2_1.2.3        knitr_1.51         tibble_3.3.1      
+#> [13] curl_7.1.0         httr2_1.3.0        knitr_1.51         tibble_3.3.1      
 #> [17] desc_1.4.3         RColorBrewer_1.1-3 bslib_0.11.0       pillar_1.11.1     
-#> [21] rlang_1.3.0        cachem_1.1.0       xfun_0.59          S7_0.2.2          
+#> [21] rlang_1.3.0        cachem_1.1.0       xfun_0.60          S7_0.2.2          
 #> [25] fs_2.1.0           sass_0.4.10        otel_0.2.0         timechange_0.4.0  
 #> [29] cli_3.6.6          withr_3.0.3        pkgdown_2.2.1      magrittr_2.0.5    
-#> [33] digest_0.6.39      grid_4.6.1         rappdirs_0.3.4     lifecycle_1.0.5   
-#> [37] vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1         farver_2.1.2      
-#> [41] ragg_1.5.2         rmarkdown_2.31     purrr_1.2.2        tools_4.6.1       
-#> [45] pkgconfig_2.0.3    htmltools_0.5.9
+#> [33] digest_0.6.39      grid_4.6.1         lifecycle_1.0.5    vctrs_0.7.3       
+#> [37] evaluate_1.0.5     glue_1.8.1         farver_2.1.2       ragg_1.5.2        
+#> [41] rmarkdown_2.31     purrr_1.2.2        tools_4.6.1        pkgconfig_2.0.3   
+#> [45] htmltools_0.5.9
 ```

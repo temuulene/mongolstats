@@ -228,11 +228,15 @@ pollutants due to its ability to penetrate deep into the lungs and
 bloodstream. The following trends reveal **chronic winter pollution
 crisis** across Ulaanbaatar’s most exposed neighborhoods.
 
-**What the dashed line means**: The horizontal dashed red line
-represents Mongolia’s Maximum Allowable Concentration (MAC) for PM2.5
-annual average (0.025 mg/m³). Values above this line indicate
-**non-compliance** with national air quality standards and heightened
-health risks.
+**What the dashed line means**: The horizontal dashed red line is
+Mongolia’s Maximum Allowable Concentration (MAC) for the PM2.5 **annual
+average** (0.025 mg/m³, MNS 4585:2016), shown here for reference. Note
+the averaging periods differ: formal compliance is assessed against the
+*annual mean*, not individual months, so a monthly average above this
+line flags an elevated month rather than a legal exceedance. For a
+like-for-like short-term benchmark, MNS 4585:2016 also sets a 24-hour
+PM2.5 limit of 0.050 mg/m³. Either way, months well above the annual
+line indicate heightened health risk.
 
 ``` r
 
@@ -251,7 +255,7 @@ p_pm <- air_trends |>
   scale_x_date(date_breaks = "6 months", date_labels = "%b %Y") +
   labs(
     title = "PM2.5 Trends in Top 10 Polluted UB Stations (2021-2025)",
-    subtitle = "Monthly Average (Line), Maximum (Ribbon), and MAC Limit (Dashed Line)",
+    subtitle = "Monthly Average (Line), Maximum (Ribbon), and annual-average MAC (Dashed Line, reference)",
     x = NULL,
     y = "Concentration (mg/m³)"
   ) +
@@ -272,11 +276,12 @@ from 2021 to 2025. All stations show peaks exceeding the 0.025 mg/m³
 dashed regulatory limit line during winter
 months.](environmental-surveillance_files/figure-html/pm25-trends-1.png)
 
-> **Key Findings**: All 10 stations show **systematic winter
-> exceedances**, with peak concentrations reaching 4-10x the MAC limit
-> during heating season (November-February). Even during summer months,
-> many stations hover near or above the regulatory threshold, indicating
-> **year-round exposure** with dangerous seasonal spikes.
+> **Key Findings**: All 10 stations show **systematic winter peaks far
+> above the annual-average standard**, with monthly averages reaching
+> 4-10x the annual-average MAC during heating season
+> (November-February). Even during summer months, many stations hover
+> near or above the annual-average threshold, indicating **year-round
+> exposure** with dangerous seasonal spikes.
 
 ### Sulfur Dioxide (SO₂) Trends: The Coal Combustion Signature
 
@@ -285,11 +290,14 @@ residential heating. Unlike PM2.5 (which has multiple sources), SO₂
 patterns directly reflect fuel use intensity, making it a critical
 indicator for evaluating clean energy transition policies.
 
-**What the dashed line means**: The horizontal dashed orange line
-represents Mongolia’s MAC for SO₂ annual average (0.020 mg/m³).
-Exceedances indicate both regulatory non-compliance and respiratory
-health risks, particularly for vulnerable populations (children,
-elderly, asthmatics).
+**What the dashed line means**: The horizontal dashed orange line is
+Mongolia’s MAC for the SO₂ **annual average** (0.020 mg/m³, MNS
+4585:2016), shown for reference. As with PM2.5, compliance is judged on
+the *annual mean*; a monthly average above the line marks an elevated
+month rather than a legal exceedance (the comparable 24-hour SO₂ limit
+is 0.050 mg/m³). Sustained winter values far above the line still signal
+real respiratory-health risk, particularly for vulnerable populations
+(children, elderly, asthmatics).
 
 ``` r
 
@@ -307,7 +315,7 @@ p_so2 <- air_trends |>
   scale_x_date(date_breaks = "6 months", date_labels = "%b %Y") +
   labs(
     title = "SO₂ Trends in Top 10 Polluted UB Stations (2023-2025)",
-    subtitle = "Bundled snapshot: Monthly Average (Line), Maximum (Ribbon), and MAC Limit (Dashed Line)",
+    subtitle = "Bundled snapshot: Monthly Average (Line), Maximum (Ribbon), and annual-average MAC (Dashed Line, reference)",
     x = NULL,
     y = "Concentration (mg/m³)"
   ) +
@@ -331,8 +339,8 @@ summers.](environmental-surveillance_files/figure-html/so2-trends-1.png)
 > increase in winter vs. summer), far exceeding PM2.5’s seasonal swing.
 > This confirms that residential coal heating is the **dominant driver**
 > of winter air pollution. Peak concentrations during January-February
-> can reach 10-30x the MAC limit, representing acute health hazard
-> conditions.
+> can reach 10-30x the annual-average MAC, representing acute health
+> hazard conditions.
 
 ### Regulatory Compliance: Exceedance Factor
 
@@ -346,10 +354,10 @@ indicates non-compliance.
 
 ``` r
 
-# 1. Get MAC Standards
+# 1. Get MAC Standards (MNS 4585:2016 annual-average limits)
 mac_so2 <- 0.020 # Annual average mg/m3
-mac_no2 <- 0.030 # Annual average mg/m3
-mac_pm25 <- 0.025 # Annual average mg/m3 (WHO/National target approximation)
+mac_no2 <- 0.040 # Annual average mg/m3
+mac_pm25 <- 0.025 # Annual average mg/m3 (MNS 4585:2016; also WHO interim target 2)
 
 # 2. Calculate Exceedance for 2024
 compliance <- air_annual |>

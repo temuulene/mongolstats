@@ -76,7 +76,7 @@ meta
 #>   dim    code  is_time n_values codes             
 #>   <chr>  <chr> <lgl>      <int> <list>            
 #> 1 Region Бүс   FALSE         28 <tibble [28 × 3]> 
-#> 2 Month  Сар   FALSE        125 <tibble [125 × 3]>
+#> 2 Month  Сар   FALSE        126 <tibble [126 × 3]>
 
 # Check available months
 time_vals <- nso_dim_values("DT_NSO_2100_015V1", "Month", labels = "en")
@@ -84,16 +84,16 @@ head(time_vals, 10)
 #> # A tibble: 10 × 2
 #>    code  label_en
 #>    <chr> <chr>   
-#>  1 0     2026-05 
-#>  2 1     2026-04 
-#>  3 2     2026-03 
-#>  4 3     2026-02 
-#>  5 4     2026-01 
-#>  6 5     2025-12 
-#>  7 6     2025-11 
-#>  8 7     2025-10 
-#>  9 8     2025-09 
-#> 10 9     2025-08
+#>  1 0     2026-06 
+#>  2 1     2026-05 
+#>  3 2     2026-04 
+#>  4 3     2026-03 
+#>  5 4     2026-02 
+#>  6 5     2026-01 
+#>  7 6     2025-12 
+#>  8 7     2025-11 
+#>  9 8     2025-10 
+#> 10 9     2025-09
 ```
 
 ### Step 4: Fetch Data
@@ -120,16 +120,16 @@ imr_national |>
 #> # A tibble: 10 × 5
 #>    Region Month value Region_en Month_en
 #>    <chr>  <chr> <dbl> <chr>     <chr>   
-#>  1 0      0        11 Total     2026-05 
-#>  2 0      1        11 Total     2026-04 
-#>  3 0      2        17 Total     2026-03 
-#>  4 0      3        11 Total     2026-02 
-#>  5 0      4        13 Total     2026-01 
-#>  6 0      5        13 Total     2025-12 
-#>  7 0      6        13 Total     2025-11 
-#>  8 0      7        11 Total     2025-10 
-#>  9 0      8        14 Total     2025-09 
-#> 10 0      9        16 Total     2025-08
+#>  1 0      0        12 Total     2026-06 
+#>  2 0      1        11 Total     2026-05 
+#>  3 0      2        11 Total     2026-04 
+#>  4 0      3        17 Total     2026-03 
+#>  5 0      4        11 Total     2026-02 
+#>  6 0      5        13 Total     2026-01 
+#>  7 0      6        13 Total     2025-12 
+#>  8 0      7        13 Total     2025-11 
+#>  9 0      8        11 Total     2025-10 
+#> 10 0      9        14 Total     2025-09
 ```
 
 ### Step 5: Visualize the Trend
@@ -168,8 +168,9 @@ p <- imr_national |>
 p  # print static ggplot
 ```
 
-![Line plot showing decline in infant mortality rate from 2010 to
-2015](getting-started_files/figure-html/plot-trend-1.png)
+![Line plot showing the trend in Mongolia's monthly infant mortality
+rate from 2015 to 2024, with a LOESS smoother highlighting the overall
+direction](getting-started_files/figure-html/plot-trend-1.png)
 
 ## Regional Comparison
 
@@ -194,23 +195,18 @@ imr_regional <- nso_data(
   ),
   labels = "en"
 ) |>
-  filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar (code length = 3)
+  # Exclude the national total ("0") and "511" -- a duplicate Ulaanbaatar
+  # entry whose values are all missing in this table (the real Ulaanbaatar
+  # data lives under code "5"). Codes "1"-"4" are regional aggregates, which
+  # we keep so the bar chart can contrast them with individual aimags.
+  filter(!Region %in% c("0", "511")) |>
   mutate(
     Region_en = trimws(Region_en),
-    # Standardize region names to match geographic boundary data
-    Region_en = dplyr::case_match(
-      Region_en,
-      "Bayan-Ulgii" ~ "Bayan-Ölgii",
-      "Uvurkhangai" ~ "Övörkhangai",
-      "Khuvsgul" ~ "Hovsgel",
-      "Umnugovi" ~ "Ömnögovi",
-      "Tuv" ~ "Töv",
-      "Sukhbaatar" ~ "Sükhbaatar",
-      .default = Region_en
-    ),
     Type = ifelse(Region %in% c("1", "2", "3", "4"), "Region", "Aimag")
   ) |>
-  # Calculate annual average IMR from monthly data
+  # Calculate annual average IMR from monthly data.
+  # Caveat: a mean of monthly rates approximates, but is not identical to, the
+  # true annual IMR (total infant deaths / total live births x 1,000).
   group_by(Region_en, Type) |>
   summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
@@ -220,18 +216,18 @@ imr_regional |>
   select(Region_en, value) |>
   head(10)
 #> # A tibble: 10 × 2
-#>    Region_en    value
-#>    <chr>        <dbl>
-#>  1 Hovsgel       27.2
-#>  2 Arkhangai     24.8
-#>  3 Övörkhangai   23.9
-#>  4 Bayankhongor  21.6
-#>  5 Ömnögovi      19.9
-#>  6 Uvs           19.8
-#>  7 Sükhbaatar    17.9
-#>  8 Bayan-Ölgii   17.7
-#>  9 Zavkhan       17.5
-#> 10 Khovd         16.8
+#>    Region_en      value
+#>    <chr>          <dbl>
+#>  1 Khuvsgul        27.2
+#>  2 Arkhangai       24.8
+#>  3 Uvurkhangai     23.9
+#>  4 Bayankhongor    21.6
+#>  5 Khangai region  20.3
+#>  6 Umnugovi        19.9
+#>  7 Uvs             19.8
+#>  8 Sukhbaatar      17.9
+#>  9 Western region  17.8
+#> 10 Bayan-Ulgii     17.7
 ```
 
 ### Visualize Regional Disparities
@@ -288,12 +284,13 @@ Combine with mapping for spatial analysis:
 
 library(sf)
 
-# Get aimag boundaries
-aimags <- mn_boundaries(level = "ADM1")
-
-# Join IMR data to map
-imr_map <- aimags |>
-  left_join(imr_regional, by = c("shapeName" = "Region_en"))
+# Join IMR data to boundaries with the package's fuzzy name matcher, which
+# reconciles transliteration differences without a hand-maintained crosswalk.
+# Keep only aimag-level rows (regional aggregates have no polygon), and use
+# max_distance = 3 to bridge NSO's "Khuvsgul" vs the boundary's "Hovsgel".
+imr_map <- imr_regional |>
+  filter(Type == "Aimag") |>
+  mn_fuzzy_join_by_name(name_col = "Region_en", level = "ADM1", max_distance = 3)
 
 # Create choropleth map
 p <- imr_map |>

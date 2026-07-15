@@ -82,21 +82,13 @@ mmr_data <- nso_data(
   labels = "en"
 ) |>
   filter(!Region %in% c("0", "1", "2", "3", "4", "511")) |> # Exclude Total, Regions, and duplicate UB
-  mutate(
-    Region_en = trimws(Region_en),
-    # Standardize region names to match the geographic boundaries
-    Region_en = dplyr::case_match(
-      Region_en,
-      "Bayan-Ulgii" ~ "Bayan-Ölgii",
-      "Uvurkhangai" ~ "Övörkhangai",
-      "Khuvsgul" ~ "Hovsgel",
-      "Umnugovi" ~ "Ömnögovi",
-      "Tuv" ~ "Töv",
-      "Sukhbaatar" ~ "Sükhbaatar",
-      .default = Region_en
-    )
-  ) |>
-  # Calculate 5-year average to reduce random variation
+  mutate(Region_en = trimws(Region_en)) |>
+  # Average the monthly values across 2020-2024 to reduce random variation.
+  # Caveat: maternal deaths are rare events, so monthly "MMR per 100,000" is
+  # extremely noisy at the aimag level. A mean of monthly ratios is a
+  # smoothing device, not a true pooled 5-year ratio (which would be total
+  # maternal deaths / total live births x 100,000). Read the map as relative,
+  # not as exact rates.
   group_by(Region_en) |>
   summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
@@ -111,11 +103,11 @@ mmr_data |>
 #>  1 Arkhangai    75.9
 #>  2 Dornogovi    67.8
 #>  3 Khovd        67.6
-#>  4 Bayan-Ölgii  65.2
-#>  5 Töv          63.8
+#>  4 Bayan-Ulgii  65.2
+#>  5 Tuv          63.8
 #>  6 Dornod       54.1
-#>  7 Hovsgel      53.2
-#>  8 Sükhbaatar   50.6
+#>  7 Khuvsgul     53.2
+#>  8 Sukhbaatar   50.6
 #>  9 Ulaanbaatar  48.6
 #> 10 Selenge      48.0
 ```
@@ -124,9 +116,17 @@ mmr_data |>
 
 ``` r
 
-# Join health data to geographic boundaries for spatial analysis
-mmr_map <- aimags |>
-  left_join(mmr_data, by = c("shapeName" = "Region_en"))
+# Join health data to geographic boundaries for spatial analysis.
+# mn_fuzzy_join_by_name() reconciles transliteration differences between the
+# NSO English names and the boundary spellings automatically (normalize +
+# fuzzy match), so we don't maintain a hand-written name crosswalk that would
+# silently drop provinces to grey when a spelling doesn't match exactly.
+# max_distance = 3 is needed because NSO's "Khuvsgul" is string distance 3
+# from the boundary spelling "Hovsgel"; all other pairs match at <= 2.
+mmr_map <- mn_fuzzy_join_by_name(
+  mmr_data,
+  name_col = "Region_en", level = "ADM1", max_distance = 3
+)
 
 # Create choropleth map
 p <- mmr_map |>
@@ -180,21 +180,16 @@ imr_data <- nso_data(
   ),
   labels = "en"
 ) |>
-  filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar
-  mutate(
-    Region_en = trimws(Region_en),
-    Region_en = dplyr::case_match(
-      Region_en,
-      "Bayan-Ulgii" ~ "Bayan-Ölgii",
-      "Uvurkhangai" ~ "Övörkhangai",
-      "Khuvsgul" ~ "Hovsgel",
-      "Umnugovi" ~ "Ömnögovi",
-      "Tuv" ~ "Töv",
-      "Sukhbaatar" ~ "Sükhbaatar",
-      .default = Region_en
-    )
-  ) |>
-  # Calculate annual average
+  # Exclude Total ("0"), regional aggregates ("1"-"4"), and "511" -- a
+  # duplicate Ulaanbaatar entry whose values are all missing in this table.
+  # Ulaanbaatar's actual data lives under code "5", so filtering by
+  # nchar(Region) == 3 would keep the empty duplicate and drop the real one.
+  filter(!Region %in% c("0", "1", "2", "3", "4", "511")) |>
+  mutate(Region_en = trimws(Region_en)) |>
+  # Average the monthly rates for 2024. Caveat: a mean of monthly IMR values
+  # is not the true annual IMR (total infant deaths / total live births x
+  # 1,000); for small aimags a month with few births can produce an extreme
+  # ratio, so treat these as indicative rather than exact.
   group_by(Region_en) |>
   summarise(value = mean(value, na.rm = TRUE), .groups = "drop") |>
   mutate(
@@ -211,9 +206,12 @@ imr_data <- nso_data(
     )
   )
 
-# Create risk category map
-p <- aimags |>
-  left_join(imr_data, by = c("shapeName" = "Region_en")) |>
+# Create risk category map (fuzzy name join reconciles spelling differences;
+# max_distance = 3 covers the Khuvsgul/Hovsgel spelling gap)
+p <- mn_fuzzy_join_by_name(
+  imr_data,
+  name_col = "Region_en", level = "ADM1", max_distance = 3
+) |>
   ggplot() +
   geom_sf(aes(fill = risk_category), color = "white", size = 0.2) +
   scale_fill_manual(

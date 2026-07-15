@@ -244,20 +244,13 @@ imr_data <- nso_data(
   ),
   labels = "en"
 ) |>
-  filter(nchar(Region) == 3) |> # Keep only Aimags and Ulaanbaatar
-  mutate(
-    Region_en = trimws(Region_en),
-    Region_en = dplyr::case_match(
-      Region_en,
-      "Bayan-Ulgii" ~ "Bayan-Ölgii",
-      "Uvurkhangai" ~ "Övörkhangai",
-      "Khuvsgul" ~ "Hovsgel",
-      "Umnugovi" ~ "Ömnögovi",
-      "Tuv" ~ "Töv",
-      "Sukhbaatar" ~ "Sükhbaatar",
-      .default = Region_en
-    )
-  ) |>
+  # Exclude Total ("0"), regional aggregates ("1"-"4"), and "511" -- a
+  # duplicate Ulaanbaatar entry with all-missing values (the real Ulaanbaatar
+  # data is under code "5").
+  filter(!Region %in% c("0", "1", "2", "3", "4", "511")) |>
+  mutate(Region_en = trimws(Region_en)) |>
+  # Mean of monthly IMR values: an indicative annual level, not a
+  # births-weighted annual rate (total infant deaths / total live births).
   group_by(Region_en) |>
   summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
@@ -269,14 +262,14 @@ imr_data |>
 #> # A tibble: 10 × 2
 #>    Region_en    value
 #>    <chr>        <dbl>
-#>  1 Hovsgel       27.2
+#>  1 Khuvsgul      27.2
 #>  2 Arkhangai     24.8
-#>  3 Övörkhangai   23.9
+#>  3 Uvurkhangai   23.9
 #>  4 Bayankhongor  21.6
-#>  5 Ömnögovi      19.9
+#>  5 Umnugovi      19.9
 #>  6 Uvs           19.8
-#>  7 Sükhbaatar    17.9
-#>  8 Bayan-Ölgii   17.7
+#>  7 Sukhbaatar    17.9
+#>  8 Bayan-Ulgii   17.7
 #>  9 Zavkhan       17.5
 #> 10 Khovd         16.8
 ```

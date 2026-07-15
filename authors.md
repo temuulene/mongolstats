@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/temuulene/mongolstats/blob/v0.2.0/inst/CITATION)
+[`inst/CITATION`](https://github.com/temuulene/mongolstats/blob/main/inst/CITATION)
 
 Enebish T (2026). *Mongolian 'NSO' 'PXWeb' Data and Boundaries (Tidy
 Client)*. R package version 0.2.0,

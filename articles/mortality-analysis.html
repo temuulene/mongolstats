@@ -68,7 +68,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Mortality Seasonality in Mongolia: An Evidence-Based Analysis</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/v0.2.0/vignettes/mortality-analysis.Rmd" class="external-link"><code>vignettes/mortality-analysis.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/mortality-analysis.Rmd" class="external-link"><code>vignettes/mortality-analysis.Rmd</code></a></small>
       <div class="d-none name"><code>mortality-analysis.Rmd</code></div>
     </div>
 
@@ -170,6 +170,15 @@ vaccination campaigns.</li>
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p><strong>Data caveat — registration vs occurrence:</strong> These are
+monthly <em>registered</em> deaths. Registration can lag the actual
+death, and year-end administrative processing tends to concentrate
+records in December and thin them in January. Part of the December-high
+/ January-low pattern below may therefore reflect <em>reporting</em>
+timing rather than true <em>occurrence</em> timing. We flag this where
+it affects interpretation.</p>
+</blockquote>
 <hr>
 </div>
 <div class="section level2">
@@ -325,11 +334,15 @@ of days in the month (Daily Average), <strong>December</strong> emerges
 as the consistent peak month for mortality intensity.</li>
 <li>
 <strong>The January Dip:</strong> Surprisingly, January frequently
-appears as a local trough in the daily average data. This suggests a
-“Harvesting Effect” (mortality displacement), where the sudden onset of
-extreme cold in December impacts the most vulnerable population
-immediately, leaving a smaller pool of high-risk individuals in
-January.</li>
+appears as a local trough in the daily average data. Two explanations
+are plausible and hard to separate here: (1) a
+<strong>death-registration artifact</strong>, where year-end processing
+shifts records into December and out of January, and (2) a genuine
+<strong>“harvesting effect”</strong> (mortality displacement), where
+December’s cold shock claims the most vulnerable first. Because December
+and January share the same day count, the days-in-month normalization
+does not distinguish them—so we treat the drop as suggestive, not
+established.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -408,8 +421,9 @@ higher than the blue boxes.</li>
 highest mortality intensity when measured as daily average deaths.</li>
 <li>
 <strong>The January Surprise:</strong> January often shows lower
-daily average deaths than December, suggesting a “harvesting effect”
-where December’s cold shock claims the most vulnerable first.</li>
+daily average deaths than December. This is consistent with either a
+harvesting effect or a year-end registration artifact (see the data
+caveat above); these data cannot distinguish the two.</li>
 <li>
 <strong>Outliers:</strong> The purple dots high above the boxes
 represent the COVID-19 surge year (2021).</li>
@@ -541,8 +555,30 @@ data, we use STL (Seasonal and Trend decomposition using Loess). This
 method is robust to outliers like the COVID-19 surge and provides a
 cleaner view of the underlying seasonal pattern.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Convert to time series object using daily averages (normalized)</span></span>
-<span><span class="va">ts_deaths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ts.html" class="external-link">ts</a></span><span class="op">(</span><span class="va">deaths_monthly</span><span class="op">$</span><span class="va">daily_avg</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2015</span>, <span class="fl">1</span><span class="op">)</span>, frequency <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Build a gap-free monthly series before constructing the ts object.</span></span>
+<span><span class="co"># ts() assigns observations to consecutive months by position, so a single</span></span>
+<span><span class="co"># missing month would shift every later value and corrupt the seasonal</span></span>
+<span><span class="co"># decomposition. We fill out the complete monthly grid and linearly</span></span>
+<span><span class="co"># interpolate any gaps (stl() cannot accept NA). In practice the NSO series</span></span>
+<span><span class="co"># is complete, so this is usually a no-op that simply guards against silent</span></span>
+<span><span class="co"># misalignment. The ts start is taken from the first observed month rather</span></span>
+<span><span class="co"># than hard-coded, so the decomposition stays correct if coverage changes.</span></span>
+<span><span class="va">ts_input</span> <span class="op">&lt;-</span> <span class="va">deaths_monthly</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">daily_avg</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html" class="external-link">complete</a></span><span class="op">(</span>date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span></span>
+<span><span class="va">ts_input</span><span class="op">$</span><span class="va">daily_avg</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">ts_input</span><span class="op">$</span><span class="va">date</span><span class="op">)</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">ts_input</span><span class="op">$</span><span class="va">daily_avg</span>,</span>
+<span>  xout <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">ts_input</span><span class="op">$</span><span class="va">date</span><span class="op">)</span>,</span>
+<span>  rule <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">y</span></span>
+<span></span>
+<span><span class="va">ts_deaths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ts.html" class="external-link">ts</a></span><span class="op">(</span></span>
+<span>  <span class="va">ts_input</span><span class="op">$</span><span class="va">daily_avg</span>,</span>
+<span>  start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/year.html" class="external-link">year</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">ts_input</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://lubridate.tidyverse.org/reference/month.html" class="external-link">month</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">ts_input</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  frequency <span class="op">=</span> <span class="fl">12</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Perform STL decomposition</span></span>
 <span><span class="co"># s.window = "periodic" assumes seasonality is constant across years</span></span>
@@ -550,7 +586,7 @@ cleaner view of the underlying seasonal pattern.</p>
 <span></span>
 <span><span class="co"># Extract components for plotting</span></span>
 <span><span class="va">decomp_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  date <span class="op">=</span> <span class="va">deaths_monthly</span><span class="op">$</span><span class="va">date</span>,</span>
+<span>  date <span class="op">=</span> <span class="va">ts_input</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  observed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">ts_deaths</span><span class="op">)</span>,</span>
 <span>  trend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">decomp</span><span class="op">$</span><span class="va">time.series</span><span class="op">[</span>, <span class="st">"trend"</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>  seasonal <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">decomp</span><span class="op">$</span><span class="va">time.series</span><span class="op">[</span>, <span class="st">"seasonal"</span><span class="op">]</span><span class="op">)</span>,</span>
@@ -599,8 +635,10 @@ the sharp spike in 2021 (COVID-19 Delta wave) and gradual increase over
 time (population growth).</li>
 <li>
 <strong>Seasonal Pattern:</strong> A clean, repeating annual cycle
-emerges. Deaths peak in winter (Jan-Feb) and trough in summer (Jun-Aug).
-This pattern is consistent across all years.</li>
+emerges. Deaths peak in the winter months (December–February) and trough
+in summer (Jun-Aug). This pattern is consistent across all years. (The
+exact peak month extracted by the decomposition is reported in the next
+section.)</li>
 <li>
 <strong>Remainder:</strong> Random noise plus anomalies. The large
 spikes in 2021 represent COVID-19 mortality that exceeded even the
@@ -697,8 +735,12 @@ timing.</p>
 <span><span class="va">peak_month_harmonic</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="va">phase</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span> <span class="va">phase</span> <span class="op">+</span> <span class="fl">12</span> <span class="kw">else</span> <span class="va">phase</span></span>
 <span></span>
 <span><span class="co"># Store results for display</span></span>
+<span><span class="co"># Map the continuous peak position in [0, 12) to a month index in 1:12.</span></span>
+<span><span class="co"># Guard the wrap-around: a peak near January can round to 0 (or 12), which</span></span>
+<span><span class="co"># would index month.name out of bounds, so fold it back with modular arithmetic.</span></span>
+<span><span class="va">peak_month_index</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">peak_month_harmonic</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span></span>
 <span><span class="va">harmonic_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  peak_month <span class="op">=</span> <span class="va">month.name</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">peak_month_harmonic</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  peak_month <span class="op">=</span> <span class="va">month.name</span><span class="op">[</span><span class="va">peak_month_index</span><span class="op">]</span>,</span>
 <span>  amplitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">amplitude</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  r_squared <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">harmonic_model</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -1117,23 +1159,27 @@ months (Nov-Mar) compared to non-winter months.</p>
 <strong>Does December have the highest deaths?</strong>
 <ul>
 <li>
-<strong>Yes, the data supports this.</strong> Unlike raw counts
-(where January’s 31 days inflate its ranking), the <strong>Daily
-Average</strong> analysis confirms that mortality intensity peaks in
-<strong>December</strong> (50.4 deaths/day). The social media claim is
-statistically accurate regarding the timing.</li>
+<strong>The data supports a strong early-winter peak.</strong> After
+normalizing for the number of days in each month (which corrects the
+artificially low count for 28-day February), mortality intensity peaks
+in <strong>Dec</strong> (50.4 deaths/day). Note that December and
+January both have 31 days, so day-count normalization does not by itself
+separate them—the ordering between the two rests on the counts
+themselves. To the extent the peak month is December, the social media
+claim is consistent with the data.</li>
 </ul>
 </li>
 <li>
 <strong>The Winter “Shock-and-Drop” Pattern:</strong>
 <ul>
 <li>We observe a surprising pattern: mortality spikes sharply in
-December as temperatures plummet, followed by a dip in January (44.8
-deaths/day—often the annual trough in daily averages). This contradicts
-the assumption that the entire winter is a sustained plateau; rather,
-the <em>onset</em> of extreme winter appears to be the deadliest phase.
-This is consistent with a “harvesting effect” where December’s cold
-shock claims the most vulnerable individuals first.</li>
+December, followed by a dip in January (44.8 deaths/day—often the annual
+trough in daily averages). Taken at face value this suggests the
+<em>onset</em> of extreme winter is the deadliest phase rather than a
+sustained plateau. But the pattern is also consistent with a year-end
+<strong>registration artifact</strong>, and because December and January
+share the same day count we cannot firmly attribute it to a biological
+“harvesting effect” from these data alone.</li>
 </ul>
 </li>
 <li>
@@ -1218,15 +1264,15 @@ conclusive.</p>
 <span><span class="co">#&gt;  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.6.1     tidyselect_1.2.1  </span></span>
 <span><span class="co">#&gt;  [5] jquerylib_0.1.4    systemfonts_1.3.2  textshaping_1.0.5  yaml_2.3.12       </span></span>
 <span><span class="co">#&gt;  [9] fastmap_1.2.0      R6_2.6.1           labeling_0.4.3     generics_0.1.4    </span></span>
-<span><span class="co">#&gt; [13] curl_7.1.0         httr2_1.2.3        knitr_1.51         tibble_3.3.1      </span></span>
+<span><span class="co">#&gt; [13] curl_7.1.0         httr2_1.3.0        knitr_1.51         tibble_3.3.1      </span></span>
 <span><span class="co">#&gt; [17] desc_1.4.3         RColorBrewer_1.1-3 bslib_0.11.0       pillar_1.11.1     </span></span>
-<span><span class="co">#&gt; [21] rlang_1.3.0        cachem_1.1.0       xfun_0.59          S7_0.2.2          </span></span>
+<span><span class="co">#&gt; [21] rlang_1.3.0        cachem_1.1.0       xfun_0.60          S7_0.2.2          </span></span>
 <span><span class="co">#&gt; [25] fs_2.1.0           sass_0.4.10        otel_0.2.0         timechange_0.4.0  </span></span>
 <span><span class="co">#&gt; [29] cli_3.6.6          withr_3.0.3        pkgdown_2.2.1      magrittr_2.0.5    </span></span>
-<span><span class="co">#&gt; [33] digest_0.6.39      grid_4.6.1         rappdirs_0.3.4     lifecycle_1.0.5   </span></span>
-<span><span class="co">#&gt; [37] vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1         farver_2.1.2      </span></span>
-<span><span class="co">#&gt; [41] ragg_1.5.2         rmarkdown_2.31     purrr_1.2.2        tools_4.6.1       </span></span>
-<span><span class="co">#&gt; [45] pkgconfig_2.0.3    htmltools_0.5.9</span></span></code></pre></div>
+<span><span class="co">#&gt; [33] digest_0.6.39      grid_4.6.1         lifecycle_1.0.5    vctrs_0.7.3       </span></span>
+<span><span class="co">#&gt; [37] evaluate_1.0.5     glue_1.8.1         farver_2.1.2       ragg_1.5.2        </span></span>
+<span><span class="co">#&gt; [41] rmarkdown_2.31     purrr_1.2.2        tools_4.6.1        pkgconfig_2.0.3   </span></span>
+<span><span class="co">#&gt; [45] htmltools_0.5.9</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
