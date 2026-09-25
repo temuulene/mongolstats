@@ -7,13 +7,18 @@
   if (!nrow(itms)) {
     return(itms)
   }
-  needle <- stringr::str_to_lower(query)
-  pattern <- if (fixed) stringr::fixed(needle) else stringr::regex(needle)
+  # Match case-insensitively rather than lowercasing the query: lowercasing
+  # a regex changes its escapes (\S "non-space" would become \s "space").
+  pattern <- if (fixed) {
+    stringr::fixed(query, ignore_case = TRUE)
+  } else {
+    stringr::regex(query, ignore_case = TRUE)
+  }
   pred <- Reduce(
     `|`,
     lapply(fields, function(f) {
       if (f %in% names(itms)) {
-        stringr::str_detect(stringr::str_to_lower(itms[[f]]), pattern)
+        stringr::str_detect(itms[[f]], pattern)
       } else {
         FALSE
       }

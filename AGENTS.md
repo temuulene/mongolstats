@@ -6,7 +6,7 @@ Purpose
 At a Glance
 - Package name: mongolstats
 - Primary domains: PXWeb data access, discovery/search, query builder + fetch, time periods, caching + offline, boundaries (sf) and joins, batch + parallel utilities, docs site generation.
-- Key dependencies: httr2, jsonlite, tibble/dplyr/purrr/stringr, sf, memoise/cachem/rappdirs, stringi/stringdist, curl; suggests: pxweb, httptest2, future/future.apply, cli, pkgdown.
+- Key dependencies: httr2, jsonlite, tibble/dplyr/purrr/stringr, sf, memoise/cachem/rappdirs, stringi/stringdist, curl; suggests: httptest2, future/future.apply, cli, pkgdown.
 
 Directory Structure
 - R/: Core package source
@@ -36,7 +36,7 @@ Major Features (What and How)
 - Batch: nso_package(list_of_requests or tibble), optional parallel via future.apply; adds tbl_id column for multi‑table results; progress bar in interactive sessions when cli available.
 - Implementation:
   - Query builder + fetch helpers: R/query.R, R/data.R
-  - Low-level POST, flattening, cookie seeding, fallback to pxweb: R/pxweb.R (nso_px_data)
+  - Low-level POST, flattening, cookie seeding: R/px_data.R (nso_px_data)
 
 3) Period Utilities
 - Build sequences: nso_period_seq(start, end, by = 'Y'|'M').
@@ -72,7 +72,7 @@ Major Features (What and How)
 - Code style: tools/style.R (styler tidyverse_style).
 
 Key Files and Responsibilities
-- R/pxweb.R: PXWeb URL builders, traversal (.px_list/.px_meta), index (.px_index), variable/dimension helpers (nso_dims, nso_dim_values), data fetch (nso_px_data) with cookie seeding and pxweb fallback.
+- R/pxweb.R: PXWeb URL builders, traversal (.px_list/.px_meta), index (.px_index), variable/dimension helpers (nso_dims, nso_dim_values), data fetch (nso_px_data) with cookie seeding (R/px_data.R).
 - R/query.R: nso_query, as_px_query, nso_fetch, body construction (.px_build_body), selection validation and label→code mapping.
 - R/data.R: nso_data, label enrichment (.px_add_labels), batching (nso_package) with optional parallel and progress.
 - R/periods.R: nso_period_seq, nso_table_periods.
@@ -115,7 +115,7 @@ Configuration & Options
 
 HTTP Behavior
 - Requests built with httr2; retries with configurable backoff; JSON parsing via jsonlite.
-- PXWeb POST: Tries with/without .px suffix; seeds rxid cookie if server sets it; on failure, optional fallback via pxweb package when installed.
+- PXWeb POST: Tries with/without .px suffix; seeds rxid cookie if server sets it; failures raise mongolstats_http_error with the server response attached.
 - Errors raise typed 'mongolstats_http_error' conditions with informative messages.
 - Offline mode raises 'mongolstats_offline_error' when a networked function is called.
 
@@ -158,7 +158,7 @@ Common Entry Points
 - Boundaries: mn_boundaries('ADM1') |> mn_boundaries_normalize() |> ...
 
 Troubleshooting Notes
-- 400/HTTP failures: inspect dimensions and values; reduce selection size; try pxweb fallback; increase timeout/retries via options.
+- 400/HTTP failures: inspect dimensions and values; reduce selection size; increase timeout/retries via options.
 - Offline errors: disable offline or rely on cached metadata only.
 - Pandoc not found for site: tools/full_site.R tries common Windows paths and RSTUDIO_PANDOC.
 

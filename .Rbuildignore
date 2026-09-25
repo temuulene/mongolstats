@@ -29,3 +29,4 @@
 ^CRAN-SUBMISSION$
 ^rhub-results$
 ^\.claude$
+^\.venv$

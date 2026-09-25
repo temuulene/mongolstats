@@ -1,3 +1,28 @@
+# mongolstats (development version)
+
+## Breaking changes
+
+*   The `pxweb` fallback in `nso_data()`, `nso_fetch()`, and `nso_package()` has been removed, and pxweb is no longer a suggested package. The fallback returned data in a different shape (display-text column names, a value column that ignored `value_name`), and it could make network requests in offline mode. Failed requests now raise `mongolstats_http_error` with the server's response attached.
+*   `mn_fuzzy_join_by_name()` now errors when `method = "jw"` is combined with `max_distance >= 1`. Jaro-Winkler distances lie between 0 and 1, so the default `max_distance = 2` matched every name to some boundary. Use a value such as `max_distance = 0.2`.
+
+## New features
+
+*   `mn_join_by_name()` and `mn_fuzzy_join_by_name()` now warn (class `mongolstats_unmatched_names`) naming data rows that matched no boundary. Previously these rows were dropped silently, so a spelling mismatch showed up only as a grey polygon on a map.
+
+## Bug fixes
+
+*   HTTP errors no longer fail with "Could not evaluate cli `{}` expression" when a server or curl message contains a brace. The original error is now attached as the parent condition.
+*   `mn_fuzzy_join_by_name()` no longer crashes with "invalid subscript type 'list'" when the name column contains `NA`.
+*   `nso_data()` and `nso_fetch()` in offline mode now raise `mongolstats_offline_error`. When table metadata was cached they raised `mongolstats_http_error`, so handlers could not tell offline mode from a network failure.
+*   `nso_itms_detail()` and `nso_variables()` now return Mongolian labels in `scr_mn`. Labels were joined on the language-specific dimension name, which never matches across languages, so `scr_mn` was always `NA`.
+*   `nso_package(parallel = TRUE)` now applies the caller's mongolstats options (language, offline mode, timeouts, base URL) inside each worker. Workers previously ran with the package defaults.
+*   `nso_package()` validates `requests` before fetching and explains the problem, e.g. a single record passed without wrapping it in `list()`, a record without `tbl_id`, or non-list `selections`. These previously failed with errors such as "$ operator is invalid for atomic vectors".
+*   `nso_search()` no longer changes the meaning of regex escapes: the pattern was lowercased for case-insensitive matching, turning `\S` into `\s`. `nso_search()` and `nso_itms_search()` now match with `ignore_case = TRUE` instead.
+
+## Internal
+
+*   Recorded HTTP fixtures now use short paths. The old paths exceeded the 100 bytes `R CMD build` stores portably, so the fixtures were dropped from the built package and the recorded tests always skipped. Those tests replay without network access and no longer skip on CRAN.
+*   A local `.venv/` directory is excluded from package builds.
 # mongolstats 0.2.0
 
 ## Breaking changes

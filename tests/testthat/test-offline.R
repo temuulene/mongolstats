@@ -29,3 +29,22 @@ test_that("offline mode skips session-cookie seeding entirely", {
   # No entry cached: nothing was seeded, so the next online call reseeds
   expect_equal(length(.mongolstats_px_env$cookies), n_before)
 })
+
+test_that("nso_data() raises the offline error when metadata is cached", {
+  testthat::local_mocked_bindings(
+    .px_resolve_table = function(tbl_id, ...) {
+      list(px_file = "T.px", row = NULL, paths = character())
+    },
+    .px_meta_cached = function(paths, table, lang = .px_lang()) {
+      list(variables = list(list(
+        code = "Y", text = "Year", values = list("0"), valueTexts = list("2024")
+      )))
+    }
+  )
+  nso_offline_enable()
+  on.exit(nso_offline_disable(), add = TRUE)
+  expect_error(
+    nso_data("T", list(Year = "2024")),
+    class = "mongolstats_offline_error"
+  )
+})

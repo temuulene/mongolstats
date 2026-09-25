@@ -12,29 +12,30 @@ nso_px_variables <- function(tbl_id) {
     .px_meta_cached(paths, px_file, lang = "mn"),
     error = function(e) NULL
   )
-  ve <- meta_en$variables
-  vm <- if (!is.null(meta_mn)) meta_mn$variables else NULL
-  out <- purrr::imap_dfr(ve, function(v, i) {
-    name <- .px_first_nonempty(v$text, v$code, paste0("V", i))
-    tibble::tibble(
-      field = name,
-      itm_id = .px_chr(v$values %||% character()),
-      scr_eng = .px_chr(v$valueTexts %||% character())
-    )
-  })
-  if (!is.null(vm)) {
-    out_mn <- purrr::imap_dfr(vm, function(v, i) {
-      name <- .px_first_nonempty(v$text, v$code, paste0("V", i))
+  # One row per dimension value. `dim_code` is the join key across
+  # languages: display names differ ("Sex" vs its Mongolian name) while the
+  # dimension code is shared.
+  value_rows <- function(vars, label_col) {
+    out <- purrr::imap_dfr(vars, function(v, i) {
       tibble::tibble(
-        field = name,
+        dim_code = as.character(v$code %||% paste0("V", i)),
+        field = .px_first_nonempty(v$text, v$code, paste0("V", i)),
         itm_id = .px_chr(v$values %||% character()),
-        scr_mn = .px_chr(v$valueTexts %||% character())
+        label = .px_chr(v$valueTexts %||% character())
       )
     })
-    out <- dplyr::left_join(out, out_mn, by = c("field", "itm_id"))
+    names(out)[names(out) == "label"] <- label_col
+    out
+  }
+  out <- value_rows(meta_en$variables, "scr_eng")
+  if (nrow(out) && length(meta_mn$variables)) {
+    out_mn <- value_rows(meta_mn$variables, "scr_mn")
+    out_mn$field <- NULL
+    out <- dplyr::left_join(out, out_mn, by = c("dim_code", "itm_id"))
   } else {
     out$scr_mn <- NA_character_
   }
+  out$dim_code <- NULL
   out$px_path <- row$px_path[1]
   out$px_file <- row$px_file[1]
   out

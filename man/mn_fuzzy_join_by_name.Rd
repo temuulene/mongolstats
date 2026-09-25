@@ -22,14 +22,21 @@ mn_fuzzy_join_by_name(
 
 \item{boundaries}{Optional pre-fetched boundaries.}
 
-\item{max_distance}{Maximum string distance for a match (default 2).}
+\item{max_distance}{Maximum string distance for a match (default 2). For
+the edit distances (\code{"osa"}, \code{"lv"}, \code{"dl"}) this counts character
+edits. Jaro-Winkler (\code{"jw"}) distances lie between 0 and 1, so use a
+small value such as \code{0.2}; values of 1 or more would accept every pair
+and are rejected.}
 
 \item{method}{Distance method passed to \code{stringdist::stringdist}. Ignored
 (base Levenshtein distance is used) when the stringdist package is not
 installed.}
 }
 \value{
-sf with best fuzzy matches joined.
+sf with best fuzzy matches joined. Data rows with no boundary
+within \code{max_distance} are dropped with a warning (class
+\code{mongolstats_unmatched_names}) naming them; rows with a missing name
+are dropped silently.
 }
 \description{
 Performs a fuzzy string-distance join between a data frame and boundary

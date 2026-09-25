@@ -49,3 +49,13 @@ test_that("offline mode raises mongolstats_offline_error", {
     class = "mongolstats_offline_error"
   )
 })
+
+test_that("upstream error text is not interpolated as a cli template", {
+  local_mocked_bindings(
+    req_perform = function(req, ...) stop("server said {oops}"),
+    .package = "httr2"
+  )
+  err <- tryCatch(.px_list(character(), lang = "en"), error = function(e) e)
+  expect_s3_class(err, "mongolstats_http_error")
+  expect_match(conditionMessage(err), "server said {oops}", fixed = TRUE)
+})
