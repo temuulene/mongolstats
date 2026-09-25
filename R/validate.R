@@ -6,7 +6,7 @@
 check_tbl_id <- function(tbl_id, call = rlang::caller_env()) {
   if (!is.character(tbl_id) || length(tbl_id) != 1L) {
     cli_abort(
-      "{.arg tbl_id} must be a single character string, not {.obj_type_of {tbl_id}}.",
+      "{.arg tbl_id} must be a single character string, not {.obj_type_friendly {tbl_id}}.",
       call = call
     )
   }
@@ -55,7 +55,7 @@ check_selections <- function(selections, call = rlang::caller_env()) {
 check_query <- function(query, call = rlang::caller_env()) {
   if (!is.character(query) || length(query) != 1L) {
     cli_abort(
-      "{.arg query} must be a single character string, not {.obj_type_of {query}}.",
+      "{.arg query} must be a single character string, not {.obj_type_friendly {query}}.",
       call = call
     )
   }

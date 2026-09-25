@@ -75,19 +75,7 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
   resolved_sel <- .px_map_selections(vars, selections)
   # Session cookie (e.g., rxid), cached per base URL for the session
   cookie <- .px_session_cookie(paths, px_file, lang = lang)
-  # Build query: every variable in the table is included.
-  q <- lapply(vars, function(v) {
-    list(
-      code = v$code,
-      selection = list(
-        filter = "item",
-        values = I(as.character(resolved_sel[[as.character(v$code)]]))
-      )
-    )
-  })
-  body <- list(query = q, response = list(format = "json"))
-  # pxweb-style named query for fallback: same shape as resolved_sel
-  px_query <- resolved_sel
+  body <- .px_query_body(vars, resolved_sel)
   url <- .px_url(paths, px_file, lang = lang)
   # Try both with and without the .px suffix as some PXWeb servers differ
   url_variants <- unique(c(url, sub("\\.px$", "", url)))
@@ -112,65 +100,32 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
         "Body: {substr(jsonlite::toJSON(body, auto_unbox = TRUE), 1, 200)}"
       ))
     }
-    resp <- tryCatch(.nso_perform(req), error = function(e) e)
-    ok <- !(inherits(resp, "error") ||
-                (inherits(resp, "httr2_response") &&
-                 !is.null(httr2::resp_status(resp)) &&
-                 httr2::resp_status(resp) >= 400))
-    if (ok) {
-      url <- u
+    # .nso_perform() raises mongolstats_http_error for transport and HTTP
+    # failures; only those move on to the next URL variant. Anything else,
+    # notably mongolstats_offline_error, propagates unchanged.
+    resp <- tryCatch(.nso_perform(req), mongolstats_http_error = function(e) e)
+    if (!inherits(resp, "error")) {
       break
     }
   }
-  if (inherits(resp, "error") ||
-          (inherits(resp, "httr2_response") &&
-           !is.null(httr2::resp_status(resp)) &&
-           httr2::resp_status(resp) >= 400)) {
+  if (inherits(resp, "error")) {
     # Drop the cached session cookie: it may have expired, and the next
     # call should reseed rather than reuse a stale session.
     .px_clear_session_cookie(lang)
-    # Capture error details for better debugging
-    err_details <- if (inherits(resp, "httr2_response")) {
-      status <- httr2::resp_status(resp)
-      body <- tryCatch(httr2::resp_body_string(resp), error = function(e) {
-        "<unable to read>"
-      })
-      sprintf("HTTP %d. Response: %s", status, substr(body, 1, 200))
-    } else if (inherits(resp, "error")) {
-      conditionMessage(resp)
-    } else {
-      "Unknown error"
-    }
-
-    if (requireNamespace("pxweb", quietly = TRUE)) {
-      # Fallback via pxweb client
-      px <- tryCatch(
-        pxweb::pxweb_get(url, query = px_query),
-        error = function(e) e
-      )
-      if (!inherits(px, "error")) {
-        df <- tryCatch(
-          pxweb::pxweb_as_data_frame(
-            px,
-            column.name.type = "text",
-            variable.value.type = "code"
-          ),
-          error = function(e) NULL
-        )
-        if (!is.null(df)) {
-          return(tibble::as_tibble(df))
-        }
-      }
-    }
-    # If fallback not available or failed, rethrow informative error
+    # PXWeb explains rejected queries in the response body
+    server_msg <- tryCatch( # nolint object_usage_linter. Used in cli_abort() below.
+      substr(httr2::resp_body_string(resp$parent$resp), 1, 200),
+      error = function(e) NULL
+    )
     cli_abort(
       c(
         "PXWeb request failed for {.val {tbl_id}}.",
-        "x" = "{err_details}",
+        "x" = if (length(server_msg) && nzchar(server_msg)) "Server response: {server_msg}",
         "i" = "Tried both .px and extensionless endpoints.",
-        "i" = "If {.pkg pxweb} is installed, verify selections or try smaller subsets."
+        "i" = "Check selections with {.fn nso_dims} or request a smaller subset."
       ),
-      class = "mongolstats_http_error"
+      class = "mongolstats_http_error",
+      parent = resp
     )
   }
   out <- jsonlite::fromJSON(
@@ -219,19 +174,37 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
     character(1)
   )
   dim_names <- make.unique(dim_names)
+  n_dim <- length(dim_names)
 
-  # Build data frame of keys and values
-  keys <- dplyr::bind_rows(lapply(dat, function(d) {
-    stats::setNames(as.list(unlist(d$key)), dim_names)
-  }))
+  # Collect all keys into one row-major character matrix instead of binding
+  # one small data frame per row (which dominated fetch time on large
+  # tables).
+  keys <- lapply(dat, function(d) as.character(unlist(d$key)))
+  bad <- which(lengths(keys) != n_dim)
+  if (length(bad)) {
+    cli_abort(
+      c(
+        "Malformed PXWeb response: row {bad[1]} has {length(keys[[bad[1]]])} key{?s}, expected {n_dim}.",
+        "i" = "Dimension columns: {.val {dim_names}}."
+      ),
+      class = "mongolstats_http_error"
+    )
+  }
+  df <- if (n_dim) {
+    key_mat <- matrix(unlist(keys, use.names = FALSE), ncol = n_dim, byrow = TRUE)
+    tibble::as_tibble(stats::setNames(
+      lapply(seq_len(n_dim), function(j) key_mat[, j]),
+      dim_names
+    ))
+  } else {
+    tibble::tibble(.rows = length(dat))
+  }
 
   vals <- vapply(
     dat,
-    function(d) if (length(d$values)) d$values[[1]] else NA_character_,
+    function(d) if (length(d$values)) as.character(d$values[[1]]) else NA_character_,
     character(1)
   )
-
-  df <- tibble::as_tibble(keys)
   df[[value_name]] <- suppressWarnings(as.numeric(vals))
   df
 }

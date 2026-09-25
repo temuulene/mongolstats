@@ -1,7 +1,7 @@
 Package: mongolstats
 Type: Package
 Title: Mongolian 'NSO' 'PXWeb' Data and Boundaries (Tidy Client)
-Version: 0.2.0
+Version: 0.2.0.9000
 Authors@R: 
     c(person(given = "Temuulen",
              family = "Enebish",
@@ -34,7 +34,6 @@ Suggests:
     rappdirs,
     pkgdown,
     roxygen2,
-    pxweb,
     remotes,
     httptest2,
     stringdist,

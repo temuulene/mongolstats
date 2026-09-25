@@ -16,6 +16,9 @@ label columns. "none" is accepted as an alias for "code".}
 }
 \value{
 A tibble with at least \code{code}; may include \code{label_en} and/or \code{label_mn}.
+In offline mode (see \code{\link[=nso_offline_enable]{nso_offline_enable()}}) an empty tibble is
+returned; failed requests raise an error of class
+\code{mongolstats_http_error}.
 }
 \description{
 Returns codes and optional labels for a specific dimension.

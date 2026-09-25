@@ -12,7 +12,8 @@
 #'
 #' @param level One of "ADM0", "ADM1", "ADM2".
 #' @param refresh If TRUE, bypass the session cache and download again.
-#' @return An `sf` object with polygons for the requested level.
+#' @return An `sf` object with polygons for the requested level. Failed
+#'   downloads raise an error of class `mongolstats_http_error`.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' # Get aimag (province) boundaries
 #' aimags <- mn_boundaries("ADM1")
@@ -43,7 +44,7 @@ mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE) {
       max_tries = .nso_retry_tries(),
       backoff = .nso_retry_backoff()
     )
-  httr2::req_perform(req, path = tmp)
+  .nso_perform(req, path = tmp)
   g <- sf::st_read(tmp, quiet = TRUE)
   .mn_boundaries_env[[level]] <- g
   g
@@ -64,5 +65,15 @@ mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE) {
     ) |>
     .nso_perform() |>
     httr2::resp_body_json()
-  res$gjDownloadURL
+  url <- res$gjDownloadURL
+  if (!is.character(url) || length(url) != 1L || !nzchar(url)) {
+    cli_abort(
+      c(
+        "GeoBoundaries returned no download URL for {.val {iso3}} {.val {level}}.",
+        "i" = "The API response may have changed; see {.url {api}}."
+      ),
+      class = "mongolstats_http_error"
+    )
+  }
+  url
 }

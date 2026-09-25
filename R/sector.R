@@ -6,16 +6,15 @@
 #' (e.g., Population, Economy, Environment). Use the returned `id` column
 #' with [nso_subsectors()] to drill into sub-categories.
 #'
-#' @return A tibble with columns `id`, `type`, and `text`.
+#' @return A tibble with columns `id`, `type`, and `text`. In offline mode
+#'   (see [nso_offline_enable()]) an empty tibble is returned; failed
+#'   requests raise an error of class `mongolstats_http_error`.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' sectors <- nso_sectors()
 #' head(sectors)
 #' @export
 nso_sectors <- function() {
-  kids <- tryCatch(
-    .px_list_cached(character(), lang = .px_lang()),
-    error = function(e) NULL
-  )
+  kids <- .nso_or_offline(.px_list_cached(character(), lang = .px_lang()))
   tibble::as_tibble(kids)
 }
 
@@ -27,7 +26,9 @@ nso_sectors <- function() {
 #'
 #' @param subid Path id from `nso_sectors()`/`nso_subsectors()`
 #'   (e.g., 'Population, household' or 'Population, household/1_Population, household').
-#' @return A tibble with columns: `id`, `type`, `text`.
+#' @return A tibble with columns: `id`, `type`, `text`. In offline mode
+#'   (see [nso_offline_enable()]) an empty tibble is returned; failed
+#'   requests raise an error of class `mongolstats_http_error`.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' sectors <- nso_sectors()
 #' nso_subsectors(sectors$id[1])
@@ -41,9 +42,6 @@ nso_subsectors <- function(subid) {
   } else {
     character()
   }
-  kids <- tryCatch(
-    .px_list_cached(paths, lang = .px_lang()),
-    error = function(e) NULL
-  )
+  kids <- .nso_or_offline(.px_list_cached(paths, lang = .px_lang()))
   tibble::as_tibble(kids)
 }

@@ -440,7 +440,7 @@ decomp_df <- data.frame(
     values_to = "value"
   ) |>
   mutate(
-    component = factor(component, 
+    component = factor(component,
                        levels = c("observed", "trend", "seasonal", "remainder"),
                        labels = c("Observed (Daily Avg)", "Trend", "Seasonal Pattern", "Remainder (Noise)"))
   )
@@ -495,7 +495,7 @@ trough_seasonal <- seasonal_cycle |> filter(seasonal_effect == min(seasonal_effe
 # Seasonal pattern bar chart showing above/below average by month
 p <- seasonal_cycle |>
   ggplot(aes(x = month_name, y = seasonal_effect)) +
-  geom_col(aes(fill = ifelse(seasonal_effect > 0, "Above Average", "Below Average")), 
+  geom_col(aes(fill = ifelse(seasonal_effect > 0, "Above Average", "Below Average")),
            alpha = 0.8) +
   geom_hline(yintercept = 0, linetype = "solid", color = "grey40") +  # zero line
   geom_text(
@@ -510,7 +510,7 @@ p <- seasonal_cycle |>
   scale_y_continuous(labels = function(x) round(x, 1)) +
   labs(
     title = "Extracted Seasonal Pattern (Daily Average Deaths)",
-    subtitle = paste0("Peak: ", peak_seasonal$month_name, " (+", round(peak_seasonal$seasonal_effect, 1), 
+    subtitle = paste0("Peak: ", peak_seasonal$month_name, " (+", round(peak_seasonal$seasonal_effect, 1),
                       " deaths/day) | Trough: ", trough_seasonal$month_name, " (", round(trough_seasonal$seasonal_effect, 1), " deaths/day)"),
     x = NULL,
     y = "Daily deaths above/below average"

@@ -6,7 +6,7 @@ Purpose
 At a Glance
 - Package name: mongolstats
 - Primary domains: PXWeb data access, discovery/search, query builder + fetch, time periods, caching + offline, boundaries (sf) and joins, batch + parallel utilities, docs site generation.
-- Key dependencies: httr2, jsonlite, tibble/dplyr/purrr/stringr, sf, memoise/cachem/rappdirs, stringi/stringdist, curl; suggests: pxweb, httptest2, future/future.apply, cli, pkgdown.
+- Key dependencies: httr2, jsonlite, tibble/dplyr/purrr/stringr, sf, memoise/cachem/rappdirs, stringi/stringdist, curl; suggests: httptest2, future/future.apply, cli, pkgdown.
 
 Directory Structure
 - R/: Core package source
@@ -36,7 +36,7 @@ Major Features (What and How)
 - Batch: nso_package(list_of_requests or tibble), optional parallel via future.apply; adds tbl_id column for multi‑table results; progress bar in interactive sessions when cli available.
 - Implementation:
   - Query builder + fetch helpers: R/query.R, R/data.R
-  - Low-level POST, flattening, cookie seeding, fallback to pxweb: R/pxweb.R (nso_px_data)
+  - Low-level POST, flattening, cookie seeding: R/px_data.R (nso_px_data)
 
 3) Period Utilities
 - Build sequences: nso_period_seq(start, end, by = 'Y'|'M').
@@ -49,10 +49,10 @@ Major Features (What and How)
 - Implementation: R/data.R (.px_add_labels), R/query.R (selection label→code mapping)
 
 5) Caching and Offline Mode
-- Disk cache for discovery (tables, variables) and PX metadata; optional TTL.
+- Disk cache for PXWeb catalogue listings and table metadata; optional TTL.
 - Enable/disable/clear/status: nso_cache_enable(dir, ttl), nso_cache_disable(), nso_cache_clear(), nso_cache_status().
-- Offline mode: nso_offline_enable()/nso_offline_disable() blocks network; discovery returns empty tibbles; data fetch errors with typed condition.
-- Implementation: R/cache.R (memoise + cachem + rappdirs env), R/cache_shims.R, R/http.R (offline guard + common req pipeline)
+- Offline mode: nso_offline_enable()/nso_offline_disable() blocks network; discovery returns empty tibbles (HTTP failures still raise mongolstats_http_error); data fetch errors with typed condition.
+- Implementation: R/cache.R (memoise + cachem + rappdirs env; keys include base URL, db, lang), R/http.R (offline guard + common req pipeline)
 
 6) Administrative Boundaries and Joins (sf)
 - Download boundaries via GeoBoundaries API: mn_boundaries(level = 'ADM0'|'ADM1'|'ADM2').
@@ -72,7 +72,7 @@ Major Features (What and How)
 - Code style: tools/style.R (styler tidyverse_style).
 
 Key Files and Responsibilities
-- R/pxweb.R: PXWeb URL builders, traversal (.px_list/.px_meta), index (.px_index), variable/dimension helpers (nso_dims, nso_dim_values), data fetch (nso_px_data) with cookie seeding and pxweb fallback.
+- R/pxweb.R: PXWeb URL builders, traversal (.px_list/.px_meta), index (.px_index), variable/dimension helpers (nso_dims, nso_dim_values), data fetch (nso_px_data) with cookie seeding (R/px_data.R).
 - R/query.R: nso_query, as_px_query, nso_fetch, body construction (.px_build_body), selection validation and label→code mapping.
 - R/data.R: nso_data, label enrichment (.px_add_labels), batching (nso_package) with optional parallel and progress.
 - R/periods.R: nso_period_seq, nso_table_periods.
@@ -81,7 +81,7 @@ Key Files and Responsibilities
 - R/sector.R: nso_sectors, nso_subsectors.
 - R/geography.R: mn_boundaries (GeoBoundaries).
 - R/names.R: normalization, exact/fuzzy boundary joins, boundary keys.
-- R/cache.R + R/cache_shims.R: memoised discovery + PX metadata cache, API (.mongolstats_cache_env).
+- R/cache.R: memoised PX list/metadata disk cache, API (.mongolstats_cache_env). The embedded table index is held in memory only, never disk-cached.
 - R/http.R: common request setup (httr2), retries/backoff, verbose logging, offline mode; user-facing nso_offline_enable/disable.
 - R/options.R: nso_options() wrapper to set/get package options.
 - R/aaa_px_helpers.R: small helpers (.px_strip_bom, .px_first_nonempty, .px_chr).
@@ -115,13 +115,13 @@ Configuration & Options
 
 HTTP Behavior
 - Requests built with httr2; retries with configurable backoff; JSON parsing via jsonlite.
-- PXWeb POST: Tries with/without .px suffix; seeds rxid cookie if server sets it; on failure, optional fallback via pxweb package when installed.
+- PXWeb POST: Tries with/without .px suffix; seeds rxid cookie if server sets it; failures raise mongolstats_http_error with the server response attached.
 - Errors raise typed 'mongolstats_http_error' conditions with informative messages.
 - Offline mode raises 'mongolstats_offline_error' when a networked function is called.
 
 Caching
 - Enable disk cache: nso_cache_enable(dir = rappdirs::user_cache_dir('mongolstats')/v1, ttl = NULL|seconds).
-- Caches: table list, variable details, PXWeb list/meta calls; memoised via memoise/cachem inside .mongolstats_cache_env.
+- Caches: PXWeb list/meta calls (which back nso_itms_detail(), nso_dims(), labels, etc.), keyed by base URL, db, and language; memoised via memoise/cachem inside .mongolstats_cache_env. The embedded table index is not disk-cached.
 - Manage via nso_cache_disable(), nso_cache_clear(), nso_cache_status().
 
 Boundary Workflows
@@ -158,7 +158,7 @@ Common Entry Points
 - Boundaries: mn_boundaries('ADM1') |> mn_boundaries_normalize() |> ...
 
 Troubleshooting Notes
-- 400/HTTP failures: inspect dimensions and values; reduce selection size; try pxweb fallback; increase timeout/retries via options.
+- 400/HTTP failures: inspect dimensions and values; reduce selection size; increase timeout/retries via options.
 - Offline errors: disable offline or rely on cached metadata only.
 - Pandoc not found for site: tools/full_site.R tries common Windows paths and RSTUDIO_PANDOC.
 

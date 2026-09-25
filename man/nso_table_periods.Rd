@@ -10,7 +10,10 @@ nso_table_periods(tbl_id)
 \item{tbl_id}{Table identifier.}
 }
 \value{
-Character vector of period labels (e.g., years)
+Character vector of period labels (e.g., years); empty when the
+table has no recognisable time dimension or in offline mode (see
+\code{\link[=nso_offline_enable]{nso_offline_enable()}}). Unknown tables and failed requests raise an
+error.
 }
 \description{
 Inspects the table metadata to find the time dimension and returns its

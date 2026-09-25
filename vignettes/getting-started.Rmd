@@ -9,10 +9,10 @@ vignette: >
 
 ```{r not-cran-check, include = FALSE}
 # Skip code evaluation on CRAN (external API calls will fail)
-RUN_VIGNETTE <- isTRUE(getOption("pkgdown.in_progress")) ||
-  (identical(Sys.getenv("NOT_CRAN"), "true") &&
-    !nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_")))
-knitr::opts_chunk$set(eval = RUN_VIGNETTE, purl = RUN_VIGNETTE)
+not_cran_check <- identical(Sys.getenv("NOT_CRAN"), "true") &&
+  !nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_"))
+run_vignette <- isTRUE(getOption("pkgdown.in_progress")) || not_cran_check
+knitr::opts_chunk$set(eval = run_vignette, purl = run_vignette)
 ```
 
 ```{r, include = FALSE}
@@ -129,7 +129,11 @@ p <- imr_national |>
   ggplot(aes(x = date, y = value, group = 1)) +
   geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) +  # dim raw data so trend stands out
   geom_point(color = "#e74c3c", size = 3, shape = 21, fill = "white", stroke = 1.5, alpha = 0.6) +
-  geom_smooth(method = "loess", se = TRUE, color = "#3498db", fill = "#3498db", alpha = 0.2, linewidth = 1.5) +  # LOESS reveals trend through monthly noise
+  # LOESS reveals trend through monthly noise
+  geom_smooth(
+    method = "loess", se = TRUE, color = "#3498db", fill = "#3498db",
+    alpha = 0.2, linewidth = 1.5
+  ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   labs(
     title = "Infant Mortality Rate in Mongolia (Monthly)",

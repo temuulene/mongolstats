@@ -64,7 +64,12 @@ print.nso_query <- function(x, ...) {
   resolved <- .px_resolve_table(tbl_id)
   meta <- .px_meta_cached(resolved$paths, resolved$px_file, lang = lang)
   vars <- meta$variables
-  resolved_sel <- .px_map_selections(vars, selections)
+  .px_query_body(vars, .px_map_selections(vars, selections))
+}
+
+# Internal: PXWeb JSON body for resolved selections (from
+# .px_map_selections()). Every variable in the table is included.
+.px_query_body <- function(vars, resolved_sel) {
   q <- lapply(vars, function(v) {
     list(
       code = v$code,
