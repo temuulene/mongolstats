@@ -9,7 +9,6 @@ on:
       - README.html
       - _pkgdown.yml
       - NEWS.md
-      - vignettes/**
       - docs/**
       - pkgdown/**
       - man/**
@@ -22,7 +21,6 @@ on:
       - README.html
       - _pkgdown.yml
       - NEWS.md
-      - vignettes/**
       - docs/**
       - pkgdown/**
       - man/**
