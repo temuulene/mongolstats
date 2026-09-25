@@ -10,18 +10,14 @@
   if (identical(which, "none")) {
     return(df)
   }
-  resolved <- tryCatch(.px_resolve_table(tbl_id), error = function(e) NULL)
-  if (is.null(resolved)) {
-    return(df)
-  }
+  resolved <- .px_resolve_table(tbl_id)
   px_file <- resolved$px_file
   paths <- resolved$paths
   fetch_lang <- .px_lang()
+  # A labelling request that fails must not return silently unlabelled
+  # data; only offline mode degrades to codes-only.
   get_meta <- function(lang) {
-    tryCatch(
-      .px_meta_cached(paths, px_file, lang = lang),
-      error = function(e) NULL
-    )
+    .nso_or_offline(.px_meta_cached(paths, px_file, lang = lang))
   }
   meta_fetch <- get_meta(fetch_lang)
   if (is.null(meta_fetch) || !length(meta_fetch$variables)) {
@@ -268,24 +264,27 @@ nso_package <- function(
   old <- options(opts)
   on.exit(options(old), add = TRUE)
   tbl <- r$tbl_id
-  df <- tryCatch(
-    nso_px_data(
-      tbl,
-      selections = r$selections,
-      lang = .px_lang(),
-      include_raw = FALSE,
-      value_name = value_name
-    ),
-    error = function(e) e
+  # Labelling is inside the tryCatch too: a failed metadata request for
+  # labels must mark this table as failed, not abort the whole batch.
+  tryCatch(
+    {
+      df <- nso_px_data(
+        tbl,
+        selections = r$selections,
+        lang = .px_lang(),
+        include_raw = FALSE,
+        value_name = value_name
+      )
+      if (nrow(df)) {
+        df$tbl_id <- tbl
+      }
+      .px_add_labels(df, tbl, which = labels)
+    },
+    error = function(e) {
+      structure(
+        list(tbl_id = tbl, message = conditionMessage(e)),
+        class = "mongolstats_failed_fetch"
+      )
+    }
   )
-  if (inherits(df, "error")) {
-    return(structure(
-      list(tbl_id = tbl, message = conditionMessage(df)),
-      class = "mongolstats_failed_fetch"
-    ))
-  }
-  if (nrow(df)) {
-    df$tbl_id <- tbl
-  }
-  .px_add_labels(df, tbl, which = labels)
 }

@@ -14,7 +14,9 @@ For package development, use \code{"inst/extdata/px_index.json"}.}
 is provided, \code{FALSE} otherwise.}
 }
 \value{
-A tibble containing the rebuilt table index.
+A tibble containing the rebuilt table index. If some catalogue
+requests fail, the index is built from the rest and a warning of class
+\code{mongolstats_incomplete_index} names the failed paths.
 }
 \description{
 Crawls the PXWeb API to rebuild the table index. If \code{path} is provided,

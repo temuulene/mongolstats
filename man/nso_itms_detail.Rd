@@ -13,7 +13,9 @@ nso_variables(tbl_id)
 \item{tbl_id}{Table identifier (e.g., "DT_NSO_0300_001V2").}
 }
 \value{
-A tibble with variable metadata.
+A tibble with variable metadata. In offline mode (see
+\code{\link[=nso_offline_enable]{nso_offline_enable()}}) an empty tibble is returned; failed requests
+raise an error of class \code{mongolstats_http_error}.
 }
 \description{
 Returns detailed variable metadata for a single table, including field

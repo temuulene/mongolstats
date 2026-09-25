@@ -7,7 +7,7 @@
 nso_cache_clear()
 }
 \value{
-No return value, called for side effects.
+Invisibly, \code{TRUE}.
 }
 \description{
 Clear cached entries

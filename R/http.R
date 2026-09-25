@@ -34,7 +34,9 @@
   isTRUE(getOption("mongolstats.offline", FALSE))
 }
 
-.nso_perform <- function(req) {
+# `path`, when given, streams the response body to that file (see
+# httr2::req_perform()).
+.nso_perform <- function(req, path = NULL) {
   if (.nso_offline()) {
     cli_abort(
       "mongolstats is in offline mode; network requests are disabled.",
@@ -47,7 +49,7 @@
   }
   # Perform request; raise typed error on failure. httr2 already errors on
   # HTTP 4xx/5xx, so both transport and HTTP failures land here.
-  resp <- tryCatch(httr2::req_perform(req), error = function(e) e)
+  resp <- tryCatch(httr2::req_perform(req, path = path), error = function(e) e)
   if (inherits(resp, "error")) {
     status <- if (inherits(resp, "httr2_http")) {
       tryCatch(httr2::resp_status(resp$resp), error = function(e) NULL)

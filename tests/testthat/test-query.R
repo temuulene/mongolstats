@@ -6,25 +6,25 @@ test_that("nso_query creates correct structure", {
 })
 
 test_that("nso_query rejects bad tbl_id", {
-  expect_error(nso_query(123), class = "rlang_error")
-  expect_error(nso_query(c("a", "b")), class = "rlang_error")
+  expect_snapshot(nso_query(123), error = TRUE)
+  expect_snapshot(nso_query(c("a", "b")), error = TRUE)
 })
 
 test_that("nso_query rejects bad selections", {
-  expect_error(nso_query("DT_NSO_TEST", selections = "not_list"), class = "rlang_error")
+  expect_snapshot(nso_query("DT_NSO_TEST", selections = "not_list"), error = TRUE)
 })
 
-test_that("print.nso_query returns invisibly", {
-  q <- nso_query("DT_NSO_TEST", selections = list(Year = "2023"))
-  expect_output(print(q), "nso_query")
-  out <- print(q)
+test_that("print.nso_query summarises the query and returns it invisibly", {
+  q <- nso_query(
+    "DT_NSO_TEST",
+    selections = list(Year = as.character(2018:2023), Sex = "Total")
+  )
+  expect_snapshot(print(q))
+  expect_invisible(out <- print(q))
   expect_identical(out, q)
 })
 
-test_that("as_px_query rejects non-query", {
-  expect_error(as_px_query("not_a_query"), class = "rlang_error")
-})
-
-test_that("nso_fetch rejects non-query", {
-  expect_error(nso_fetch("not_a_query"), class = "rlang_error")
+test_that("as_px_query and nso_fetch reject non-query input", {
+  expect_snapshot(as_px_query("not_a_query"), error = TRUE)
+  expect_snapshot(nso_fetch("not_a_query"), error = TRUE)
 })

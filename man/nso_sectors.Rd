@@ -7,7 +7,9 @@
 nso_sectors()
 }
 \value{
-A tibble with columns \code{id}, \code{type}, and \code{text}.
+A tibble with columns \code{id}, \code{type}, and \code{text}. In offline mode
+(see \code{\link[=nso_offline_enable]{nso_offline_enable()}}) an empty tibble is returned; failed
+requests raise an error of class \code{mongolstats_http_error}.
 }
 \description{
 Queries the PXWeb API root to return the top-level statistical sectors

@@ -25,6 +25,13 @@
   as.character(unlist(x, use.names = FALSE))
 }
 
+# Evaluate a discovery request, treating offline mode as "no results":
+# returns `empty` on mongolstats_offline_error. HTTP and all other errors
+# propagate, so a failing server is never mistaken for an empty catalogue.
+.nso_or_offline <- function(expr, empty = NULL) {
+  tryCatch(expr, mongolstats_offline_error = function(e) empty)
+}
+
 # Map user selections onto PXWeb value codes for every table dimension.
 #
 # Single source of truth for selection handling, used by nso_px_data() and
@@ -154,16 +161,21 @@
 # Resolve a tbl_id to its px_file, index row, and path segments.
 # Returns a list with $px_file, $row (tibble), and $paths (character vector).
 # Raises an error if the table is not found in the index.
-.px_resolve_table <- function(tbl_id, idx = .px_index()) {
-  px_file <- if (grepl("\\.px$", tbl_id, ignore.case = TRUE)) {
-    tbl_id
-  } else {
-    paste0(tbl_id, ".px")
-  }
-  row <- idx[idx$px_file == px_file, , drop = FALSE]
+.px_resolve_table <- function(tbl_id, idx = .px_index(), call = rlang::caller_env()) {
+  # Table ids match case-insensitively, with or without the .px suffix;
+  # the index's own spelling is used for requests.
+  px_file <- paste0(sub("\\.px$", "", tbl_id, ignore.case = TRUE), ".px")
+  row <- idx[tolower(idx$px_file) == tolower(px_file), , drop = FALSE]
   if (!nrow(row)) {
-    cli_abort("Table {.val {tbl_id}} not found in PXWeb index.")
+    cli_abort(
+      c(
+        "Table {.val {tbl_id}} not found in PXWeb index.",
+        "i" = "Find table ids with {.fn nso_search} or {.fn nso_itms}."
+      ),
+      call = call
+    )
   }
+  px_file <- row$px_file[1]
   if (nrow(row) > 1) {
     # The catalogue cross-lists some tables in several folders; that is
     # harmless. Only warn when the id names genuinely different tables.

@@ -7,11 +7,11 @@ nso_px_variables <- function(tbl_id) {
   px_file <- resolved$px_file
   row <- resolved$row
   paths <- resolved$paths
-  meta_en <- .px_meta_cached(paths, px_file, lang = "en")
-  meta_mn <- tryCatch(
-    .px_meta_cached(paths, px_file, lang = "mn"),
-    error = function(e) NULL
-  )
+  meta_en <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "en"))
+  if (is.null(meta_en)) {
+    return(tibble::tibble())
+  }
+  meta_mn <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "mn"))
   # One row per dimension value. `dim_code` is the join key across
   # languages: display names differ ("Sex" vs its Mongolian name) while the
   # dimension code is shared.
@@ -48,6 +48,9 @@ nso_px_variables <- function(tbl_id) {
 #' @param tbl_id Table identifier (e.g., "DT_NSO_0300_001V2").
 #' @return A tibble with columns: `dim` (display name), `code` (dimension code),
 #'   `is_time` (logical), and `n_values` (number of values for the dimension).
+#'   In offline mode (see [nso_offline_enable()]) an empty tibble is
+#'   returned; failed requests raise an error of class
+#'   `mongolstats_http_error`.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' dims <- nso_dims("DT_NSO_0300_001V2")
 #' dims
@@ -57,10 +60,7 @@ nso_dims <- function(tbl_id) {
   resolved <- .px_resolve_table(tbl_id)
   px_file <- resolved$px_file
   paths <- resolved$paths
-  meta_en <- tryCatch(
-    .px_meta_cached(paths, px_file, lang = "en"),
-    error = function(e) NULL
-  )
+  meta_en <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "en"))
   if (is.null(meta_en) || is.null(meta_en$variables)) {
     return(tibble::tibble())
   }
@@ -90,6 +90,9 @@ nso_dims <- function(tbl_id) {
 #' @param labels One of "code", "en", "mn", or "both" to control returned
 #'   label columns. "none" is accepted as an alias for "code".
 #' @return A tibble with at least `code`; may include `label_en` and/or `label_mn`.
+#'   In offline mode (see [nso_offline_enable()]) an empty tibble is
+#'   returned; failed requests raise an error of class
+#'   `mongolstats_http_error`.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' values <- nso_dim_values("DT_NSO_0300_001V2", "Year")
 #' head(values)
@@ -109,10 +112,7 @@ nso_dim_values <- function(
   resolved <- .px_resolve_table(tbl_id)
   px_file <- resolved$px_file
   paths <- resolved$paths
-  meta_en <- tryCatch(
-    .px_meta_cached(paths, px_file, lang = "en"),
-    error = function(e) NULL
-  )
+  meta_en <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "en"))
   if (is.null(meta_en) || is.null(meta_en$variables)) {
     return(tibble::tibble())
   }
@@ -179,10 +179,7 @@ nso_dim_values <- function(
     }
   }
   if (labels %in% c("mn", "both")) {
-    meta_mn <- tryCatch(
-      .px_meta_cached(paths, px_file, lang = "mn"),
-      error = function(e) NULL
-    )
+    meta_mn <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "mn"))
     if (!is.null(meta_mn) && length(meta_mn$variables)) {
       vars_mn <- meta_mn$variables
       # match by dimension code to be robust across languages
@@ -215,6 +212,9 @@ nso_dim_values <- function(
 #' @param tbl_id Table identifier (e.g., "DT_NSO_0300_001V2").
 #' @return A tibble with columns: `dim` (display name), `code` (dimension code),
 #'   `is_time` (logical), `n_values` (integer), and `codes` (list of tibbles).
+#'   In offline mode (see [nso_offline_enable()]) an empty tibble is
+#'   returned; failed requests raise an error of class
+#'   `mongolstats_http_error`.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' meta <- nso_table_meta("DT_NSO_0300_001V2")
 #' meta
@@ -224,8 +224,8 @@ nso_table_meta <- function(tbl_id) {
   resolved <- .px_resolve_table(tbl_id)
   px_file <- resolved$px_file
   paths <- resolved$paths
-  meta_en <- tryCatch(.px_meta_cached(paths, px_file, lang = "en"), error = function(e) NULL)
-  meta_mn <- tryCatch(.px_meta_cached(paths, px_file, lang = "mn"), error = function(e) NULL)
+  meta_en <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "en"))
+  meta_mn <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "mn"))
   if (is.null(meta_en) || is.null(meta_en$variables)) {
     return(tibble::tibble())
   }
