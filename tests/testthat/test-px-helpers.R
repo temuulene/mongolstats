@@ -98,3 +98,59 @@ test_that(".px_flatten_response handles empty data and custom value_name", {
   df <- .px_flatten_response(out, value_name = "pop")
   expect_equal(df$pop, 1.5)
 })
+
+test_that(".px_resolve_table matches table ids case-insensitively", {
+  fake_idx <- tibble::tibble(px_file = "DT_TEST_01V2.px", px_path = "a")
+  for (id in c("dt_test_01v2", "DT_TEST_01V2.PX", "Dt_Test_01v2.px")) {
+    expect_equal(.px_resolve_table(id, idx = fake_idx)$px_file, "DT_TEST_01V2.px")
+  }
+})
+
+test_that(".px_flatten_response keeps rows aligned on larger responses", {
+  n <- 5000
+  out <- list(
+    columns = list(
+      list(code = "A", text = "A", type = "d"),
+      list(code = "B", text = "B", type = "t"),
+      list(code = "V", text = "V", type = "c")
+    ),
+    data = lapply(seq_len(n), function(i) {
+      list(key = list(as.character(i), as.character(i %% 3)), values = list(as.character(i / 2)))
+    })
+  )
+  df <- .px_flatten_response(out)
+  expect_named(df, c("A", "B", "value"))
+  expect_equal(nrow(df), n)
+  expect_equal(df$A, as.character(seq_len(n)))
+  expect_equal(df$B, as.character(seq_len(n) %% 3))
+  expect_equal(df$value, seq_len(n) / 2)
+})
+
+test_that(".px_flatten_response errors on keys that do not match the columns", {
+  out <- list(
+    columns = list(
+      list(code = "A", text = "A", type = "d"),
+      list(code = "B", text = "B", type = "d"),
+      list(code = "V", text = "V", type = "c")
+    ),
+    data = list(
+      list(key = list("x", "y"), values = list("1")),
+      list(key = list("x"), values = list("2"))
+    )
+  )
+  expect_snapshot(.px_flatten_response(out), error = TRUE)
+})
+
+test_that(".px_flatten_response treats missing values as NA", {
+  out <- list(
+    columns = list(
+      list(code = "A", text = "A", type = "d"),
+      list(code = "V", text = "V", type = "c")
+    ),
+    data = list(
+      list(key = list("x"), values = list("..")),
+      list(key = list("y"), values = list())
+    )
+  )
+  expect_equal(.px_flatten_response(out)$value, c(NA_real_, NA_real_))
+})

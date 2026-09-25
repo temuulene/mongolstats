@@ -10,18 +10,14 @@
   if (identical(which, "none")) {
     return(df)
   }
-  resolved <- tryCatch(.px_resolve_table(tbl_id), error = function(e) NULL)
-  if (is.null(resolved)) {
-    return(df)
-  }
+  resolved <- .px_resolve_table(tbl_id)
   px_file <- resolved$px_file
   paths <- resolved$paths
   fetch_lang <- .px_lang()
+  # A labelling request that fails must not return silently unlabelled
+  # data; only offline mode degrades to codes-only.
   get_meta <- function(lang) {
-    tryCatch(
-      .px_meta_cached(paths, px_file, lang = lang),
-      error = function(e) NULL
-    )
+    .nso_or_offline(.px_meta_cached(paths, px_file, lang = lang))
   }
   meta_fetch <- get_meta(fetch_lang)
   if (is.null(meta_fetch) || !length(meta_fetch$variables)) {
@@ -160,47 +156,13 @@ nso_package <- function(
   # Accept the nso_fetch() vocabulary too: "code" is an alias for "none"
   if (identical(labels, "code")) labels <- "none"
   labels <- match.arg(labels)
-  if (is.data.frame(requests)) {
-    # expect columns: tbl_id (character), selections (list-column)
-    if (!("tbl_id" %in% names(requests) && "selections" %in% names(requests))) {
-      cli_abort(c(
-        "For PXWeb, provide a data frame with columns {.field tbl_id} and {.field selections} (list-column).",
-        "i" = "Column {.field selections} should be a list-column of named lists."
-      ))
-    }
-    reqs <- purrr::pmap(requests[, c("tbl_id", "selections")], list)
-  } else if (is.list(requests)) {
-    reqs <- requests
-  } else {
-    cli_abort(c(
-      "{.arg requests} must be a list of records or a data frame with {.field tbl_id} + {.field selections}.",
-      "i" = "Each record should be a list with elements {.field tbl_id} and {.field selections}."
-    ))
-  }
+  reqs <- .nso_package_requests(requests)
+  # Parallel workers start with the package defaults from .onLoad(), so the
+  # caller's options (language, offline mode, timeouts, base URL) are
+  # captured here and re-applied inside each fetch.
+  opts <- .nso_capture_options()
   worker <- function(r) {
-    tbl <- r$tbl_id
-    sel <- r$selections
-    df <- tryCatch(
-      nso_px_data(
-        tbl,
-        selections = sel,
-        lang = .px_lang(),
-        include_raw = FALSE,
-        value_name = value_name
-      ),
-      error = function(e) e
-    )
-    if (inherits(df, "error")) {
-      # Tag the failure; reported collectively after all fetches complete
-      return(structure(
-        list(tbl_id = tbl, message = conditionMessage(df)),
-        class = "mongolstats_failed_fetch"
-      ))
-    }
-    if (nrow(df)) {
-      df$tbl_id <- tbl
-    }
-    .px_add_labels(df, tbl, which = labels)
+    .nso_package_fetch(r, labels = labels, value_name = value_name, opts = opts)
   }
   if (isTRUE(parallel) && requireNamespace("future.apply", quietly = TRUE)) {
     parts <- future.apply::future_lapply(reqs, worker, future.seed = TRUE)
@@ -239,4 +201,90 @@ nso_package <- function(
     ))
   }
   dplyr::bind_rows(parts[!is_failed])
+}
+
+# Normalize and validate nso_package() requests into a list of records,
+# each a list with a single-string `tbl_id` and a list `selections`.
+.nso_package_requests <- function(requests, call = rlang::caller_env()) {
+  if (is.data.frame(requests)) {
+    # expect columns: tbl_id (character), selections (list-column)
+    if (!("tbl_id" %in% names(requests) && "selections" %in% names(requests))) {
+      cli_abort(
+        c(
+          "For PXWeb, provide a data frame with columns {.field tbl_id} and {.field selections} (list-column).",
+          "i" = "Column {.field selections} should be a list-column of named lists."
+        ),
+        call = call
+      )
+    }
+    requests <- purrr::pmap(requests[, c("tbl_id", "selections")], list)
+  } else if (!is.list(requests)) {
+    cli_abort(
+      c(
+        "{.arg requests} must be a list of records or a data frame with {.field tbl_id} + {.field selections}.",
+        "i" = "Each record should be a list with elements {.field tbl_id} and {.field selections}."
+      ),
+      call = call
+    )
+  } else if ("tbl_id" %in% names(requests)) {
+    cli_abort(
+      c(
+        "{.arg requests} must be a list of records, not a single record.",
+        "i" = "Wrap a single request in {.fn list}: {.code list(list(tbl_id = ..., selections = ...))}."
+      ),
+      call = call
+    )
+  }
+  for (i in seq_along(requests)) {
+    r <- requests[[i]]
+    tbl <- if (is.list(r)) r$tbl_id
+    if (!is.character(tbl) || length(tbl) != 1L || is.na(tbl)) {
+      cli_abort(
+        "Request {i} must be a list with a single-string {.field tbl_id}.",
+        call = call
+      )
+    }
+    if (!is.list(r$selections)) {
+      cli_abort(
+        c(
+          "Request {i} ({.val {tbl}}) must have {.field selections} as a named list.",
+          "i" = "Use {.code selections = list(Year = \"2024\")}."
+        ),
+        call = call
+      )
+    }
+  }
+  requests
+}
+
+# Fetch one nso_package() record under the caller's options `opts` (from
+# .nso_capture_options()). Failures are returned as a tagged record so they
+# can be reported together once every fetch has completed.
+.nso_package_fetch <- function(r, labels, value_name, opts) {
+  old <- options(opts)
+  on.exit(options(old), add = TRUE)
+  tbl <- r$tbl_id
+  # Labelling is inside the tryCatch too: a failed metadata request for
+  # labels must mark this table as failed, not abort the whole batch.
+  tryCatch(
+    {
+      df <- nso_px_data(
+        tbl,
+        selections = r$selections,
+        lang = .px_lang(),
+        include_raw = FALSE,
+        value_name = value_name
+      )
+      if (nrow(df)) {
+        df$tbl_id <- tbl
+      }
+      .px_add_labels(df, tbl, which = labels)
+    },
+    error = function(e) {
+      structure(
+        list(tbl_id = tbl, message = conditionMessage(e)),
+        class = "mongolstats_failed_fetch"
+      )
+    }
+  )
 }

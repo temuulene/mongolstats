@@ -9,10 +9,19 @@ vignette: >
 
 ```{r not-cran-check, include = FALSE}
 # Skip code evaluation on CRAN (external API calls will fail)
-RUN_VIGNETTE <- isTRUE(getOption("pkgdown.in_progress")) ||
-  (identical(Sys.getenv("NOT_CRAN"), "true") &&
-    !nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_")))
-knitr::opts_chunk$set(eval = RUN_VIGNETTE, purl = RUN_VIGNETTE)
+not_cran_check <- identical(Sys.getenv("NOT_CRAN"), "true") &&
+  !nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_"))
+run_vignette <- isTRUE(getOption("pkgdown.in_progress")) || not_cran_check
+knitr::opts_chunk$set(eval = run_vignette, purl = run_vignette)
+# Inline `r` code runs even when chunks are skipped (eval = FALSE), so
+# values computed in chunks go through this helper. `expr` is only
+# evaluated when the chunks ran, and falls back if it cannot be computed.
+inline_value <- function(expr, fallback = "n/a") {
+  if (!run_vignette) {
+    return(fallback)
+  }
+  tryCatch(expr, error = function(e) fallback)
+}
 ```
 
 ```{r, include = FALSE}
@@ -333,13 +342,19 @@ p_imr  # print static ggplot
 To understand the interplay between these factors, we examine correlations between population density, educational load, and health outcomes.
 
 ```{r multi-var}
-# Combine all metrics into one analytical dataset
-# We use inner_join to ensure we only have districts with all data
+# Combine all metrics into one analytical dataset. left_join keeps every
+# district; a metric missing for a district becomes NA.
+imr_by_district <- select(imr_data, District, IMR = value)
+schools_by_district <- select(edu_load, District, Students_Per_School)
+density_by_district <- ub_pop_map |>
+  st_drop_geometry() |>
+  select(District, Density)
+
 analysis_df <- health_metrics |>
   select(District, Population, Resp_Death_Rate) |>
-  left_join(imr_data |> select(District, IMR = value), by = "District") |>
-  left_join(edu_load |> select(District, Students_Per_School), by = "District") |>
-  left_join(ub_pop_map |> st_drop_geometry() |> select(District, Density), by = "District")
+  left_join(imr_by_district, by = "District") |>
+  left_join(schools_by_district, by = "District") |>
+  left_join(density_by_district, by = "District")
 
 # Correlation Matrix (guard against empty or all-NA data)
 cor_input <- analysis_df |>
@@ -392,15 +407,15 @@ p_cor  # print static ggplot
 ### Key Insights
 
 > **Read these correlations with caution.** They are computed across only
-> `r nrow(cor_input)` districts with complete data. With so few observations
+> `r inline_value(nrow(cor_input), "a handful of")` districts with complete data. With so few observations
 > and no significance testing, the coefficients are statistically unstable—a
 > single district can swing them substantially—and confidence intervals would
 > be very wide. They also describe *district-level averages*, so they cannot be
 > used to infer individual-level risk (the ecological fallacy). Treat the
 > patterns below as hypothesis-generating, not confirmatory.
 
-1.  **Density & Infant Mortality**: Population density and Infant Mortality Rate (IMR) show a positive correlation (r = `r round(cor_mat["Density", "IMR"], 2)`) in this small sample. Denser districts, which often include crowded ger areas with limited infrastructure, *may* face higher infant-health risks—but the caveat above should temper any causal reading.
-2.  **Respiratory Health**: Respiratory mortality correlates only weakly with density (r = `r round(cor_mat["Resp. Rate", "Density"], 2)`) and with IMR (r = `r round(cor_mat["Resp. Rate", "IMR"], 2)`). This may reflect city-wide pollution exposure that is relatively uniform across districts, or that mortality data captures only the most severe outcomes, masking broader morbidity.
+1.  **Density & Infant Mortality**: Population density and Infant Mortality Rate (IMR) show a positive correlation (r = `r inline_value(round(cor_mat["Density", "IMR"], 2))`) in this small sample. Denser districts, which often include crowded ger areas with limited infrastructure, *may* face higher infant-health risks—but the caveat above should temper any causal reading.
+2.  **Respiratory Health**: Respiratory mortality correlates only weakly with density (r = `r inline_value(round(cor_mat["Resp. Rate", "Density"], 2))`) and with IMR (r = `r inline_value(round(cor_mat["Resp. Rate", "IMR"], 2))`). This may reflect city-wide pollution exposure that is relatively uniform across districts, or that mortality data captures only the most severe outcomes, masking broader morbidity.
 3.  **Infrastructure Load**: The student-per-school ratio shows weak correlations with the other indicators, suggesting it is not a primary driver of the observed differences in this dataset.
 
 ## 5. Air Quality Monitoring Network
@@ -476,8 +491,9 @@ p_map  # print static ggplot
 
 ```{r station-coverage}
 # Join station counts with population data for coverage analysis
+pop_by_district <- select(pop_data, District, Population = value)
 station_coverage <- station_count |>
-  left_join(pop_data |> select(District, Population = value), by = "District") |>
+  left_join(pop_by_district, by = "District") |>
   mutate(
     Pop_per_Station = Population / Stations,
     Coverage_Score = case_when(

@@ -36,6 +36,24 @@ cat(sprintf(
 
 devtools::load_all(".", quiet = TRUE)
 
+# Real PXWeb URLs embed the catalogue folder path, which pushes fixture paths
+# past the 100 bytes R CMD build can store portably. Rename recordings to
+# px/<lang>/<table file> (and px/<lang>.json for the catalogue root); the
+# with_px_fixtures() test helper requests the same short URLs on replay.
+short_mock_path <- function(f) {
+  m <- regmatches(f, regexec("^[^/]+/api/v1/(en|mn)/NSO(.*)$", f))[[1]]
+  if (!length(m)) {
+    stop("Unexpected fixture path: ", f, call. = FALSE)
+  }
+  lang <- m[2]
+  rest <- m[3]
+  if (startsWith(rest, "/")) {
+    file.path("px", lang, basename(rest))
+  } else {
+    paste0("px/", lang, rest)
+  }
+}
+
 record <- function(dir, expr) {
   # Reseed the PXWeb session cookie inside each capture so the seeding GET
   # is part of every fixture set.
@@ -64,7 +82,7 @@ record <- function(dir, expr) {
 
   target <- file.path("tests", "testthat", dir)
   for (f in files) {
-    dest <- file.path(target, f)
+    dest <- file.path(target, short_mock_path(f))
     dir.create(dirname(dest), recursive = TRUE, showWarnings = FALSE)
     file.copy(file.path(tmp, f), dest, overwrite = TRUE)
   }

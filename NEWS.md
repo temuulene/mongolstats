@@ -1,3 +1,45 @@
+# mongolstats (development version)
+
+## Breaking changes
+
+*   Discovery functions (`nso_dims()`, `nso_dim_values()`, `nso_itms_detail()`, `nso_sectors()`, `nso_subsectors()`, `nso_table_meta()`, `nso_table_periods()`) now raise `mongolstats_http_error` when a request fails. Previously any failure returned an empty result, so a server outage looked like an empty catalogue. Offline mode still returns empty results.
+*   The `pxweb` fallback in `nso_data()`, `nso_fetch()`, and `nso_package()` has been removed, and pxweb is no longer a suggested package. The fallback returned data in a different shape (display-text column names, a value column that ignored `value_name`), and it could make network requests in offline mode. Failed requests now raise `mongolstats_http_error` with the server's response attached.
+*   `mn_fuzzy_join_by_name()` now errors when `method = "jw"` is combined with `max_distance >= 1`. Jaro-Winkler distances lie between 0 and 1, so the default `max_distance = 2` matched every name to some boundary. Use a value such as `max_distance = 0.2`.
+*   `nso_options()` now validates values (e.g. `mongolstats.lang` must be `"en"` or `"mn"`, `mongolstats.timeout` a positive number) and leaves all options unchanged when one is invalid. It warns about names that are not mongolstats options. An unsupported `mongolstats.lang` set directly with `options()` now errors instead of silently falling back to English.
+*   `nso_table_periods()` now errors for an unknown table id or a non-string `tbl_id`, like the other discovery functions. It previously returned `character(0)`, which was indistinguishable from a table without a time dimension.
+
+## New features
+
+*   Table ids are now matched case-insensitively, with or without the `.px` suffix (e.g. `"dt_nso_0300_001v2"`).
+*   `mn_join_by_name()` and `mn_fuzzy_join_by_name()` now warn (class `mongolstats_unmatched_names`) naming data rows that matched no boundary. Previously these rows were dropped silently, so a spelling mismatch showed up only as a grey polygon on a map.
+*   `nso_rebuild_px_index()` warns (class `mongolstats_incomplete_index`) naming catalogue paths whose requests failed, instead of silently writing an incomplete index, and stops immediately in offline mode.
+
+## Bug fixes
+
+*   HTTP errors no longer fail with "Could not evaluate cli `{}` expression" when a server or curl message contains a brace. The original error is now attached as the parent condition.
+*   Argument validation errors now describe the offending value ("not `NULL`", "not a number"). They used a nonexistent cli style and printed the raw value instead, e.g. "not ." for `NULL`.
+*   `mn_boundaries()` raises `mongolstats_http_error` when the boundary download fails, and a clear error when the GeoBoundaries API returns no download URL.
+*   `mn_fuzzy_join_by_name()` no longer crashes with "invalid subscript type 'list'" when the name column contains `NA`.
+*   `nso_cache_enable()`: cached catalogue listings and metadata are now keyed by the PXWeb base URL and database, so switching `mongolstats.px_base_url` or `mongolstats.px_db` no longer returns another server's metadata. The table index is no longer stored in the disk cache, where a stale copy outlived package upgrades that refresh the embedded index.
+*   `nso_data()` and `nso_fetch()` in offline mode now raise `mongolstats_offline_error`. When table metadata was cached they raised `mongolstats_http_error`, so handlers could not tell offline mode from a network failure.
+*   `nso_data()`, `nso_fetch()`, and `nso_package()` with `labels` other than `"none"` now error when the label metadata request fails. They previously returned the data without labels and without a warning. In `nso_package()` the table is reported as failed.
+*   `nso_itms_detail()` and `nso_variables()` now return Mongolian labels in `scr_mn`. Labels were joined on the language-specific dimension name, which never matches across languages, so `scr_mn` was always `NA`.
+*   `nso_itms_by_sector()` validates `list_id` instead of failing inside a subsetting call.
+*   `nso_package(parallel = TRUE)` now applies the caller's mongolstats options (language, offline mode, timeouts, base URL) inside each worker. Workers previously ran with the package defaults.
+*   `nso_package()` validates `requests` before fetching and explains the problem, e.g. a single record passed without wrapping it in `list()`, a record without `tbl_id`, or non-list `selections`. These previously failed with errors such as "$ operator is invalid for atomic vectors".
+*   `nso_search()` no longer changes the meaning of regex escapes: the pattern was lowercased for case-insensitive matching, turning `\S` into `\s`. `nso_search()` and `nso_itms_search()` now match with `ignore_case = TRUE` instead.
+
+## Performance
+
+*   `nso_data()` flattens large PXWeb responses much faster: row keys are collected into one matrix instead of binding a data frame per row (about 8x faster on a 50,000-row response). Malformed responses whose row keys do not match the dimension columns now raise an error.
+
+## Internal
+
+*   Recorded HTTP fixtures now use short paths. The old paths exceeded the 100 bytes `R CMD build` stores portably, so the fixtures were dropped from the built package and the recorded tests always skipped. Those tests replay without network access and no longer skip on CRAN.
+*   A local `.venv/` directory is excluded from package builds.
+*   Continuous integration now fails on lints, on test coverage below 80% (tests that need the live API skip in CI), and on out-of-date Rd files, instead of regenerating them before the check. The package, tests, and vignettes are lint-clean.
+*   Error-message tests use snapshots, and new offline tests cover the discovery functions against a fake table.
+
 # mongolstats 0.2.0
 
 ## Breaking changes

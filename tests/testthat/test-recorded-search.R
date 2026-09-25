@@ -3,13 +3,7 @@
 # tests here cover the metadata and catalogue HTTP endpoints.
 
 test_that("nso_table_meta works with recorded HTTP", {
-  skip_on_cran()
-  if (!requireNamespace("httptest2", quietly = TRUE)) {
-    skip("httptest2 not installed")
-  }
-  # Record fixtures with tools/record_fixtures.R
-  skip_if_no_mock_dir("px_meta")
-  httptest2::with_mock_dir("px_meta", {
+  with_px_fixtures("px_meta", {
     meta <- nso_table_meta("DT_NSO_0300_001V2")
     expect_s3_class(meta, "tbl_df")
     expect_true(
@@ -21,13 +15,17 @@ test_that("nso_table_meta works with recorded HTTP", {
   })
 })
 
+test_that("nso_itms_detail attaches Mongolian labels with recorded HTTP", {
+  with_px_fixtures("px_meta", {
+    d <- nso_itms_detail("DT_NSO_0300_001V2")
+    expect_s3_class(d, "tbl_df")
+    expect_gte(nrow(d), 1)
+    expect_false(anyNA(d$scr_mn))
+  })
+})
+
 test_that("sectors work with recorded HTTP", {
-  skip_on_cran()
-  if (!requireNamespace("httptest2", quietly = TRUE)) {
-    skip("httptest2 not installed")
-  }
-  skip_if_no_mock_dir("px_sectors")
-  httptest2::with_mock_dir("px_sectors", {
+  with_px_fixtures("px_sectors", {
     top <- nso_sectors()
     expect_s3_class(top, "tbl_df")
     expect_gte(nrow(top), 1)

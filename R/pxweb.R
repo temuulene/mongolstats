@@ -6,9 +6,9 @@
 
 .px_lang <- function() {
   lng <- getOption("mongolstats.lang", default = "en")
-  if (!lng %in% c("en", "mn")) {
-    lng <- "en"
-  }
+  # Validated here too because options() bypasses nso_options(); silently
+  # falling back to English would return the wrong language's labels.
+  .nso_check_option("mongolstats.lang", lng)
   lng
 }
 
@@ -77,7 +77,7 @@
     isTRUE(.mongolstats_cache_env$enabled) &&
       !is.null(.mongolstats_cache_env$px_list_memo)
   ) {
-    .mongolstats_cache_env$px_list_memo(paths, lang)
+    .mongolstats_cache_env$px_list_memo(paths, lang, .px_base_url(), .px_db())
   } else {
     .px_list(paths, lang)
   }
@@ -88,7 +88,9 @@
     isTRUE(.mongolstats_cache_env$enabled) &&
       !is.null(.mongolstats_cache_env$px_meta_memo)
   ) {
-    .mongolstats_cache_env$px_meta_memo(paths, table, lang)
+    .mongolstats_cache_env$px_meta_memo(
+      paths, table, lang, .px_base_url(), .px_db()
+    )
   } else {
     .px_meta(paths, table, lang)
   }

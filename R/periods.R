@@ -65,22 +65,20 @@ nso_period_seq <- function(start, end, by = c("Y", "M")) {
 #' available period labels (e.g., years or year-months).
 #'
 #' @param tbl_id Table identifier.
-#' @return Character vector of period labels (e.g., years)
+#' @return Character vector of period labels (e.g., years); empty when the
+#'   table has no recognisable time dimension or in offline mode (see
+#'   [nso_offline_enable()]). Unknown tables and failed requests raise an
+#'   error.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' periods <- nso_table_periods("DT_NSO_0300_001V2")
 #' head(periods)
 #' @export
 nso_table_periods <- function(tbl_id) {
-  resolved <- tryCatch(.px_resolve_table(tbl_id), error = function(e) NULL)
-  if (is.null(resolved)) {
-    return(character())
-  }
+  check_tbl_id(tbl_id)
+  resolved <- .px_resolve_table(tbl_id)
   px_file <- resolved$px_file
   paths <- resolved$paths
-  meta <- tryCatch(
-    .px_meta_cached(paths, px_file, lang = .px_lang()),
-    error = function(e) NULL
-  )
+  meta <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = .px_lang()))
   if (is.null(meta) || is.null(meta$variables)) {
     return(character())
   }

@@ -14,8 +14,9 @@
 #' head(tables)
 #' @export
 nso_itms <- function() {
-  # use cached path when available
-  idx <- tryCatch(.fetch_itms(), error = function(e) tibble::tibble())
+  # The embedded index is held in memory for the session. It is never put
+  # in the disk cache, where a stale copy would outlive package upgrades.
+  idx <- .nso_or_offline(.px_index(), tibble::tibble())
   if (!nrow(idx)) {
     return(idx)
   }
@@ -30,15 +31,17 @@ nso_itms <- function() {
 #' names, item IDs, and labels in English and Mongolian when available.
 #'
 #' @param tbl_id Table identifier (e.g., "DT_NSO_0300_001V2").
-#' @return A tibble with variable metadata.
+#' @return A tibble with variable metadata. In offline mode (see
+#'   [nso_offline_enable()]) an empty tibble is returned; failed requests
+#'   raise an error of class `mongolstats_http_error`.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' vars <- nso_itms_detail("DT_NSO_0300_001V2")
 #' vars
 #' @export
 nso_itms_detail <- function(tbl_id) {
   check_tbl_id(tbl_id)
-  # use cached path when available
-  .fetch_detail(tbl_id)
+  # Table metadata is disk-cached by .px_meta_cached() when caching is on
+  nso_px_variables(tbl_id)
 }
 
 #' Search tables by keyword (PXWeb)
@@ -73,6 +76,11 @@ nso_itms_search <- function(query, fields = c("tbl_eng_nm", "tbl_nm")) {
 #' tables <- nso_itms_by_sector(sectors$id[1])
 #' @export
 nso_itms_by_sector <- function(list_id) {
+  if (!is.character(list_id) || length(list_id) != 1L || is.na(list_id)) {
+    cli_abort(
+      "{.arg list_id} must be a single character string, not {.obj_type_friendly {list_id}}."
+    )
+  }
   itms <- nso_itms()
   itms[itms$px_path == list_id | itms$list_id == list_id, , drop = FALSE]
 }

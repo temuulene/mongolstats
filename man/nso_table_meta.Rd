@@ -12,6 +12,9 @@ nso_table_meta(tbl_id)
 \value{
 A tibble with columns: \code{dim} (display name), \code{code} (dimension code),
 \code{is_time} (logical), \code{n_values} (integer), and \code{codes} (list of tibbles).
+In offline mode (see \code{\link[=nso_offline_enable]{nso_offline_enable()}}) an empty tibble is
+returned; failed requests raise an error of class
+\code{mongolstats_http_error}.
 }
 \description{
 Returns a tibble with one row per dimension and a \code{codes} list-column,

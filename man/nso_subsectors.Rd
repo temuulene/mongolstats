@@ -11,7 +11,9 @@ nso_subsectors(subid)
 (e.g., 'Population, household' or 'Population, household/1_Population, household').}
 }
 \value{
-A tibble with columns: \code{id}, \code{type}, \code{text}.
+A tibble with columns: \code{id}, \code{type}, \code{text}. In offline mode
+(see \code{\link[=nso_offline_enable]{nso_offline_enable()}}) an empty tibble is returned; failed
+requests raise an error of class \code{mongolstats_http_error}.
 }
 \description{
 Navigates one level deeper in the PXWeb catalogue hierarchy. Pass in a

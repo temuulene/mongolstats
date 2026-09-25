@@ -1,15 +1,25 @@
 # Recursively list available PXWeb tables under NSO
 # Returns tibble with columns: px_path, px_file, tbl_id, tbl_eng_nm, tbl_nm, strt_prd, end_prd
 nso_px_tables <- function() {
+  # A crawl tolerates individual HTTP failures (the rest of the catalogue is
+  # still worth having) but reports them together at the end. Offline mode
+  # propagates: nothing can be crawled.
+  failed <- character()
+  try_http <- function(expr, where) {
+    tryCatch(expr, mongolstats_http_error = function(e) {
+      failed <<- c(failed, where)
+      NULL
+    })
+  }
   # BFS traversal to avoid deep recursion limits
   queue <- list(character())
   out <- list()
   while (length(queue)) {
     paths <- queue[[1]]
     queue <- queue[-1]
-    kids <- tryCatch(
+    kids <- try_http(
       .px_list_cached(paths, lang = .px_lang()),
-      error = function(e) NULL
+      if (length(paths)) paste(paths, collapse = "/") else "<root>"
     )
     if (is.null(kids) || !length(kids)) {
       next
@@ -20,14 +30,9 @@ nso_px_tables <- function() {
     if (nrow(tables)) {
       for (i in seq_len(nrow(tables))) {
         px_file <- tables$id[i]
-        meta_en <- tryCatch(
-          .px_meta_cached(paths, px_file, lang = "en"),
-          error = function(e) NULL
-        )
-        meta_mn <- tryCatch(
-          .px_meta_cached(paths, px_file, lang = "mn"),
-          error = function(e) NULL
-        )
+        where <- paste(c(paths, px_file), collapse = "/")
+        meta_en <- try_http(.px_meta_cached(paths, px_file, lang = "en"), where)
+        meta_mn <- try_http(.px_meta_cached(paths, px_file, lang = "mn"), where)
         title_en <- if (!is.null(meta_en)) meta_en$title else NA_character_
         title_mn <- if (!is.null(meta_mn)) meta_mn$title else NA_character_
         # derive period range from a time-like variable when possible
@@ -87,6 +92,16 @@ nso_px_tables <- function() {
       }
     }
   }
+  if (length(failed)) {
+    failed <- unique(failed)
+    cli_warn(
+      c(
+        "{length(failed)} catalogue request{?s} failed; the table index is incomplete.",
+        "i" = "Failed: {.val {utils::head(failed, 5)}}{if (length(failed) > 5) ', ...'}."
+      ),
+      class = "mongolstats_incomplete_index"
+    )
+  }
   dplyr::bind_rows(out)
 }
 
@@ -117,7 +132,7 @@ nso_px_tables <- function() {
     # prefer embedded index to avoid cold-start crawl
     idx <- .px_index_embedded()
     if (!nrow(idx)) {
-      idx <- tryCatch(nso_px_tables(), error = function(e) tibble::tibble())
+      idx <- .nso_or_offline(nso_px_tables(), tibble::tibble())
     }
     .mongolstats_px_env$idx <- idx
   }
@@ -133,9 +148,10 @@ nso_px_tables <- function() {
 #' @param path Output path for JSON. If `NULL` (default), no file is written.
 #'   For package development, use `"inst/extdata/px_index.json"`.
 #' @param write Whether to write JSON to `path`. Defaults to `TRUE` if `path`
-
 #'   is provided, `FALSE` otherwise.
-#' @return A tibble containing the rebuilt table index.
+#' @return A tibble containing the rebuilt table index. If some catalogue
+#'   requests fail, the index is built from the rest and a warning of class
+#'   `mongolstats_incomplete_index` names the failed paths.
 #' @examples
 #' # Crawls the entire PXWeb catalogue; takes several minutes
 #' \dontrun{
