@@ -53,11 +53,25 @@ jobs:
             libfreetype6-dev libpng-dev libjpeg-dev libtiff5-dev \
             gfortran libudunits2-dev libgdal-dev libgeos-dev libproj-dev
 
+      # Pin roxygen2 to the version recorded in DESCRIPTION: releases change
+      # output formatting (8.1.0 regroups importFrom() in NAMESPACE), which
+      # would fail the stale-docs check below although nothing is stale.
+      - name: Read roxygen2 version from DESCRIPTION
+        id: roxygen
+        run: |
+          version=$(tr -d '\r' < DESCRIPTION | sed -n 's/^Config\/roxygen2\/version: *//p')
+          if [ -z "$version" ]; then
+            echo "::error::Config/roxygen2/version is missing from DESCRIPTION"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+        shell: bash
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: >-
             any::rcmdcheck,
-            any::roxygen2,
+            roxygen2@${{ steps.roxygen.outputs.version }},
             local::.
           needs: check
 
