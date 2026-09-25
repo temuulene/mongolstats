@@ -9,10 +9,10 @@ vignette: >
 
 ```{r not-cran-check, include = FALSE}
 # Skip code evaluation on CRAN (external API calls will fail)
-RUN_VIGNETTE <- isTRUE(getOption("pkgdown.in_progress")) ||
-  (identical(Sys.getenv("NOT_CRAN"), "true") &&
-    !nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_")))
-knitr::opts_chunk$set(eval = RUN_VIGNETTE, purl = RUN_VIGNETTE)
+not_cran_check <- identical(Sys.getenv("NOT_CRAN"), "true") &&
+  !nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_"))
+run_vignette <- isTRUE(getOption("pkgdown.in_progress")) || not_cran_check
+knitr::opts_chunk$set(eval = run_vignette, purl = run_vignette)
 ```
 
 ```{r, include = FALSE}
@@ -333,13 +333,19 @@ p_imr  # print static ggplot
 To understand the interplay between these factors, we examine correlations between population density, educational load, and health outcomes.
 
 ```{r multi-var}
-# Combine all metrics into one analytical dataset
-# We use inner_join to ensure we only have districts with all data
+# Combine all metrics into one analytical dataset. left_join keeps every
+# district; a metric missing for a district becomes NA.
+imr_by_district <- select(imr_data, District, IMR = value)
+schools_by_district <- select(edu_load, District, Students_Per_School)
+density_by_district <- ub_pop_map |>
+  st_drop_geometry() |>
+  select(District, Density)
+
 analysis_df <- health_metrics |>
   select(District, Population, Resp_Death_Rate) |>
-  left_join(imr_data |> select(District, IMR = value), by = "District") |>
-  left_join(edu_load |> select(District, Students_Per_School), by = "District") |>
-  left_join(ub_pop_map |> st_drop_geometry() |> select(District, Density), by = "District")
+  left_join(imr_by_district, by = "District") |>
+  left_join(schools_by_district, by = "District") |>
+  left_join(density_by_district, by = "District")
 
 # Correlation Matrix (guard against empty or all-NA data)
 cor_input <- analysis_df |>
@@ -476,8 +482,9 @@ p_map  # print static ggplot
 
 ```{r station-coverage}
 # Join station counts with population data for coverage analysis
+pop_by_district <- select(pop_data, District, Population = value)
 station_coverage <- station_count |>
-  left_join(pop_data |> select(District, Population = value), by = "District") |>
+  left_join(pop_by_district, by = "District") |>
   mutate(
     Pop_per_Station = Population / Stations,
     Coverage_Score = case_when(
