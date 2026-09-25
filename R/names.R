@@ -18,6 +18,22 @@
   }
 }
 
+# Warn about data names that matched no boundary: left-joining onto the
+# boundaries drops those rows, which otherwise goes unnoticed until a
+# polygon renders grey on a map.
+.warn_unmatched_names <- function(unmatched, hint) {
+  if (!length(unmatched)) {
+    return(invisible())
+  }
+  cli_warn(
+    c(
+      "{length(unmatched)} name{?s} in {.arg data} matched no boundary and {?was/were} dropped: {.val {unmatched}}.",
+      "i" = hint
+    ),
+    class = "mongolstats_unmatched_names"
+  )
+}
+
 .normalize_str <- function(x) {
   x <- stringi::stri_trans_general(x, "Latin-ASCII")
   x <- stringr::str_to_lower(x)
@@ -58,7 +74,9 @@ mn_boundaries_normalize <- function(g, name_col = "shapeName") {
 #' @param name_col Column in `data` that contains names to join on.
 #' @param level Boundary level, passed to `mn_boundaries()` if `boundaries` not provided.
 #' @param boundaries Optional pre-fetched boundaries.
-#' @return An `sf` object with joined data.
+#' @return An `sf` object with joined data. Data rows whose name matches no
+#'   boundary are dropped with a warning (class
+#'   `mongolstats_unmatched_names`) naming them.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' pop_data <- data.frame(aimag = c("Ulaanbaatar", "Darkhan-Uul"), pop = c(1500000, 100000))
 #' sf_joined <- mn_join_by_name(pop_data, "aimag", level = "ADM1")
@@ -71,6 +89,11 @@ mn_join_by_name <- function(data, name_col, level = "ADM1", boundaries = NULL) {
   boundaries <- mn_boundaries_normalize(boundaries)
   d <- data
   d$name_std <- .normalize_str(d[[name_col]])
+  unmatched <- !is.na(d$name_std) & !d$name_std %in% boundaries$name_std
+  .warn_unmatched_names(
+    unique(d[[name_col]][unmatched]),
+    "Check the spelling, or use {.fn mn_fuzzy_join_by_name}."
+  )
   dplyr::left_join(boundaries, d, by = "name_std")
 }
 
@@ -84,11 +107,18 @@ mn_join_by_name <- function(data, name_col, level = "ADM1", boundaries = NULL) {
 #' @param name_col Column in `data` containing names.
 #' @param level Boundary level.
 #' @param boundaries Optional pre-fetched boundaries.
-#' @param max_distance Maximum string distance for a match (default 2).
+#' @param max_distance Maximum string distance for a match (default 2). For
+#'   the edit distances (`"osa"`, `"lv"`, `"dl"`) this counts character
+#'   edits. Jaro-Winkler (`"jw"`) distances lie between 0 and 1, so use a
+#'   small value such as `0.2`; values of 1 or more would accept every pair
+#'   and are rejected.
 #' @param method Distance method passed to `stringdist::stringdist`. Ignored
 #'   (base Levenshtein distance is used) when the stringdist package is not
 #'   installed.
-#' @return sf with best fuzzy matches joined.
+#' @return sf with best fuzzy matches joined. Data rows with no boundary
+#'   within `max_distance` are dropped with a warning (class
+#'   `mongolstats_unmatched_names`) naming them; rows with a missing name
+#'   are dropped silently.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' # Join even with minor spelling differences
 #' pop_data <- data.frame(aimag = c("Ulanbatar", "Darhan"), pop = c(1500000, 100000))
@@ -104,15 +134,28 @@ mn_fuzzy_join_by_name <- function(
 ) {
   method <- match.arg(method)
   .check_name_col(data, name_col)
+  bad_distance <- !is.numeric(max_distance) || length(max_distance) != 1L ||
+    is.na(max_distance) || max_distance < 0
+  if (bad_distance) {
+    cli_abort("{.arg max_distance} must be a single non-negative number.")
+  }
+  if (method == "jw" && max_distance >= 1) {
+    cli_abort(c(
+      "{.arg max_distance} must be below 1 for {.code method = \"jw\"}.",
+      "i" = "Jaro-Winkler distances lie between 0 and 1, so {.val {max_distance}} would match every name.",
+      "i" = "Try {.code max_distance = 0.2}."
+    ))
+  }
   if (is.null(boundaries)) {
     boundaries <- mn_boundaries(level)
   }
   boundaries <- mn_boundaries_normalize(boundaries)
   d <- data
   d$name_std <- .normalize_str(d[[name_col]])
-  # Compute pairwise distances and pick best match per data row
-  keys_g <- unique(boundaries$name_std)
-  keys_d <- unique(d$name_std)
+  # Compute pairwise distances and pick best match per data row. Missing
+  # names cannot match anything and would give an all-NA distance row.
+  keys_g <- unique(boundaries$name_std[!is.na(boundaries$name_std)])
+  keys_d <- unique(d$name_std[!is.na(d$name_std)])
   if (!length(keys_d) || !length(keys_g)) {
     return(dplyr::left_join(boundaries, d, by = "name_std"))
   }
@@ -123,17 +166,21 @@ mn_fuzzy_join_by_name <- function(
   } else {
     utils::adist(keys_d, keys_g, partial = FALSE, ignore.case = TRUE)
   }
-  best_idx <- apply(mat, 1, which.min)
-  best_dst <- mapply(function(i, r) mat[r, i], best_idx, seq_along(best_idx))
+  best_idx <- max.col(-mat, ties.method = "first")
   map_df <- tibble::tibble(
     name_std = keys_d,
     match_std = keys_g[best_idx],
-    dist = as.numeric(best_dst)
+    dist = as.numeric(mat[cbind(seq_along(keys_d), best_idx)])
   )
   map_df <- map_df[
     map_df$dist <= max_distance | map_df$name_std == map_df$match_std, ,
     drop = FALSE
   ]
+  unmatched <- !is.na(d$name_std) & !d$name_std %in% map_df$name_std
+  .warn_unmatched_names(
+    unique(d[[name_col]][unmatched]),
+    "Check the spelling, or increase {.arg max_distance}."
+  )
   d2 <- dplyr::left_join(d, map_df, by = "name_std")
   d2$name_std <- d2$match_std
   d2$match_std <- NULL

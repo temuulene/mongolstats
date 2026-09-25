@@ -16,7 +16,9 @@ mn_join_by_name(data, name_col, level = "ADM1", boundaries = NULL)
 \item{boundaries}{Optional pre-fetched boundaries.}
 }
 \value{
-An \code{sf} object with joined data.
+An \code{sf} object with joined data. Data rows whose name matches no
+boundary are dropped with a warning (class
+\code{mongolstats_unmatched_names}) naming them.
 }
 \description{
 Performs an exact join between a data frame and boundary polygons using

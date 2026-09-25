@@ -63,3 +63,13 @@ test_that("nso_itms_detail works for a known table", {
   expect_gte(nrow(d), 1)
   expect_true(all(c("field", "itm_id", "scr_eng") %in% names(d)))
 })
+
+test_that("nso_search() keeps regex escapes case-sensitive", {
+  idx <- tibble::tibble(tbl_eng_nm = c("a b", "aXb"))
+  # \S is "non-space"; lowercasing the pattern turned it into \s
+  expect_equal(.search_index(idx, "A\\Sb", "tbl_eng_nm")$tbl_eng_nm, "aXb")
+  expect_equal(
+    .search_index(idx, "A B", "tbl_eng_nm", fixed = TRUE)$tbl_eng_nm,
+    "a b"
+  )
+})

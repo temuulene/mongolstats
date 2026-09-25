@@ -83,12 +83,7 @@ test_that("mismatched code/label lengths are skipped, not an error", {
 })
 
 test_that("labels = 'both' attaches mn labels with recorded metadata", {
-  skip_on_cran()
-  if (!requireNamespace("httptest2", quietly = TRUE)) {
-    skip("httptest2 not installed")
-  }
-  skip_if_no_mock_dir("px_meta")
-  httptest2::with_mock_dir("px_meta", {
+  with_px_fixtures("px_meta", {
     # Codes "0" = Total in both languages for DT_NSO_0300_001V2
     df <- tibble::tibble(
       Sex = "0", Age = "0", Year = "1",
@@ -99,4 +94,12 @@ test_that("labels = 'both' attaches mn labels with recorded metadata", {
     expect_false(any(is.na(out$Sex_mn)))
     expect_equal(out$Sex_en, "Total")
   })
+})
+
+test_that("nso_itms_detail() joins Mongolian labels on the dimension code", {
+  with_fake_meta()
+  d <- nso_itms_detail("T")
+  mn <- fake_meta("mn")$variables
+  expect_equal(d$field, c("Sex", "Sex", "Year", "Year"))
+  expect_equal(d$scr_mn, unlist(c(mn[[1]]$valueTexts, mn[[2]]$valueTexts)))
 })

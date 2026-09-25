@@ -54,16 +54,17 @@
     } else {
       NULL
     }
-    msg <- paste0(
-      "mongolstats HTTP error",
+    # The upstream message travels as the parent condition. Pasting it into
+    # the cli template instead would parse any literal `{` in a server or
+    # curl message as a glue expression and crash the error itself.
+    detail <- paste0( # nolint object_usage_linter. Used in cli_abort() below.
       if (!is.null(status)) paste0(" (status ", status, ")"),
-      ": ",
-      conditionMessage(resp),
       if (!is.null(req$url)) paste0(" [", req$url, "]")
     )
     cli_abort(
-      msg,
-      class = "mongolstats_http_error"
+      "mongolstats HTTP error{detail}.",
+      class = "mongolstats_http_error",
+      parent = resp
     )
   }
   resp

@@ -19,30 +19,34 @@
 #' options(old)
 #' @export
 nso_options <- function(...) {
-  opts_prefix <- c(
-    "mongolstats.px_base_url",
-    "mongolstats.lang",
-    "mongolstats.px_db",
-    "mongolstats.timeout",
-    "mongolstats.retry_tries",
-    "mongolstats.retry_backoff",
-    "mongolstats.verbose",
-    "mongolstats.offline",
-    "mongolstats.default_labels",
-    "mongolstats.progress",
-    "mongolstats.parallel",
-    "mongolstats.value_name",
-    "mongolstats.attach_raw"
-  )
   dots <- list(...)
   if (!length(dots)) {
-    return(invisible(stats::setNames(
-      lapply(opts_prefix, getOption),
-      nm = opts_prefix
-    )))
+    return(invisible(.nso_capture_options()))
   }
   old <- lapply(names(dots), getOption)
   names(old) <- names(dots)
   do.call(options, dots)
   invisible(old)
+}
+
+.nso_option_names <- c(
+  "mongolstats.px_base_url",
+  "mongolstats.lang",
+  "mongolstats.px_db",
+  "mongolstats.timeout",
+  "mongolstats.retry_tries",
+  "mongolstats.retry_backoff",
+  "mongolstats.verbose",
+  "mongolstats.offline",
+  "mongolstats.default_labels",
+  "mongolstats.progress",
+  "mongolstats.parallel",
+  "mongolstats.value_name",
+  "mongolstats.attach_raw"
+)
+
+# Current values of all package options as a named list suitable for
+# options(); unset options are NULL.
+.nso_capture_options <- function() {
+  stats::setNames(lapply(.nso_option_names, getOption), .nso_option_names)
 }

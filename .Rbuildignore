@@ -27,3 +27,4 @@
 ^Meta$
 ^CRAN-SUBMISSION$
 ^rhub-results$
+^\.venv$
