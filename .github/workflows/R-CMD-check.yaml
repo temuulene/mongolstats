@@ -9,11 +9,8 @@ on:
       - README.html
       - _pkgdown.yml
       - NEWS.md
-      - vignettes/**
       - docs/**
       - pkgdown/**
-      - man/**
-      - inst/extdata/**
   pull_request:
     branches: [ main, master ]
     paths-ignore:
@@ -22,11 +19,8 @@ on:
       - README.html
       - _pkgdown.yml
       - NEWS.md
-      - vignettes/**
       - docs/**
       - pkgdown/**
-      - man/**
-      - inst/extdata/**
   workflow_dispatch:
 
 jobs:
