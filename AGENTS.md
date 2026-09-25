@@ -49,10 +49,10 @@ Major Features (What and How)
 - Implementation: R/data.R (.px_add_labels), R/query.R (selection label→code mapping)
 
 5) Caching and Offline Mode
-- Disk cache for discovery (tables, variables) and PX metadata; optional TTL.
+- Disk cache for PXWeb catalogue listings and table metadata; optional TTL.
 - Enable/disable/clear/status: nso_cache_enable(dir, ttl), nso_cache_disable(), nso_cache_clear(), nso_cache_status().
-- Offline mode: nso_offline_enable()/nso_offline_disable() blocks network; discovery returns empty tibbles; data fetch errors with typed condition.
-- Implementation: R/cache.R (memoise + cachem + rappdirs env), R/cache_shims.R, R/http.R (offline guard + common req pipeline)
+- Offline mode: nso_offline_enable()/nso_offline_disable() blocks network; discovery returns empty tibbles (HTTP failures still raise mongolstats_http_error); data fetch errors with typed condition.
+- Implementation: R/cache.R (memoise + cachem + rappdirs env; keys include base URL, db, lang), R/http.R (offline guard + common req pipeline)
 
 6) Administrative Boundaries and Joins (sf)
 - Download boundaries via GeoBoundaries API: mn_boundaries(level = 'ADM0'|'ADM1'|'ADM2').
@@ -81,7 +81,7 @@ Key Files and Responsibilities
 - R/sector.R: nso_sectors, nso_subsectors.
 - R/geography.R: mn_boundaries (GeoBoundaries).
 - R/names.R: normalization, exact/fuzzy boundary joins, boundary keys.
-- R/cache.R + R/cache_shims.R: memoised discovery + PX metadata cache, API (.mongolstats_cache_env).
+- R/cache.R: memoised PX list/metadata disk cache, API (.mongolstats_cache_env). The embedded table index is held in memory only, never disk-cached.
 - R/http.R: common request setup (httr2), retries/backoff, verbose logging, offline mode; user-facing nso_offline_enable/disable.
 - R/options.R: nso_options() wrapper to set/get package options.
 - R/aaa_px_helpers.R: small helpers (.px_strip_bom, .px_first_nonempty, .px_chr).
@@ -121,7 +121,7 @@ HTTP Behavior
 
 Caching
 - Enable disk cache: nso_cache_enable(dir = rappdirs::user_cache_dir('mongolstats')/v1, ttl = NULL|seconds).
-- Caches: table list, variable details, PXWeb list/meta calls; memoised via memoise/cachem inside .mongolstats_cache_env.
+- Caches: PXWeb list/meta calls (which back nso_itms_detail(), nso_dims(), labels, etc.), keyed by base URL, db, and language; memoised via memoise/cachem inside .mongolstats_cache_env. The embedded table index is not disk-cached.
 - Manage via nso_cache_disable(), nso_cache_clear(), nso_cache_status().
 
 Boundary Workflows

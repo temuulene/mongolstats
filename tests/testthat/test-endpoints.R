@@ -73,3 +73,33 @@ test_that("nso_search() keeps regex escapes case-sensitive", {
     "a b"
   )
 })
+
+test_that("nso_itms_by_sector() validates list_id", {
+  expect_snapshot(nso_itms_by_sector(NULL), error = TRUE)
+  expect_snapshot(nso_itms_by_sector(c("a", "b")), error = TRUE)
+})
+
+test_that("nso_package() reports a labelling failure as a failed table", {
+  local_mocked_bindings(
+    nso_px_data = function(...) tibble::tibble(Year = "0", value = 1),
+    .px_add_labels = function(...) {
+      cli::cli_abort("metadata unavailable", class = "mongolstats_http_error")
+    }
+  )
+  expect_warning(
+    out <- nso_package(list(list(tbl_id = "T", selections = list())), labels = "en"),
+    "Failed to fetch"
+  )
+  expect_equal(nrow(out), 0)
+})
+
+test_that("nso_itms_by_sector() and nso_search(sector =) filter by folder", {
+  itms <- nso_itms()
+  sector <- itms$px_path[1]
+  in_sector <- nso_itms_by_sector(sector)
+  expect_gte(nrow(in_sector), 1)
+  expect_true(all(in_sector$px_path == sector))
+  hits <- nso_search(".", sector = sector)
+  expect_setequal(hits$px_file, in_sector$px_file)
+  expect_equal(nrow(nso_itms_by_sector("no/such/folder")), 0)
+})

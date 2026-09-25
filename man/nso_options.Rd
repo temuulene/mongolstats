@@ -15,7 +15,10 @@ Invisibly, the previous values of the options changed, or a list of
 current values when called with no arguments.
 }
 \description{
-Convenience wrapper around \code{\link[base:options]{base::options()}} for mongolstats.
+Convenience wrapper around \code{\link[base:options]{base::options()}} for mongolstats. Values are
+validated before anything is set: for example \code{mongolstats.lang} must be
+\code{"en"} or \code{"mn"}, and \code{mongolstats.timeout} a positive number. Names that
+are not mongolstats options are set with a warning, which catches typos.
 }
 \examples{
 # Get all current mongolstats options

@@ -1,3 +1,29 @@
+# join helpers error clearly on a missing name column
+
+    Code
+      mn_join_by_name(d, "region")
+    Condition
+      Error in `mn_join_by_name()`:
+      ! Column "region" not found in `data`.
+      i Available columns: "aimag" and "pop".
+
+---
+
+    Code
+      mn_fuzzy_join_by_name(d, "region")
+    Condition
+      Error in `mn_fuzzy_join_by_name()`:
+      ! Column "region" not found in `data`.
+      i Available columns: "aimag" and "pop".
+
+---
+
+    Code
+      mn_join_by_name(d, c("a", "b"))
+    Condition
+      Error in `mn_join_by_name()`:
+      ! `name_col` must be a single character string.
+
 # fuzzy join rejects edit-distance thresholds for method = 'jw'
 
     Code

@@ -10,9 +10,9 @@ test_that("name normalization produces expected tokens", {
 test_that("join helpers error clearly on a missing name column", {
   d <- data.frame(aimag = "Ulaanbaatar", pop = 1)
   # Errors before any boundary download, naming the missing column
-  expect_error(mn_join_by_name(d, "region"), "region")
-  expect_error(mn_fuzzy_join_by_name(d, "region"), "region")
-  expect_error(mn_join_by_name(d, c("a", "b")), "single character")
+  expect_snapshot(mn_join_by_name(d, "region"), error = TRUE)
+  expect_snapshot(mn_fuzzy_join_by_name(d, "region"), error = TRUE)
+  expect_snapshot(mn_join_by_name(d, c("a", "b")), error = TRUE)
 })
 
 # Plain data frames stand in for sf boundaries: the joins only need the

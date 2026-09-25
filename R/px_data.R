@@ -174,19 +174,37 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
     character(1)
   )
   dim_names <- make.unique(dim_names)
+  n_dim <- length(dim_names)
 
-  # Build data frame of keys and values
-  keys <- dplyr::bind_rows(lapply(dat, function(d) {
-    stats::setNames(as.list(unlist(d$key)), dim_names)
-  }))
+  # Collect all keys into one row-major character matrix instead of binding
+  # one small data frame per row (which dominated fetch time on large
+  # tables).
+  keys <- lapply(dat, function(d) as.character(unlist(d$key)))
+  bad <- which(lengths(keys) != n_dim)
+  if (length(bad)) {
+    cli_abort(
+      c(
+        "Malformed PXWeb response: row {bad[1]} has {length(keys[[bad[1]]])} key{?s}, expected {n_dim}.",
+        "i" = "Dimension columns: {.val {dim_names}}."
+      ),
+      class = "mongolstats_http_error"
+    )
+  }
+  df <- if (n_dim) {
+    key_mat <- matrix(unlist(keys, use.names = FALSE), ncol = n_dim, byrow = TRUE)
+    tibble::as_tibble(stats::setNames(
+      lapply(seq_len(n_dim), function(j) key_mat[, j]),
+      dim_names
+    ))
+  } else {
+    tibble::tibble(.rows = length(dat))
+  }
 
   vals <- vapply(
     dat,
-    function(d) if (length(d$values)) d$values[[1]] else NA_character_,
+    function(d) if (length(d$values)) as.character(d$values[[1]]) else NA_character_,
     character(1)
   )
-
-  df <- tibble::as_tibble(keys)
   df[[value_name]] <- suppressWarnings(as.numeric(vals))
   df
 }

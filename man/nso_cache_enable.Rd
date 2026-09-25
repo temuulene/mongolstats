@@ -16,11 +16,15 @@ disk cache). If \code{NULL}, entries persist until cleared.}
 Cache directory path (invisibly).
 }
 \description{
-Caches table lists and codebooks on disk to speed up repeated calls.
+Caches PXWeb catalogue listings and table metadata (codebooks) on disk to
+speed up repeated calls, including across R sessions. Entries are keyed by
+the PXWeb base URL, database, and language, so changing
+\code{mongolstats.px_base_url} or \code{mongolstats.px_db} never returns another
+server's metadata. Data fetched with \code{\link[=nso_data]{nso_data()}} is not cached.
 Optionally set a time-to-live (TTL) for cache entries.
 }
 \examples{
-\dontshow{if (requireNamespace("memoise", quietly = TRUE) && requireNamespace("cachem", quietly = TRUE) && requireNamespace("rappdirs", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+\dontshow{if (rlang::is_installed(c("memoise", "cachem", "rappdirs"))) withAutoprint(\{ # examplesIf}
 # Enable caching in a temporary directory (for demo purposes)
 cache_dir <- nso_cache_enable(dir = tempdir())
 

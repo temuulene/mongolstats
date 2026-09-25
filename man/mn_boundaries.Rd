@@ -12,7 +12,8 @@ mn_boundaries(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE)
 \item{refresh}{If TRUE, bypass the session cache and download again.}
 }
 \value{
-An \code{sf} object with polygons for the requested level.
+An \code{sf} object with polygons for the requested level. Failed
+downloads raise an error of class \code{mongolstats_http_error}.
 }
 \description{
 Downloads Mongolia boundaries for ADM0/ADM1/ADM2 from the GeoBoundaries API

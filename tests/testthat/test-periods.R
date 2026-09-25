@@ -40,8 +40,8 @@ test_that("nso_period_seq yearly accepts YYYYMM and uses the year part", {
   expect_equal(nso_period_seq("202301", "202512"), c("2023", "2024", "2025"))
 })
 
-test_that("nso_table_periods handles unknown tbl_id", {
-  skip_on_cran()
-  # No network assumption here; function should return character(0) if metadata not available
-  expect_type(nso_table_periods("DT_NSO_NON_EXISTENT"), "character")
+test_that("nso_table_periods validates tbl_id like other discovery helpers", {
+  # Resolved against the embedded index: no network needed
+  expect_snapshot(nso_table_periods("DT_NSO_NON_EXISTENT"), error = TRUE)
+  expect_snapshot(nso_table_periods(NULL), error = TRUE)
 })

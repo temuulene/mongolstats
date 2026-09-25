@@ -10,6 +10,27 @@ test_that("nso_options value can be verified with getOption", {
   expect_equal(getOption("mongolstats.lang"), "en")
 })
 
+test_that("nso_options() rejects invalid values without changing options", {
+  before <- nso_options()
+  expect_snapshot(nso_options(mongolstats.lang = "fr"), error = TRUE)
+  expect_snapshot(nso_options(mongolstats.default_labels = "english"), error = TRUE)
+  expect_snapshot(nso_options(mongolstats.timeout = -1), error = TRUE)
+  expect_snapshot(nso_options(mongolstats.retry_tries = 0), error = TRUE)
+  expect_snapshot(nso_options(mongolstats.offline = "yes"), error = TRUE)
+  expect_identical(nso_options(), before)
+})
+
+test_that("nso_options() warns about unknown option names", {
+  expect_snapshot(old <- nso_options(mongolstats.langauge = "mn"))
+  on.exit(options(old), add = TRUE)
+})
+
+test_that(".px_lang() errors on an unsupported language set via options()", {
+  old <- options(mongolstats.lang = "fr")
+  on.exit(options(old), add = TRUE)
+  expect_snapshot(.px_lang(), error = TRUE)
+})
+
 test_that(".nso_progress returns logical", {
   expect_type(.nso_progress(), "logical")
 })
