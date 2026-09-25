@@ -61,8 +61,17 @@ jobs:
             local::.
           needs: check
 
-      - name: Regenerate Rd with roxygen2
-        run: roxygen2::roxygenise()
+      # Fail when committed docs are stale instead of silently regenerating
+      # them: the check must test what is in the repository.
+      - name: Check Rd files are up to date
+        run: |
+          roxygen2::roxygenise()
+          stale <- system2("git", c("status", "--porcelain", "--", "man", "NAMESPACE"), stdout = TRUE)
+          if (length(stale)) {
+            system2("git", c("--no-pager", "diff", "--", "man", "NAMESPACE"))
+            stop("Rd files or NAMESPACE are out of date; run devtools::document() and commit:\n",
+                 paste(stale, collapse = "\n"), call. = FALSE)
+          }
         shell: Rscript {0}
 
       - name: Check
