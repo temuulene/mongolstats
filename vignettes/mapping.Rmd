@@ -30,7 +30,7 @@ knitr::opts_chunk$set(
 
 ```{r setup, message=FALSE, warning=FALSE}
 library(mongolstats)
-library(sf)
+library(mongolmaps)
 library(dplyr)
 library(ggplot2)
 nso_options(mongolstats.lang = "en")
@@ -50,205 +50,274 @@ theme_set(
 
 ## Overview
 
-Geographic analysis is essential for understanding health disparities and targeting interventions. This guide demonstrates spatial epidemiology using Mongolia's aimag-level (provincial) health data.
+Geographic analysis helps find health disparities and target interventions. This guide maps two aimag-level indicators, maternal and infant mortality, and shows the steps that keep such maps honest: checking the counts, pooling small numbers, showing uncertainty, and comparing areas with a funnel plot rather than fixed colour bands.
 
 ## Getting Boundary Data
 
-Mongolia's administrative boundaries are available at three levels:
+[mongolmaps](https://github.com/temuulene/mongolmaps) ships boundaries for every administrative level. Each unit carries its NSO code, so tables from mongolstats join by code rather than by name.
 
-```{r boundaries, fig.alt="Map showing the 21 aimags (provinces) and Ulaanbaatar capital of Mongolia with white fill and grey borders"}
-# ADM0: National boundary
-country <- mn_boundaries(level = "ADM0")
-
-# ADM1: Aimags (21 provinces + Ulaanbaatar)
-aimags <- mn_boundaries(level = "ADM1")
-
-# ADM2: Soums (districts)
-soums <- mn_boundaries(level = "ADM2")
-
-# Quick preview
+```{r boundaries, fig.alt="Map of Mongolia's 21 aimags and the capital, Ulaanbaatar, with each unit labelled"}
+aimags <- mn_aimags() # 21 aimags and Ulaanbaatar
 aimags |>
-  ggplot() +
-  geom_sf(fill = "white", color = "grey30", size = 0.3) +
-  theme_void() +
-  labs(title = "Mongolia's 21 Aimags + Ulaanbaatar")
+  sf::st_drop_geometry() |>
+  select(name, nso_code, iso_code, area_km2) |>
+  head()
+
+mn_map(aimags, label = TRUE, title = "Mongolia's 21 Aimags and Ulaanbaatar")
 ```
 
-## Case Study: Maternal Mortality Geography
+Other levels work the same way: `mn_regions()`, `mn_soums()`, `mn_ub_districts()` and `mn_khoroos()`. (mongolstats also has `mn_boundaries()`, which downloads geoBoundaries polygons, and name-based joins, `mn_join_by_name()` and `mn_fuzzy_join_by_name()`, for data that have no NSO codes.)
 
-### Understanding Regional Disparities
+### Region codes in NSO tables
 
-Maternal mortality is a critical indicator of health system performance and equity.
+NSO's `Region` dimension mixes levels: `"0"` is the national total, `"1"`–`"4"` are the four economic regions, `"5"` is Ulaanbaatar as a region, and three-digit codes are aimags. `mn_join()` keeps the aimag level and drops the rest. One quirk matters for the monthly health tables: they store Ulaanbaatar's figures under the region code `"5"` and leave its aimag-level code `"511"` empty. Recode `"5"` to `"511"` before joining so the capital is not left blank.
 
-```{r maternal-data}
-# Fetch maternal mortality data for all aimags (2020-2024)
-# We'll calculate a 5-year average to smooth out year-to-year variability
-# This is important because small populations can have unstable rates
+## Case Study: Maternal Mortality
 
-# The table is monthly; map month labels ("YYYY-MM") to codes for 2020-2024
-mmr_tbl <- "DT_NSO_2100_050V1" # MMR per 100,000 live births
-mmr_months <- nso_dim_values(mmr_tbl, "Month", labels = "en") |>
-  filter(label_en >= "2020-01", label_en <= "2024-12") |>
-  pull(code)
+Maternal deaths are rare: Mongolia records a few dozen a year, and most aimags record none in a typical year. A single year's maternal mortality ratio (MMR) by aimag is therefore mostly noise. We pool 10 years of counts and attach confidence intervals.
 
-mmr_data <- nso_data(
-  tbl_id = mmr_tbl,
+### Check the counts before mapping
+
+Aimag codes start with their region's digit (`1xx` = Western, `2xx` = Khangai, `3xx` = Central, `4xx` = Eastern), so aimag counts should add up to their regional subtotal. Checking this catches data entry errors before they reach a map.
+
+```{r maternal-check}
+# Rows where the aimag counts do not add up to the regional subtotal
+subtotal_mismatches <- function(data) {
+  aimag_sums <- data |>
+    filter(nchar(Region) == 3, Region != "511") |>
+    mutate(region = substr(Region, 1, 1)) |>
+    summarise(aimag_sum = sum(value, na.rm = TRUE), .by = c(region, period))
+  region_totals <- data |>
+    filter(Region %in% c("1", "2", "3", "4")) |>
+    select(region = Region, period, region_total = value)
+  inner_join(aimag_sums, region_totals, by = join_by(region, period)) |>
+    filter(aimag_sum != region_total)
+}
+
+# Annual maternal deaths by aimag
+annual_tbl <- "DT_NSO_2100_002V1"
+maternal_annual <- nso_data(
+  annual_tbl,
   selections = list(
-    "Region" = nso_dim_values(mmr_tbl, "Region")$code,
-    "Month" = mmr_months
+    Region = nso_dim_values(annual_tbl, "Region")$code,
+    Year = nso_dim_values(annual_tbl, "Year")$code
   ),
   labels = "en"
 ) |>
-  filter(!Region %in% c("0", "1", "2", "3", "4", "511")) |> # Exclude Total, Regions, and duplicate UB
-  mutate(Region_en = trimws(Region_en)) |>
-  # Average the monthly values across 2020-2024 to reduce random variation.
-  # Caveat: maternal deaths are rare events, so monthly "MMR per 100,000" is
-  # extremely noisy at the aimag level. A mean of monthly ratios is a
-  # smoothing device, not a true pooled 5-year ratio (which would be total
-  # maternal deaths / total live births x 100,000). Read the map as relative,
-  # not as exact rates.
-  group_by(Region_en) |>
-  summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
+  mutate(period = Year_en)
 
-# Preview data
-mmr_data |>
-  arrange(desc(value)) |>
-  select(Region_en, value) |>
+# Monthly maternal deaths by aimag
+monthly_tbl <- "DT_NSO_2100_002V2"
+maternal_monthly <- nso_data(
+  monthly_tbl,
+  selections = list(
+    Region = nso_dim_values(monthly_tbl, "Region")$code,
+    Month = nso_dim_values(monthly_tbl, "Month")$code
+  ),
+  labels = "en"
+) |>
+  mutate(period = Month_en)
+
+subtotal_mismatches(maternal_annual)
+subtotal_mismatches(maternal_monthly)
+```
+
+The annual table has `r if (run_vignette) nrow(subtotal_mismatches(maternal_annual)) else "some"` region-year(s) where the aimags do not add up to their region; the monthly table has `r if (run_vignette) nrow(subtotal_mismatches(maternal_monthly)) else "none"`. An aimag count larger than its whole region's total is an entry error, and pooled over 10 years it would make that aimag look like a hot spot. We use the monthly table, which adds up, and report any mismatch to NSO.
+
+### Pooled maternal mortality ratio
+
+The MMR divides maternal deaths by live births (`DT_NSO_2100_018V5`), both summed over the same 10 complete years:
+
+```{r maternal-data}
+# Sum a monthly count table over whole years, by region code. Blank cells
+# are counted as zero and reported in `n_blank` (see below).
+pooled_counts <- function(tbl, years) {
+  months <- nso_dim_values(tbl, "Month", labels = "en")
+  nso_data(
+    tbl,
+    selections = list(
+      Region = nso_dim_values(tbl, "Region")$code,
+      Month = months$code[substr(months$label_en, 1, 4) %in% years]
+    ),
+    labels = "en"
+  ) |>
+    filter(Region != "511") |> # empty duplicate of Ulaanbaatar
+    summarise(
+      count = sum(value, na.rm = TRUE),
+      n_blank = sum(is.na(value)),
+      n_cells = n(),
+      .by = c(Region, Region_en)
+    )
+}
+
+# The 10 most recent years with all 12 months published
+month_labels <- nso_dim_values(monthly_tbl, "Month", labels = "en")$label_en
+complete_years <- names(which(table(substr(month_labels, 1, 4)) == 12))
+mmr_years <- tail(sort(complete_years), 10)
+mmr_period <- paste0(min(mmr_years), "–", max(mmr_years))
+
+maternal_deaths <- pooled_counts(monthly_tbl, mmr_years)
+live_births <- pooled_counts("DT_NSO_2100_018V5", mmr_years)
+
+mmr <- maternal_deaths |>
+  select(Region, Region_en, deaths = count) |>
+  inner_join(select(live_births, Region, births = count), by = join_by(Region)) |>
+  mutate(
+    Region_en = trimws(Region_en),
+    mmr = deaths / births * 1e5,
+    # Exact Poisson 95% confidence interval
+    lower = qchisq(0.025, 2 * deaths) / 2 / births * 1e5,
+    upper = qchisq(0.975, 2 * (deaths + 1)) / 2 / births * 1e5
+  )
+
+national_mmr <- mmr |> filter(Region == "0")
+
+# Aimags and the capital only
+mmr_units <- mmr |>
+  filter(nchar(Region) == 3 | Region == "5") |>
+  mutate(Region = if_else(Region == "5", "511", Region))
+
+mmr_units |>
+  arrange(desc(mmr)) |>
+  select(Region_en, deaths, births, mmr, lower, upper) |>
   head(10)
 ```
 
-### Creating a Choropleth Map
+NSO leaves some cells blank rather than entering 0 (`r if (run_vignette) sum(maternal_deaths$n_blank) else "some"` of `r if (run_vignette) sum(maternal_deaths$n_cells) else "all"` region-months here). Counting blanks as zero is safe for this table: the monthly sums reproduce the national annual totals in `DT_NSO_2100_002V1`. Check this for any table before you treat blanks as zero.
 
-```{r maternal-map}
-# Join health data to geographic boundaries for spatial analysis.
-# mn_fuzzy_join_by_name() reconciles transliteration differences between the
-# NSO English names and the boundary spellings automatically (normalize +
-# fuzzy match), so we don't maintain a hand-written name crosswalk that would
-# silently drop provinces to grey when a spelling doesn't match exactly.
-# max_distance = 3 is needed because NSO's "Khuvsgul" is string distance 3
-# from the boundary spelling "Hovsgel"; all other pairs match at <= 2.
-mmr_map <- mn_fuzzy_join_by_name(
-  mmr_data,
-  name_col = "Region_en", level = "ADM1", max_distance = 3
-)
+Over `r if (run_vignette) mmr_period else "the period"`, the national MMR was `r if (run_vignette) round(national_mmr$mmr) else "-"` per 100,000 live births (`r if (run_vignette) national_mmr$deaths else "-"` maternal deaths). `r if (run_vignette) sum(mmr_units$deaths <= 5) else "Many"` of the `r if (run_vignette) nrow(mmr_units) else "22"` areas (21 aimags and the capital) recorded 5 or fewer maternal deaths in 10 years.
 
-# Create choropleth map
-p <- mmr_map |>
-  ggplot() +
-  geom_sf(aes(fill = value), color = "white", size = 0.2) +
-  scale_fill_viridis_c(
-    option = "rocket",
-    direction = -1,  # dark = high mortality (concerning)
-    name = "MMR\n(per 100k)",
-    labels = scales::label_number()
-  ) +
+### Choropleth and confidence intervals
+
+```{r maternal-map, fig.alt="Choropleth map of the pooled maternal mortality ratio by aimag and Ulaanbaatar over the last 10 complete years"}
+mmr_map <- mn_join(mmr_units, by = "Region", level = "aimag")
+
+mn_map(mmr_map, fill = mmr, title = paste0("Maternal Mortality Ratio, ", mmr_period)) +
   labs(
-    title = "5-Year Average Maternal Mortality Ratio (2020-2024)",
-    subtitle = "Deaths per 100,000 live births (Mean)",
-    caption = "Source: NSO Mongolia"
-  ) +
-  theme_void() +  # removes axes for clean map appearance
-  theme(
-    plot.title = element_text(face = "bold", size = 16),
-    plot.subtitle = element_text(color = "grey40"),
-    legend.position = "bottom",          # bottom legend maximizes map width
-    legend.title = element_text(size = 10, face = "bold"),
-    legend.key.width = unit(1.5, "cm")   # wider legend key for continuous scale
+    subtitle = "Maternal deaths per 100,000 live births, 10 years pooled. Data: NSO Mongolia",
+    fill = "MMR\n(per 100k)"
   )
-
-p  # print static ggplot
 ```
 
-## Case Study: Infant Mortality Hot Spots
+A map shows point estimates only. The interval plot shows how uncertain each one is:
 
-### Identifying High-Risk Regions
+```{r maternal-intervals, fig.alt="Dot plot of the pooled maternal mortality ratio by aimag with exact 95% confidence intervals and a dashed line at the national ratio", fig.height=7}
+mmr_units |>
+  mutate(Region_en = forcats::fct_reorder(Region_en, mmr)) |>
+  ggplot(aes(x = mmr, y = Region_en)) +
+  geom_vline(xintercept = national_mmr$mmr, linetype = "dashed", color = "grey50") +
+  geom_errorbar(aes(xmin = lower, xmax = upper), width = 0.3, color = "grey60", orientation = "y") +
+  geom_point(color = "#c0392b", size = 2.5) +
+  labs(
+    title = paste0("Maternal Mortality Ratio by Aimag, ", mmr_period),
+    subtitle = "Per 100,000 live births, with exact 95% CIs; dashed line = national ratio",
+    x = "Maternal deaths per 100,000 live births",
+    y = NULL,
+    caption = "Source: NSO Mongolia, DT_NSO_2100_002V2 and DT_NSO_2100_018V5"
+  ) +
+  theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
+```
 
-```{r imr-hotspots}
-# Get infant mortality rates
-imr_tbl <- "DT_NSO_2100_015V1" # IMR per 1,000 live births (Monthly)
+Even with 10 years pooled, most intervals overlap the national ratio. An aimag with no maternal deaths has an estimate of 0 but an upper limit well above zero; it is not evidence of zero risk. The pooled period also includes 2021, when maternal deaths rose sharply during the COVID-19 pandemic.
 
-# Get metadata
-months <- nso_dim_values(imr_tbl, "Month", labels = "en")
-months_2024 <- months |>
-  filter(grepl("2024", label_en)) |>
-  pull(code)
+## Case Study: Infant Mortality
 
-imr_data <- nso_data(
-  tbl_id = imr_tbl,
-  selections = list(
-    "Region" = nso_dim_values(imr_tbl, "Region")$code,
-    "Month" = months_2024
-  ),
-  labels = "en"
-) |>
-  # Exclude Total ("0"), regional aggregates ("1"-"4"), and "511" -- a
-  # duplicate Ulaanbaatar entry whose values are all missing in this table.
-  # Ulaanbaatar's actual data lives under code "5", so filtering by
-  # nchar(Region) == 3 would keep the empty duplicate and drop the real one.
-  filter(!Region %in% c("0", "1", "2", "3", "4", "511")) |>
-  mutate(Region_en = trimws(Region_en)) |>
-  # Average the monthly rates for 2024. Caveat: a mean of monthly IMR values
-  # is not the true annual IMR (total infant deaths / total live births x
-  # 1,000); for small aimags a month with few births can produce an extreme
-  # ratio, so treat these as indicative rather than exact.
-  group_by(Region_en) |>
-  summarise(value = mean(value, na.rm = TRUE), .groups = "drop") |>
+### Funnel plot
+
+Ranking aimags or colouring them by fixed cut-offs (for example, "IMR above 20") treats a rate from 300 births the same as one from 30,000. A **funnel plot** sets each aimag's rate against its number of births and adds control limits around the national rate. The limits are wide for small aimags and narrow for large ones. Points outside the limits differ from the national rate by more than chance alone would explain.
+
+```{r imr-funnel-data}
+# Latest year with all 12 months published
+imr_year <- max(complete_years)
+
+infant_deaths <- pooled_counts("DT_NSO_2100_014V1", imr_year)
+imr_births <- pooled_counts("DT_NSO_2100_018V5", imr_year)
+
+imr <- infant_deaths |>
+  select(Region, Region_en, deaths = count) |>
+  inner_join(select(imr_births, Region, births = count), by = join_by(Region)) |>
+  mutate(Region_en = trimws(Region_en), imr = deaths / births * 1000)
+
+national_rate <- with(filter(imr, Region == "0"), deaths / births) # per live birth
+
+# Poisson control limits around the national rate, for any number of births.
+# Spiegelhalter's interpolation smooths the steps of the discrete Poisson
+# quantiles (Spiegelhalter 2005, Statistics in Medicine 24:1185-1202).
+funnel_limit <- function(births, p) {
+  lambda <- births * national_rate
+  r <- qpois(p, lambda)
+  alpha <- (ppois(r, lambda) - p) / dpois(r, lambda)
+  pmax(r - alpha, 0) / births * 1000
+}
+
+imr_units <- imr |>
+  filter(nchar(Region) == 3 | Region == "5") |>
   mutate(
-    # Classify risk levels
-    risk_category = case_when(
-      value < 10 ~ "Low (<10)",
-      value < 20 ~ "Medium (10-20)",
-      value < 30 ~ "High (20-30)",
-      TRUE ~ "Very High (≥30)"
+    Region = if_else(Region == "5", "511", Region),
+    signal = case_when(
+      imr > funnel_limit(births, 0.975) ~ "Above 95% limit",
+      imr < funnel_limit(births, 0.025) ~ "Below 95% limit",
+      .default = "Within limits"
     ),
-    risk_category = factor(
-      risk_category,
-      levels = c("Low (<10)", "Medium (10-20)", "High (20-30)", "Very High (≥30)")
-    )
+    signal = factor(signal, levels = c("Above 95% limit", "Within limits", "Below 95% limit"))
   )
 
-# Create risk category map (fuzzy name join reconciles spelling differences;
-# max_distance = 3 covers the Khuvsgul/Hovsgel spelling gap)
-p <- mn_fuzzy_join_by_name(
-  imr_data,
-  name_col = "Region_en", level = "ADM1", max_distance = 3
-) |>
-  ggplot() +
-  geom_sf(aes(fill = risk_category), color = "white", size = 0.2) +
-  scale_fill_manual(
-    values = c(
-      "Low (<10)" = "#27ae60",       # green = good outcome
-      "Medium (10-20)" = "#f1c40f",  # yellow = caution
-      "High (20-30)" = "#e67e22",    # orange = concerning
-      "Very High (≥30)" = "#c0392b"  # red = critical
-    ),
-    na.value = "grey90",  # missing data shown in light grey
-    name = "Risk Level\n(IMR)",
-    drop = FALSE  # show all levels even if not present in data
-  ) +
-  labs(
-    title = "Infant Mortality Risk Categories (2024 Average)",
-    subtitle = "Deaths per 1,000 live births",
-    caption = "Source: NSO Mongolia"
-  ) +
-  theme_void() +
-  theme(
-    plot.title = element_text(face = "bold", size = 16),
-    plot.subtitle = element_text(color = "grey40"),
-    legend.position = "bottom",          # bottom legend maximizes map width
-    legend.title = element_text(size = 10, face = "bold")
-  )
-
-p  # print static ggplot
+count(imr_units, signal)
 ```
+
+```{r imr-funnel-plot, fig.alt="Funnel plot of infant mortality rate against number of live births by aimag, with 95% and 99.8% control limits around the national rate"}
+funnel <- tibble::tibble(births = exp(seq(log(200), log(max(imr_units$births) * 1.1), length.out = 300))) |>
+  mutate(
+    lower_998 = funnel_limit(births, 0.001), upper_998 = funnel_limit(births, 0.999),
+    lower_95 = funnel_limit(births, 0.025), upper_95 = funnel_limit(births, 0.975)
+  )
+
+signal_colors <- c("Above 95% limit" = "#e34948", "Within limits" = "grey55", "Below 95% limit" = "#2a78d6")
+
+ggplot(imr_units, aes(x = births, y = imr)) +
+  geom_line(data = funnel, aes(y = upper_998), linetype = "dotted", color = "grey40") +
+  geom_line(data = funnel, aes(y = lower_998), linetype = "dotted", color = "grey40") +
+  geom_line(data = funnel, aes(y = upper_95), linetype = "dashed", color = "grey40") +
+  geom_line(data = funnel, aes(y = lower_95), linetype = "dashed", color = "grey40") +
+  geom_hline(yintercept = national_rate * 1000, color = "grey20") +
+  geom_point(aes(color = signal), size = 2.5) +
+  ggrepel::geom_text_repel(
+    data = filter(imr_units, signal != "Within limits" | Region == "511"),
+    aes(label = Region_en), size = 3, color = "grey20", min.segment.length = 0, seed = 1
+  ) +
+  scale_x_log10(labels = scales::label_comma()) +
+  scale_y_continuous(limits = c(0, NA)) +
+  scale_color_manual(values = signal_colors, name = NULL) +
+  labs(
+    title = paste0("Funnel Plot of Infant Mortality by Aimag, ", imr_year),
+    subtitle = "Solid line = national rate; dashed = 95% limits; dotted = 99.8% limits",
+    x = "Live births (log scale)",
+    y = "Infant deaths per 1,000 live births",
+    caption = "Source: NSO Mongolia, DT_NSO_2100_014V1 and DT_NSO_2100_018V5"
+  ) +
+  theme(legend.position = "top", panel.grid.minor = element_blank())
+```
+
+### Mapping the signals
+
+```{r imr-signal-map, fig.alt="Map of aimags classified as above, within, or below the 95% funnel limits for infant mortality"}
+imr_map <- mn_join(imr_units, by = "Region", level = "aimag")
+
+mn_map(imr_map, fill = signal, title = paste0("Infant Mortality Compared with the National Rate, ", imr_year)) +
+  scale_fill_manual(values = signal_colors, na.value = "grey90", name = NULL) +
+  labs(subtitle = "Classified by 95% funnel limits around the national rate. Data: NSO Mongolia")
+```
+
+With 22 units, about one would fall outside 95% limits by chance alone, so treat a single point just past the 95% limit with caution; the 99.8% limits are a stricter screen. A signal is a reason to look closer, for example at data quality, referral patterns, or access to care, not proof that care is worse. Infant deaths and births are counted where they are recorded, so referrals of high-risk births to Ulaanbaatar can raise the capital's rate and lower the rate of the aimag the mother came from.
 
 ## Tips for Spatial Epidemiology
 
-1. **Check data completeness**: Not all aimags may have data for all indicators
-2. **Use appropriate scales**: Choose color scales that highlight health disparities
-3. **Add context**: Include reference lines (e.g., national average) when relevant
-4. **Consider population size**: Normalize rates by population when comparing regions
-5. **Temporal analysis**: Create animated maps to show geographic trends over time
+1. **Check the counts first**: Make sure aimags add up to regional and national totals before you pool or map.
+2. **Build rates from counts**: Sum numerators and denominators over the period, then divide. Do not average monthly or annual rates.
+3. **Pool rare events**: Combine several years for rare outcomes such as maternal deaths.
+4. **Show uncertainty**: Pair every choropleth with confidence intervals or a funnel plot.
+5. **Compare against chance, not fixed cut-offs**: Funnel plots account for different population sizes; fixed colour bands do not.
+6. **Join by code**: `mongolmaps::mn_join()` matches NSO `Region` codes, so spelling differences cannot drop an aimag from the map.
 
 ## Next Steps
 

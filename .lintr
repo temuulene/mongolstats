@@ -6,8 +6,13 @@ linters: lintr::linters_with_defaults(
  )
 exclusions: list(
   "R/zzz.R",
-  # Helper functions in this vignette use data-masked column names
+  # Helper functions in these vignettes use data-masked column names
   # (dplyr/sf), which object_usage_linter reports as undefined variables.
-  # Name the file, not the directory: a directory entry excludes it entirely.
+  # Name the files, not the directory: a directory entry excludes it entirely.
+  "vignettes/discovery.Rmd" = list(object_usage_linter = Inf),
+  "vignettes/environmental-surveillance.Rmd" = list(object_usage_linter = Inf),
+  "vignettes/getting-started.Rmd" = list(object_usage_linter = Inf),
+  "vignettes/mapping.Rmd" = list(object_usage_linter = Inf),
+  "vignettes/mortality-analysis.Rmd" = list(object_usage_linter = Inf),
   "vignettes/ub-health-environment.Rmd" = list(object_usage_linter = Inf)
  )

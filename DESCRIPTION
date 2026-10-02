@@ -17,7 +17,7 @@ Imports:
     httr2,
     jsonlite,
     tibble,
-    dplyr,
+    dplyr (>= 1.1.0),
     purrr,
     stringr,
     sf,
@@ -46,7 +46,11 @@ Suggests:
     scales,
     forcats,
     tidyr,
-    lubridate
+    lubridate,
+    ggrepel,
+    mongolmaps
+Remotes:
+    temuulene/mongolmaps
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

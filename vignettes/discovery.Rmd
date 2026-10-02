@@ -49,29 +49,31 @@ theme_set(
 
 ## Overview
 
-Mongolia's National Statistics Office maintains comprehensive public health surveillance data. This guide demonstrates how to discover and access epidemiological data for research and policy analysis.
+Mongolia's National Statistics Office (NSO) publishes vital statistics and disease surveillance data that are useful for research and policy analysis. This guide shows how to find the right tables, check what they measure, and turn counts into rates.
 
 ## Finding Health Tables
 
 ### Search by Keyword
 
-Finding the right data is the first step in any analysis. The `nso_itms_search()` function allows you to query the entire NSO catalog using simple keywords:
+`nso_itms_search()` searches table titles across the whole NSO catalogue. Some tables are listed in more than one folder, so `distinct()` keeps one row per table:
 
 ```{r search-examples}
-# Infant and maternal health
+# Mortality
 mortality <- nso_itms_search("mortality")
 mortality |>
-  select(tbl_id, tbl_eng_nm) |>
+  distinct(tbl_id, tbl_eng_nm) |>
   head(10)
 
-# Cancer surveillance
+# Cancer
 cancer <- nso_itms_search("cancer")
-cancer |> select(tbl_id, tbl_eng_nm)
+cancer |> distinct(tbl_id, tbl_eng_nm)
 
 # Communicable diseases
-infectious <- nso_itms_search("tuberculosis")
-infectious |> select(tbl_id, tbl_eng_nm)
+infectious <- nso_itms_search("communicable")
+infectious |> distinct(tbl_id, tbl_eng_nm)
 ```
+
+Read the title before you fetch: it tells you whether a table holds **counts** ("NUMBER OF ...", "CASES OF ...") or **rates** ("per 1000 live births", "per 10000 population"), and at which level ("aimags and the Capital", "by soum").
 
 ### Browse by Sector
 
@@ -90,232 +92,319 @@ if (nrow(health_sector) > 0) {
 }
 ```
 
-## Case Study: Cancer Epidemiology
+## Case Study: Cancer Incidence
 
-### Exploring Cancer Incidence Data
-
-Cancer burden is shifting in Mongolia. To understand these changes, we can analyze incidence trends over the last decade:
+### Exploring the Table
 
 ```{r cancer-metadata}
-# Find cancer incidence table
-cancer_tbl <- "DT_NSO_2100_012V1" # New cases per 10,000 population
+cancer_tbl <- "DT_NSO_2100_012V1" # New cases of cancer per 10,000 population
 
 # Examine available dimensions
 meta <- nso_table_meta(cancer_tbl)
 meta
 
-# View cancer types
+# Cancer types: codes are not in a meaningful order, so read the labels
 cancer_types <- nso_dim_values(cancer_tbl, "Type malignant neoplasms", labels = "en")
-cancer_types |> head(10)
+cancer_types
 
-# Check time coverage
-# Note: "Year" dimension uses internal codes, so we map labels (years) to codes
-annual_meta <- nso_dim_values(cancer_tbl, "Year", labels = "both")
-years <- annual_meta$label_en
-years
+# Year codes are internal ids; the labels hold the years
+annual_meta <- nso_dim_values(cancer_tbl, "Year", labels = "en")
+range(annual_meta$label_en)
 ```
 
-### Fetching and Visualizing Cancer Trends
+### Incidence by Site
 
-```{r cancer-analysis}
-# Fetch cancer incidence data for the most common types
-# We focus on the last 10 years to show recent trends
-# and select 4 major cancer types (Lung, Liver, Stomach, Cervix)
-
-# Step 1: Identify the 10 most recent years
+```{r cancer-analysis, fig.alt="Small multiples of crude cancer incidence per 10,000 population in Mongolia over the last 10 years, one panel each for cervical, liver, lung, oesophageal and stomach cancer", fig.height=4.5}
+# The 10 most recent years
 recent_years <- annual_meta |>
   arrange(label_en) |>
   tail(10) |>
   pull(code)
 
-# Step 2: Fetch data for major cancer types
+# Specific sites only: drop the "Total" and "Other" categories. NSO labels
+# can carry leading spaces, so trim them before comparing.
+site_codes <- cancer_types |>
+  filter(!trimws(label_en) %in% c("Total", "Other")) |>
+  pull(code)
+
 cancer_data <- nso_data(
   tbl_id = cancer_tbl,
   selections = list(
-    "Type malignant neoplasms" = c("1", "2", "3", "4"), # Lung, Liver, Stomach, Cervix
+    "Type malignant neoplasms" = site_codes,
     "Year" = recent_years
   ),
   labels = "en"
-)
+) |>
+  mutate(site = trimws(`Type malignant neoplasms_en`), year = as.integer(Year_en))
 
-# Visualize cancer incidence trends as static plot
-p <- cancer_data |>
-  ggplot(aes(
-    x = as.integer(Year_en), y = value, color = `Type malignant neoplasms_en`,
-    group = `Type malignant neoplasms_en`
-  )) +
-  geom_line(linewidth = 1.2) +
-  geom_point(size = 3, shape = 21, fill = "white", stroke = 1.5) +  # hollow points stand out on lines
-  scale_color_viridis_d(option = "plasma", end = 0.9) +  # colorblind-friendly discrete palette
-  scale_x_continuous(breaks = function(x) seq(ceiling(min(x)), floor(max(x)), by = 1)) +
+# One panel per site, on a shared scale, so overlapping lines do not hide each other
+cancer_data |>
+  ggplot(aes(x = year, y = value)) +
+  geom_line(color = "#8e44ad", linewidth = 1) +
+  geom_point(color = "#8e44ad", size = 2) +
+  facet_wrap(~site, nrow = 1) +
+  scale_x_continuous(breaks = function(x) range(round(x))) +
+  scale_y_continuous(limits = c(0, NA), breaks = scales::breaks_width(2)) +
   labs(
-    title = "Cancer Incidence Trends in Mongolia",
-    subtitle = "New cases per 10,000 population (Recent Trends)",
+    title = "Cancer Incidence in Mongolia by Site",
+    subtitle = "New cases per 10,000 population (crude rate, rounded by NSO to whole numbers)",
     x = NULL,
-    y = "Incidence Rate (per 10,000)",
-    color = "Cancer Type",
-    caption = "Source: NSO Mongolia"
+    y = "Incidence (per 10,000)",
+    caption = "Source: NSO Mongolia, DT_NSO_2100_012V1"
   ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    legend.position = "top",
-    plot.title = element_text(face = "bold", size = 16),
-    plot.subtitle = element_text(color = "grey40", margin = margin(b = 10)),
-    panel.grid.minor = element_blank(),
-    panel.grid.major.x = element_blank(),  # vertical gridlines clutter multi-line plots
-    axis.text = element_text(color = "grey30")
-  )
-
-p  # print static ggplot
+  theme(panel.grid.minor = element_blank(), panel.spacing = unit(1, "lines"))
 ```
 
-### Regional Disparities
+```{r cancer-site-facts, include=FALSE}
+site_ranking <- if (run_vignette) {
+  cancer_data |>
+    summarise(mean_rate = mean(value, na.rm = TRUE), .by = site) |>
+    arrange(desc(mean_rate))
+}
+```
 
-```{r infant-mortality}
-# Infant mortality by aimag
-imr_tbl <- "DT_NSO_2100_015V1" # IMR per 1,000 live births (Monthly)
+Over these years, `r if (run_vignette) tolower(site_ranking$site[1]) else "one site"` cancer has the highest average incidence, followed by `r if (run_vignette) tolower(site_ranking$site[2]) else "another"` cancer. Two cautions apply to this table:
 
-# Get metadata
-imr_meta <- nso_table_meta(imr_tbl)
-months <- nso_dim_values(imr_tbl, "Month", labels = "en")
+* **Rounding.** NSO rounds these rates to whole numbers per 10,000, so a change of 1 between years can be rounding alone.
+* **Single-year spikes.** A value that jumps and then returns to its old level the next year, such as two sites trading places for one year, is more likely a data entry problem than a real change. Check such values with NSO before you interpret them.
 
-# Fetch recent data for all regions (2024 Average)
-months_2024 <- months |>
-  filter(grepl("2024", label_en)) |>
-  pull(code)
+### Crude versus Age-Standardised Incidence
 
-imr_data <- nso_data(
-  tbl_id = imr_tbl,
+The rates above are **crude**: new cases divided by the whole population. Cancer risk rises steeply with age, so a crude rate climbs as a population ages even when the risk at each age is flat. Age-standardisation removes this effect. It applies each year's age-specific rates to one fixed standard population, here the WHO World Standard Population (2000–2025).
+
+NSO publishes the numerators and denominators needed: new cancer cases by age group (`DT_NSO_2100_044V1`) and population by age group (`DT_NSO_0300_003V1`).
+
+```{r cancer-asr}
+# New cancer cases by age group and year (counts)
+case_years <- nso_dim_values("DT_NSO_2100_044V1", "Year", labels = "en")
+case_ages <- nso_dim_values("DT_NSO_2100_044V1", "Age group", labels = "en")
+indicator <- nso_dim_values("DT_NSO_2100_044V1", "Indicator", labels = "en")
+cancer_cases <- nso_data(
+  "DT_NSO_2100_044V1",
   selections = list(
-    "Region" = nso_dim_values(imr_tbl, "Region")$code,
-    "Month" = months_2024
+    Indicator = indicator$code[trimws(indicator$label_en) == "New cases of cancer"],
+    "Age group" = case_ages$code,
+    Year = case_years$code
   ),
   labels = "en"
 ) |>
-  # Exclude Total ("0"), regional aggregates ("1"-"4"), and "511" -- a
-  # duplicate Ulaanbaatar entry with all-missing values (the real Ulaanbaatar
-  # data is under code "5").
-  filter(!Region %in% c("0", "1", "2", "3", "4", "511")) |>
-  mutate(Region_en = trimws(Region_en)) |>
-  # Mean of monthly IMR values: an indicative annual level, not a
-  # births-weighted annual rate (total infant deaths / total live births).
-  group_by(Region_en) |>
-  summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
+  transmute(year = Year_en, age = trimws(`Age group_en`), cases = value) |>
+  filter(age != "Total")
 
-# Find regions with highest IMR
-imr_data |>
-  arrange(desc(value)) |>
-  select(Region_en, value) |>
-  head(10)
-```
-
-### Time Trend Analysis
-
-```{r imr-trends}
-# Analyze national trend (Monthly)
-imr_national <- nso_data(
-  tbl_id = imr_tbl,
+# Population by age group, same years, both sexes
+pop_years <- nso_dim_values("DT_NSO_0300_003V1", "Year", labels = "en")
+pop_ages <- nso_dim_values("DT_NSO_0300_003V1", "Age group", labels = "en")
+pop_sex <- nso_dim_values("DT_NSO_0300_003V1", "Sex", labels = "en")
+population <- nso_data(
+  "DT_NSO_0300_003V1",
   selections = list(
-    "Region" = "0", # National total
-    "Month" = months$code
+    Sex = pop_sex$code[trimws(pop_sex$label_en) == "Total"],
+    "Age group" = pop_ages$code,
+    Year = pop_years$code[pop_years$label_en %in% case_years$label_en]
   ),
   labels = "en"
-)
+) |>
+  transmute(year = Year_en, age = trimws(`Age group_en`), population = value) |>
+  filter(age != "Total")
 
-# Analyze national infant mortality trend using monthly data
-# Convert Month_en column (format: "YYYY-MM") to proper dates
-# Filter to 2019-2024 period for clear recent trends
-
-imr_national |>
-  mutate(date = as.Date(paste0(Month_en, "-01"))) |>
-  filter(date >= as.Date("2019-01-01") & date <= as.Date("2024-12-31")) |>
-  ggplot(aes(x = date, y = value, group = 1)) +
-  geom_line(color = "#2980b9", linewidth = 1, alpha = 0.3) +  # dim raw data so trend stands out
-  geom_point(color = "#2980b9", size = 2, shape = 21, fill = "white", stroke = 1, alpha = 0.5) +
-  # LOESS smoother reveals underlying trend
-  geom_smooth(
-    method = "loess", se = TRUE, color = "#2980b9", fill = "#2980b9",
-    alpha = 0.2, linewidth = 1.5
-  ) +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-  scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.2))) +  # y-axis starts at 0 to avoid exaggerating changes
-  labs(
-    title = "Infant Mortality Rate Trend",
-    subtitle = "Monthly Deaths per 1,000 live births (2019-2024)",
-    x = NULL,
-    y = "IMR (per 1,000 live births)",
-    caption = "Source: NSO Mongolia"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(face = "bold", size = 16),
-    plot.subtitle = element_text(color = "grey40"),
-    panel.grid.minor = element_blank(),
-    panel.grid.major.x = element_blank()
+# The two tables use different age groups; collapse both to the cancer
+# table's groups (0-4, 5-14, 15-19, ..., 60-64, 65+)
+to_cancer_groups <- function(age) {
+  case_when(
+    age %in% c("5-9", "10-14") ~ "5-14",
+    age %in% c("65-69", "70-74", "75-79", "80-84", "85+", "70+") ~ "65+",
+    .default = age
   )
+}
+
+# WHO World Standard Population (2000-2025), per million
+who_standard <- tibble::tibble(
+  age = c(
+    "0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44",
+    "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85+"
+  ),
+  weight = c(
+    88569, 86870, 85970, 84670, 82171, 79272, 76073, 71475, 65877,
+    60379, 53681, 45484, 37187, 29590, 22092, 15195, 9097, 6348
+  )
+) |>
+  mutate(age = to_cancer_groups(age)) |>
+  summarise(weight = sum(weight), .by = age)
+
+population <- population |>
+  mutate(age = to_cancer_groups(age)) |>
+  summarise(population = sum(population), .by = c(year, age))
+
+cancer_asr <- cancer_cases |>
+  inner_join(population, by = join_by(year, age)) |>
+  inner_join(who_standard, by = join_by(age)) |>
+  summarise(
+    crude = sum(cases) / sum(population) * 1e4,
+    # Direct standardisation: weighted mean of age-specific rates
+    standardised = sum(weight * cases / population) / sum(weight) * 1e4,
+    .by = year
+  ) |>
+  mutate(year = as.integer(year)) |>
+  arrange(year)
+
+cancer_asr
 ```
 
-## Case Study: Tuberculosis Burden
+```{r cancer-asr-plot, fig.alt="Line chart comparing crude and age-standardised cancer incidence per 10,000 in Mongolia. The crude rate rises over the period while the age-standardised rate stays roughly flat.", fig.height=4.5}
+cancer_asr |>
+  tidyr::pivot_longer(c(crude, standardised), names_to = "measure", values_to = "rate") |>
+  mutate(measure = if_else(measure == "crude", "Crude", "Age-standardised (WHO World)")) |>
+  ggplot(aes(x = year, y = rate, color = measure)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("Crude" = "#2a78d6", "Age-standardised (WHO World)" = "#eb6834"), name = NULL) +
+  scale_y_continuous(limits = c(0, NA)) +
+  labs(
+    title = "All-Site Cancer Incidence: Crude and Age-Standardised",
+    subtitle = "New cases per 10,000 population",
+    x = NULL,
+    y = "Incidence (per 10,000)",
+    caption = "Source: NSO Mongolia, DT_NSO_2100_044V1 and DT_NSO_0300_003V1"
+  ) +
+  theme(legend.position = "top", panel.grid.minor = element_blank())
+```
 
-Let's analyze the seasonal trends of Tuberculosis using monthly data.
+```{r cancer-asr-facts, include=FALSE}
+asr_first <- if (run_vignette) slice_min(cancer_asr, year) else NULL
+asr_last <- if (run_vignette) slice_max(cancer_asr, year) else NULL
+pct_change <- function(from, to) sprintf("%+.1f%%", (to / from - 1) * 100)
+```
+
+Between `r if (run_vignette) asr_first$year else "the first year"` and `r if (run_vignette) asr_last$year else "the latest year"`, the crude rate changed by `r if (run_vignette) pct_change(asr_first$crude, asr_last$crude) else "-"`, but the age-standardised rate changed by `r if (run_vignette) pct_change(asr_first$standardised, asr_last$standardised) else "-"`. Most of the rise in crude incidence reflects an older population, not a higher risk of cancer at any given age. The age-standardised rate is higher than the crude rate because Mongolia's population is younger than the WHO standard population.
+
+> **Biostatistical note:** Age-standardised rates are for comparison only: between years, between countries, or between groups with different age structures. They depend on the standard population chosen. Report the crude rate, or the number of cases, when the question is about the actual burden on health services. The 2021 dip in both rates coincides with the COVID-19 pandemic, when fewer people were diagnosed.
+
+## Finding Numerators and Denominators
+
+Many NSO rate tables have matching count tables. With counts you can pool years, combine areas, and attach confidence intervals, which a published rate does not allow. For infant mortality:
+
+- `DT_NSO_2100_014V1`: infant deaths (count), by aimag and month
+- `DT_NSO_2100_018V5`: live births (count), by aimag and month
+- `DT_NSO_2100_015V2`: infant mortality rate (per 1,000 live births), by soum and year
+
+Before you rely on rates you build yourself, check that they reproduce the published ones:
+
+```{r numerators-denominators}
+# National annual totals from a monthly count table
+national_annual <- function(tbl) {
+  months <- nso_dim_values(tbl, "Month", labels = "en")
+  nso_data(tbl, selections = list(Region = "0", Month = months$code), labels = "en") |>
+    mutate(year = substr(Month_en, 1, 4)) |>
+    summarise(count = sum(value), n_months = n(), .by = year) |>
+    filter(n_months == 12) # complete years only
+}
+
+infant_deaths <- national_annual("DT_NSO_2100_014V1")
+live_births <- national_annual("DT_NSO_2100_018V5")
+
+# Published annual rate. This id names two tables in the catalogue, so
+# mongolstats warns and uses the first match ("by soum, and by year"),
+# which includes the national total.
+imr_years <- nso_dim_values("DT_NSO_2100_015V2", "Year", labels = "en")
+imr_published <- nso_data(
+  "DT_NSO_2100_015V2",
+  selections = list(Region = "0", Year = imr_years$code),
+  labels = "en"
+) |>
+  select(year = Year_en, published = value)
+
+imr_check <- infant_deaths |>
+  select(year, deaths = count) |>
+  inner_join(select(live_births, year, births = count), by = join_by(year)) |>
+  inner_join(imr_published, by = join_by(year)) |>
+  mutate(calculated = round(deaths / births * 1000, 1)) |>
+  arrange(year)
+
+imr_check
+```
+
+The calculated rates differ from the published ones by at most `r if (run_vignette) max(abs(imr_check$calculated - imr_check$published)) else "-"` per 1,000, because NSO rounds the published rate to a whole number. The count tables can be trusted to give the same answer. The [Getting Started](getting-started.html) and [Mapping](mapping.html) guides use them to compare aimags.
+
+## Case Study: Tuberculosis Notifications
+
+The monthly communicable disease table counts reported (notified) cases. To compare years, divide by the population at risk. Here we use the national mid-year population.
 
 ```{r tb-data}
-# TB cases (Monthly)
-tb_tbl <- "DT_NSO_2100_035V1" # CASES OF COMMUNICABLE DISEASES, by type of selected diseases and by month
+tb_tbl <- "DT_NSO_2100_035V1" # Cases of communicable diseases, by type and by month
 
-# Get metadata to find the code for Tuberculosis
-# Note: Dimensions are "Indicators" and "Month"
+# Find the code for tuberculosis
 indicators <- nso_dim_values(tb_tbl, "Indicators", labels = "en")
 tb_code <- indicators |>
-  filter(grepl("Tuberculosis", label_en, ignore.case = TRUE)) |>
+  filter(trimws(label_en) == "Tuberculosis") |>
   pull(code)
 
-# Fetch monthly data
-tb_data <- nso_data(
+tb_months <- nso_dim_values(tb_tbl, "Month", labels = "en")
+tb_annual <- nso_data(
   tbl_id = tb_tbl,
-  selections = list(
-    "Indicators" = tb_code,
-    "Month" = nso_dim_values(tb_tbl, "Month")$code
-  ),
+  selections = list(Indicators = tb_code, Month = tb_months$code),
   labels = "en"
-)
+) |>
+  mutate(year = substr(Month_en, 1, 4)) |>
+  summarise(cases = sum(value), n_months = n(), .by = year) |>
+  filter(n_months == 12)
 
-# Visualize Monthly Tuberculosis Trends
-p <- tb_data |>
-  mutate(date = as.Date(paste0(Month_en, "-01"))) |>
-  filter(!is.na(value)) |>
-  ggplot(aes(x = date, y = value, group = 1)) +
-  geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) +  # dim raw data
-  geom_point(color = "#2c3e50", size = 2, alpha = 0.3) +
-  geom_smooth(method = "loess", se = TRUE, color = "#e74c3c", fill = "#e74c3c", alpha = 0.2, linewidth = 1.5) +  # trend line
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-  scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.2))) +  # start y-axis at 0
-  labs(
-    title = "Tuberculosis Cases in Mongolia",
-    subtitle = "Monthly reported cases",
-    x = NULL,
-    y = "Number of Cases (Monthly)",
-    caption = "Source: NSO Mongolia (DT_NSO_2100_035V1)"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(face = "bold", size = 16),
-    plot.subtitle = element_text(color = "grey40"),
-    panel.grid.minor = element_blank()
-  )
+# Mid-year population (denominator)
+population <- nso_data(
+  "DT_NSO_0300_002V1",
+  selections = list(Region = "0", Year = tb_annual$year),
+  labels = "en"
+) |>
+  select(year = Year_en, population = value)
 
-p  # print static ggplot
+tb_rate <- tb_annual |>
+  inner_join(population, by = join_by(year)) |>
+  mutate(
+    year = as.integer(year),
+    rate = cases / population * 1e5,
+    # Exact Poisson 95% confidence interval
+    lower = qchisq(0.025, 2 * cases) / 2 / population * 1e5,
+    upper = qchisq(0.975, 2 * (cases + 1)) / 2 / population * 1e5
+  ) |>
+  arrange(year)
+
+tb_rate
 ```
 
-> **Biostatistical Note:** This plot shows the *number* of reported cases, not the incidence *rate*. Trends should be interpreted with caution, as an increase in cases could be due to population growth or improved detection, rather than an increase in disease risk.
+```{r tb-plot, fig.alt="Line chart of the annual tuberculosis notification rate per 100,000 population in Mongolia, falling over the period with a sharp drop in 2021"}
+tb_rate |>
+  ggplot(aes(x = year, y = rate)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "#e74c3c", alpha = 0.15) +
+  geom_line(color = "#e74c3c", linewidth = 1) +
+  geom_point(color = "#e74c3c", size = 2) +
+  scale_x_continuous(breaks = tb_rate$year) +
+  scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.1))) + # start at 0
+  labs(
+    title = "Tuberculosis Notifications in Mongolia",
+    subtitle = "Reported cases per 100,000 population, with 95% confidence intervals",
+    x = NULL,
+    y = "Notifications per 100,000",
+    caption = "Source: NSO Mongolia, DT_NSO_2100_035V1 and DT_NSO_0300_002V1"
+  ) +
+  theme(panel.grid.minor = element_blank())
+```
+
+```{r tb-facts, include=FALSE}
+tb_first <- if (run_vignette) slice_min(tb_rate, year) else NULL
+tb_last <- if (run_vignette) slice_max(tb_rate, year) else NULL
+```
+
+The notification rate fell from `r if (run_vignette) round(tb_first$rate) else "-"` per 100,000 in `r if (run_vignette) tb_first$year else "the first year"` to `r if (run_vignette) round(tb_last$rate) else "-"` in `r if (run_vignette) tb_last$year else "the latest year"`.
+
+> **Biostatistical note:** A notification rate counts cases that were **diagnosed and reported**, not all new cases (incidence). It falls when case finding falls, as well as when transmission falls. The sharp drop in 2021 coincides with the COVID-19 pandemic, which disrupted tuberculosis services in many countries. These data cannot separate a true decline from missed diagnoses. For incidence, see the World Health Organization's country estimates, which adjust for under-reporting.
 
 ## Tips for Epidemiological Research
 
-1. **Always check time coverage**: Use `nso_table_periods()` to verify data availability
-2. **Use labels for clarity**: Set `labels = "en"` to get readable dimension names
-3. **Join multiple indicators**: Combine tables to calculate derived metrics (e.g., case-fatality rates)
-4. **Account for denominator data**: Link disease counts with population data for rate calculations
-5. **Regional analysis**: Most health tables include breakdowns by aimag and soum for geographic analysis
+1. **Check time coverage**: Use `nso_table_periods()` or `nso_dim_values()` to see which periods a table covers. Monthly tables usually include a partial current year; keep complete years for annual comparisons.
+2. **Check what a table measures**: The title says whether values are counts or rates and gives the rate's denominator.
+3. **Prefer counts for analysis**: Build rates from numerator and denominator counts, then check them against any published rate.
+4. **Use the right denominator**: Live births for infant and maternal mortality; mid-year population for incidence and crude death rates.
+5. **Watch for ambiguous ids**: A few table ids name more than one table. mongolstats warns and tells you which one it used.
+6. **Geographic detail varies**: Many health tables are by aimag; some are by soum ("by soum" in the title). Check the `Region` dimension with `nso_dim_values()`.
 
 ## Next Steps
 

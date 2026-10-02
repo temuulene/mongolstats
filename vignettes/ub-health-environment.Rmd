@@ -39,11 +39,11 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(mongolstats)
+library(mongolmaps)
 library(dplyr)
 library(ggplot2)
 library(sf)
 library(tidyr)
-library(purrr)
 
 nso_options(mongolstats.lang = "en")
 
@@ -62,484 +62,310 @@ theme_set(
 
 ## Introduction
 
-Ulaanbaatar, the capital of Mongolia, is a rapidly urbanizing metropolis that houses nearly half of the nation's population. This concentration creates distinct epidemiological and environmental profiles compared to the rest of the country.
+Ulaanbaatar, the capital of Mongolia, is home to about half of the country's population. This vignette looks at its nine districts (duureg) using NSO tables published "by soum and district": population and growth, school capacity, the air quality monitoring network, and the limits of district-level health statistics.
 
-This vignette performs a comprehensive, biostatistical analysis of Ulaanbaatar's 9 districts (soums), leveraging "by soum" datasets available through the NSO API. We explore demographic shifts, socioeconomic disparities, and public health outcomes, culminating in a multivariate analysis of district-level indicators.
+## Districts and Their Codes
 
-## Methodology: Dynamic Data Retrieval
-
-To analyze UB districts specifically, we employ a spatial filtering approach. We retrieve data for all soums and then filter for those geometrically contained within the Ulaanbaatar capital region.
+[mongolmaps](https://github.com/temuulene/mongolmaps) provides the district boundaries with their NSO codes and areas, so NSO tables join without matching names.
 
 ```{r helpers}
-# 1. Define UB District Names (Map vs Data standard)
-# Map names (transliterated) -> Data names (English standard)
-ub_name_map <- c(
-  "Baganuur" = "Baganuur",
-  "Bagaxangai" = "Bagakhangai",
-  "Bayangol" = "Bayangol",
-  "Bayanzu'rx" = "Bayanzurkh",
-  "Chingeltei" = "Chingeltei",
-  "Nalaix" = "Nalaikh",
-  "Songinoxairxan" = "Songinokhairkhan",
-  "Su'xbaatar" = "Sukhbaatar",
-  "Xan-Uul" = "Khan-Uul"
-)
+ub_districts <- mn_ub_districts()
+ub_districts |>
+  st_drop_geometry() |>
+  select(name, nso_code, area_km2)
 
-# 2. Get Spatial Boundaries
-# We use a cached version or fetch if needed
-get_ub_shapes <- function() {
-  # Get all soums and UB boundary
-  all_soums <- mn_boundaries(level = "ADM2")
-  aimags <- mn_boundaries(level = "ADM1")
-  ub_boundary <- aimags |> filter(shapeName == "Ulaanbaatar")
-
-  # Spatial filter (turn off S2 for robustness, then restore the caller's
-  # setting on exit so this helper does not leave a global side effect behind)
-  old_s2 <- sf_use_s2(FALSE)
-  on.exit(suppressMessages(sf_use_s2(old_s2)), add = TRUE)
-  ub_districts <- all_soums |>
-    filter(shapeName %in% names(ub_name_map)) |>
-    st_filter(ub_boundary)
-
-  # Add standardized name column
-  ub_districts |>
-    mutate(District = ub_name_map[shapeName])
+# Fetch an NSO table for the nine districts only
+get_ub_data <- function(tbl_id, selections = list()) {
+  nso_data(
+    tbl_id,
+    selections = c(list(Region = ub_districts$nso_code), selections),
+    labels = "en"
+  ) |>
+    mutate(District = trimws(Region_en))
 }
 
-ub_shapes <- get_ub_shapes()
-
-# 3. Helper to fetch and filter NSO data for UB
-get_ub_data <- function(tbl_id, ...) {
-  # Fetch data for all regions
-  df <- nso_data(tbl_id, labels = "en", ...)
-
-  # Filter for UB districts using the "511" prefix code pattern
-  df |>
-    filter(grepl("^511", Region)) |>
-    mutate(District = trimws(Region_en)) |> # Standardize name
-    filter(District %in% ub_name_map) |>
-    select(-Region_en, -Region) # Keep only standardized District
+# Latest year a table covers
+latest_year <- function(tbl_id) {
+  max(nso_dim_values(tbl_id, "Year", labels = "en")$label_en)
 }
 ```
 
 ## 1. Demographic Profile
 
-Understanding the population distribution is fundamental to any public health analysis.
-
 ### Population Density
 
-We calculate population density using the most recent population data and the district land areas.
+The population table `DT_NSO_0300_002V4` gives the mid-year resident population down to khoroo level. (This table id names two tables in the catalogue; mongolstats warns and uses the first match, which is the khoroo-level table and also includes the districts.)
 
-```{r demog-density}
-# Fetch Population Data (DT_NSO_0300_002V4)
-pop_data <- get_ub_data("DT_NSO_0300_002V4",
-  selections = list(Year = "2024")
-)
+```{r demog-density, fig.alt="Map of population density by Ulaanbaatar district on a log scale, with each district labelled"}
+pop_tbl <- "DT_NSO_0300_002V4"
+pop_year <- latest_year(pop_tbl)
 
-# Join population data with district boundaries
-ub_pop_map <- ub_shapes |>
-  left_join(pop_data, by = "District") |>
-  # Project to UTM Zone 48N for accurate area calculation in meters (not degrees)
-  st_transform(32648) |>
-  mutate(
-    Area_km2 = as.numeric(st_area(geometry)) / 1e6, # Convert m² to km²
-    Density = value / Area_km2 # People per km²
-  ) |>
-  st_transform(4326) # Back to WGS84 for plotting
+pop_data <- get_ub_data(pop_tbl, list(Year = pop_year))
 
-# Map population density
-p_dens <- ggplot(ub_pop_map) +
-  geom_sf(aes(fill = Density), color = "white", size = 0.2) +
-  scale_fill_viridis_c(
-    option = "rocket",
-    direction = -1,
-    trans = "log10",  # log scale because densities span 4 orders of magnitude
-    name = "Population Density\n(People/km²)",
-    labels = scales::comma
-  ) +
+ub_pop_map <- pop_data |>
+  mn_join(by = "Region", level = "soum", within = "Ulaanbaatar") |>
+  mutate(density = value / area_km2) # residents per km2
+
+mn_map(
+  ub_pop_map,
+  fill = density, trans = "log10", label = TRUE,
+  title = paste0("Population Density by District, ", pop_year)
+) +
   labs(
-    title = "Population Density by District (2024)",
-    subtitle = "People per square kilometer (Logarithmic Scale)",
-    caption = "Source: NSO Mongolia (DT_NSO_0300_002V4)\nNote: Log scale used to visualize wide range of densities."
-  ) +
-  theme_void() +
-  theme(
-    plot.title = element_text(face = "bold", size = 14),
-    plot.subtitle = element_text(color = "grey40"),
-    legend.position = "bottom",          # bottom legend maximizes map width
-    legend.key.width = unit(1.5, "cm")
+    subtitle = "Residents per km² (log scale). Data: NSO Mongolia, DT_NSO_0300_002V4",
+    fill = "Residents\nper km²"
   )
-
-p_dens  # print static ggplot
 ```
 
-> **Interpretation**: The central districts (Bayangol, Chingeltei, Sukhbaatar) exhibit extremely high density, while the exurban districts (Baganuur, Bagakhangai) remain sparsely populated. This density gradient is a critical factor for infectious disease transmission and environmental exposure.
+```{r density-facts, include = FALSE}
+density_rank <- if (run_vignette) {
+  ub_pop_map |>
+    st_drop_geometry() |>
+    arrange(desc(density))
+}
+```
+
+**`r inline_value(density_rank$District[1])`** is the densest district, with about `r inline_value(scales::label_comma()(round(density_rank$density[1], -2)))` residents per km². **`r inline_value(density_rank$District[9])`** is the least dense, at about `r inline_value(round(density_rank$density[9]))` per km². Districts such as Bayanzurkh and Songinokhairkhan include large areas of mountain and pasture, so a district average hides very dense neighbourhoods. Khoroo-level data show more detail:
+
+```{r khoroo-density, fig.alt="Map of population density by khoroo in Ulaanbaatar's six central districts on a log scale", fig.height=5.5}
+khoroo_codes <- nso_dim_values(pop_tbl, "Region")$code |>
+  stringr::str_subset("^511\\d{4}$") # seven-digit codes are khoroos
+
+khoroo_pop <- nso_data(
+  pop_tbl,
+  selections = list(Region = khoroo_codes, Year = pop_year),
+  labels = "en"
+) |>
+  mn_join(by = "Region", level = "bag", within = "Ulaanbaatar")
+
+central <- c("Bayangol", "Bayanzurkh", "Chingeltei", "Khan-Uul", "Songinokhairkhan", "Sukhbaatar")
+mn_map(
+  filter(khoroo_pop, parent_pcode %in% ub_districts$pcode[ub_districts$name %in% central]),
+  fill = value / area_km2, trans = "log10",
+  title = paste0("Population Density by Khoroo, Central Ulaanbaatar, ", pop_year)
+) +
+  labs(subtitle = "Residents per km² (log scale), six central districts", fill = "Residents\nper km²")
+```
+
+The khoroo boundaries in mongolmaps come from an open project that does not state their source, so treat them as unofficial.
 
 ### Population Growth Trends
 
-Analyzing growth rates helps identify rapidly expanding areas which may strain local health infrastructure.
+Rapid growth can strain local health and school services.
 
-```{r demog-trend}
-# Fetch historical population data (last 10 years)
-pop_trend <- get_ub_data("DT_NSO_0300_002V4",
-  selections = list(Year = as.character(2013:2024))
-)
+```{r demog-trend, fig.alt="Line chart of resident population by Ulaanbaatar district over the last 10 years"}
+trend_years <- as.character(as.integer(pop_year) - 9:0)
+pop_trend <- get_ub_data(pop_tbl, list(Year = trend_years)) |>
+  mutate(Year = as.integer(Year_en))
 
-p_trend <- pop_trend |>
-  mutate(Year = as.numeric(Year_en)) |>
-  arrange(Year) |>
-  ggplot(aes(x = Year, y = value, color = District, group = District)) +
+pop_trend |>
+  ggplot(aes(x = Year, y = value, color = District)) +
   geom_line(linewidth = 1) +
-  geom_point(size = 2) +
-  scale_y_continuous(labels = scales::comma) +
-  scale_x_continuous(breaks = 2013:2024) +
+  geom_point(size = 1.5) +
+  scale_y_continuous(labels = scales::label_comma()) +
+  scale_x_continuous(breaks = as.integer(trend_years)) +
   labs(
-    title = "Population Growth Trends (2013-2024)",
-    subtitle = "Annual resident population",
+    title = paste0("Resident Population by District, ", min(trend_years), "–", max(trend_years)),
+    subtitle = "Mid-year resident population",
     y = "Population", x = NULL, color = "District",
-    caption = "Source: NSO Mongolia"
+    caption = "Source: NSO Mongolia, DT_NSO_0300_002V4"
   ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    legend.position = "bottom"
-  )
-
-p_trend  # print static ggplot
+  theme(legend.position = "bottom", panel.grid.minor = element_blank())
 ```
 
-The rapid growth in **Songinokhairkhan** and **Bayanzurkh** highlights their role as the primary absorption points for rural-to-urban migration, often associated with the expansion of unplanned "ger districts".
+```{r growth-facts, include = FALSE}
+growth <- if (run_vignette) {
+  pop_trend |>
+    filter(Year %in% range(Year)) |>
+    summarise(
+      change = (value[Year == max(Year)] / value[Year == min(Year)] - 1) * 100,
+      .by = District
+    ) |>
+    arrange(desc(change))
+}
+fmt_change <- function(x) sprintf("%+.0f%%", x)
+```
 
-## 2. Socioeconomic Indicators
+Over these 10 years, **`r inline_value(growth$District[1])`** grew fastest (`r inline_value(fmt_change(growth$change[1]))`), followed by **`r inline_value(growth$District[2])`** (`r inline_value(fmt_change(growth$change[2]))`). **`r inline_value(growth$District[9])`** changed the least (`r inline_value(fmt_change(growth$change[9]))`). Growth this uneven means services planned on older population figures may now be under strain in the fastest-growing districts.
 
-Direct socioeconomic data by soum is limited. However, we can use **educational infrastructure load** as a proxy for public service capacity and development pressure.
+## 2. School Capacity
 
-### Educational Load (Students per School)
+NSO publishes few socioeconomic indicators by district. The number of students per general education school gives a rough measure of pressure on public services.
 
-We compare the number of students to the number of schools to estimate overcrowding.
+```{r socio-edu, fig.alt="Bar chart of students per general education school by Ulaanbaatar district"}
+edu_year <- latest_year("DT_NSO_2002_057V2")
+schools <- get_ub_data("DT_NSO_2001_002V2", list(Year = edu_year)) |>
+  select(District, Schools = value)
+students <- get_ub_data("DT_NSO_2002_057V2", list(Year = edu_year)) |>
+  select(District, Students = value)
 
-```{r socio-edu}
-# Fetch Schools (DT_NSO_2001_002V2) and Students (DT_NSO_2002_057V2)
-schools <- get_ub_data("DT_NSO_2001_002V2", selections = list(Year = "2024")) |>
-  rename(Schools = value)
-students <- get_ub_data("DT_NSO_2002_057V2", selections = list(Year = "2024")) |>
-  rename(Students = value)
-
-edu_load <- left_join(schools, students, by = c("District", "Year")) |>
+edu_load <- inner_join(schools, students, by = join_by(District)) |>
   mutate(Students_Per_School = Students / Schools)
 
-p_edu <- ggplot(edu_load, aes(
-  x = reorder(District, Students_Per_School),
-  y = Students_Per_School, fill = District
-)) +
-  geom_col(show.legend = FALSE) +
-  geom_text(aes(label = round(Students_Per_School)), hjust = -0.1, size = 3) +  # inline labels replace tooltips
-  coord_flip() +
-  scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) +
+ggplot(edu_load, aes(x = Students_Per_School, y = reorder(District, Students_Per_School))) +
+  geom_col(fill = "#2a78d6", width = 0.7) +
+  geom_text(aes(label = round(Students_Per_School)), hjust = -0.1, size = 3) +
+  scale_x_continuous(labels = scales::label_comma(), expand = expansion(mult = c(0, 0.15))) +
   labs(
-    title = "Educational Load: Students per School (2024)",
-    subtitle = "Average number of students per general educational school",
-    y = "Students per School", x = NULL,
-    caption = "Source: NSO Mongolia"
+    title = paste0("Students per General Education School, ", edu_year),
+    subtitle = "Full-time students divided by number of schools",
+    x = "Students per school", y = NULL,
+    caption = "Source: NSO Mongolia, DT_NSO_2001_002V2 and DT_NSO_2002_057V2"
   ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    panel.grid.major.y = element_blank()  # horizontal gridlines clutter bar charts
-  )
-
-p_edu  # print static ggplot
+  theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
 ```
 
-Districts with higher ratios may indicate infrastructure lags relative to population growth, often correlating with lower socioeconomic status and higher vulnerability.
+Schools differ in size and shift system, so a high ratio points to crowding but does not measure it directly.
 
-## 3. Public Health Overview
+## 3. Health Statistics by District: A Caution
 
-Urban health is multidimensional. We focus on three key indicators that reflect environmental pressures and health system capacity: respiratory mortality, infant outcomes, and infectious disease.
+Rates need a numerator and a denominator for the **same population**. NSO's district tables count residents by where they live, but births and deaths can be counted where they happen, which is often a hospital in another district. A quick check is to divide each district's births and deaths by its residents:
 
-### Respiratory Mortality
+```{r health-check, fig.alt="Two-panel bar chart of live births and deaths per 1,000 residents by Ulaanbaatar district, showing implausible differences between districts"}
+vital_year <- latest_year("DT_NSO_2100_027V1")
 
-Respiratory diseases are a leading cause of death in UB. We calculate the **Crude Death Rate (CDR)** per 10,000 population.
-
-```{r health-resp}
-# 1. Get Respiratory Deaths (Code found in discovery phase)
-# We need to find the code dynamically or use known one.
-# For vignette stability, we'll search for it.
-resp_meta <- nso_dim_values("DT_NSO_2100_027V1", "Indicator", labels = "en")
-resp_code <- resp_meta |>
-  filter(grepl("respiratory", label_en, ignore.case = TRUE)) |>
-  pull(code)
-
-resp_deaths <- get_ub_data("DT_NSO_2100_027V1",
-  selections = list(Indicator = resp_code, Year = "2024")
+births <- get_ub_data(
+  "DT_NSO_2100_018V6",
+  list(Indicator = "0", Year = vital_year) # Indicator "0" = both sexes
 ) |>
-  rename(Deaths = value)
+  select(District, count = value) |>
+  mutate(measure = "Live births per 1,000 residents")
 
-# 2. Calculate Rates using Population data from Demographics section
-health_metrics <- resp_deaths |>
-  left_join(pop_data, by = c("District")) |>
-  rename(Population = value) |>
-  mutate(Resp_Death_Rate = (Deaths / Population) * 10000)
+deaths <- get_ub_data(
+  "DT_NSO_2100_027V1",
+  list(Indicator = "0", Year = vital_year) # Indicator "0" = all deaths
+) |>
+  select(District, count = value) |>
+  mutate(measure = "Deaths per 1,000 residents")
 
-p_resp <- ggplot(health_metrics, aes(
-  x = reorder(District, Resp_Death_Rate),
-  y = Resp_Death_Rate, fill = Resp_Death_Rate
-)) +
-  geom_col() +
-  geom_text(aes(label = round(Resp_Death_Rate, 1)), hjust = -0.1, size = 3) +  # inline labels
-  scale_fill_viridis_c(option = "inferno", direction = -1, name = "Rate") +
-  coord_flip() +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +  # room for labels
+residents <- get_ub_data(pop_tbl, list(Year = vital_year)) |>
+  select(District, residents = value)
+
+vital_rates <- bind_rows(births, deaths) |>
+  inner_join(residents, by = join_by(District)) |>
+  mutate(rate = count / residents * 1000)
+
+vital_rates |>
+  ggplot(aes(x = rate, y = reorder(District, residents))) +
+  geom_col(fill = "#8e44ad", width = 0.7) +
+  geom_text(aes(label = round(rate, 1)), hjust = -0.1, size = 3) +
+  facet_wrap(~measure, scales = "free_x") +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.2))) +
   labs(
-    title = "Respiratory Mortality Rate (2024)",
-    subtitle = "Deaths per 10,000 population",
-    y = "Rate per 10,000", x = NULL,
-    caption = "Source: NSO Mongolia"
+    title = paste0("Recorded Births and Deaths per 1,000 Residents, ", vital_year),
+    subtitle = "Districts ordered by number of residents",
+    x = NULL, y = NULL,
+    caption = "Source: NSO Mongolia, DT_NSO_2100_018V6, DT_NSO_2100_027V1 and DT_NSO_0300_002V4"
   ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    legend.position = "none"  # color already encoded in bar height
-  )
-
-p_resp  # print static ggplot
+  theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
 ```
 
-### Infant Mortality Rate (IMR)
-
-IMR is a sensitive indicator of maternal health and primary care access.
-
-```{r health-imr}
-# Fetch IMR directly (DT_NSO_2100_015V2 is Rate per 1000)
-# Using 2023 as 2024 data appears incomplete for some districts
-imr_data <- get_ub_data("DT_NSO_2100_015V2",
-  selections = list(Year = "2023")
-)
-
-p_imr <- ggplot(imr_data, aes(x = reorder(District, value), y = value)) +
-  geom_segment(aes(xend = District, yend = 0), color = "grey") +  # lollipop stem
-  geom_point(size = 4, color = "steelblue") +  # lollipop head
-  geom_text(aes(label = round(value, 1)), hjust = -0.3, size = 3) +  # inline labels
-  coord_flip() +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
-  labs(
-    title = "Infant Mortality Rate (2023)",
-    subtitle = "Deaths per 1,000 live births",
-    y = "IMR (per 1,000)", x = NULL,
-    caption = "Source: NSO Mongolia"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    panel.grid.major.y = element_blank()
-  )
-
-p_imr  # print static ggplot
+```{r health-facts, include = FALSE}
+birth_rates <- if (run_vignette) filter(vital_rates, startsWith(measure, "Live births")) |> arrange(rate)
+death_rates <- if (run_vignette) filter(vital_rates, startsWith(measure, "Deaths")) |> arrange(rate)
 ```
 
-## 4. Multivariate Analysis
+These numbers cannot describe the residents. **`r inline_value(birth_rates$District[1])`**, with `r inline_value(scales::label_comma()(birth_rates$residents[1]))` residents, recorded `r inline_value(birth_rates$count[1])` live births in `r inline_value(vital_year)`, while **`r inline_value(birth_rates$District[9])`** recorded `r inline_value(round(birth_rates$rate[9]))` per 1,000 residents. Recorded deaths range from `r inline_value(round(death_rates$rate[1], 1))` per 1,000 residents in `r inline_value(death_rates$District[1])` to `r inline_value(round(death_rates$rate[9], 1))` in `r inline_value(death_rates$District[9])`. The pattern fits counting by **place of occurrence**: births and deaths are recorded in the districts that have maternity and general hospitals, not in the districts where the mother or the person who died lived.
 
-To understand the interplay between these factors, we examine correlations between population density, educational load, and health outcomes.
+So district-level rates built from these tables, such as infant mortality or deaths from respiratory disease per 10,000 residents, mix up where people live with where hospitals are. Correlating them with district density or other indicators would produce misleading results. For district comparisons, use data coded by **place of residence**, which may need a request to the Health Development Center or NSO. City-wide rates for Ulaanbaatar as a whole are less affected, though referrals of patients from the aimags to the capital's hospitals still raise its counts.
 
-```{r multi-var}
-# Combine all metrics into one analytical dataset. left_join keeps every
-# district; a metric missing for a district becomes NA.
-imr_by_district <- select(imr_data, District, IMR = value)
-schools_by_district <- select(edu_load, District, Students_Per_School)
-density_by_district <- ub_pop_map |>
-  st_drop_geometry() |>
-  select(District, Density)
+## 4. Air Quality Monitoring Network
 
-analysis_df <- health_metrics |>
-  select(District, Population, Resp_Death_Rate) |>
-  left_join(imr_by_district, by = "District") |>
-  left_join(schools_by_district, by = "District") |>
-  left_join(density_by_district, by = "District")
-
-# Correlation Matrix (guard against empty or all-NA data)
-cor_input <- analysis_df |>
-  select(Density,
-    `Students/School` = Students_Per_School,
-    `Resp. Rate` = Resp_Death_Rate, IMR
-  ) |>
-  tidyr::drop_na()
-
-if (nrow(cor_input) < 2) {
-  cor_mat <- matrix(NA_real_, nrow = 4, ncol = 4, dimnames = list(
-    c("Density", "Students/School", "Resp. Rate", "IMR"),
-    c("Density", "Students/School", "Resp. Rate", "IMR")
-  ))
-} else {
-  cor_mat <- cor_input |> cor()
-}
-
-# Reshape for ggplot
-cor_long <- as.data.frame(cor_mat) |>
-  mutate(Var1 = rownames(cor_mat)) |>
-  pivot_longer(-Var1, names_to = "Var2", values_to = "Correlation") |>
-  filter(Var1 != Var2) # Remove diagonal
-
-p_cor <- ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation)) +
-  geom_tile(color = "white") +
-  scale_fill_gradient2(
-    low = "blue", high = "red", mid = "white",
-    midpoint = 0, limit = c(-1, 1)
-  ) +
-  geom_text(aes(
-    label = round(Correlation, 2),
-    color = ifelse(abs(Correlation) > 0.5, "white", "black")  # contrast for readability
-  )) +
-  scale_color_identity() +
-  labs(
-    title = "Correlation of District Indicators",
-    subtitle = "Pearson correlation coefficients",
-    x = NULL, y = NULL
-  ) +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.title = element_text(face = "bold")
-  )
-
-p_cor  # print static ggplot
-```
-
-### Key Insights
-
-> **Read these correlations with caution.** They are computed across only
-> `r inline_value(nrow(cor_input), "a handful of")` districts with complete data. With so few observations
-> and no significance testing, the coefficients are statistically unstable—a
-> single district can swing them substantially—and confidence intervals would
-> be very wide. They also describe *district-level averages*, so they cannot be
-> used to infer individual-level risk (the ecological fallacy). Treat the
-> patterns below as hypothesis-generating, not confirmatory.
-
-1.  **Density & Infant Mortality**: Population density and Infant Mortality Rate (IMR) show a positive correlation (r = `r inline_value(round(cor_mat["Density", "IMR"], 2))`) in this small sample. Denser districts, which often include crowded ger areas with limited infrastructure, *may* face higher infant-health risks—but the caveat above should temper any causal reading.
-2.  **Respiratory Health**: Respiratory mortality correlates only weakly with density (r = `r inline_value(round(cor_mat["Resp. Rate", "Density"], 2))`) and with IMR (r = `r inline_value(round(cor_mat["Resp. Rate", "IMR"], 2))`). This may reflect city-wide pollution exposure that is relatively uniform across districts, or that mortality data captures only the most severe outcomes, masking broader morbidity.
-3.  **Infrastructure Load**: The student-per-school ratio shows weak correlations with the other indicators, suggesting it is not a primary driver of the observed differences in this dataset.
-
-## 5. Air Quality Monitoring Network
-
-Ulaanbaatar's air quality monitoring network consists of 18 stations spread across 6 of the city's 9 districts. Understanding their spatial distribution is critical for interpreting pollution exposure patterns.
-
-### Station-to-District Mapping
+Station-level air quality data (see the [Environmental Analysis](environmental-surveillance.html) vignette) can only be linked to people if we know where the stations are. NSO does not publish station coordinates, so the table below lists approximate locations for 18 Ulaanbaatar stations, compiled from public station listings, including the World Air Quality Index project (api.waqi.info). Check them before using them for exposure assignment.
 
 ```{r aq-station-map}
-# Define station-to-district mapping with accurate coordinates
-# Sources: WAQI API (api.waqi.info) and user-provided coordinates
 ub_aq_stations <- tribble(
-  ~Station, ~District, ~Latitude, ~Longitude, ~Source,
-  "Misheel-Expo center", "Khan-Uul", 47.89428, 106.8825, "WAQI",
-  "West crossroad", "Bayangol", 47.91576, 106.8940, "WAQI",
-  "1st micro district", "Songinokhairkhan", 47.91798, 106.8481, "WAQI",
-  "13th micro district", "Bayanzurkh", 47.91761, 106.9374, "WAQI",
-  "32nd Toirog", "Sukhbaatar", 47.939333, 106.914333, "User",
-  "Ofitseruudiin ordon", "Bayanzurkh", 47.916611, 106.972556, "User",
-  "Kharkhorin market", "Songinokhairkhan", 47.910583, 106.837111, "User",
-  "Urgakh naran micro district", "Bayanzurkh", 47.873778, 107.115028, "User",
-  "Dambdarjaa", "Sukhbaatar", 47.988250, 106.951167, "User",
-  "Khailaast", "Chingeltei", 47.963528, 106.893889, "User",
-  "Tolgoit", "Songinokhairkhan", 47.920278, 106.799250, "User",
-  "Zuragt", "Chingeltei", 47.92973, 106.8886, "WAQI",
-  "Amgalan", "Bayanzurkh", 47.906250, 107.016556, "User",
-  "Nisekh", "Khan-Uul", 47.86394, 106.7791, "WAQI",
-  "Tavan buudal", "Sukhbaatar", 47.954500, 106.914833, "User",
-  "Bayankhoshuu", "Songinokhairkhan", 47.945528, 106.822917, "User",
-  "Sharkhad", "Bayanzurkh", 47.93375, 107.0103, "WAQI",
-  "100 ail", "Sukhbaatar", 47.93291, 106.9214, "WAQI"
+  ~Station, ~Latitude, ~Longitude,
+  "Misheel-Expo center", 47.89428, 106.8825,
+  "West crossroad", 47.91576, 106.8940,
+  "1st micro district", 47.91798, 106.8481,
+  "13th micro district", 47.91761, 106.9374,
+  "32nd Toirog", 47.939333, 106.914333,
+  "Ofitseruudiin ordon", 47.916611, 106.972556,
+  "Kharkhorin market", 47.910583, 106.837111,
+  "Urgakh naran micro district", 47.873778, 107.115028,
+  "Dambdarjaa", 47.988250, 106.951167,
+  "Khailaast", 47.963528, 106.893889,
+  "Tolgoit", 47.920278, 106.799250,
+  "Zuragt", 47.92973, 106.8886,
+  "Amgalan", 47.906250, 107.016556,
+  "Nisekh", 47.86394, 106.7791,
+  "Tavan buudal", 47.954500, 106.914833,
+  "Bayankhoshuu", 47.945528, 106.822917,
+  "Sharkhad", 47.93375, 107.0103,
+  "100 ail", 47.93291, 106.9214
 )
 
-# Convert to sf object
+# Assign each station to the district polygon it falls in
 ub_stations_sf <- ub_aq_stations |>
   st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) |>
-  st_transform(32648)
+  st_join(select(ub_districts, District = name))
 
-# Station count by district
-station_count <- ub_aq_stations |>
-  count(District, name = "Stations") |>
+# Station count for every district, including those with none
+station_count <- ub_districts |>
+  st_drop_geometry() |>
+  select(District = name) |>
+  left_join(count(st_drop_geometry(ub_stations_sf), District, name = "Stations"), by = join_by(District)) |>
+  mutate(Stations = coalesce(Stations, 0L)) |>
   arrange(desc(Stations))
 
-knitr::kable(station_count, caption = "Air Quality Monitoring Stations by District")
+knitr::kable(station_count, caption = "Air quality monitoring stations by district")
 ```
 
-> **Bayanzurkh** has the most stations (5), reflecting its large area and population, followed by **Songinokhairkhan** and **Sukhbaatar** (4 each). **Khan-Uul** and **Chingeltei** have 2 stations each, and **Bayangol** has a single station. Three of Ulaanbaatar's nine districts—**Baganuur**, **Bagakhangai**, and **Nalaikh**—have no station in this network at all. This uneven distribution leaves clear spatial gaps, particularly in the sparsely monitored peripheral ger districts where exposure may be highest.
+Stations are assigned by their coordinates, using mongolmaps' simplified district boundaries. A station within a few hundred metres of a district border may fall on the other side.
 
-### Spatial Distribution Map
+### Spatial Distribution
 
-```{r aq-network-map, fig.height=6}
-# Create map with district boundaries and station locations
-p_map <- ggplot() +
-  geom_sf(data = ub_shapes, fill = "grey90", color = "white", linewidth = 0.5) +
-  geom_sf(data = ub_stations_sf, color = "#e74c3c", size = 3, alpha = 0.8) +  # red dots for stations
-  geom_sf_text(data = ub_shapes, aes(label = District), size = 2.5, color = "grey40") +  # district labels
-  labs(
-    title = "Air Quality Monitoring Network in Ulaanbaatar",
-    subtitle = "18 stations distributed across 6 districts",
-    caption = "Red points = monitoring stations"
+```{r aq-network-map, fig.height=6, fig.alt="Map of Ulaanbaatar's central districts with air quality monitoring stations shown as red points"}
+# Zoom to the stations, with a 3 km margin, in UTM zone 48N (metres)
+utm48n <- 32648
+station_box <- ub_stations_sf |>
+  st_transform(utm48n) |>
+  st_buffer(3000) |>
+  st_bbox()
+
+mn_map(filter(ub_districts, name %in% central), label = TRUE, crs = utm48n,
+       title = "Air Quality Monitoring Stations in Central Ulaanbaatar") +
+  geom_sf(data = ub_stations_sf, color = "#e34948", size = 2.5, alpha = 0.9) +
+  ggrepel::geom_text_repel(
+    data = ub_stations_sf, aes(label = Station, geometry = geometry), stat = "sf_coordinates",
+    size = 2.4, color = "grey20", min.segment.length = 0, seed = 1
   ) +
-  theme_void() +
-  theme(
-    plot.title = element_text(face = "bold", size = 14),
-    plot.subtitle = element_text(size = 11),
-    plot.caption = element_text(hjust = 0, size = 9)
-  )
-
-p_map  # print static ggplot
+  coord_sf(
+    crs = utm48n, datum = NA,
+    xlim = station_box[c("xmin", "xmax")], ylim = station_box[c("ymin", "ymax")]
+  ) +
+  labs(subtitle = "Red points = monitoring stations (approximate locations)")
 ```
 
-### Station Coverage Analysis
+### Coverage
 
-```{r station-coverage}
-# Join station counts with population data for coverage analysis
-pop_by_district <- select(pop_data, District, Population = value)
+```{r station-coverage, fig.alt="Bar chart of residents per monitoring station for each Ulaanbaatar district that has at least one station"}
 station_coverage <- station_count |>
-  left_join(pop_by_district, by = "District") |>
-  mutate(
-    Pop_per_Station = Population / Stations,
-    Coverage_Score = case_when(
-      Pop_per_Station < 100000 ~ "High Coverage",
-      Pop_per_Station < 150000 ~ "Moderate Coverage",
-      TRUE ~ "Low Coverage"
-    )
-  )
+  left_join(select(pop_data, District, Population = value), by = join_by(District)) |>
+  mutate(Pop_per_Station = if_else(Stations > 0, Population / Stations, NA_real_))
 
-p_coverage <- ggplot(
-  station_coverage,
-  aes(
-    x = reorder(District, Pop_per_Station),
-    y = Pop_per_Station / 1000,
-    fill = Coverage_Score
-  )
-) +
-  geom_col() +
-  geom_text(aes(label = scales::comma(Pop_per_Station)), hjust = -0.1, size = 3) +  # inline labels
-  coord_flip() +
-  scale_fill_manual(values = c(
-    "High Coverage" = "#27ae60",     # green = good
-    "Moderate Coverage" = "#f39c12", # yellow = caution
-    "Low Coverage" = "#e74c3c"       # red = concern
-  )) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
+station_coverage |>
+  filter(Stations > 0) |>
+  ggplot(aes(x = Pop_per_Station / 1000, y = reorder(District, Pop_per_Station))) +
+  geom_col(fill = "#2a78d6", width = 0.7) +
+  geom_text(aes(label = paste0(round(Pop_per_Station / 1000), "k (", Stations, ")")), hjust = -0.1, size = 3) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.25))) +
   labs(
-    title = "Air Quality Monitoring Coverage by District",
-    subtitle = "Population per monitoring station (thousands)",
-    x = NULL,
-    y = "Population per Station (thousands)",
-    fill = "Coverage Level"
+    title = "Residents per Monitoring Station",
+    subtitle = "Thousands of residents per station (number of stations in brackets)",
+    x = "Residents per station (thousands)", y = NULL,
+    caption = "Districts with no station are not shown"
   ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(face = "bold"),
-    legend.position = "bottom",
-    panel.grid.major.y = element_blank()
-  )
-
-p_coverage  # print static ggplot
+  theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
 ```
 
-> **Coverage Disparities**: Districts like **Bayanzurkh** and **Songinokhairkhan** (despite having multiple stations) still serve large populations relative to station count. This suggests potential **spatial gaps** in monitoring coverage, particularly in the sprawling ger districts where pollution exposure may be highest but monitoring is sparse.
+```{r coverage-facts, include = FALSE}
+no_station <- if (run_vignette) filter(station_coverage, Stations == 0)
+```
+
+`r inline_value(nrow(no_station))` districts, `r inline_value(knitr::combine_words(no_station$District))`, have no station in this network. About `r inline_value(scales::label_comma()(round(sum(no_station$Population), -3)))` residents (`r inline_value(round(sum(no_station$Population) / sum(station_coverage$Population) * 100))`% of the city) live there. Residents per station is a crude measure: pollution varies with distance from sources and with terrain, so the location of stations matters as much as their number. The ger areas on the city's northern and eastern edges, where most household coal and wood burning happens, are where denser monitoring would add the most to exposure estimates.
 
 ## Conclusion
 
-
-This analysis demonstrates that Ulaanbaatar is not a monolith. Significant disparities exist between the central core and the expanding ger districts. By utilizing the `mongolstats` package to access granular "by soum" data, researchers can uncover these local nuances to inform targeted public health interventions.
+Ulaanbaatar's districts differ widely in density, growth and school capacity, and NSO's district tables plus mongolmaps' boundaries make these differences easy to map. Health outcomes are harder: published district births and deaths follow hospital locations, so district-level rates need data coded by place of residence before they can guide local public health action.
