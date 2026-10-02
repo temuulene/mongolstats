@@ -5,7 +5,6 @@
 inst/doc
 doc
 docs/
-pkgdown
 *.Rproj
 # Ignore HTML files except in vignettes
 *.html
