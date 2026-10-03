@@ -2,7 +2,7 @@
 % Please edit documentation in R/periods.R
 \name{nso_table_periods}
 \alias{nso_table_periods}
-\title{Get valid periods for a table (PXWeb)}
+\title{Periods available in a table}
 \usage{
 nso_table_periods(tbl_id)
 }
@@ -10,18 +10,30 @@ nso_table_periods(tbl_id)
 \item{tbl_id}{Table identifier.}
 }
 \value{
-Character vector of period labels (e.g., years); empty when the
-table has no recognisable time dimension or in offline mode (see
-\code{\link[=nso_offline_enable]{nso_offline_enable()}}). Unknown tables and failed requests raise an
-error.
+A tibble with one row per period, oldest first, and columns
+\code{code} (the positional PXWeb code), \code{label} (as shown by NSO, e.g.
+\code{"2024"} or \code{"2024-03"}), \code{date} (first day of the period, see
+\code{\link[=nso_period_date]{nso_period_date()}}) and \code{frequency} (\code{"year"}, \code{"quarter"}, \code{"month"}
+or \code{"day"}). Periods whose label is not a recognisable date keep their
+catalogue order at the end. The tibble has no rows when the table has no
+time dimension or in offline mode (see \code{\link[=nso_offline_enable]{nso_offline_enable()}}). Unknown
+tables and failed requests raise an error.
 }
 \description{
-Inspects the table metadata to find the time dimension and returns its
-available period labels (e.g., years or year-months).
+Finds the table's time dimension (years, quarters, months or dates) and
+lists its periods from oldest to newest.
+}
+\details{
+NSO codes periods by position: code \code{"0"} is the latest period, so a
+period's code changes whenever a new one is published. Use the \code{label}
+column (or \code{\link[=nso_period_seq]{nso_period_seq()}}) in selections, not \code{code}.
 }
 \examples{
 \dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 periods <- nso_table_periods("DT_NSO_0300_001V2")
-head(periods)
+tail(periods)
 \dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link[=nso_latest_periods]{nso_latest_periods()}} for the most recent periods.
 }

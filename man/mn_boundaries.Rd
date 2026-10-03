@@ -16,14 +16,24 @@ An \code{sf} object with polygons for the requested level. Failed
 downloads raise an error of class \code{mongolstats_http_error}.
 }
 \description{
-Downloads Mongolia boundaries for ADM0/ADM1/ADM2 from the GeoBoundaries API
-and returns an \code{sf} object. Results are cached in memory for the session,
-so repeated calls (including via \code{\link[=mn_join_by_name]{mn_join_by_name()}}) do not re-download.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+\code{mn_boundaries()} was deprecated in mongolstats 0.3.0. Use the mongolmaps
+package instead: \code{\link[mongolmaps:mn_admin]{mongolmaps::mn_admin()}} and its shortcuts
+(\code{mn_country()}, \code{mn_aimags()}, \code{mn_soums()}, ...) ship boundaries that
+carry NSO codes, need no download, and join to NSO tables by code with
+\code{\link[mongolmaps:mn_join]{mongolmaps::mn_join()}}.
+
+\code{mn_boundaries()} downloads boundaries for ADM0/ADM1/ADM2 from the
+geoBoundaries API and returns an \code{sf} object (the sf package must be
+installed). Results are cached in memory for the session.
 }
 \examples{
-\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
-# Get aimag (province) boundaries
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet() && rlang::is_installed("sf")) withAutoprint(\{ # examplesIf}
 aimags <- mn_boundaries("ADM1")
-head(aimags)
+# ->
+if (rlang::is_installed("mongolmaps")) {
+  aimags <- mongolmaps::mn_aimags()
+}
 \dontshow{\}) # examplesIf}
 }

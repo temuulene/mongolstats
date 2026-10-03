@@ -5,23 +5,30 @@
 # other language's metadata only shares the dimension *code* (e.g. the en
 # text is "Sex" while the shared code is the Cyrillic word), so labels are
 # attached by mapping code -> data column via the fetch-language metadata.
+# The time column already holds fetch-language labels (see
+# .px_label_time()), so its labels are matched on those instead of codes.
 .px_add_labels <- function(df, tbl_id, which = c("none", "en", "mn", "both")) {
   which <- match.arg(which)
   if (identical(which, "none")) {
     return(df)
   }
-  resolved <- .px_resolve_table(tbl_id)
-  px_file <- resolved$px_file
-  paths <- resolved$paths
   fetch_lang <- .px_lang()
   # A labelling request that fails must not return silently unlabelled
   # data; only offline mode degrades to codes-only.
   get_meta <- function(lang) {
-    .nso_or_offline(.px_meta_cached(paths, px_file, lang = lang))
+    .nso_or_offline(.px_table_meta(tbl_id, lang = lang)$meta)
   }
   meta_fetch <- get_meta(fetch_lang)
   if (is.null(meta_fetch) || !length(meta_fetch$variables)) {
     return(df)
+  }
+  tv <- .px_time_var(meta_fetch$variables)
+  time_code <- if (tv) as.character(meta_fetch$variables[[tv]]$code) else NA_character_
+  time_label <- if (tv) {
+    stats::setNames(
+      .px_chr(meta_fetch$variables[[tv]]$valueTexts),
+      .px_chr(meta_fetch$variables[[tv]]$values)
+    )
   }
   col_by_code <- stats::setNames(
     vapply(
@@ -49,7 +56,8 @@
       if (!length(codes) || length(codes) != length(lbls)) {
         next
       }
-      map <- tibble::tibble(code = codes, lbl = lbls)
+      key <- if (identical(as.character(v$code), time_code)) unname(time_label[codes]) else codes
+      map <- tibble::tibble(code = key, lbl = lbls)
       names(map) <- c(col, paste0(col, suffix))
       d <- dplyr::left_join(d, map, by = col)
     }
@@ -81,24 +89,37 @@
 #' @param labels Label handling: "none" (codes only), "en", "mn", or "both".
 #'   "code" is accepted as an alias for "none" (matching [nso_fetch()]).
 #' @param value_name Name of the numeric value column in the result (default: "value").
-#' @param include_raw If TRUE, attach the raw PX payload as attribute `px_raw`.
-#' @section Table Structure Notes:
-#' Some NSO tables have unique dimension structures that affect how `selections`
-#' should be constructed:
-#' \itemize{
-#'   \item \strong{Air Quality Monthly Tables} (e.g., \code{DT_NSO_2400_015V1} to \code{V6}):
-#'     These tables do not have a \code{Year} dimension. Instead, they use a running
-#'     \code{Month} dimension with integer codes (e.g., \code{"0"} for the most recent month).
-#'     Example: \code{selections = list(Month = as.character(0:11))} retrieves the last 12 months.
-#' }
+#' @param include_raw If TRUE, attach the raw PX payload as attribute `px_raw`
+#'   (a list of payloads when the request was split, see below).
+#' @section Time dimensions:
+#' NSO codes periods by position: in every table, code `"0"` is the latest
+#' period, so a period's code changes whenever a new one is published. The
+#' time dimension (years, quarters, months or dates) is therefore always
+#' returned by its label, such as `"2024"` or `"2024-03"`, whatever `labels`
+#' is; [nso_period_date()] converts these labels to dates. Other dimensions
+#' are returned as codes unless `labels` asks for labels.
+#'
+#' Select periods by label (`Year = "2024"`), with [nso_period_seq()]
+#' (`Month = nso_period_seq("202401", "202412", by = "M")`), or with
+#' [nso_latest_periods()]. Periods match whatever format the table uses, so
+#' `"202403"`, `"2024-03"` and `"2024M3"` select the same month.
+#' @section Large requests:
+#' data.1212.mn answers at most 1,000,000 cells per request. Larger
+#' selections are split into several requests and the results combined;
+#' set `options(mongolstats.max_cells = )` to change the limit.
 #' @return A tibble with one column per dimension and a numeric value column.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
-#' # Fetch population data
+#' # Population of Mongolia by sex in the two latest years
 #' pop <- nso_data(
 #'   tbl_id = "DT_NSO_0300_001V2",
-#'   selections = list(Year = "2023")
+#'   selections = list(
+#'     Sex = c("Male", "Female"),
+#'     Age = "Total",
+#'     Year = nso_latest_periods("DT_NSO_0300_001V2", n = 2)
+#'   ),
+#'   labels = "en"
 #' )
-#' head(pop)
+#' pop
 #' @export
 nso_data <- function(
   tbl_id,
@@ -128,8 +149,11 @@ nso_data <- function(
 #' Fetch multiple tables and bind (PXWeb)
 #' @param requests A list of records, each with `tbl_id` and `selections` (named list)
 #' @param labels Label handling as in `nso_data()`
-#' @param parallel If TRUE, use future.apply to fetch tables in parallel.
-#'   Defaults to the `mongolstats.parallel` option (`FALSE`).
+#' @param parallel If TRUE, fetch tables in parallel with
+#'   [purrr::in_parallel()] (requires the mirai and carrier packages). Start
+#'   background workers first with `mirai::daemons(4)`; without them the
+#'   tables are fetched one at a time. Workers load the installed copy of
+#'   mongolstats. Defaults to the `mongolstats.parallel` option (`FALSE`).
 #' @param value_name Name of the numeric value column in the result (default: "value").
 #' @param strict If TRUE, error when any table fails to fetch. If FALSE
 #'   (default), failed tables are dropped from the result with a warning
@@ -164,8 +188,30 @@ nso_package <- function(
   worker <- function(r) {
     .nso_package_fetch(r, labels = labels, value_name = value_name, opts = opts)
   }
-  if (isTRUE(parallel) && requireNamespace("future.apply", quietly = TRUE)) {
-    parts <- future.apply::future_lapply(reqs, worker, future.seed = TRUE)
+  if (isTRUE(parallel)) {
+    rlang::check_installed(c("mirai", "carrier"), reason = "to fetch tables in parallel.")
+    if (!mirai::daemons_set()) {
+      cli_inform(
+        c(
+          "i" = "No {.pkg mirai} daemons are running, so tables are fetched one at a time.",
+          " " = "Start workers first, e.g. with {.code mirai::daemons(4)}."
+        ),
+        class = "mongolstats_no_daemons"
+      )
+    }
+    # in_parallel() ships the function and the objects named here to each
+    # worker; `fetch` keeps a reference to the mongolstats namespace, which
+    # the worker loads from its library.
+    parts <- purrr::map(
+      reqs,
+      purrr::in_parallel(
+        function(r) fetch(r, labels = labels, value_name = value_name, opts = opts),
+        fetch = .nso_package_fetch,
+        labels = labels,
+        value_name = value_name,
+        opts = opts
+      )
+    )
   } else if (
     length(reqs) > 1 &&
       .nso_progress() &&
@@ -202,6 +248,10 @@ nso_package <- function(
   }
   dplyr::bind_rows(parts[!is_failed])
 }
+
+# `fetch` is bound inside the worker function by purrr::in_parallel() (see
+# nso_package()), which R CMD check cannot see.
+utils::globalVariables("fetch")
 
 # Normalize and validate nso_package() requests into a list of records,
 # each a list with a single-string `tbl_id` and a list `selections`.

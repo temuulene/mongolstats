@@ -21,13 +21,23 @@ boundary are dropped with a warning (class
 \code{mongolstats_unmatched_names}) naming them.
 }
 \description{
-Performs an exact join between a data frame and boundary polygons using
-normalized place names. Both sides are normalized via transliteration and
-lowercasing before joining.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+\code{mn_join_by_name()} was deprecated in mongolstats 0.3.0. Use
+\code{\link[mongolmaps:mn_join]{mongolmaps::mn_join()}}, which joins by NSO code or by name in any
+spelling, drops national and regional totals, and takes Ulaanbaatar's
+figures from region code \code{"5"} when a table leaves code \code{"511"} empty.
+
+Performs an exact join between a data frame and geoBoundaries polygons
+using normalized place names.
 }
 \examples{
-\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet() && rlang::is_installed("sf")) withAutoprint(\{ # examplesIf}
 pop_data <- data.frame(aimag = c("Ulaanbaatar", "Darkhan-Uul"), pop = c(1500000, 100000))
 sf_joined <- mn_join_by_name(pop_data, "aimag", level = "ADM1")
+# ->
+if (rlang::is_installed("mongolmaps")) {
+  sf_joined <- mongolmaps::mn_join(pop_data, by = "aimag", level = "aimag")
+}
 \dontshow{\}) # examplesIf}
 }

@@ -13,6 +13,6 @@ exclusions: list(
   "vignettes/environmental-surveillance.Rmd" = list(object_usage_linter = Inf),
   "vignettes/getting-started.Rmd" = list(object_usage_linter = Inf),
   "vignettes/mapping.Rmd" = list(object_usage_linter = Inf),
-  "vignettes/mortality-analysis.Rmd" = list(object_usage_linter = Inf),
+  "vignettes/articles/mortality-analysis.Rmd" = list(object_usage_linter = Inf),
   "vignettes/ub-health-environment.Rmd" = list(object_usage_linter = Inf)
  )

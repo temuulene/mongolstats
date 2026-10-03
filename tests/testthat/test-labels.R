@@ -34,7 +34,8 @@ with_fake_meta <- function() {
 
 test_that("labels = 'mn' attaches Mongolian labels to English-named columns", {
   with_fake_meta()
-  df <- tibble::tibble(Sex = c("0", "1"), Year = c("21", "22"), value = c(1, 2))
+  # nso_px_data() has already replaced the time codes with their labels
+  df <- tibble::tibble(Sex = c("0", "1"), Year = c("2023", "2024"), value = c(1, 2))
   out <- .px_add_labels(df, "T", which = "mn")
   expect_equal(out$Sex_mn, c("Бүгд", "Эрэгтэй"))
   expect_equal(out$Year_mn, c("2023", "2024"))

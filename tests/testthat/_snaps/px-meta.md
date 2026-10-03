@@ -33,6 +33,22 @@
       Error in `nso_dim_values()`:
       ! `dim` must be a single character string.
 
+# nso_table_periods() lists the time dimension's periods
+
+    Code
+      nso_latest_periods("T", n = 0)
+    Condition
+      Error in `nso_latest_periods()`:
+      ! `n` must be a single positive whole number, not 0.
+
+# nso_latest_periods() errors for a table without a time dimension
+
+    Code
+      nso_latest_periods("T")
+    Condition
+      Error in `nso_latest_periods()`:
+      ! Table "T" has no recognisable time dimension.
+
 # nso_subsectors() splits a path id into PXWeb path segments
 
     Code

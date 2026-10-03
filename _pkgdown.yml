@@ -45,7 +45,7 @@ navbar:
       href: https://github.com/temuulene/mongolstats
 home:
   title: mongolstats
-  description: Tidy access to NSO statistics via PXWeb and boundaries (sf) with tidyverse-style helpers.
+  description: Tidy access to the statistics of the National Statistics Office of Mongolia through its PXWeb API.
   links:
     - text: NSO PXWeb
       href: https://data.1212.mn/pxweb/
@@ -63,49 +63,57 @@ articles:
       - getting-started
       - discovery
       - mapping
-      - mortality-analysis
+      - articles/mortality-analysis
   - title: Case Studies (Requires API)
     contents:
       - environmental-surveillance
       - ub-health-environment
 reference:
-  - title: Discover Tables
+  - title: Find Tables
     contents:
-      - nso_itms
+      - nso_search
       - nso_tables
-      - nso_itms_detail
-      - nso_variables
-      - nso_table_meta
-      - nso_dims
-      - nso_dim_values
-      - nso_itms_search
       - nso_itms_by_sector
       - nso_sectors
       - nso_subsectors
+  - title: Inspect Tables
+    contents:
+      - nso_dims
+      - nso_dim_values
+      - nso_variables
+      - nso_table_meta
+  - title: Periods
+    contents:
+      - nso_table_periods
+      - nso_latest_periods
+      - nso_period_seq
+      - nso_period_date
   - title: Fetch Data
     contents:
       - nso_data
       - nso_package
-      - nso_search
       - nso_query
       - as_px_query
       - nso_fetch
-  - title: Boundaries and Joins
+  - title: Options, Caching and Offline Mode
+    contents:
+      - nso_options
+      - nso_cache_enable
+      - nso_cache_disable
+      - nso_cache_clear
+      - nso_cache_status
+      - nso_offline_enable
+      - nso_offline_disable
+      - nso_rebuild_px_index
+  - title: Superseded
+    desc: Older names that keep working; new code should use the functions above.
+    contents:
+      - nso_itms
+  - title: Deprecated
+    desc: geoBoundaries helpers, replaced by the mongolmaps package.
     contents:
       - mn_boundaries
       - mn_boundary_keys
       - mn_boundaries_normalize
       - mn_join_by_name
       - mn_fuzzy_join_by_name
-  - title: Utilities
-    contents:
-      - nso_cache_enable
-      - nso_cache_disable
-      - nso_cache_clear
-      - nso_cache_status
-      - nso_period_seq
-      - nso_table_periods
-      - nso_options
-      - nso_rebuild_px_index
-      - nso_offline_enable
-      - nso_offline_disable

@@ -14,3 +14,11 @@
       Error in `nso_itms_by_sector()`:
       ! `list_id` must be a single character string, not a character vector.
 
+# nso_search(fixed = TRUE) matches literally, like nso_itms_search()
+
+    Code
+      nso_search("x", fixed = NA)
+    Condition
+      Error in `nso_search()`:
+      ! `fixed` must be `TRUE` or `FALSE`.
+

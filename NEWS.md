@@ -1,21 +1,42 @@
-# mongolstats (development version)
+# mongolstats 0.3.0
 
 ## Breaking changes
 
+*   Time dimensions are now always returned by their labels (`"2024"`, `"2024-03"`), whatever `labels` is. NSO codes periods by position, with `"0"` the latest period, so a code such as `Year == "0"` changed meaning every time NSO published a new period. Other dimensions are still returned as codes. With `labels = "en"` or `"both"` the `Year_en`-style columns are still added.
+*   `nso_table_periods()` now returns a tibble with `code`, `label`, `date` and `frequency`, oldest period first, instead of a character vector of labels in catalogue order (newest first). It also finds time dimensions named "Month", "Quarter" or in Mongolian, which it previously missed.
+*   `nso_package(parallel = TRUE)` now runs on mirai daemons through `purrr::in_parallel()` instead of future.apply; start workers with `mirai::daemons()`. future and future.apply are no longer suggested packages; mirai and carrier are.
+*   sf has moved from Imports to Suggests: only the deprecated `mn_boundaries()` needs it.
 *   Discovery functions (`nso_dims()`, `nso_dim_values()`, `nso_itms_detail()`, `nso_sectors()`, `nso_subsectors()`, `nso_table_meta()`, `nso_table_periods()`) now raise `mongolstats_http_error` when a request fails. Previously any failure returned an empty result, so a server outage looked like an empty catalogue. Offline mode still returns empty results.
 *   The `pxweb` fallback in `nso_data()`, `nso_fetch()`, and `nso_package()` has been removed, and pxweb is no longer a suggested package. The fallback returned data in a different shape (display-text column names, a value column that ignored `value_name`), and it could make network requests in offline mode. Failed requests now raise `mongolstats_http_error` with the server's response attached.
 *   `mn_fuzzy_join_by_name()` now errors when `method = "jw"` is combined with `max_distance >= 1`. Jaro-Winkler distances lie between 0 and 1, so the default `max_distance = 2` matched every name to some boundary. Use a value such as `max_distance = 0.2`.
 *   `nso_options()` now validates values (e.g. `mongolstats.lang` must be `"en"` or `"mn"`, `mongolstats.timeout` a positive number) and leaves all options unchanged when one is invalid. It warns about names that are not mongolstats options. An unsupported `mongolstats.lang` set directly with `options()` now errors instead of silently falling back to English.
 *   `nso_table_periods()` now errors for an unknown table id or a non-string `tbl_id`, like the other discovery functions. It previously returned `character(0)`, which was indistinguishable from a table without a time dimension.
 
+## Lifecycle changes
+
+*   The geoBoundaries helpers `mn_boundaries()`, `mn_boundary_keys()`, `mn_boundaries_normalize()`, `mn_join_by_name()` and `mn_fuzzy_join_by_name()` are deprecated in favour of the mongolmaps package, whose boundaries carry NSO codes and whose `mn_join()` joins NSO tables by code, drops totals, and takes Ulaanbaatar's figures from region code `"5"` when a table leaves `"511"` empty.
+*   `nso_itms()`, `nso_itms_detail()` and `nso_itms_search()` are superseded by `nso_tables()`, `nso_variables()` and `nso_search(fixed = TRUE)`. They keep working without warnings.
+
 ## New features
 
+*   Tables that NSO has moved to another catalogue folder are now found automatically: when a table's metadata request fails with HTTP 400 or 404, mongolstats looks it up in the live catalogue, updates the in-memory index, and tells you (class `mongolstats_table_moved`). Tables published after the bundled index was built are found with the PXWeb search API (class `mongolstats_table_located`). Previously both failed, e.g. the GDP table `DT_NSO_0500_001V1` after NSO's September 2026 reorganisation.
+*   Requests larger than the server's limit of 1,000,000 cells are split into several requests and the results combined. The limit is set by the new option `mongolstats.max_cells`.
+*   All requests are rate-limited to data.1212.mn's published limit of 1,000 calls per 100 seconds.
+*   New `nso_latest_periods()` returns the labels of a table's most recent periods, ready for `selections`.
+*   New `nso_period_date()` converts NSO period labels in any of the office's formats (`"2024"`, `"2024-03"`, `"2016M3"`, `"2024.03"`, `"2024-II"`, `"2026-07-06"`) to dates.
+*   Selections on the time dimension match periods written in any of these formats, so `nso_period_seq("202401", "202412", by = "M")` now selects months labelled `"2024-01"` or `"2024M1"`. Previously its output matched no NSO monthly table.
+*   Labels in `selections` match ignoring the leading spaces NSO uses to indent nested categories, e.g. `"GDP, at 2015 constant prices"` for `" GDP, at 2015 constant prices"`.
+*   `nso_search()` gains `fixed = TRUE` for literal matching.
+*   `nso_tables()` gains an `updated` column with the date NSO last updated each table, and the bundled table index has been rebuilt from the current catalogue.
 *   Table ids are now matched case-insensitively, with or without the `.px` suffix (e.g. `"dt_nso_0300_001v2"`).
 *   `mn_join_by_name()` and `mn_fuzzy_join_by_name()` now warn (class `mongolstats_unmatched_names`) naming data rows that matched no boundary. Previously these rows were dropped silently, so a spelling mismatch showed up only as a grey polygon on a map.
 *   `nso_rebuild_px_index()` warns (class `mongolstats_incomplete_index`) naming catalogue paths whose requests failed, instead of silently writing an incomplete index, and stops immediately in offline mode.
 
 ## Bug fixes
 
+*   The start and end periods in the table index (`strt_prd`, `end_prd`) were reversed for most tables, because NSO lists periods newest first, and missing for tables whose time dimension is not named "Year" or "Time". They are now the earliest and latest periods by date.
+*   `nso_itms_by_sector()` and `nso_search(sector = )` now include tables in sub-folders. NSO keeps every table in a sub-folder, so a sector id from `nso_sectors()` previously matched no tables.
+*   `nso_dims()` and `nso_table_meta()` now mark the time dimension in `is_time`. NSO never sets PXWeb's time flag, so `is_time` was always `FALSE`.
 *   HTTP errors no longer fail with "Could not evaluate cli `{}` expression" when a server or curl message contains a brace. The original error is now attached as the parent condition.
 *   Argument validation errors now describe the offending value ("not `NULL`", "not a number"). They used a nonexistent cli style and printed the raw value instead, e.g. "not ." for `NULL`.
 *   `mn_boundaries()` raises `mongolstats_http_error` when the boundary download fails, and a clear error when the GeoBoundaries API returns no download URL.
@@ -36,7 +57,10 @@
 ## Internal
 
 *   Recorded HTTP fixtures now use short paths. The old paths exceeded the 100 bytes `R CMD build` stores portably, so the fixtures were dropped from the built package and the recorded tests always skipped. Those tests replay without network access and no longer skip on CRAN.
-*   A local `.venv/` directory is excluded from package builds.
+*   All top-level hidden files and folders (such as a local `.venv/`) are excluded from package builds.
+*   The pkgdown site no longer publishes a Markdown copy of every page.
+*   Requests share one builder (user agent, timeout, retries, rate limit), and HTTP errors carry the response `status`.
+*   The vignettes and README use `mongolmaps::mn_join()` without recoding Ulaanbaatar by hand, select periods by label, and follow NSO's renamed tables and dimensions. The monthly mortality article moved to `vignettes/articles/`.
 *   Continuous integration now fails on lints, on test coverage below 80% (tests that need the live API skip in CI), and on out-of-date Rd files, instead of regenerating them before the check. The package, tests, and vignettes are lint-clean.
 *   Error-message tests use snapshots, and new offline tests cover the discovery functions against a fake table.
 

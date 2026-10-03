@@ -44,19 +44,28 @@
 
 #' Add normalized name columns to boundaries
 #'
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' `mn_boundaries_normalize()` was deprecated in mongolstats 0.3.0 together
+#' with [mn_boundaries()]. To match place names in any spelling, use
+#' [mongolmaps::mn_match()].
+#'
 #' Adds a `name_std` column to an `sf` boundary object by transliterating,
-#' lowercasing, and stripping special characters from place names. This
-#' enables reliable joins between NSO data and administrative boundary polygons.
+#' lowercasing, and stripping special characters from place names.
 #'
 #' @param g sf object from `mn_boundaries()`.
 #' @param name_col Column with English names (default 'shapeName').
 #' @return An `sf` object with an additional `name_std` column.
-#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
-#' aimags <- mn_boundaries("ADM1")
-#' aimags <- mn_boundaries_normalize(aimags)
-#' head(aimags$name_std)
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet() && rlang::is_installed("sf")
+#' aimags <- mn_boundaries_normalize(mn_boundaries("ADM1"))
+#' # ->
+#' if (rlang::is_installed("mongolmaps")) {
+#'   mongolmaps::mn_match(c("Khuvsgul", "Hovsgol"), to = "name_en")
+#' }
 #' @export
 mn_boundaries_normalize <- function(g, name_col = "shapeName") {
+  lifecycle::deprecate_soft("0.3.0", "mn_boundaries_normalize()", "mongolmaps::mn_match()")
   if (!name_col %in% names(g)) {
     return(g)
   }
@@ -66,9 +75,16 @@ mn_boundaries_normalize <- function(g, name_col = "shapeName") {
 
 #' Join data to boundaries by (normalized) names
 #'
-#' Performs an exact join between a data frame and boundary polygons using
-#' normalized place names. Both sides are normalized via transliteration and
-#' lowercasing before joining.
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' `mn_join_by_name()` was deprecated in mongolstats 0.3.0. Use
+#' [mongolmaps::mn_join()], which joins by NSO code or by name in any
+#' spelling, drops national and regional totals, and takes Ulaanbaatar's
+#' figures from region code `"5"` when a table leaves code `"511"` empty.
+#'
+#' Performs an exact join between a data frame and geoBoundaries polygons
+#' using normalized place names.
 #'
 #' @param data Data frame with a name column.
 #' @param name_col Column in `data` that contains names to join on.
@@ -77,11 +93,16 @@ mn_boundaries_normalize <- function(g, name_col = "shapeName") {
 #' @return An `sf` object with joined data. Data rows whose name matches no
 #'   boundary are dropped with a warning (class
 #'   `mongolstats_unmatched_names`) naming them.
-#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet() && rlang::is_installed("sf")
 #' pop_data <- data.frame(aimag = c("Ulaanbaatar", "Darkhan-Uul"), pop = c(1500000, 100000))
 #' sf_joined <- mn_join_by_name(pop_data, "aimag", level = "ADM1")
+#' # ->
+#' if (rlang::is_installed("mongolmaps")) {
+#'   sf_joined <- mongolmaps::mn_join(pop_data, by = "aimag", level = "aimag")
+#' }
 #' @export
 mn_join_by_name <- function(data, name_col, level = "ADM1", boundaries = NULL) {
+  lifecycle::deprecate_soft("0.3.0", "mn_join_by_name()", "mongolmaps::mn_join()")
   .check_name_col(data, name_col)
   if (is.null(boundaries)) {
     boundaries <- mn_boundaries(level)
@@ -99,9 +120,15 @@ mn_join_by_name <- function(data, name_col, level = "ADM1", boundaries = NULL) {
 
 #' Fuzzy join data to boundaries by name
 #'
-#' Performs a fuzzy string-distance join between a data frame and boundary
-#' polygons. Useful when place-name spellings differ slightly between
-#' datasets (e.g., "Ulanbatar" vs "Ulaanbaatar").
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' `mn_fuzzy_join_by_name()` was deprecated in mongolstats 0.3.0. Use
+#' [mongolmaps::mn_join()], which knows the common spellings of every aimag
+#' and soum and reports each fuzzy match it makes.
+#'
+#' Performs a fuzzy string-distance join between a data frame and
+#' geoBoundaries polygons.
 #'
 #' @param data Data frame with a name column.
 #' @param name_col Column in `data` containing names.
@@ -119,10 +146,13 @@ mn_join_by_name <- function(data, name_col, level = "ADM1", boundaries = NULL) {
 #'   within `max_distance` are dropped with a warning (class
 #'   `mongolstats_unmatched_names`) naming them; rows with a missing name
 #'   are dropped silently.
-#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
-#' # Join even with minor spelling differences
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet() && rlang::is_installed("sf")
 #' pop_data <- data.frame(aimag = c("Ulanbatar", "Darhan"), pop = c(1500000, 100000))
 #' sf_joined <- mn_fuzzy_join_by_name(pop_data, "aimag", level = "ADM1")
+#' # ->
+#' if (rlang::is_installed("mongolmaps")) {
+#'   sf_joined <- mongolmaps::mn_join(pop_data, by = "aimag", level = "aimag")
+#' }
 #' @export
 mn_fuzzy_join_by_name <- function(
   data,
@@ -132,6 +162,7 @@ mn_fuzzy_join_by_name <- function(
   max_distance = 2,
   method = c("osa", "lv", "jw", "dl")
 ) {
+  lifecycle::deprecate_soft("0.3.0", "mn_fuzzy_join_by_name()", "mongolmaps::mn_join()")
   method <- match.arg(method)
   .check_name_col(data, name_col)
   bad_distance <- !is.numeric(max_distance) || length(max_distance) != 1L ||
@@ -189,17 +220,27 @@ mn_fuzzy_join_by_name <- function(
 
 #' Boundary keys/crosswalk helper
 #'
-#' Returns a lightweight tibble of key columns from the GeoBoundaries data,
-#' including normalized names, without the full geometry. Useful for building
-#' custom crosswalks between NSO data and boundary identifiers.
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' `mn_boundary_keys()` was deprecated in mongolstats 0.3.0. Use
+#' [mongolmaps::mn_codes()], which lists every administrative unit with its
+#' NSO code, ISO 3166-2 code, P-code and names.
+#'
+#' Returns a lightweight tibble of key columns from the geoBoundaries data,
+#' including normalized names, without the full geometry.
 #'
 #' @param level Boundary level.
 #' @return A tibble with key columns from GeoBoundaries and normalized names.
-#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet() && rlang::is_installed("sf")
 #' keys <- mn_boundary_keys("ADM1")
-#' head(keys)
+#' # ->
+#' if (rlang::is_installed("mongolmaps")) {
+#'   keys <- mongolmaps::mn_codes("aimag")
+#' }
 #' @export
 mn_boundary_keys <- function(level = "ADM1") {
+  lifecycle::deprecate_soft("0.3.0", "mn_boundary_keys()", "mongolmaps::mn_codes()")
   g <- mn_boundaries(level)
   g <- mn_boundaries_normalize(g)
   tibble::tibble(

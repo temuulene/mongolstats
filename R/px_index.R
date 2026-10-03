@@ -1,6 +1,11 @@
 # Recursively list available PXWeb tables under NSO
-# Returns tibble with columns: px_path, px_file, tbl_id, tbl_eng_nm, tbl_nm, strt_prd, end_prd
+# Returns tibble with columns: px_path, px_file, tbl_id, tbl_eng_nm, tbl_nm,
+# strt_prd, end_prd, updated
 nso_px_tables <- function() {
+  show_progress <- .nso_progress() && interactive()
+  if (show_progress) {
+    cli::cli_progress_bar("Indexing NSO tables", total = NA)
+  }
   # A crawl tolerates individual HTTP failures (the rest of the catalogue is
   # still worth having) but reports them together at the end. Offline mode
   # propagates: nothing can be crawled.
@@ -35,44 +40,7 @@ nso_px_tables <- function() {
         meta_mn <- try_http(.px_meta_cached(paths, px_file, lang = "mn"), where)
         title_en <- if (!is.null(meta_en)) meta_en$title else NA_character_
         title_mn <- if (!is.null(meta_mn)) meta_mn$title else NA_character_
-        # derive period range from a time-like variable when possible
-        rng <- tryCatch(
-          {
-            vars <- meta_en$variables
-            if (length(vars)) {
-              time_idx <- which(vapply(
-                vars,
-                function(v) {
-                  isTRUE(v$time) || grepl("year|time", tolower(v$text %||% ""))
-                },
-                logical(1)
-              ))
-              if (!length(time_idx)) {
-                time_idx <- which(vapply(
-                  vars,
-                  function(v) {
-                    length(v$values) &&
-                      all(grepl("^20[0-9]{2}$", .px_chr(v$valueTexts) %||% ""))
-                  },
-                  logical(1)
-                ))
-              }
-              if (length(time_idx)) {
-                vt <- .px_chr(vars[[time_idx[1]]]$valueTexts %||% character())
-                if (length(vt)) {
-                  c(vt[1], vt[length(vt)])
-                } else {
-                  c(NA_character_, NA_character_)
-                }
-              } else {
-                c(NA_character_, NA_character_)
-              }
-            } else {
-              c(NA_character_, NA_character_)
-            }
-          },
-          error = function(e) c(NA_character_, NA_character_)
-        )
+        rng <- .px_period_range(meta_en$variables)
         out[[length(out) + 1]] <- tibble::tibble(
           px_path = paste(paths, collapse = "/"),
           px_file = px_file,
@@ -80,8 +48,10 @@ nso_px_tables <- function() {
           tbl_eng_nm = title_en %||% NA_character_,
           tbl_nm = title_mn %||% NA_character_,
           strt_prd = rng[1],
-          end_prd = rng[2]
+          end_prd = rng[2],
+          updated = if (is.null(tables$updated)) NA_character_ else as.character(tables$updated[i])
         )
+        if (show_progress) cli::cli_progress_update()
       }
     }
     # enqueue child folders
@@ -103,6 +73,18 @@ nso_px_tables <- function() {
     )
   }
   dplyr::bind_rows(out)
+}
+
+# Earliest and latest period labels of the time dimension in `vars`, by date
+# (NSO lists periods newest first, so the first and last labels are the
+# wrong way round); NA when there is no dated time dimension.
+.px_period_range <- function(vars) {
+  periods <- .px_periods(vars)
+  periods <- periods[!is.na(periods$date), , drop = FALSE]
+  if (!nrow(periods)) {
+    return(c(NA_character_, NA_character_))
+  }
+  c(periods$label[1], periods$label[nrow(periods)])
 }
 
 # Build/refresh PXWeb table index and memoize in package env

@@ -39,14 +39,22 @@ within \code{max_distance} are dropped with a warning (class
 are dropped silently.
 }
 \description{
-Performs a fuzzy string-distance join between a data frame and boundary
-polygons. Useful when place-name spellings differ slightly between
-datasets (e.g., "Ulanbatar" vs "Ulaanbaatar").
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+\code{mn_fuzzy_join_by_name()} was deprecated in mongolstats 0.3.0. Use
+\code{\link[mongolmaps:mn_join]{mongolmaps::mn_join()}}, which knows the common spellings of every aimag
+and soum and reports each fuzzy match it makes.
+
+Performs a fuzzy string-distance join between a data frame and
+geoBoundaries polygons.
 }
 \examples{
-\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
-# Join even with minor spelling differences
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet() && rlang::is_installed("sf")) withAutoprint(\{ # examplesIf}
 pop_data <- data.frame(aimag = c("Ulanbatar", "Darhan"), pop = c(1500000, 100000))
 sf_joined <- mn_fuzzy_join_by_name(pop_data, "aimag", level = "ADM1")
+# ->
+if (rlang::is_installed("mongolmaps")) {
+  sf_joined <- mongolmaps::mn_join(pop_data, by = "aimag", level = "aimag")
+}
 \dontshow{\}) # examplesIf}
 }

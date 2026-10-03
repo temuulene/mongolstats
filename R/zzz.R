@@ -13,7 +13,8 @@
     mongolstats.parallel = FALSE,
     mongolstats.default_labels = "none",
     mongolstats.value_name = "value",
-    mongolstats.attach_raw = FALSE
+    mongolstats.attach_raw = FALSE,
+    mongolstats.max_cells = 1e6
   )
   to_set <- !(names(op.mongolstats) %in% names(op))
   if (any(to_set)) {

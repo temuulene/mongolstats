@@ -76,7 +76,7 @@ This guide shows how to:
 > **About the air quality tables**
 >
 > - **Annual table** (`DT_NSO_2024_135V01`): annual mean concentration by station and pollutant, selected by `Year`.
-> - **Monthly station tables** (`DT_NSO_2400_015V2` for NO₂, `DT_NSO_2400_015V5` for PM2.5): for each station and month, the monthly average, the monthly maximum, the number of measurement days ("MN by day"), and the percentage of days above the air quality standard. Month codes are not in date order, so map month labels (`"YYYY-MM"`) to codes with `nso_dim_values()`.
+> - **Monthly station tables** (`DT_NSO_2400_015V2` for NO₂, `DT_NSO_2400_015V5` for PM2.5): for each station and month, the monthly average, the monthly maximum, the number of measurement days ("MN by day"), and the percentage of days above the air quality standard. Month codes count back from the latest month, so select months by their `"YYYY-MM"` labels, listed with `nso_table_periods()`.
 >
 > The NSO catalogue reuses the ids `DT_NSO_2400_015V1` (SO₂), `V3` (CO) and `V4` (PM10) for unrelated tables in another folder, so those monthly series cannot be fetched by id alone (mongolstats warns about the ambiguity). This vignette uses a snapshot bundled with mongolstats for monthly SO₂.
 >
@@ -134,16 +134,16 @@ Only `r inline_value(length(top_stations))` Ulaanbaatar stations reported an ann
 Fine particulate matter (PM2.5) is the air pollutant with the strongest evidence of harm: long-term exposure raises the risk of heart and lung disease, lung cancer, and death. We keep only months with measurements on at least 75% of days, a common completeness rule for a valid monthly mean.
 
 ```{r pm25-data}
-# Month codes for months from `from` onward
-recent_month_codes <- function(tbl, from = "2021-01") {
-  mv <- nso_dim_values(tbl, "Month", labels = "en")
-  mv$code[!is.na(mv$label_en) & mv$label_en >= from]
+# Labels of the months from `from` onward
+recent_months <- function(tbl, from = "2021-01-01") {
+  periods <- nso_table_periods(tbl)
+  periods$label[!is.na(periods$date) & periods$date >= as.Date(from)]
 }
 
 pm25_monthly <- tryCatch(
   nso_data(
     "DT_NSO_2400_015V5",
-    selections = list(Month = recent_month_codes("DT_NSO_2400_015V5")),
+    selections = list(Month = recent_months("DT_NSO_2400_015V5")),
     labels = "en"
   ),
   error = function(e) NULL

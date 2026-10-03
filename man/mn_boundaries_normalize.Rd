@@ -15,14 +15,21 @@ mn_boundaries_normalize(g, name_col = "shapeName")
 An \code{sf} object with an additional \code{name_std} column.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+\code{mn_boundaries_normalize()} was deprecated in mongolstats 0.3.0 together
+with \code{\link[=mn_boundaries]{mn_boundaries()}}. To match place names in any spelling, use
+\code{\link[mongolmaps:mn_match]{mongolmaps::mn_match()}}.
+
 Adds a \code{name_std} column to an \code{sf} boundary object by transliterating,
-lowercasing, and stripping special characters from place names. This
-enables reliable joins between NSO data and administrative boundary polygons.
+lowercasing, and stripping special characters from place names.
 }
 \examples{
-\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
-aimags <- mn_boundaries("ADM1")
-aimags <- mn_boundaries_normalize(aimags)
-head(aimags$name_std)
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet() && rlang::is_installed("sf")) withAutoprint(\{ # examplesIf}
+aimags <- mn_boundaries_normalize(mn_boundaries("ADM1"))
+# ->
+if (rlang::is_installed("mongolmaps")) {
+  mongolmaps::mn_match(c("Khuvsgul", "Hovsgol"), to = "name_en")
+}
 \dontshow{\}) # examplesIf}
 }

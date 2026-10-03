@@ -22,7 +22,8 @@ nso_data(
 
 \item{value_name}{Name of the numeric value column in the result (default: "value").}
 
-\item{include_raw}{If TRUE, attach the raw PX payload as attribute \code{px_raw}.}
+\item{include_raw}{If TRUE, attach the raw PX payload as attribute \code{px_raw}
+(a list of payloads when the request was split, see below).}
 }
 \value{
 A tibble with one column per dimension and a numeric value column.
@@ -30,25 +31,40 @@ A tibble with one column per dimension and a numeric value column.
 \description{
 Fetch statistical data for a table (PXWeb)
 }
-\section{Table Structure Notes}{
+\section{Time dimensions}{
 
-Some NSO tables have unique dimension structures that affect how \code{selections}
-should be constructed:
-\itemize{
-\item \strong{Air Quality Monthly Tables} (e.g., \code{DT_NSO_2400_015V1} to \code{V6}):
-These tables do not have a \code{Year} dimension. Instead, they use a running
-\code{Month} dimension with integer codes (e.g., \code{"0"} for the most recent month).
-Example: \code{selections = list(Month = as.character(0:11))} retrieves the last 12 months.
+NSO codes periods by position: in every table, code \code{"0"} is the latest
+period, so a period's code changes whenever a new one is published. The
+time dimension (years, quarters, months or dates) is therefore always
+returned by its label, such as \code{"2024"} or \code{"2024-03"}, whatever \code{labels}
+is; \code{\link[=nso_period_date]{nso_period_date()}} converts these labels to dates. Other dimensions
+are returned as codes unless \code{labels} asks for labels.
+
+Select periods by label (\code{Year = "2024"}), with \code{\link[=nso_period_seq]{nso_period_seq()}}
+(\code{Month = nso_period_seq("202401", "202412", by = "M")}), or with
+\code{\link[=nso_latest_periods]{nso_latest_periods()}}. Periods match whatever format the table uses, so
+\code{"202403"}, \code{"2024-03"} and \code{"2024M3"} select the same month.
 }
+
+\section{Large requests}{
+
+data.1212.mn answers at most 1,000,000 cells per request. Larger
+selections are split into several requests and the results combined;
+set \code{options(mongolstats.max_cells = )} to change the limit.
 }
 
 \examples{
 \dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
-# Fetch population data
+# Population of Mongolia by sex in the two latest years
 pop <- nso_data(
   tbl_id = "DT_NSO_0300_001V2",
-  selections = list(Year = "2023")
+  selections = list(
+    Sex = c("Male", "Female"),
+    Age = "Total",
+    Year = nso_latest_periods("DT_NSO_0300_001V2", n = 2)
+  ),
+  labels = "en"
 )
-head(pop)
+pop
 \dontshow{\}) # examplesIf}
 }

@@ -5,7 +5,7 @@
     Condition
       Error in `nso_table_periods()`:
       ! Table "DT_NSO_NON_EXISTENT" not found in PXWeb index.
-      i Find table ids with `nso_search()` or `nso_itms()`.
+      i Find table ids with `nso_search()` or `nso_tables()`.
 
 ---
 

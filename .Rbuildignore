@@ -13,9 +13,7 @@
 ^tools$
 ^README\.html$
 ^data-raw$
-^vignettes/mortality-analysis\.Rmd$
-^vignettes/mortality-analysis\.html$
-^vignettes/mortality-analysis_files$
+^vignettes/articles$
 ^doc$
 ^Meta$
 ^CRAN-SUBMISSION$

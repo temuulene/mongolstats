@@ -18,7 +18,8 @@ test_that("discovery functions return empty results in offline mode", {
   expect_equal(nrow(nso_dim_values("T", "Year")), 0)
   expect_equal(nrow(nso_table_meta("T")), 0)
   expect_equal(nrow(nso_itms_detail("T")), 0)
-  expect_identical(nso_table_periods("T"), character())
+  expect_equal(nrow(nso_table_periods("T")), 0)
+  expect_identical(nso_latest_periods("T"), character())
 })
 
 test_that("discovery functions surface HTTP errors", {
@@ -132,9 +133,40 @@ test_that("nso_table_meta() returns per-dimension codebooks in both languages", 
   expect_equal(sex$label_mn, c("Бүгд", "Эр"))
 })
 
-test_that("nso_table_periods() returns the time dimension's labels", {
+test_that("nso_table_periods() lists the time dimension's periods", {
   local_fake_table()
-  expect_equal(nso_table_periods("T"), c("2023", "2024"))
+  p <- nso_table_periods("T")
+  expect_equal(p$label, c("2023", "2024"))
+  expect_equal(p$code, c("0", "1"))
+  expect_equal(p$date, as.Date(c("2023-01-01", "2024-01-01")))
+  expect_equal(nso_latest_periods("T"), "2024")
+  expect_equal(nso_latest_periods("T", n = 5), c("2023", "2024"))
+  expect_snapshot(nso_latest_periods("T", n = 0), error = TRUE)
+})
+
+test_that(".px_periods() sorts newest-first catalogues oldest first", {
+  vars <- list(list(
+    code = "Month", text = "Month",
+    values = list("0", "1", "2"),
+    valueTexts = list("2026-03", "2026-02", "2026-01")
+  ))
+  p <- .px_periods(vars)
+  expect_equal(p$label, c("2026-01", "2026-02", "2026-03"))
+  expect_equal(p$code, c("2", "1", "0"))
+  expect_equal(.px_period_range(vars), c("2026-01", "2026-03"))
+  expect_equal(.px_period_range(list()), c(NA_character_, NA_character_))
+})
+
+test_that("nso_latest_periods() errors for a table without a time dimension", {
+  local_mocked_bindings(
+    .px_resolve_table = function(tbl_id, ...) {
+      list(px_file = "T.px", row = tibble::tibble(px_path = "", px_file = "T.px"), paths = character())
+    },
+    .px_meta_cached = function(...) {
+      list(variables = list(list(code = "S", text = "Sex", values = list("0"), valueTexts = list("Total"))))
+    }
+  )
+  expect_snapshot(nso_latest_periods("T"), error = TRUE)
 })
 
 test_that("nso_subsectors() splits a path id into PXWeb path segments", {

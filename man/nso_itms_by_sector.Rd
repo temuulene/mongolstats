@@ -10,15 +10,13 @@ nso_itms_by_sector(list_id)
 \item{list_id}{Path string from \code{nso_sectors()}/\code{nso_subsectors()} \code{id}.}
 }
 \value{
-A tibble of tables matching the specified sector path.
+A tibble of the tables in the sector and its sub-folders.
 }
 \description{
-Filters the table catalogue to only those belonging to a given sector
-or sub-sector path, as returned by \code{\link[=nso_sectors]{nso_sectors()}} or \code{\link[=nso_subsectors]{nso_subsectors()}}.
+Filters the table catalogue to the tables in a given sector or
+sub-sector, as returned by \code{\link[=nso_sectors]{nso_sectors()}} or \code{\link[=nso_subsectors]{nso_subsectors()}},
+including the tables in its sub-folders.
 }
 \examples{
-\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
-sectors <- nso_sectors()
-tables <- nso_itms_by_sector(sectors$id[1])
-\dontshow{\}) # examplesIf}
+nso_itms_by_sector("Population, household")
 }

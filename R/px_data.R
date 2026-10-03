@@ -25,13 +25,7 @@
   seeded <- FALSE
   try(
     {
-      seed <- httr2::request(.px_url(paths, px_file, lang = lang)) |>
-        httr2::req_user_agent(.nso_user_agent()) |>
-        httr2::req_timeout(.nso_timeout()) |>
-        httr2::req_retry(
-          max_tries = .nso_retry_tries(),
-          backoff = .nso_retry_backoff()
-        ) |>
+      seed <- .nso_request(.px_url(paths, px_file, lang = lang)) |>
         httr2::req_perform()
       seeded <- TRUE
       setck <- tryCatch(
@@ -63,31 +57,46 @@
 
 # Fetch data from a PXWeb table
 # Returns tibble with one column per dimension plus a numeric `value` column.
+# Selections larger than the server's cell limit are split into several
+# requests. The time dimension is reported by label (see .px_label_time()).
 nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FALSE, value_name = "value") {
   check_selections(selections)
-  resolved <- .px_resolve_table(tbl_id)
-  px_file <- resolved$px_file
-  paths <- resolved$paths
-  meta <- .px_meta_cached(paths, px_file, lang = lang)
-  vars <- meta$variables
+  tm <- .px_table_meta(tbl_id, lang = lang)
+  vars <- tm$meta$variables
   # Map selections to codes first; errors on unknown dimensions/values
   # before any further network activity.
   resolved_sel <- .px_map_selections(vars, selections)
+  chunks <- .px_chunk_selections(resolved_sel, .nso_max_cells())
   # Session cookie (e.g., rxid), cached per base URL for the session
-  cookie <- .px_session_cookie(paths, px_file, lang = lang)
-  body <- .px_query_body(vars, resolved_sel)
+  cookie <- .px_session_cookie(tm$paths, tm$px_file, lang = lang)
+  show_progress <- length(chunks) > 1L && .nso_progress() && interactive()
+  if (show_progress) {
+    cli::cli_progress_bar("Fetching {.val {tbl_id}} in parts", total = length(chunks))
+  }
+  raws <- vector("list", length(chunks))
+  parts <- vector("list", length(chunks))
+  for (k in seq_along(chunks)) {
+    body <- .px_query_body(vars, chunks[[k]])
+    raws[[k]] <- .px_post(tbl_id, tm$paths, tm$px_file, body, cookie = cookie, lang = lang)
+    parts[[k]] <- .px_flatten_response(raws[[k]], value_name = value_name)
+    if (show_progress) cli::cli_progress_update()
+  }
+  df <- .px_label_time(dplyr::bind_rows(parts), vars, raws[[1]]$columns)
+  # Optionally attach raw PX payload for debugging/advanced use
+  if (isTRUE(include_raw)) {
+    attr(df, "px_raw") <- if (length(raws) == 1L) raws[[1]] else raws
+  }
+  df
+}
+
+# POST one PXWeb query and return the parsed JSON response.
+.px_post <- function(tbl_id, paths, px_file, body, cookie = NULL, lang = .px_lang()) {
   url <- .px_url(paths, px_file, lang = lang)
   # Try both with and without the .px suffix as some PXWeb servers differ
   url_variants <- unique(c(url, sub("\\.px$", "", url)))
   resp <- NULL
   for (u in url_variants) {
-    req <- httr2::request(u) |>
-      httr2::req_user_agent(.nso_user_agent()) |>
-      httr2::req_timeout(.nso_timeout()) |>
-      httr2::req_retry(
-        max_tries = .nso_retry_tries(),
-        backoff = .nso_retry_backoff()
-      )
+    req <- .nso_request(u)
     if (!is.null(cookie)) {
       req <- httr2::req_headers(req, Cookie = cookie)
     }
@@ -125,18 +134,52 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
         "i" = "Check selections with {.fn nso_dims} or request a smaller subset."
       ),
       class = "mongolstats_http_error",
+      status = resp$status,
       parent = resp
     )
   }
-  out <- jsonlite::fromJSON(
-    httr2::resp_body_string(resp),
-    simplifyVector = FALSE
-  )
-  df <- .px_flatten_response(out, value_name = value_name)
-  # Optionally attach raw PX payload for debugging/advanced use
-  if (isTRUE(include_raw)) {
-    attr(df, "px_raw") <- out
+  jsonlite::fromJSON(httr2::resp_body_string(resp), simplifyVector = FALSE)
+}
+
+# Split resolved selections (named list of value codes, one element per
+# dimension) so that no request asks for more than `max_cells` cells. The
+# dimension with the most values is split first; a dimension is only split
+# further when single values of it are still too large.
+.px_chunk_selections <- function(sel, max_cells) {
+  n <- as.numeric(lengths(sel))
+  if (!length(sel) || prod(n) <= max_cells) {
+    return(list(sel))
   }
+  j <- which.max(n)
+  per <- max(1, floor(max_cells / prod(n[-j])))
+  pieces <- split(sel[[j]], ceiling(seq_along(sel[[j]]) / per))
+  unlist(
+    lapply(unname(pieces), function(p) {
+      s <- sel
+      s[[j]] <- p
+      .px_chunk_selections(s, max_cells)
+    }),
+    recursive = FALSE
+  )
+}
+
+# Replace the time dimension's positional codes ("0" is the latest period)
+# with its labels ("2025", "2026-08"), which keep their meaning when NSO
+# publishes a new period. `columns` is the response's `$columns`.
+.px_label_time <- function(df, vars, columns) {
+  tv <- .px_time_var(vars)
+  if (!tv || !nrow(df)) {
+    return(df)
+  }
+  v <- vars[[tv]]
+  dims <- .px_dim_columns(columns)
+  col <- dims$name[match(as.character(v$code), dims$code)]
+  codes <- .px_chr(v$values)
+  labels <- .px_chr(v$valueTexts)
+  if (is.na(col) || !col %in% names(df) || length(codes) != length(labels)) {
+    return(df)
+  }
+  df[[col]] <- labels[match(df[[col]], codes)]
   df
 }
 
@@ -153,27 +196,7 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
     return(tibble::tibble())
   }
 
-  # Filter columns by type (cols is a list, not a data frame)
-  dim_cols <- Filter(
-    function(col) !is.null(col$type) && col$type %in% c("d", "t"),
-    cols
-  )
-  dim_names <- vapply(
-    seq_along(dim_cols),
-    function(i) {
-      nm <- .px_first_nonempty(
-        dim_cols[[i]]$text,
-        dim_cols[[i]]$code,
-        paste0("dim", i)
-      )
-      if (is.null(nm)) {
-        nm <- paste0("dim", i)
-      }
-      nm
-    },
-    character(1)
-  )
-  dim_names <- make.unique(dim_names)
+  dim_names <- .px_dim_columns(cols)$name
   n_dim <- length(dim_names)
 
   # Collect all keys into one row-major character matrix instead of binding
@@ -207,4 +230,26 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
   )
   df[[value_name]] <- suppressWarnings(as.numeric(vals))
   df
+}
+
+# Dimension columns of a PXWeb response (`$columns`) as a tibble of `code`
+# and `name`, the column name used in the flattened data (display text,
+# made unique). Key columns are typed "d" or "t"; content columns "c".
+.px_dim_columns <- function(columns) {
+  dim_cols <- Filter(
+    function(col) !is.null(col$type) && col$type %in% c("d", "t"),
+    columns
+  )
+  names <- vapply(
+    seq_along(dim_cols),
+    function(i) {
+      .px_first_nonempty(dim_cols[[i]]$text, dim_cols[[i]]$code, paste0("dim", i)) %||%
+        paste0("dim", i)
+    },
+    character(1)
+  )
+  tibble::tibble(
+    code = vapply(dim_cols, function(col) as.character(col$code %||% NA_character_), character(1)),
+    name = make.unique(names)
+  )
 }

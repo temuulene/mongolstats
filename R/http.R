@@ -34,6 +34,26 @@
   isTRUE(getOption("mongolstats.offline", FALSE))
 }
 
+# Largest number of cells requested in one PXWeb query; bigger selections
+# are split (data.1212.mn reports maxCells = 1,000,000 at /api/v1/en/?config).
+.nso_max_cells <- function() {
+  as.numeric(getOption("mongolstats.max_cells", default = 1e6))
+}
+
+# A GET request with the package's user agent, timeout, retries and rate
+# limit. data.1212.mn allows 1,000 calls per 100 seconds; the token bucket
+# (one per host) keeps batch and parallel fetches under that.
+.nso_request <- function(url) {
+  httr2::request(url) |>
+    httr2::req_user_agent(.nso_user_agent()) |>
+    httr2::req_timeout(.nso_timeout()) |>
+    httr2::req_retry(
+      max_tries = .nso_retry_tries(),
+      backoff = .nso_retry_backoff()
+    ) |>
+    httr2::req_throttle(capacity = 1000, fill_time_s = 100)
+}
+
 # `path`, when given, streams the response body to that file (see
 # httr2::req_perform()).
 .nso_perform <- function(req, path = NULL) {
@@ -66,6 +86,7 @@
     cli_abort(
       "mongolstats HTTP error{detail}.",
       class = "mongolstats_http_error",
+      status = status,
       parent = resp
     )
   }

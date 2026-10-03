@@ -71,7 +71,7 @@ theme_set(
 Search the catalogue by keyword:
 
 ```{r search}
-mortality_tables <- nso_itms_search("infant mortality")
+mortality_tables <- nso_search("infant mortality")
 mortality_tables |>
   distinct(tbl_id, tbl_eng_nm)
 ```
@@ -87,10 +87,11 @@ Before fetching data, check which dimensions the table has:
 meta <- nso_table_meta("DT_NSO_2100_015V1")
 meta
 
-# Month labels are "YYYY-MM"; the codes behind them are not in date order
-months <- nso_dim_values("DT_NSO_2100_015V1", "Month", labels = "en")
+# Periods oldest first, with their dates. Month labels are "YYYY-MM"; the
+# codes count back from the latest month ("0"), so select periods by label.
+months <- nso_table_periods("DT_NSO_2100_015V1")
 head(months)
-range(months$label_en)
+range(months$label)
 ```
 
 ### Step 4: Fetch Data
@@ -102,13 +103,15 @@ imr_national <- nso_data(
   tbl_id = "DT_NSO_2100_015V1",
   selections = list(
     Region = "0", # national total
-    Month = months$code
+    Month = months$label
   ),
   labels = "en" # add English label columns
 )
 
+# The Month column holds labels such as "2024-03", which keep their meaning
+# when NSO publishes a new month
 imr_national |>
-  arrange(Month_en) |>
+  arrange(Month) |>
   head(10)
 ```
 
@@ -118,7 +121,7 @@ NSO rounds these monthly rates to whole numbers, which is coarse for a measure t
 
 ```{r plot-trend, fig.alt="Line plot of Mongolia's monthly infant mortality rate since 2016, with a LOESS smoother showing the overall direction"}
 imr_national |>
-  mutate(date = as.Date(paste0(Month_en, "-01"))) |> # "YYYY-MM" to Date
+  mutate(date = nso_period_date(Month)) |> # "YYYY-MM" to Date
   ggplot(aes(x = date, y = value)) +
   geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) + # dim raw data so trend stands out
   geom_point(color = "#e74c3c", size = 2, shape = 21, fill = "white", stroke = 1, alpha = 0.6) +
@@ -236,9 +239,9 @@ Where an interval crosses the dashed line, that aimag's rate is consistent with 
 [mongolmaps](https://github.com/temuulene/mongolmaps) provides boundaries that carry NSO codes, so the `Region` column joins without matching names.
 
 ```{r map-example, fig.alt="Choropleth map of infant mortality rates across Mongolia's aimags and Ulaanbaatar for the latest complete year"}
+# mn_join() takes Ulaanbaatar's figures from region code "5" when the
+# capital's own code "511" is empty, as it is in this table
 imr_map <- imr_units |>
-  # mongolmaps knows Ulaanbaatar by its aimag-level code "511"
-  mutate(Region = if_else(Region == "5", "511", Region)) |>
   mn_join(by = "Region", level = "aimag")
 
 mn_map(
@@ -255,17 +258,19 @@ The map shows point estimates only. Read it with the confidence intervals above:
 
 | Function | Purpose | Example |
 |----------|---------|---------|
-| `nso_itms_search()` | Find tables by keyword | `nso_itms_search("mortality")` |
+| `nso_search()` | Find tables by keyword | `nso_search("mortality")` |
 | `nso_table_meta()` | Get table dimensions | `nso_table_meta("DT_NSO_...")` |
 | `nso_dim_values()` | List dimension values | `nso_dim_values(tbl, "Region")` |
 | `nso_table_periods()` | Check time coverage | `nso_table_periods(tbl)` |
+| `nso_latest_periods()` | Latest periods, for selections | `list(Year = nso_latest_periods(tbl, n = 5))` |
 | `nso_data()` | Fetch data | `nso_data(tbl, selections, labels)` |
+| `nso_period_date()` | Period labels to dates | `nso_period_date(data$Month)` |
 | `mongolmaps::mn_join()` | Join NSO data to boundaries by code | `mn_join(data, by = "Region", level = "aimag")` |
 | `mongolmaps::mn_map()` | Quick map of joined data | `mn_map(joined, fill = value)` |
 
 ## Best Practices
 
-1. **Use codes in scripts, labels for display**: Selections accept codes or labels, but codes are more stable. `labels = "en"` adds readable label columns alongside the codes.
+1. **Use codes in scripts, labels for display**: Selections accept codes or labels, but codes such as region codes are more stable. `labels = "en"` adds readable label columns alongside the codes. Periods are the exception: NSO numbers them from the latest (`"0"`), so mongolstats always returns them as labels, and you should select them by label or with `nso_latest_periods()`.
 2. **Check metadata first**: Use `nso_table_meta()` and `nso_dim_values()` to see dimensions and codes before fetching.
 3. **Separate the levels**: Region columns mix the national total (`"0"`), regions (`"1"`–`"4"`), the capital (`"5"`), and aimags. Filter to one level before summing or ranking, or you will count deaths twice.
 4. **Build rates from counts**: Add up numerators and denominators over the period, then divide. Do not average monthly rates.

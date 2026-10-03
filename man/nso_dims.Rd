@@ -11,7 +11,9 @@ nso_dims(tbl_id)
 }
 \value{
 A tibble with columns: \code{dim} (display name), \code{code} (dimension code),
-\code{is_time} (logical), and \code{n_values} (number of values for the dimension).
+\code{is_time} (whether it is the table's time dimension; see
+\code{\link[=nso_table_periods]{nso_table_periods()}}), and \code{n_values} (number of values for the
+dimension).
 In offline mode (see \code{\link[=nso_offline_enable]{nso_offline_enable()}}) an empty tibble is
 returned; failed requests raise an error of class
 \code{mongolstats_http_error}.

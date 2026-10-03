@@ -55,21 +55,21 @@ Mongolia's National Statistics Office (NSO) publishes vital statistics and disea
 
 ### Search by Keyword
 
-`nso_itms_search()` searches table titles across the whole NSO catalogue. Some tables are listed in more than one folder, so `distinct()` keeps one row per table:
+`nso_search()` searches table titles across the whole NSO catalogue. Some tables are listed in more than one folder, so `distinct()` keeps one row per table:
 
 ```{r search-examples}
 # Mortality
-mortality <- nso_itms_search("mortality")
+mortality <- nso_search("mortality")
 mortality |>
   distinct(tbl_id, tbl_eng_nm) |>
   head(10)
 
 # Cancer
-cancer <- nso_itms_search("cancer")
+cancer <- nso_search("cancer")
 cancer |> distinct(tbl_id, tbl_eng_nm)
 
 # Communicable diseases
-infectious <- nso_itms_search("communicable")
+infectious <- nso_search("communicable")
 infectious |> distinct(tbl_id, tbl_eng_nm)
 ```
 

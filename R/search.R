@@ -29,30 +29,36 @@
 
 #' Search NSO tables
 #'
-#' Performs a case-insensitive regex search across the table catalogue,
-#' optionally filtered to a specific sector. Searches table names in
-#' English and/or Mongolian by default. For a literal keyword search use
-#' [nso_itms_search()].
+#' Searches table titles in the catalogue (see [nso_tables()]),
+#' case-insensitively, in English and Mongolian by default. `query` is a
+#' regular expression unless `fixed = TRUE`.
 #'
 #' @param query Search string (regex, case-insensitive).
-#' @param sector Optional sector/subsector `list_id` to filter results.
+#' @param sector Optional sector or sub-sector path (an `id` from
+#'   [nso_sectors()] or [nso_subsectors()]); only tables in it or its
+#'   sub-folders are searched.
 #' @param fields Character vector of fields to search within.
+#' @param fixed If `TRUE`, match `query` literally instead of as a regular
+#'   expression, so characters such as `+` or `(` need no escaping.
 #' @return Tibble of matching tables.
-#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
+#' @examples
 #' nso_search("population")
+#' nso_search("infant mortality", sector = "Education, health")
+#' nso_search("c++", fixed = TRUE)
 #' @export
 nso_search <- function(
   query,
   sector = NULL,
-  fields = c("tbl_eng_nm", "tbl_nm")
+  fields = c("tbl_eng_nm", "tbl_nm"),
+  fixed = FALSE
 ) {
   check_query(query)
-  itms <- nso_itms()
-  if (!is.null(sector)) {
-    itms <- itms[
-      itms$px_path == sector | itms$list_id == sector, ,
-      drop = FALSE
-    ]
+  if (!is.logical(fixed) || length(fixed) != 1L || is.na(fixed)) {
+    cli_abort("{.arg fixed} must be {.code TRUE} or {.code FALSE}.")
   }
-  .search_index(itms, query, fields, fixed = FALSE)
+  itms <- nso_tables()
+  if (!is.null(sector)) {
+    itms <- .in_sector(itms, sector)
+  }
+  .search_index(itms, query, fields, fixed = fixed)
 }

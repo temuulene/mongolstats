@@ -3,15 +3,13 @@
 #' @keywords internal
 #' @noRd
 nso_px_variables <- function(tbl_id) {
-  resolved <- .px_resolve_table(tbl_id)
-  px_file <- resolved$px_file
-  row <- resolved$row
-  paths <- resolved$paths
-  meta_en <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "en"))
-  if (is.null(meta_en)) {
+  tm <- .nso_or_offline(.px_table_meta(tbl_id, lang = "en"))
+  if (is.null(tm)) {
     return(tibble::tibble())
   }
-  meta_mn <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "mn"))
+  meta_en <- tm$meta
+  row <- tm$row
+  meta_mn <- .nso_or_offline(.px_table_meta(tbl_id, lang = "mn")$meta)
   # One row per dimension value. `dim_code` is the join key across
   # languages: display names differ ("Sex" vs its Mongolian name) while the
   # dimension code is shared.
@@ -47,7 +45,9 @@ nso_px_variables <- function(tbl_id) {
 #'
 #' @param tbl_id Table identifier (e.g., "DT_NSO_0300_001V2").
 #' @return A tibble with columns: `dim` (display name), `code` (dimension code),
-#'   `is_time` (logical), and `n_values` (number of values for the dimension).
+#'   `is_time` (whether it is the table's time dimension; see
+#'   [nso_table_periods()]), and `n_values` (number of values for the
+#'   dimension).
 #'   In offline mode (see [nso_offline_enable()]) an empty tibble is
 #'   returned; failed requests raise an error of class
 #'   `mongolstats_http_error`.
@@ -57,10 +57,7 @@ nso_px_variables <- function(tbl_id) {
 #' @export
 nso_dims <- function(tbl_id) {
   check_tbl_id(tbl_id)
-  resolved <- .px_resolve_table(tbl_id)
-  px_file <- resolved$px_file
-  paths <- resolved$paths
-  meta_en <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "en"))
+  meta_en <- .nso_or_offline(.px_table_meta(tbl_id, lang = "en")$meta)
   if (is.null(meta_en) || is.null(meta_en$variables)) {
     return(tibble::tibble())
   }
@@ -72,7 +69,7 @@ nso_dims <- function(tbl_id) {
       character(1)
     ),
     code = vapply(vars, function(v) as.character(v$code), character(1)),
-    is_time = vapply(vars, function(v) isTRUE(v$time), logical(1)),
+    is_time = seq_along(vars) == .px_time_var(vars),
     n_values = vapply(
       vars,
       function(v) length(.px_chr(v$values %||% character())),
@@ -109,10 +106,7 @@ nso_dim_values <- function(
   # Accept the nso_data() vocabulary too: "none" is an alias for "code"
   if (identical(labels, "none")) labels <- "code"
   labels <- match.arg(labels)
-  resolved <- .px_resolve_table(tbl_id)
-  px_file <- resolved$px_file
-  paths <- resolved$paths
-  meta_en <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "en"))
+  meta_en <- .nso_or_offline(.px_table_meta(tbl_id, lang = "en")$meta)
   if (is.null(meta_en) || is.null(meta_en$variables)) {
     return(tibble::tibble())
   }
@@ -179,7 +173,7 @@ nso_dim_values <- function(
     }
   }
   if (labels %in% c("mn", "both")) {
-    meta_mn <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "mn"))
+    meta_mn <- .nso_or_offline(.px_table_meta(tbl_id, lang = "mn")$meta)
     if (!is.null(meta_mn) && length(meta_mn$variables)) {
       vars_mn <- meta_mn$variables
       # match by dimension code to be robust across languages
@@ -211,7 +205,8 @@ nso_dim_values <- function(
 #'
 #' @param tbl_id Table identifier (e.g., "DT_NSO_0300_001V2").
 #' @return A tibble with columns: `dim` (display name), `code` (dimension code),
-#'   `is_time` (logical), `n_values` (integer), and `codes` (list of tibbles).
+#'   `is_time` (whether it is the table's time dimension), `n_values`
+#'   (integer), and `codes` (list of tibbles).
 #'   In offline mode (see [nso_offline_enable()]) an empty tibble is
 #'   returned; failed requests raise an error of class
 #'   `mongolstats_http_error`.
@@ -221,17 +216,15 @@ nso_dim_values <- function(
 #' @export
 nso_table_meta <- function(tbl_id) {
   check_tbl_id(tbl_id)
-  resolved <- .px_resolve_table(tbl_id)
-  px_file <- resolved$px_file
-  paths <- resolved$paths
-  meta_en <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "en"))
-  meta_mn <- .nso_or_offline(.px_meta_cached(paths, px_file, lang = "mn"))
+  meta_en <- .nso_or_offline(.px_table_meta(tbl_id, lang = "en")$meta)
+  meta_mn <- .nso_or_offline(.px_table_meta(tbl_id, lang = "mn")$meta)
   if (is.null(meta_en) || is.null(meta_en$variables)) {
     return(tibble::tibble())
   }
   vars_en <- meta_en$variables
   vars_mn <- if (!is.null(meta_mn)) meta_mn$variables else NULL
   # Build per-dimension codebooks
+  time_i <- .px_time_var(vars_en)
   out <- purrr::imap_dfr(vars_en, function(v_en, i) {
     dim_name <- .px_first_nonempty(v_en$text, v_en$code, paste0("V", i))
     codes <- .px_chr(v_en$values %||% character())
@@ -258,7 +251,7 @@ nso_table_meta <- function(tbl_id) {
     tibble::tibble(
       dim = dim_name,
       code = as.character(v_en$code),
-      is_time = isTRUE(v_en$time),
+      is_time = i == time_i,
       n_values = length(codes),
       codes = list(df_codes)
     )

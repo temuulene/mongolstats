@@ -66,11 +66,11 @@ aimags |>
 mn_map(aimags, label = TRUE, title = "Mongolia's 21 Aimags and Ulaanbaatar")
 ```
 
-Other levels work the same way: `mn_regions()`, `mn_soums()`, `mn_ub_districts()` and `mn_khoroos()`. (mongolstats also has `mn_boundaries()`, which downloads geoBoundaries polygons, and name-based joins, `mn_join_by_name()` and `mn_fuzzy_join_by_name()`, for data that have no NSO codes.)
+Other levels work the same way: `mn_regions()`, `mn_soums()`, `mn_ub_districts()` and `mn_khoroos()`. (mongolstats' own geoBoundaries helpers, `mn_boundaries()` and the name-based joins, are deprecated in favour of mongolmaps.)
 
 ### Region codes in NSO tables
 
-NSO's `Region` dimension mixes levels: `"0"` is the national total, `"1"`–`"4"` are the four economic regions, `"5"` is Ulaanbaatar as a region, and three-digit codes are aimags. `mn_join()` keeps the aimag level and drops the rest. One quirk matters for the monthly health tables: they store Ulaanbaatar's figures under the region code `"5"` and leave its aimag-level code `"511"` empty. Recode `"5"` to `"511"` before joining so the capital is not left blank.
+NSO's `Region` dimension mixes levels: `"0"` is the national total, `"1"`–`"4"` are the four economic regions, `"5"` is Ulaanbaatar as a region, and three-digit codes are aimags. `mn_join()` keeps the aimag level and drops the rest. Many health tables store Ulaanbaatar's figures only under the region code `"5"` and leave its aimag-level code `"511"` empty; `mn_join()` notices this and takes the capital's values from the region row, with a message, so no recoding is needed.
 
 ## Case Study: Maternal Mortality
 
@@ -172,10 +172,9 @@ mmr <- maternal_deaths |>
 
 national_mmr <- mmr |> filter(Region == "0")
 
-# Aimags and the capital only
+# Aimags and the capital (Ulaanbaatar's figures are on region code "5")
 mmr_units <- mmr |>
-  filter(nchar(Region) == 3 | Region == "5") |>
-  mutate(Region = if_else(Region == "5", "511", Region))
+  filter(nchar(Region) == 3 | Region == "5")
 
 mmr_units |>
   arrange(desc(mmr)) |>
@@ -253,7 +252,6 @@ funnel_limit <- function(births, p) {
 imr_units <- imr |>
   filter(nchar(Region) == 3 | Region == "5") |>
   mutate(
-    Region = if_else(Region == "5", "511", Region),
     signal = case_when(
       imr > funnel_limit(births, 0.975) ~ "Above 95% limit",
       imr < funnel_limit(births, 0.025) ~ "Below 95% limit",
@@ -282,7 +280,7 @@ ggplot(imr_units, aes(x = births, y = imr)) +
   geom_hline(yintercept = national_rate * 1000, color = "grey20") +
   geom_point(aes(color = signal), size = 2.5) +
   ggrepel::geom_text_repel(
-    data = filter(imr_units, signal != "Within limits" | Region == "511"),
+    data = filter(imr_units, signal != "Within limits" | Region == "5"),
     aes(label = Region_en), size = 3, color = "grey20", min.segment.length = 0, seed = 1
   ) +
   scale_x_log10(labels = scales::label_comma()) +
