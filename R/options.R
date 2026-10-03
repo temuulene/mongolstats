@@ -61,7 +61,8 @@ nso_options <- function(...) {
   "mongolstats.progress",
   "mongolstats.parallel",
   "mongolstats.value_name",
-  "mongolstats.attach_raw"
+  "mongolstats.attach_raw",
+  "mongolstats.max_cells"
 )
 
 # Current values of all package options as a named list suitable for
@@ -90,7 +91,8 @@ nso_options <- function(...) {
     mongolstats.px_base_url = ,
     mongolstats.px_db = ,
     mongolstats.value_name = is_string(value),
-    mongolstats.timeout = is_positive(value),
+    mongolstats.timeout = ,
+    mongolstats.max_cells = is_positive(value),
     mongolstats.retry_tries = is_positive(value) && value == round(value),
     mongolstats.verbose = ,
     mongolstats.offline = ,
@@ -109,6 +111,7 @@ nso_options <- function(...) {
     mongolstats.px_db = ,
     mongolstats.value_name = "a single non-empty string",
     mongolstats.timeout = "a single positive number (seconds)",
+    mongolstats.max_cells = "a single positive number",
     mongolstats.retry_tries = "a single positive whole number",
     "{.code TRUE} or {.code FALSE}"
   )

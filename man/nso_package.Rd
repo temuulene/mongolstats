@@ -17,8 +17,11 @@ nso_package(
 
 \item{labels}{Label handling as in \code{nso_data()}}
 
-\item{parallel}{If TRUE, use future.apply to fetch tables in parallel.
-Defaults to the \code{mongolstats.parallel} option (\code{FALSE}).}
+\item{parallel}{If TRUE, fetch tables in parallel with
+\code{\link[purrr:in_parallel]{purrr::in_parallel()}} (requires the mirai and carrier packages). Start
+background workers first with \code{mirai::daemons(4)}; without them the
+tables are fetched one at a time. Workers load the installed copy of
+mongolstats. Defaults to the \code{mongolstats.parallel} option (\code{FALSE}).}
 
 \item{value_name}{Name of the numeric value column in the result (default: "value").}
 

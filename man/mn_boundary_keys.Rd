@@ -13,13 +13,21 @@ mn_boundary_keys(level = "ADM1")
 A tibble with key columns from GeoBoundaries and normalized names.
 }
 \description{
-Returns a lightweight tibble of key columns from the GeoBoundaries data,
-including normalized names, without the full geometry. Useful for building
-custom crosswalks between NSO data and boundary identifiers.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+\code{mn_boundary_keys()} was deprecated in mongolstats 0.3.0. Use
+\code{\link[mongolmaps:mn_codes]{mongolmaps::mn_codes()}}, which lists every administrative unit with its
+NSO code, ISO 3166-2 code, P-code and names.
+
+Returns a lightweight tibble of key columns from the geoBoundaries data,
+including normalized names, without the full geometry.
 }
 \examples{
-\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet() && rlang::is_installed("sf")) withAutoprint(\{ # examplesIf}
 keys <- mn_boundary_keys("ADM1")
-head(keys)
+# ->
+if (rlang::is_installed("mongolmaps")) {
+  keys <- mongolmaps::mn_codes("aimag")
+}
 \dontshow{\}) # examplesIf}
 }

@@ -145,3 +145,16 @@ test_that("check_selections rejects unnamed and duplicated names", {
   expect_silent(check_selections(list()))
   expect_silent(check_selections(list(Year = c("2023", "2024"))))
 })
+
+test_that("labels match ignoring NSO's indentation spaces", {
+  vars <- list(list(
+    code = "IND", text = "Statistical indicator",
+    values = list("0", "1"),
+    valueTexts = list("GDP, at current prices", " GDP, at 2015 constant prices")
+  ))
+  sel <- .px_map_selections(vars, list("Statistical indicator" = "GDP, at 2015 constant prices"))
+  expect_equal(sel$IND, "1")
+  # The exact spelling still works
+  sel2 <- .px_map_selections(vars, list("Statistical indicator" = " GDP, at 2015 constant prices"))
+  expect_equal(sel2$IND, "1")
+})

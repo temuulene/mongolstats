@@ -38,14 +38,7 @@
 #' @noRd
 .px_list <- function(paths = character(), lang = .px_lang()) {
   url <- do.call(.px_url, as.list(c(paths, lang = lang)))
-  res <- httr2::request(url) |>
-    httr2::req_user_agent(.nso_user_agent()) |>
-    httr2::req_timeout(.nso_timeout()) |>
-    httr2::req_retry(
-      max_tries = .nso_retry_tries(),
-      backoff = .nso_retry_backoff()
-    ) |>
-    .nso_perform()
+  res <- .nso_perform(.nso_request(url))
   txt <- .px_strip_bom(httr2::resp_body_string(res))
   jsonlite::fromJSON(txt, simplifyVector = TRUE)
 }
@@ -59,14 +52,7 @@
 #' @noRd
 .px_meta <- function(paths, table, lang = .px_lang()) {
   url <- .px_url(paths, table, lang = lang)
-  res <- httr2::request(url) |>
-    httr2::req_user_agent(.nso_user_agent()) |>
-    httr2::req_timeout(.nso_timeout()) |>
-    httr2::req_retry(
-      max_tries = .nso_retry_tries(),
-      backoff = .nso_retry_backoff()
-    ) |>
-    .nso_perform()
+  res <- .nso_perform(.nso_request(url))
   txt <- .px_strip_bom(httr2::resp_body_string(res))
   jsonlite::fromJSON(txt, simplifyVector = FALSE)
 }

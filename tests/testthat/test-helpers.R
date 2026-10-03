@@ -1,4 +1,8 @@
+# These functions are deprecated; their warnings are checked in
+# test-deprecated.R, so each test here silences them.
+
 test_that("mn_boundaries_normalize adds name_std", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   skip_on_cran()
   skip_if_offline()
   g <- mn_boundaries("ADM1")
@@ -7,6 +11,7 @@ test_that("mn_boundaries_normalize adds name_std", {
 })
 
 test_that("mn_fuzzy_join_by_name returns sf with matches", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   skip_on_cran()
   skip_if_offline()
   g <- mn_boundaries("ADM1")
@@ -25,6 +30,7 @@ test_that("mn_fuzzy_join_by_name returns sf with matches", {
 })
 
 test_that("cache can enable and clear", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   skip_if_not_installed("memoise")
   skip_if_not_installed("cachem")
   skip_if_not_installed("rappdirs")

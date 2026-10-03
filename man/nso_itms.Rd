@@ -2,26 +2,35 @@
 % Please edit documentation in R/itms.R
 \name{nso_itms}
 \alias{nso_itms}
-\alias{nso_tables}
-\title{List available NSO tables (PXWeb)}
+\alias{nso_itms_detail}
+\alias{nso_itms_search}
+\title{Superseded discovery functions}
 \usage{
 nso_itms()
 
-nso_tables()
+nso_itms_detail(tbl_id)
+
+nso_itms_search(query, fields = c("tbl_eng_nm", "tbl_nm"))
+}
+\arguments{
+\item{tbl_id}{Table identifier.}
+
+\item{query}{A single keyword, matched literally and case-insensitively.}
+
+\item{fields}{Columns of \code{\link[=nso_tables]{nso_tables()}} to search.}
 }
 \value{
-A tibble with columns: \code{px_path}, \code{px_file}, \code{tbl_id}, \code{tbl_eng_nm},
-\code{tbl_nm}, \code{strt_prd}, \code{end_prd}, \code{list_id}.
+As the newer functions.
 }
 \description{
-Retrieves the full catalogue of available statistical tables from the
-National Statistics Office PXWeb API. Uses the embedded index by default
-for fast startup; call \code{\link[=nso_rebuild_px_index]{nso_rebuild_px_index()}} to refresh from the API.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}}
+
+These are the original names of three discovery functions. They keep
+working, but new code should use the newer names:
+\itemize{
+\item \code{nso_itms()} is \code{\link[=nso_tables]{nso_tables()}}.
+\item \code{nso_itms_detail()} is \code{\link[=nso_variables]{nso_variables()}}.
+\item \code{nso_itms_search(query)} is \code{\link[=nso_search]{nso_search(query, fixed = TRUE)}}.
 }
-\examples{
-\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
-# List all available tables
-tables <- nso_itms()
-head(tables)
-\dontshow{\}) # examplesIf}
 }
+\keyword{internal}

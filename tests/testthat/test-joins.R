@@ -1,4 +1,8 @@
+# These functions are deprecated; their warnings are checked in
+# test-deprecated.R, so each test here silences them.
+
 test_that("name normalization produces expected tokens", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   x <- c("Ulaanbaatar", "Övörkhangai aimag", "  Darkhan-Uul\t")
   norm <- c("ulaanbaatar", "ovorkhangai aimag", "darkhan uul")
   expect_equal(
@@ -8,6 +12,7 @@ test_that("name normalization produces expected tokens", {
 })
 
 test_that("join helpers error clearly on a missing name column", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   d <- data.frame(aimag = "Ulaanbaatar", pop = 1)
   # Errors before any boundary download, naming the missing column
   expect_snapshot(mn_join_by_name(d, "region"), error = TRUE)
@@ -22,6 +27,7 @@ fake_boundaries <- function() {
 }
 
 test_that("fuzzy join returns all boundaries when data is empty", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   d <- data.frame(name = character(), value = numeric())
   expect_silent(
     res <- mn_fuzzy_join_by_name(d, "name", boundaries = fake_boundaries())
@@ -31,6 +37,7 @@ test_that("fuzzy join returns all boundaries when data is empty", {
 })
 
 test_that("fuzzy join skips NA names instead of crashing", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   d <- data.frame(aimag = c("Ulanbatar", NA), pop = 1:2)
   res <- mn_fuzzy_join_by_name(d, "aimag", boundaries = fake_boundaries())
   expect_equal(res$pop[res$shapeName == "Ulaanbaatar"], 1L)
@@ -38,6 +45,7 @@ test_that("fuzzy join skips NA names instead of crashing", {
 })
 
 test_that("fuzzy join rejects edit-distance thresholds for method = 'jw'", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   skip_if_not_installed("stringdist")
   d <- data.frame(aimag = c("Zzzzzzz", "Qqqq"), pop = 1:2)
   expect_snapshot(
@@ -53,6 +61,7 @@ test_that("fuzzy join rejects edit-distance thresholds for method = 'jw'", {
 })
 
 test_that("fuzzy join validates max_distance", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   d <- data.frame(aimag = "Ulanbatar", pop = 1)
   expect_snapshot(
     mn_fuzzy_join_by_name(d, "aimag", boundaries = fake_boundaries(), max_distance = -1),
@@ -61,6 +70,7 @@ test_that("fuzzy join validates max_distance", {
 })
 
 test_that("joins warn about data names that match no boundary", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   d <- data.frame(aimag = c("Ulaanbaatar", "Ulan Bator", NA), pop = 1:3)
   expect_snapshot(
     res <- mn_join_by_name(d, "aimag", boundaries = fake_boundaries())
@@ -77,6 +87,7 @@ test_that("joins warn about data names that match no boundary", {
 })
 
 test_that("joins are silent when every data name matches", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   d <- data.frame(aimag = c("Ulaanbaatar", "Darkhan Uul"), pop = 1:2)
   expect_no_warning(mn_join_by_name(d, "aimag", boundaries = fake_boundaries()))
   expect_no_warning(

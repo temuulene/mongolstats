@@ -6,20 +6,32 @@
 
 #' Mongolia administrative boundaries (sf)
 #'
-#' Downloads Mongolia boundaries for ADM0/ADM1/ADM2 from the GeoBoundaries API
-#' and returns an `sf` object. Results are cached in memory for the session,
-#' so repeated calls (including via [mn_join_by_name()]) do not re-download.
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' `mn_boundaries()` was deprecated in mongolstats 0.3.0. Use the mongolmaps
+#' package instead: [mongolmaps::mn_admin()] and its shortcuts
+#' (`mn_country()`, `mn_aimags()`, `mn_soums()`, ...) ship boundaries that
+#' carry NSO codes, need no download, and join to NSO tables by code with
+#' [mongolmaps::mn_join()].
+#'
+#' `mn_boundaries()` downloads boundaries for ADM0/ADM1/ADM2 from the
+#' geoBoundaries API and returns an `sf` object (the sf package must be
+#' installed). Results are cached in memory for the session.
 #'
 #' @param level One of "ADM0", "ADM1", "ADM2".
 #' @param refresh If TRUE, bypass the session cache and download again.
 #' @return An `sf` object with polygons for the requested level. Failed
 #'   downloads raise an error of class `mongolstats_http_error`.
-#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
-#' # Get aimag (province) boundaries
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet() && rlang::is_installed("sf")
 #' aimags <- mn_boundaries("ADM1")
-#' head(aimags)
+#' # ->
+#' if (rlang::is_installed("mongolmaps")) {
+#'   aimags <- mongolmaps::mn_aimags()
+#' }
 #' @export
 mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE) {
+  lifecycle::deprecate_soft("0.3.0", "mn_boundaries()", "mongolmaps::mn_admin()")
   level <- match.arg(level)
   if (!isTRUE(refresh)) {
     hit <- .mn_boundaries_env[[level]]
@@ -27,6 +39,7 @@ mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE) {
       return(hit)
     }
   }
+  rlang::check_installed("sf", reason = "to read boundary files.")
   # Respect offline mode
   if (.nso_offline()) {
     cli_abort(
@@ -37,14 +50,7 @@ mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE) {
   url <- .gb_gj_url("MNG", level)
   tmp <- tempfile(fileext = ".geojson")
   on.exit(try(unlink(tmp), silent = TRUE), add = TRUE)
-  req <- httr2::request(url) |>
-    httr2::req_user_agent(.nso_user_agent()) |>
-    httr2::req_timeout(.nso_timeout()) |>
-    httr2::req_retry(
-      max_tries = .nso_retry_tries(),
-      backoff = .nso_retry_backoff()
-    )
-  .nso_perform(req, path = tmp)
+  .nso_perform(.nso_request(url), path = tmp)
   g <- sf::st_read(tmp, quiet = TRUE)
   .mn_boundaries_env[[level]] <- g
   g
@@ -56,13 +62,7 @@ mn_boundaries <- function(level = c("ADM0", "ADM1", "ADM2"), refresh = FALSE) {
     iso3,
     level
   )
-  res <- httr2::request(api) |>
-    httr2::req_user_agent(.nso_user_agent()) |>
-    httr2::req_timeout(.nso_timeout()) |>
-    httr2::req_retry(
-      max_tries = .nso_retry_tries(),
-      backoff = .nso_retry_backoff()
-    ) |>
+  res <- .nso_request(api) |>
     .nso_perform() |>
     httr2::resp_body_json()
   url <- res$gjDownloadURL

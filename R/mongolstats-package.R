@@ -1,19 +1,20 @@
-#' mongolstats: Mongolian NSO PXWeb Data and Boundaries
+#' mongolstats: Tidy Client for the Mongolian NSO PXWeb Statistics API
 #'
 #' A tidyverse-friendly client for the National Statistics Office of Mongolia
-#' PXWeb API (data.1212.mn) with helpers to discover tables, variables, and fetch
-#' statistical data. Also includes utilities to retrieve Mongolia administrative
-#' boundaries (ADM0-ADM2) as 'sf' objects from open sources for mapping and
-#' spatial analysis.
+#' PXWeb API (data.1212.mn) with helpers to discover tables, variables, and
+#' periods, and to fetch statistical data. For maps, join the results to the
+#' boundaries in the companion package mongolmaps by NSO code.
 #'
 #' @section Main Functions:
 #' \describe{
+#'   \item{nso_search}{Find tables by keyword}
+#'   \item{nso_tables}{List all tables}
+#'   \item{nso_dims, nso_dim_values}{Inspect a table's dimensions and values}
+#'   \item{nso_table_periods, nso_latest_periods}{Periods available in a table}
 #'   \item{nso_data}{Fetch statistical data from a table}
-#'   \item{nso_itms, nso_tables}{List available tables}
-#'   \item{nso_itms_search}{Search tables by keyword}
-#'   \item{mn_boundaries}{Get administrative boundaries}
 #' }
 #'
+#' @importFrom lifecycle deprecated
 #' @importFrom utils head
 #' @importFrom curl curl_escape
 #' @importFrom stats setNames

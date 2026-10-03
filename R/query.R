@@ -61,9 +61,7 @@ print.nso_query <- function(x, ...) {
 
 # Internal: build a PXWeb JSON body from selections
 .px_build_body <- function(tbl_id, selections, lang = .px_lang()) {
-  resolved <- .px_resolve_table(tbl_id)
-  meta <- .px_meta_cached(resolved$paths, resolved$px_file, lang = lang)
-  vars <- meta$variables
+  vars <- .px_table_meta(tbl_id, lang = lang)$meta$variables
   .px_query_body(vars, .px_map_selections(vars, selections))
 }
 

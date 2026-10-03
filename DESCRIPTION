@@ -1,54 +1,60 @@
 Package: mongolstats
 Type: Package
-Title: Mongolian 'NSO' 'PXWeb' Data and Boundaries (Tidy Client)
-Version: 0.2.0.9000
-Authors@R: 
+Title: Tidy Client for the Mongolian 'NSO' 'PXWeb' Statistics API
+Version: 0.3.0
+Authors@R:
     c(person(given = "Temuulen",
              family = "Enebish",
              role = c("aut", "cre", "cph"),
              email = "temuulen@gmail.com"))
-Description: A 'tidyverse'-friendly client for the National Statistics Office of Mongolia
-    'PXWeb' API <https://data.1212.mn/> with helpers to discover tables, variables, and fetch
-    statistical data. Also includes utilities to retrieve Mongolia administrative boundaries
-    (ADM0-ADM2) as 'sf' objects from open sources for mapping and spatial analysis.
-Depends: 
+Description: A 'tidyverse'-friendly client for the 'PXWeb' API of the
+    National Statistics Office of Mongolia <https://data.1212.mn/>. Discover
+    tables and their dimensions, and fetch statistical data as tibbles with
+    English or Mongolian labels. Periods are reported by their labels and
+    can be selected in any of the office's period formats, tables that have
+    moved within the catalogue are found automatically, and large requests
+    are split to stay within the server's limits. Maps and joins by
+    statistical code are provided by the companion package 'mongolmaps'.
+Depends:
     R (>= 4.1.0)
-Imports: 
-    httr2,
-    jsonlite,
-    tibble,
-    dplyr (>= 1.1.0),
-    purrr,
-    stringr,
-    sf,
-    stringi,
-    curl,
+Imports:
     cli,
-    rlang
+    curl,
+    dplyr (>= 1.1.0),
+    httr2 (>= 1.1.0),
+    jsonlite,
+    lifecycle,
+    purrr (>= 1.1.0),
+    rlang,
+    stringi,
+    stringr,
+    tibble
 Suggests:
-    testthat (>= 3.1.7),
-    knitr,
-    rmarkdown,
-    memoise,
     cachem,
-    rappdirs,
-    pkgdown,
-    roxygen2,
-    remotes,
-    httptest2,
-    stringdist,
+    carrier,
     covr,
-    lintr,
-    styler,
-    future,
-    future.apply,
-    ggplot2,
-    scales,
     forcats,
-    tidyr,
-    lubridate,
+    ggplot2,
     ggrepel,
-    mongolmaps
+    httptest2,
+    knitr,
+    lintr,
+    lubridate,
+    memoise,
+    mirai,
+    mongolmaps,
+    pkgdown,
+    rappdirs,
+    remotes,
+    rmarkdown,
+    roxygen2,
+    scales,
+    sf,
+    stringdist,
+    styler,
+    testthat (>= 3.1.7),
+    tidyr,
+    withr
 Remotes:
     temuulene/mongolmaps
 VignetteBuilder: knitr

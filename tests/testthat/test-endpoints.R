@@ -98,8 +98,25 @@ test_that("nso_itms_by_sector() and nso_search(sector =) filter by folder", {
   sector <- itms$px_path[1]
   in_sector <- nso_itms_by_sector(sector)
   expect_gte(nrow(in_sector), 1)
-  expect_true(all(in_sector$px_path == sector))
+  expect_true(all(in_sector$px_path == sector | startsWith(in_sector$px_path, paste0(sector, "/"))))
   hits <- nso_search(".", sector = sector)
   expect_setequal(hits$px_file, in_sector$px_file)
   expect_equal(nrow(nso_itms_by_sector("no/such/folder")), 0)
+})
+
+test_that("a top-level sector includes the tables in its sub-folders", {
+  itms <- nso_tables()
+  top <- sub("/.*$", "", itms$px_path[1])
+  expected <- itms$px_path == top | startsWith(itms$px_path, paste0(top, "/"))
+  expect_equal(nrow(nso_itms_by_sector(top)), sum(expected))
+  expect_gt(sum(expected), 0)
+  # A path that is only a prefix of a folder name is not a match
+  expect_equal(nrow(nso_itms_by_sector(substr(top, 1, 3))), 0)
+})
+
+test_that("nso_search(fixed = TRUE) matches literally, like nso_itms_search()", {
+  expect_equal(nso_search("c++", fixed = TRUE), nso_itms_search("c++"))
+  expect_equal(nso_search("population", fixed = TRUE), nso_itms_search("population"))
+  expect_equal(nso_itms(), nso_tables())
+  expect_snapshot(nso_search("x", fixed = NA), error = TRUE)
 })

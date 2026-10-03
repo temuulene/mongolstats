@@ -40,7 +40,12 @@
 #     (variable text, falling back to code) or the variable code.
 #   - Values that are valid codes pass through unchanged; remaining values
 #     are mapped from labels to codes element-wise, so codes and labels can
-#     be mixed in one vector. Codes take priority over labels.
+#     be mixed in one vector. Codes take priority over labels. Labels also
+#     match ignoring leading and trailing spaces, which NSO uses to indent
+#     nested categories.
+#   - On the time dimension, values that are neither a code nor a label
+#     match a label for the same period in another spelling ("202601",
+#     "2026M1" and "2026-01" are one month).
 #   - Dimensions not selected get all their codes (PXWeb "select all").
 #
 # Errors (class "mongolstats_selection_error"):
@@ -106,6 +111,7 @@
     )
   }
 
+  time_j <- .px_time_var(vars)
   out <- stats::setNames(vector("list", length(vars)), dim_codes)
   for (j in seq_along(vars)) {
     v <- vars[[j]]
@@ -132,12 +138,29 @@
     if (length(vt) && length(vt) == length(vv)) {
       needs_map <- !is_code
       mapped[needs_map] <- vv[match(vals[needs_map], vt)]
+      # NSO indents nested labels with leading spaces (" GDP, at 2015
+      # constant prices"); match those ignoring surrounding whitespace
+      loose <- is.na(mapped)
+      if (any(loose)) {
+        mapped[loose] <- vv[match(trimws(vals[loose]), trimws(vt))]
+      }
       dup_labs <- intersect(vals[needs_map], vt[duplicated(vt)])
       if (length(dup_labs)) {
         cli_warn(c(
           "Some labels in {.field {dim_display[j]}} are not unique: {.val {dup_labs}}.",
           "i" = "The first matching code was used. Prefer codes for this dimension."
         ))
+      }
+      unmatched <- is.na(mapped)
+      if (j == time_j && any(unmatched)) {
+        # Read both sides in the table's frequency: "2025-4" is the fourth
+        # quarter in a quarterly table and April otherwise
+        quarterly <- .px_var_quarterly(v)
+        mapped[unmatched] <- vv[match(
+          .px_period_key(vals[unmatched], quarterly = quarterly),
+          .px_period_key(vt, quarterly = quarterly),
+          incomparables = NA
+        )]
       }
     }
     if (length(vv) && !all(mapped %in% vv)) {
@@ -160,17 +183,21 @@
 
 # Resolve a tbl_id to its px_file, index row, and path segments.
 # Returns a list with $px_file, $row (tibble), and $paths (character vector).
-# Raises an error if the table is not found in the index.
+# Tables missing from the index (published after it was built) are looked up
+# with the PXWeb search API; an error is raised if that finds nothing too.
 .px_resolve_table <- function(tbl_id, idx = .px_index(), call = rlang::caller_env()) {
   # Table ids match case-insensitively, with or without the .px suffix;
   # the index's own spelling is used for requests.
   px_file <- paste0(sub("\\.px$", "", tbl_id, ignore.case = TRUE), ".px")
   row <- idx[tolower(idx$px_file) == tolower(px_file), , drop = FALSE]
+  if (!nrow(row) && !.nso_offline()) {
+    row <- .px_locate_new_table(px_file) %||% row
+  }
   if (!nrow(row)) {
     cli_abort(
       c(
         "Table {.val {tbl_id}} not found in PXWeb index.",
-        "i" = "Find table ids with {.fn nso_search} or {.fn nso_itms}."
+        "i" = "Find table ids with {.fn nso_search} or {.fn nso_tables}."
       ),
       call = call
     )

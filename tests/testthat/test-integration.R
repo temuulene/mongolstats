@@ -72,9 +72,67 @@ test_that("nso_table_periods returns valid periods", {
 
   periods <- nso_table_periods("DT_NSO_0300_001V2")
 
-  expect_type(periods, "character")
-  expect_gte(length(periods), 1)
-  expect_true("2024" %in% periods)
+  expect_named(periods, c("code", "label", "date", "frequency"))
+  expect_gte(nrow(periods), 1)
+  expect_true("2024" %in% periods$label)
+  expect_false(is.unsorted(periods$date))
+  expect_true(all(periods$frequency == "year"))
+})
+
+test_that("time dimensions come back as labels, not positional codes", {
+  skip_on_cran()
+  skip_if_offline()
+
+  result <- nso_data(
+    "DT_NSO_0300_001V2",
+    selections = list(Sex = "Total", Age = "Total", Year = c("2023", "2024")),
+    labels = "none"
+  )
+  expect_setequal(result$Year, c("2023", "2024"))
+  # Other dimensions keep their codes
+  expect_true(all(result$Sex == "0"))
+})
+
+test_that("nso_latest_periods() returns the newest period labels", {
+  skip_on_cran()
+  skip_if_offline()
+
+  latest <- nso_latest_periods("DT_NSO_0300_001V2", n = 2)
+  periods <- nso_table_periods("DT_NSO_0300_001V2")
+  expect_equal(latest, utils::tail(periods$label, 2))
+})
+
+test_that("large selections are fetched in parts with the same result", {
+  skip_on_cran()
+  skip_if_offline()
+
+  sel <- list(Sex = c("Male", "Female"), Year = c("2023", "2024"))
+  whole <- nso_data("DT_NSO_0300_001V2", sel)
+  withr::local_options(mongolstats.max_cells = 50)
+  parts <- nso_data("DT_NSO_0300_001V2", sel)
+  key <- c("Sex", "Age", "Year")
+  expect_equal(
+    dplyr::arrange(parts, dplyr::across(dplyr::all_of(key))),
+    dplyr::arrange(whole, dplyr::across(dplyr::all_of(key)))
+  )
+})
+
+test_that("a table that moved folder is found and the index updated", {
+  skip_on_cran()
+  skip_if_offline()
+
+  # Pretend the index still lists the population table in a stale folder
+  idx <- .px_index()
+  withr::defer(.mongolstats_px_env$idx <- idx)
+  stale <- idx
+  hit <- stale$tbl_id == "DT_NSO_0300_001V2"
+  stale$px_path[hit] <- "Population, household"
+  .mongolstats_px_env$idx <- stale
+  .mongolstats_px_env$missing <- NULL
+
+  expect_message(dims <- nso_dims("DT_NSO_0300_001V2"), class = "mongolstats_table_moved")
+  expect_true("Year" %in% dims$dim)
+  expect_equal(.px_resolve_table("DT_NSO_0300_001V2")$row$px_path, idx$px_path[hit][1])
 })
 
 test_that("nso_package works with multiple tables", {
@@ -155,4 +213,12 @@ test_that("mixed code and label selections return consistent data", {
     labels = "none"
   )
   expect_equal(by_label$value, by_mixed$value)
+})
+
+test_that("nso_dims() marks the time dimension NSO leaves unflagged", {
+  skip_on_cran()
+  skip_if_offline()
+
+  d <- nso_dims("DT_NSO_0300_001V2")
+  expect_equal(d$dim[d$is_time], "Year")
 })

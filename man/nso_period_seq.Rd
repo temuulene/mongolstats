@@ -2,7 +2,7 @@
 % Please edit documentation in R/periods.R
 \name{nso_period_seq}
 \alias{nso_period_seq}
-\title{Create period codes}
+\title{Create a sequence of periods}
 \usage{
 nso_period_seq(start, end, by = c("Y", "M"))
 }
@@ -12,11 +12,13 @@ nso_period_seq(start, end, by = c("Y", "M"))
 \item{by}{'Y' for yearly or 'M' for monthly.}
 }
 \value{
-Character vector of period codes.
+Character vector of periods.
 }
 \description{
-Utilities to construct NSO period codes and sequences. For monthly data,
-use YYYYMM; for yearly, use YYYY.
+Builds a run of years (\code{YYYY}) or months (\code{YYYYMM}) for use in
+\code{selections}. Selections match these to a table's time labels whatever
+format the table uses, so \code{"202403"} selects \code{"2024-03"}, \code{"2024M3"} or
+\code{"2024.03"}.
 }
 \examples{
 # Generate yearly sequence

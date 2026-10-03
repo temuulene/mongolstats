@@ -1,4 +1,8 @@
+# These functions are deprecated; their warnings are checked in
+# test-deprecated.R, so each test here silences them.
+
 test_that("mn_boundaries() raises mongolstats_http_error when the download fails", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   local_mocked_bindings(.gb_gj_url = function(...) "http://127.0.0.1:9/mng.geojson")
   old <- options(mongolstats.retry_tries = 1L, mongolstats.timeout = 2)
   on.exit(options(old), add = TRUE)
@@ -9,6 +13,7 @@ test_that("mn_boundaries() raises mongolstats_http_error when the download fails
 })
 
 test_that(".gb_gj_url() errors clearly when the API gives no download URL", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   local_mocked_bindings(
     .nso_perform = function(req, ...) {
       httr2::response(

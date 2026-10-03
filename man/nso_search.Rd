@@ -4,26 +4,35 @@
 \alias{nso_search}
 \title{Search NSO tables}
 \usage{
-nso_search(query, sector = NULL, fields = c("tbl_eng_nm", "tbl_nm"))
+nso_search(
+  query,
+  sector = NULL,
+  fields = c("tbl_eng_nm", "tbl_nm"),
+  fixed = FALSE
+)
 }
 \arguments{
 \item{query}{Search string (regex, case-insensitive).}
 
-\item{sector}{Optional sector/subsector \code{list_id} to filter results.}
+\item{sector}{Optional sector or sub-sector path (an \code{id} from
+\code{\link[=nso_sectors]{nso_sectors()}} or \code{\link[=nso_subsectors]{nso_subsectors()}}); only tables in it or its
+sub-folders are searched.}
 
 \item{fields}{Character vector of fields to search within.}
+
+\item{fixed}{If \code{TRUE}, match \code{query} literally instead of as a regular
+expression, so characters such as \code{+} or \code{(} need no escaping.}
 }
 \value{
 Tibble of matching tables.
 }
 \description{
-Performs a case-insensitive regex search across the table catalogue,
-optionally filtered to a specific sector. Searches table names in
-English and/or Mongolian by default. For a literal keyword search use
-\code{\link[=nso_itms_search]{nso_itms_search()}}.
+Searches table titles in the catalogue (see \code{\link[=nso_tables]{nso_tables()}}),
+case-insensitively, in English and Mongolian by default. \code{query} is a
+regular expression unless \code{fixed = TRUE}.
 }
 \examples{
-\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}
 nso_search("population")
-\dontshow{\}) # examplesIf}
+nso_search("infant mortality", sector = "Education, health")
+nso_search("c++", fixed = TRUE)
 }
