@@ -13,6 +13,7 @@ template:
     fg: "#212529"
     enable-dark-mode: true
 url: https://temuulene.github.io/mongolstats/
+llm-docs: false
 development:
   mode: auto
 navbar:
