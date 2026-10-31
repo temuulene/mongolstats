@@ -4,6 +4,12 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the built website
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: write
@@ -45,7 +51,7 @@ jobs:
 
       - name: Build pkgdown site
         env:
-          NOT_CRAN: "true"
+          NOT_CRAN: ""
         run: |
           withr::with_options(
             list(rmarkdown.html_vignette.check_title = FALSE),
@@ -53,7 +59,15 @@ jobs:
           )
         shell: Rscript {0}
 
+      - name: Save website preview
+        if: github.event_name == 'workflow_dispatch' && !inputs.publish
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkgdown-preview
+          path: docs
+
       - name: Deploy to gh-pages branch
+        if: github.event_name == 'release' || inputs.publish
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
