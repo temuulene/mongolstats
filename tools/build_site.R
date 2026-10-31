@@ -11,8 +11,5 @@ if (!rmarkdown::pandoc_available()) {
   stop("Pandoc is required to build the website.")
 }
 roxygen2::roxygenise()
-# The bilingual article intentionally has a shorter English index entry.
-withr::with_options(
-  list(rmarkdown.html_vignette.check_title = FALSE),
-  pkgdown::build_site(preview = FALSE, install = FALSE, new_process = FALSE)
-)
+source("tools/render_site.R")
+build_package_site()

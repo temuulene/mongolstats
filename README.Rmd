@@ -19,6 +19,8 @@ knitr::opts_chunk$set(
 
 # mongolstats <img src="man/figures/logo.svg" align="right" height="139" alt="" />
 
+<p class="language-switch"><a href="https://temuulene.github.io/mongolstats/mn/" lang="mn" hreflang="mn">Монгол хэлээр</a></p>
+
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/temuulene/mongolstats/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
@@ -55,7 +57,7 @@ pak::pak(c("temuulene/mongolstats", "cran::mongolmaps"))
 
 Find a table, then fetch it with selections written as codes or labels:
 
-```{r gdp-example, eval=TRUE, message=FALSE, warning=FALSE}
+```{r gdp-example, eval=TRUE, message=FALSE, warning=FALSE, fig.alt="Mongolia's annual GDP at current prices from 2010 to 2025, in trillion MNT"}
 library(mongolstats)
 library(dplyr)
 library(ggplot2)
@@ -100,7 +102,7 @@ gdp |>
 
 NSO tables identify places by code. [mongolmaps](https://github.com/temuulene/mongolmaps) boundaries carry the same codes, so `mn_join()` attaches a table to the map in one step, keeping the aimags and dropping the national and regional totals:
 
-```{r pop-map-example, eval=TRUE, message=FALSE, warning=FALSE}
+```{r pop-map-example, eval=TRUE, message=FALSE, warning=FALSE, fig.alt="Aimag-level resident population across Mongolia on a logarithmic colour scale"}
 library(mongolmaps)
 
 pop_tbl <- "DT_NSO_0300_002V1"
@@ -110,33 +112,28 @@ pop <- nso_data(pop_tbl, selections = list(Year = latest))
 
 pop |>
   mn_join(by = "Region", level = "aimag") |>
-  mn_map(fill = value, trans = "log10", title = paste("Population by aimag,", latest)) +
+  mn_map(fill = value, trans = "log10", lang = "en", title = paste("Population by aimag,", latest)) +
   labs(fill = "Population\n(log scale)")
 ```
 
-## Sources and metadata / Эх сурвалж ба мета өгөгдөл
+## Sources and metadata
 
 The 0.4 workflow adds reviewed indicator queries, source citations, durable
 provenance manifests, and source-value status. Start with a concept, inspect its
 definition and unit, then keep the original status records alongside an export.
 
-0.4 хувилбарт хянасан үзүүлэлтийн асуулга, эх сурвалжийн ишлэл, хадгалж болох
-бүртгэл, анхны утгын төлөв нэмэгдсэн. Үзүүлэлтийн тодорхойлолт, нэгжийг шалгаж,
-экспортын хамт анхны тэмдэглэгээний мэдээллийг хадгалаарай.
-
 ```{r provenance-quick-start, eval=FALSE}
 nso_indicators("GDP")
 nso_indicator("gdp_current")
 gdp <- nso_indicator_query("gdp_current", periods = c("2023", "2024")) |>
-  nso_fetch(labels = "both")
+  nso_fetch(labels = "en")
 nso_table_info(gdp)
 nso_citation(gdp)
 nso_value_status(gdp)
 nso_write_manifest(gdp, "gdp-provenance.json")
 
 # Discover definitions and the separate public portal.
-# Тодорхойлолт болон тусдаа нээлттэй порталаас хайх.
-nso_metadata_search("хүн ам", type = "all")
+nso_metadata("indicator", 12925)
 nso_indicators(source = "portal")
 ```
 
@@ -146,12 +143,6 @@ Open the bilingual source and metadata guide with
 `vignette("data-provenance", package = "mongolstats")` for exports, quality checks,
 classification codebooks, catalog freshness, and the limits of the experimental
 services.
-
-Порталын дугаар, газар зүйн код нь өөрийн эх сурвалжийн тогтолцоотой. Албан ёсны
-нэр байхгүй бол дутуу хэвээр үлдэнэ. Өгөгдлийн сангийн дэмжлэг нь зөвхөн жагсаалт
-үзүүлнэ. Экспорт, чанарын шалгалт, ангиллын код, хайлтын шинэ байдал, туршилтын
-үйлчилгээний хязгаарыг хоёр хэл дээрх заавраас үзээрэй:
-`vignette("data-provenance", package = "mongolstats")`.
 
 ## Documentation
 

@@ -8,10 +8,10 @@ vignette: >
 ---
 
 ```{r not-cran-check, include = FALSE}
-# Skip code evaluation on CRAN (external API calls will fail)
-not_cran_check <- identical(Sys.getenv("NOT_CRAN"), "true") &&
-  !nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_"))
-run_vignette <- isTRUE(getOption("pkgdown.in_progress")) || not_cran_check
+# Render tutorials on the website, without making requests during package checks.
+run_vignette <- !nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_")) &&
+  (identical(Sys.getenv("IN_PKGDOWN"), "true") ||
+     identical(Sys.getenv("NOT_CRAN"), "true"))
 knitr::opts_chunk$set(eval = run_vignette, purl = run_vignette)
 # Inline `r` code runs even when chunks are skipped (eval = FALSE), so
 # values computed in chunks go through this helper. `expr` is only
