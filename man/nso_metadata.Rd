@@ -30,7 +30,7 @@ that the underlying records are publicly downloadable.
 }
 \description{
 These experimental interfaces expose the public catalogue at
-\url{https://metadata.nso.mn/}. Its numeric identifiers belong to a separate
+\verb{https://metadata.nso.mn/}. Its numeric identifiers belong to a separate
 service from PXWeb table identifiers. An \code{indicator} can describe a
 questionnaire field rather than a published statistical series.
 }
@@ -38,6 +38,8 @@ questionnaire field rather than a published statistical series.
 Quality flags identify potential inconsistencies and do not correct the
 upstream record. \code{include_raw = TRUE} preserves unrecognized fields for
 inspection. These endpoints have no published stability guarantee.
+The upstream site's certificate chain may be incomplete on some systems;
+requests can then fail certificate verification.
 }
 \examples{
 \dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) withAutoprint(\{ # examplesIf}

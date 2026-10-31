@@ -43,9 +43,10 @@ recorded with the release packet.
 ## Final selected source, 2026-10-30
 
 The archive was rebuilt after qualifying a test helper with its namespace to
-pass lint in a clean session. Package R code is unchanged. Final verification
-results and submission status are recorded with the release packet.
+pass lint in a clean session and resolving incoming wording and hyperlink
+notes. Package function definitions are unchanged. Final verification results
+and submission status are recorded with the release packet.
 
 Filename: `mongolstats_0.4.0.tar.gz`
 
-SHA256: `dd6b43d46adfb34ae7c3c326bbd6b7fe3d67b22e4de6b9dda23fb13b466be264`
+SHA256: `161289462a4741fc1177126b6a023e1a822ac45d05a586aeebf80eb5176cdf66`

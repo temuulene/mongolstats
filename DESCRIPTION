@@ -12,7 +12,7 @@ Authors@R:
              comment = "Bundled statistical extracts; see inst/COPYRIGHTS"))
 Description: A 'tidyverse'-friendly client for the public statistical services of
     the National Statistics Office of Mongolia <https://data.1212.mn/>. Discover
-    tables and their dimensions, and fetch statistical data as tibbles with
+    tables and their dimensions, and fetch statistical data as 'tibble' data frames with
     English or Mongolian labels. Periods are reported by their labels and
     can be selected in any of the office's period formats, tables that have
     moved within the catalogue are found automatically, and large requests

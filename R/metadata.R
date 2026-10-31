@@ -2,7 +2,7 @@
 #'
 #' @description
 #' These experimental interfaces expose the public catalogue at
-#' <https://metadata.nso.mn/>. Its numeric identifiers belong to a separate
+#' `https://metadata.nso.mn/`. Its numeric identifiers belong to a separate
 #' service from PXWeb table identifiers. An `indicator` can describe a
 #' questionnaire field rather than a published statistical series.
 #'
@@ -26,6 +26,8 @@
 #' Quality flags identify potential inconsistencies and do not correct the
 #' upstream record. `include_raw = TRUE` preserves unrecognized fields for
 #' inspection. These endpoints have no published stability guarantee.
+#' The upstream site's certificate chain may be incomplete on some systems;
+#' requests can then fail certificate verification.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' field <- nso_metadata("indicator", 12925, include_raw = TRUE)
 #' field$quality_flags
