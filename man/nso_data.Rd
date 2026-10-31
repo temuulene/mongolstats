@@ -23,7 +23,9 @@ nso_data(
 \item{value_name}{Name of the numeric value column in the result (default: "value").}
 
 \item{include_raw}{If TRUE, attach the raw PX payload as attribute \code{px_raw}
-(a list of payloads when the request was split, see below).}
+(a list of payloads when the request was split, see below). Source
+provenance and observation status are retained separately in every result;
+inspect them with \code{\link[=nso_provenance]{nso_provenance()}} and \code{\link[=nso_value_status]{nso_value_status()}}.}
 }
 \value{
 A tibble with one column per dimension and a numeric value column.
@@ -48,9 +50,10 @@ Select periods by label (\code{Year = "2024"}), with \code{\link[=nso_period_seq
 
 \section{Large requests}{
 
-data.1212.mn answers at most 1,000,000 cells per request. Larger
-selections are split into several requests and the results combined;
-set \code{options(mongolstats.max_cells = )} to change the limit.
+Larger selections are split into requests under the configured cell limit.
+\code{\link[=nso_api_config]{nso_api_config()}} discovers server limits; cached limits and
+\code{mongolstats.max_cells} are respected. The package coordinates NSO request
+attempts on the same computer, including workers, at a conservative rate.
 }
 
 \examples{

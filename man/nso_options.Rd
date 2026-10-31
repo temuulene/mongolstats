@@ -20,6 +20,16 @@ validated before anything is set: for example \code{mongolstats.lang} must be
 \code{"en"} or \code{"mn"}, and \code{mongolstats.timeout} a positive number. Names that
 are not mongolstats options are set with a warning, which catches typos.
 }
+\details{
+\code{mongolstats.request_interval} sets the minimum delay between NSO request
+attempts, with a one-second floor. Processes on the same computer coordinate
+through \code{mongolstats.rate_limit_dir}, which must name the same directory in
+each process. This does not coordinate other applications or computers
+sharing a public IP address. \code{mongolstats.portal_base_url} and
+\code{mongolstats.metadata_base_url} select the portal and metadata services.
+\code{mongolstats.max_cells} caps data-query cells; \code{mongolstats.max_values}
+describes the metadata value-list limit, rather than a data-query limit.
+}
 \examples{
 # Get all current mongolstats options
 nso_options()

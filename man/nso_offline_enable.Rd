@@ -15,12 +15,13 @@ the network will raise a clear offline error. Cached metadata can still
 be used if already available via \code{nso_cache_enable()}.
 }
 \examples{
+old <- nso_options(mongolstats.offline = FALSE)
 # Enable offline mode
 nso_offline_enable()
 
 # Check the option was set
 getOption("mongolstats.offline")
 
-# Disable to restore normal operation
-nso_offline_disable()
+# Restore the original setting
+options(old)
 }

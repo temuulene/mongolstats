@@ -18,4 +18,8 @@
 Displays a human-readable summary of the query, including the table
 identifier and the first few dimension selections.
 }
+\examples{
+query <- nso_query("DT_NSO_0300_001V2", list(Year = "2024", Sex = "Total"))
+print(query)
+}
 \keyword{internal}

@@ -30,6 +30,9 @@ nso_query <- function(tbl_id, selections = list()) {
 #' @param ... Additional arguments passed to print methods (ignored).
 #' @return `x`, invisibly.
 #' @keywords internal
+#' @examples
+#' query <- nso_query("DT_NSO_0300_001V2", list(Year = "2024", Sex = "Total"))
+#' print(query)
 #' @export
 print.nso_query <- function(x, ...) {
   cat("<nso_query>\n", sep = "")
@@ -127,7 +130,9 @@ nso_fetch <- function(
     labels <- getOption("mongolstats.default_labels", "code")
   }
   # Accept the nso_data() vocabulary too: "none" is an alias for "code"
-  if (identical(labels, "none")) labels <- "code"
+  if (identical(labels, "none")) {
+    labels <- "code"
+  }
   labels <- match.arg(labels)
   # Map 'code' -> existing 'none' for backwards compatibility
   lab <- if (identical(labels, "code")) "none" else labels

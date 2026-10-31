@@ -9,7 +9,11 @@
 # Resolve a table and fetch its metadata, relocating the table once if its
 # indexed folder no longer holds it. Returns a list with `meta`, `px_file`,
 # `paths`, and `row` (as .px_resolve_table()).
-.px_table_meta <- function(tbl_id, lang = .px_lang(), call = rlang::caller_env()) {
+.px_table_meta <- function(
+  tbl_id,
+  lang = .px_lang(),
+  call = rlang::caller_env()
+) {
   resolved <- .px_resolve_table(tbl_id, call = call)
   meta <- tryCatch(
     .px_meta_cached(resolved$paths, resolved$px_file, lang = lang),
@@ -64,7 +68,10 @@
   if (length(hits$id)) {
     for (p in unique(hits$path[tolower(hits$id) == tolower(px_file)])) {
       segs <- .px_split_path(p)
-      if (!identical(paste(segs, collapse = "/"), old_path) && .px_table_exists(segs, px_file)) {
+      if (
+        !identical(paste(segs, collapse = "/"), old_path) &&
+          .px_table_exists(segs, px_file)
+      ) {
         new_paths <- segs
         break
       }
@@ -72,13 +79,21 @@
   }
   if (is.null(new_paths)) {
     cli_inform(
-      c("i" = "Table {.val {tbl}} is no longer in folder {.val {old_path}}; searching the NSO catalogue for it."),
+      c(
+        "i" = "Table {.val {tbl}} is no longer in folder {.val {old_path}}; searching the NSO catalogue for it."
+      ),
       class = "mongolstats_table_search"
     )
-    new_paths <- .px_find_in_catalogue(px_file, start = .px_split_path(old_path))
+    new_paths <- .px_find_in_catalogue(
+      px_file,
+      start = .px_split_path(old_path)
+    )
   }
   if (is.null(new_paths)) {
-    .mongolstats_px_env$missing <- c(.mongolstats_px_env$missing, tolower(px_file))
+    .mongolstats_px_env$missing <- c(
+      .mongolstats_px_env$missing,
+      tolower(px_file)
+    )
     return(NULL)
   }
   new_path <- paste(new_paths, collapse = "/")
@@ -88,7 +103,9 @@
   idx <- .px_index()
   moved <- tolower(idx$px_file) == tolower(px_file) & idx$px_path == old_path
   idx$px_path[moved] <- new_path
-  if ("list_id" %in% names(idx)) idx$list_id[moved] <- new_path
+  if ("list_id" %in% names(idx)) {
+    idx$list_id[moved] <- new_path
+  }
   .mongolstats_px_env$idx <- idx
   cli_inform(
     c(
@@ -123,12 +140,18 @@
       px_path = paste(segs, collapse = "/"),
       px_file = hits$id[i],
       tbl_id = sub("\\.px$", "", hits$id[i], ignore.case = TRUE),
-      tbl_eng_nm = if (identical(.px_lang(), "en")) hits$title[i] else NA_character_,
+      tbl_eng_nm = if (identical(.px_lang(), "en")) {
+        hits$title[i]
+      } else {
+        NA_character_
+      },
       tbl_nm = if (identical(.px_lang(), "mn")) hits$title[i] else NA_character_
     )
     .mongolstats_px_env$idx <- dplyr::bind_rows(.px_index(), row)
     cli_inform(
-      c("i" = "Table {.val {row$tbl_id}} is not in the bundled table index; found it in folder {.val {row$px_path}}."),
+      c(
+        "i" = "Table {.val {row$tbl_id}} is not in the bundled table index; found it in folder {.val {row$px_path}}."
+      ),
       class = "mongolstats_table_located"
     )
     return(row)
@@ -142,9 +165,36 @@
   req <- .nso_request(.px_url(lang = lang)) |>
     httr2::req_url_query(query = query)
   res <- .nso_perform(req)
-  out <- jsonlite::fromJSON(.px_strip_bom(httr2::resp_body_string(res)), simplifyVector = TRUE)
-  if (!is.data.frame(out)) {
-    return(data.frame(id = character(), path = character(), title = character()))
+  out <- tryCatch(
+    jsonlite::parse_json(
+      .px_strip_bom(httr2::resp_body_string(res)),
+      simplifyVector = TRUE
+    ),
+    error = function(e) {
+      cli_abort(
+        "The PXWeb search service returned invalid JSON.",
+        class = c("mongolstats_invalid_response", "mongolstats_http_error"),
+        parent = e
+      )
+    }
+  )
+  body <- .px_strip_bom(httr2::resp_body_string(res))
+  if (grepl("^\\s*\\[\\s*\\]\\s*$", body)) {
+    return(data.frame(
+      id = character(),
+      path = character(),
+      title = character()
+    ))
+  }
+  if (
+    !is.data.frame(out) ||
+      !all(c("id", "path", "title") %in% names(out)) ||
+      !all(vapply(out[c("id", "path", "title")], is.character, logical(1)))
+  ) {
+    cli_abort(
+      "PXWeb search returned an unexpected catalogue response.",
+      class = "mongolstats_invalid_response"
+    )
   }
   out
 }

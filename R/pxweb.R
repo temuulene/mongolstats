@@ -40,7 +40,7 @@
   url <- do.call(.px_url, as.list(c(paths, lang = lang)))
   res <- .nso_perform(.nso_request(url))
   txt <- .px_strip_bom(httr2::resp_body_string(res))
-  jsonlite::fromJSON(txt, simplifyVector = TRUE)
+  jsonlite::parse_json(txt, simplifyVector = TRUE)
 }
 
 #' Get PXWeb table metadata
@@ -54,7 +54,7 @@
   url <- .px_url(paths, table, lang = lang)
   res <- .nso_perform(.nso_request(url))
   txt <- .px_strip_bom(httr2::resp_body_string(res))
-  jsonlite::fromJSON(txt, simplifyVector = FALSE)
+  jsonlite::parse_json(txt, simplifyVector = FALSE)
 }
 
 # Internal cached wrappers

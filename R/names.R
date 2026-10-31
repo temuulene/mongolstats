@@ -65,7 +65,11 @@
 #' }
 #' @export
 mn_boundaries_normalize <- function(g, name_col = "shapeName") {
-  lifecycle::deprecate_soft("0.3.0", "mn_boundaries_normalize()", "mongolmaps::mn_match()")
+  lifecycle::deprecate_soft(
+    "0.3.0",
+    "mn_boundaries_normalize()",
+    "mongolmaps::mn_match()"
+  )
   if (!name_col %in% names(g)) {
     return(g)
   }
@@ -102,7 +106,11 @@ mn_boundaries_normalize <- function(g, name_col = "shapeName") {
 #' }
 #' @export
 mn_join_by_name <- function(data, name_col, level = "ADM1", boundaries = NULL) {
-  lifecycle::deprecate_soft("0.3.0", "mn_join_by_name()", "mongolmaps::mn_join()")
+  lifecycle::deprecate_soft(
+    "0.3.0",
+    "mn_join_by_name()",
+    "mongolmaps::mn_join()"
+  )
   .check_name_col(data, name_col)
   if (is.null(boundaries)) {
     boundaries <- mn_boundaries(level)
@@ -162,11 +170,17 @@ mn_fuzzy_join_by_name <- function(
   max_distance = 2,
   method = c("osa", "lv", "jw", "dl")
 ) {
-  lifecycle::deprecate_soft("0.3.0", "mn_fuzzy_join_by_name()", "mongolmaps::mn_join()")
+  lifecycle::deprecate_soft(
+    "0.3.0",
+    "mn_fuzzy_join_by_name()",
+    "mongolmaps::mn_join()"
+  )
   method <- match.arg(method)
   .check_name_col(data, name_col)
-  bad_distance <- !is.numeric(max_distance) || length(max_distance) != 1L ||
-    is.na(max_distance) || max_distance < 0
+  bad_distance <- !is.numeric(max_distance) ||
+    length(max_distance) != 1L ||
+    is.na(max_distance) ||
+    max_distance < 0
   if (bad_distance) {
     cli_abort("{.arg max_distance} must be a single non-negative number.")
   }
@@ -193,7 +207,7 @@ mn_fuzzy_join_by_name <- function(
   # Prefer 'method' via stringdist when available; otherwise fall back to
   # base adist (Levenshtein), in which case `method` is ignored.
   mat <- if (requireNamespace("stringdist", quietly = TRUE)) {
-    stringdist::stringdistmatrix(keys_d, keys_g, method = method)
+    stringdist::stringdistmatrix(keys_d, keys_g, method = method, nthread = 1L)
   } else {
     utils::adist(keys_d, keys_g, partial = FALSE, ignore.case = TRUE)
   }
@@ -204,7 +218,8 @@ mn_fuzzy_join_by_name <- function(
     dist = as.numeric(mat[cbind(seq_along(keys_d), best_idx)])
   )
   map_df <- map_df[
-    map_df$dist <= max_distance | map_df$name_std == map_df$match_std, ,
+    map_df$dist <= max_distance | map_df$name_std == map_df$match_std,
+    ,
     drop = FALSE
   ]
   unmatched <- !is.na(d$name_std) & !d$name_std %in% map_df$name_std
@@ -240,7 +255,11 @@ mn_fuzzy_join_by_name <- function(
 #' }
 #' @export
 mn_boundary_keys <- function(level = "ADM1") {
-  lifecycle::deprecate_soft("0.3.0", "mn_boundary_keys()", "mongolmaps::mn_codes()")
+  lifecycle::deprecate_soft(
+    "0.3.0",
+    "mn_boundary_keys()",
+    "mongolmaps::mn_codes()"
+  )
   g <- mn_boundaries(level)
   g <- mn_boundaries_normalize(g)
   tibble::tibble(

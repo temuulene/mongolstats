@@ -34,15 +34,15 @@ economic trends, and map regional statistics—all from within R.
 You can install mongolstats from CRAN with:
 
 ``` r
-install.packages("mongolstats")
+install.packages(c("mongolstats", "mongolmaps"))
 ```
 
-Or install the development version, with mongolmaps for maps, from
-[GitHub](https://github.com/) with:
+Or install the development version from [GitHub](https://github.com/)
+with the released mongolmaps from CRAN:
 
 ``` r
 # install.packages("pak")
-pak::pak(c("temuulene/mongolstats", "temuulene/mongolmaps"))
+pak::pak(c("temuulene/mongolstats", "cran::mongolmaps"))
 ```
 
 ## Quick Start
@@ -132,6 +132,48 @@ pop |>
 ```
 
 <img src="man/figures/README-pop-map-example-1.png" alt="" width="100%" />
+
+## Sources and metadata / Эх сурвалж ба мета өгөгдөл
+
+The 0.4 workflow adds reviewed indicator queries, source citations,
+durable provenance manifests, and source-value status. Start with a
+concept, inspect its definition and unit, then keep the original status
+records alongside an export.
+
+0.4 хувилбарт хянасан үзүүлэлтийн асуулга, эх сурвалжийн ишлэл, хадгалж
+болох бүртгэл, анхны утгын төлөв нэмэгдсэн. Үзүүлэлтийн тодорхойлолт,
+нэгжийг шалгаж, экспортын хамт анхны тэмдэглэгээний мэдээллийг
+хадгалаарай.
+
+``` r
+nso_indicators("GDP")
+nso_indicator("gdp_current")
+gdp <- nso_indicator_query("gdp_current", periods = c("2023", "2024")) |>
+  nso_fetch(labels = "both")
+nso_table_info(gdp)
+nso_citation(gdp)
+nso_value_status(gdp)
+nso_write_manifest(gdp, "gdp-provenance.json")
+
+# Discover definitions and the separate public portal.
+# Тодорхойлолт болон тусдаа нээлттэй порталаас хайх.
+nso_metadata_search("хүн ам", type = "all")
+nso_indicators(source = "portal")
+```
+
+Portal identifiers and geography codes use their own source scheme;
+missing official labels remain missing. Datamart support provides
+discovery only. Open the bilingual source and metadata guide with
+`vignette("data-provenance", package = "mongolstats")` for exports,
+quality checks, classification codebooks, catalog freshness, and the
+limits of the experimental services.
+
+Порталын дугаар, газар зүйн код нь өөрийн эх сурвалжийн тогтолцоотой.
+Албан ёсны нэр байхгүй бол дутуу хэвээр үлдэнэ. Өгөгдлийн сангийн
+дэмжлэг нь зөвхөн жагсаалт үзүүлнэ. Экспорт, чанарын шалгалт, ангиллын
+код, хайлтын шинэ байдал, туршилтын үйлчилгээний хязгаарыг хоёр хэл
+дээрх заавраас үзээрэй:
+`vignette("data-provenance", package = "mongolstats")`.
 
 ## Documentation
 

@@ -1,0 +1,6 @@
+[
+  {"tbl_id":"DT_NSO_0000_4_4","period":"2002","code":"CO9999","scr_mn":"Улсын дүн","scr_en":null,"code1":"2","scr_mn1":"Уул уурхай, олборлох","scr_en1":null,"code5":"5","src_en5":"Official fifth label","code6":null,"dtval_co":"152025.4"},
+  {"tbl_id":"DT_NSO_0000_4_4","period":"2003","code":"CO9999","scr_mn":"Улсын дүн","scr_en":null,"code1":"2","scr_mn1":"Уул уурхай, олборлох","scr_en1":null,"code5":null,"dtval_co":".."},
+  {"tbl_id":"DT_NSO_0000_4_4","period":"2004*","code":"UNMAPPED","scr_mn":null,"scr_en":null,"code1":"3","scr_mn1":null,"scr_en1":null,"code5":null,"dtval_co":"0"},
+  {"tbl_id":"DT_NSO_0000_4_4","period":"2004*","code":"CO9999","scr_mn":"Улсын дүн","scr_en":null,"code1":"3","code5":null,"dtval_co":null}
+]

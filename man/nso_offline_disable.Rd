@@ -13,5 +13,7 @@ Invisibly, \code{TRUE}.
 Disable offline mode
 }
 \examples{
+old <- nso_options(mongolstats.offline = TRUE)
 nso_offline_disable()
+options(old)
 }

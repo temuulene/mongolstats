@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "indicators": [
+    {
+      "id": "gdp_current",
+      "name": "GDP at current prices, production approach",
+      "aliases": ["GDP", "nominal GDP", "current price GDP", "ДНБ"],
+      "source_id": "DT_NSO_0500_001V1",
+      "definition": "National gross domestic product at current prices, total economic activity, using the production approach. The template excludes constant-price levels, growth rates and dollar-denominated measures in the same table.",
+      "unit": "million togrogs",
+      "unit_status": "verified_px_response",
+      "frequency": "year",
+      "geography": "Mongolia national total",
+      "geography_dimension": null,
+      "time_dimension": "Жил",
+      "verified_at": "2026-10-19",
+      "source_url": "https://data.1212.mn/api/v1/en/NSO/Economy%2C%20environment/National%20Accounts/GROSS%20DOMESTIC%20PRODUCT%2C%20by%20production%20approach%2C%20by%20year/DT_NSO_0500_001V1.px",
+      "caveats": "Period labels can carry a trailing asterisk; retain the source label. GDP series are subject to revisions. The unit preserves the official UNITS[en] label from the PX-format response verified on 2026-10-19; no numeric conversion is applied. No portal series equivalence is asserted.",
+      "selections": {"Статистик үзүүлэлт": ["0"], "Эдийн засгийн салбар": ["0"], "Жил": ["all"]}
+    },
+    {
+      "id": "resident_population",
+      "name": "Resident population in Mongolia by geography",
+      "aliases": ["resident population", "population", "суурин хүн ам"],
+      "source_id": "DT_NSO_0300_068V2",
+      "definition": "Resident population in Mongolia, both sexes, national total by default. Geography selections use the source Region dimension and retain its administrative hierarchy; they must not be summed across overlapping levels.",
+      "unit": "persons",
+      "unit_status": "count_from_statistical_concept",
+      "frequency": "year",
+      "geography": "National default; region, aimag, soum/district, bag/khoroo source codes available",
+      "geography_dimension": "Бүс",
+      "time_dimension": "Он",
+      "verified_at": "2026-10-19",
+      "source_url": "https://data.1212.mn/api/v1/en/NSO/Population%2C%20household/1_Population%2C%20household/DT_NSO_0300_068V2.px",
+      "caveats": "Resident population differs from citizen population and midyear population measures. Geography codes and administrative boundaries can change across years. The PXWeb national code 0 is unrelated to the portal code CO9999. The table is cross-listed; resolution follows the package's standard location rules.",
+      "selections": {"Хүйс": ["0"], "Бүс": ["0"], "Он": ["all"]}
+    }
+  ]
+}

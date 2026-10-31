@@ -33,4 +33,11 @@ working, but new code should use the newer names:
 \item \code{nso_itms_search(query)} is \code{\link[=nso_search]{nso_search(query, fixed = TRUE)}}.
 }
 }
+\examples{
+head(nso_itms())
+nso_itms_search("population")
+if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) {
+  nso_itms_detail("DT_NSO_0300_001V2")
+}
+}
 \keyword{internal}

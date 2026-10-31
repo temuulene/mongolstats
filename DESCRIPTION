@@ -1,19 +1,26 @@
 Package: mongolstats
 Type: Package
-Title: Tidy Client for the Mongolian 'NSO' 'PXWeb' Statistics API
-Version: 0.3.0
+Title: Tidy Access to Mongolian Official Statistics and Metadata
+Version: 0.4.0
 Authors@R:
     c(person(given = "Temuulen",
              family = "Enebish",
              role = c("aut", "cre", "cph"),
-             email = "temuulen@gmail.com"))
-Description: A 'tidyverse'-friendly client for the 'PXWeb' API of the
-    National Statistics Office of Mongolia <https://data.1212.mn/>. Discover
-    tables and their dimensions, and fetch statistical data as tibbles with
+             email = "temuulen@gmail.com"),
+      person("National Statistics Office of Mongolia",
+             role = "cph",
+             comment = "Bundled statistical extracts; see inst/COPYRIGHTS"))
+Description: A 'tidyverse'-friendly client for the public statistical services of
+    the National Statistics Office of Mongolia <https://data.1212.mn/>. Discover
+    tables and their dimensions, and fetch statistical data as 'tibble' data frames with
     English or Mongolian labels. Periods are reported by their labels and
     can be selected in any of the office's period formats, tables that have
     moved within the catalogue are found automatically, and large requests
-    are split to stay within the server's limits. Maps and joins by
+    are split to stay within the server's limits. Source provenance and raw
+    observation symbols support reproducible exports. Experimental clients
+    provide access to the public data and metadata portals, including official
+    definitions, collection forms, classifications, and reviewed indicator
+    queries. Maps and joins by
     statistical code are provided by the companion package 'mongolmaps'.
 Depends:
     R (>= 4.1.0)
@@ -21,6 +28,8 @@ Imports:
     cli,
     curl,
     dplyr (>= 1.1.0),
+    digest,
+    filelock,
     httr2 (>= 1.1.0),
     jsonlite,
     lifecycle,
@@ -42,9 +51,8 @@ Suggests:
     lubridate,
     memoise,
     mirai,
-    mongolmaps,
+    mongolmaps (>= 0.2.0),
     pkgdown,
-    rappdirs,
     remotes,
     rmarkdown,
     roxygen2,
@@ -55,8 +63,6 @@ Suggests:
     testthat (>= 3.1.7),
     tidyr,
     withr
-Remotes:
-    temuulene/mongolmaps
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -65,3 +71,4 @@ URL: https://temuulene.github.io/mongolstats/, https://data.1212.mn/pxweb/
 BugReports: https://github.com/temuulene/mongolstats/issues
 License: MIT + file LICENSE
 Config/roxygen2/version: 8.0.0
+Config/Needs/website: pkgdown@2.1.3

@@ -30,12 +30,10 @@ knitr::opts_chunk$set(
 
 ## Installation
 
-Install mongolstats, and mongolmaps for the maps, from GitHub:
+Install mongolstats and the released mongolmaps from CRAN:
 
-```{r install}
-# install.packages("pak")
-# pak::pak("temuulene/mongolstats")
-# pak::pak("temuulene/mongolmaps")
+```{r install, eval=FALSE}
+install.packages(c("mongolstats", "mongolmaps"))
 ```
 
 ## Your First Analysis: Infant Mortality
@@ -51,10 +49,10 @@ library(dplyr)
 library(ggplot2)
 
 # Set language to English for readable output
-nso_options(mongolstats.lang = "en")
+old_options <- nso_options(mongolstats.lang = "en")
 
 # Set global ggplot2 theme with proper margins to prevent text cutoff
-theme_set(
+old_theme <- theme_set(
   theme_minimal(base_size = 11) +
     theme(
       plot.margin = margin(10, 10, 10, 10),
@@ -311,4 +309,9 @@ tibble::tribble(
   "Mid-year population", "DT_NSO_0300_002V1", "Count", "Aimag, year"
 ) |>
   knitr::kable()
+```
+
+```{r restore-session, include=FALSE}
+options(old_options)
+ggplot2::theme_set(old_theme)
 ```

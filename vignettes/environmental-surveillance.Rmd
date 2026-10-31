@@ -45,10 +45,10 @@ library(ggplot2)
 library(tidyr)
 library(stringr)
 
-nso_options(mongolstats.lang = "en")
+old_options <- nso_options(mongolstats.lang = "en")
 
 # Global theme with proper margins to prevent text cutoff
-theme_set(
+old_theme <- theme_set(
   theme_minimal(base_size = 11) +
     theme(
       plot.margin = margin(10, 10, 10, 10),
@@ -506,4 +506,9 @@ tibble::tribble(
   "Forest fires", "DT_NSO_2400_005V1", "Aimag"
 ) |>
   knitr::kable()
+```
+
+```{r restore-session, include=FALSE}
+options(old_options)
+ggplot2::theme_set(old_theme)
 ```

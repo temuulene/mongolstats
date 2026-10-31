@@ -34,7 +34,7 @@ library(tidyr)
 library(ggplot2)
 library(lubridate)
 library(scales)
-nso_options(mongolstats.lang = "en")
+old_options <- nso_options(mongolstats.lang = "en")
 
 # Reusable theme for all plots in this analysis
 theme_mortality <- function(base_size = 12) {
@@ -49,7 +49,7 @@ theme_mortality <- function(base_size = 12) {
     )
 }
 
-theme_set(theme_mortality())
+old_theme <- theme_set(theme_mortality())
 
 # Formatting helpers for inline results
 fmt_pct <- function(x, digits = 1) sprintf(paste0("%+.", digits, "f%%"), x)
@@ -806,4 +806,9 @@ December is `r fmt_pct(type_dec("All deaths"), 0)` for all deaths and `r fmt_pct
 
 ```{r session-info}
 sessionInfo()
+```
+
+```{r restore-session, include=FALSE}
+options(old_options)
+ggplot2::theme_set(old_theme)
 ```

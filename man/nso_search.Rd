@@ -8,7 +8,8 @@ nso_search(
   query,
   sector = NULL,
   fields = c("tbl_eng_nm", "tbl_nm"),
-  fixed = FALSE
+  fixed = FALSE,
+  live = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,11 @@ sub-folders are searched.}
 
 \item{fixed}{If \code{TRUE}, match \code{query} literally instead of as a regular
 expression, so characters such as \code{+} or \code{(} need no escaping.}
+
+\item{live}{Use the live PXWeb keyword search instead of the bundled title
+index. The source's search semantics apply; regex matching and \code{fields}
+apply only to the local index. Results carry a \code{catalogue} attribute
+identifying the returned search window. Requires network access.}
 }
 \value{
 Tibble of matching tables.

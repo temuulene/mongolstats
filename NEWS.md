@@ -1,3 +1,18 @@
+# mongolstats 0.4.0
+
+* Experimental clients now expose the public data and metadata portals alongside PXWeb. The bundled data include an installed source, copyright, and license notice.
+* `mn_fuzzy_join_by_name()` limits distance calculations to one thread, including when stringdist has a larger process-wide default.
+* `nso_api_config()` inspects server limits; NSO request attempts, retries, redirects, and worker processes share a scheduler with at least one second between attempts on one computer. The default retry delay also works when stats is not attached.
+* `nso_cache_enable()` uses the standard R user cache directory, a 10 MiB size limit, and seven-day expiry by default. Set `ttl = NULL` to disable age-based expiry. Existing caches in the former rappdirs location are retained and can be selected explicitly with `dir`.
+* `nso_check_data()` reports duplicate observation keys, mixed units or geographic levels, unresolved source symbols, and absent requested periods without changing values.
+* `nso_data()`, `nso_fetch()`, and `nso_package()` retain source provenance, resolved selections, request details, response metadata and comments, and raw observation symbols. Failed requests preserve available diagnostic context; unsupported multi-content responses raise explicit errors.
+* `nso_indicators()`, `nso_indicator()`, and `nso_indicator_query()` provide reviewed GDP and resident-population query templates with definitions, units, caveats, and validation dates.
+* `nso_metadata()`, `nso_metadata_search()`, `nso_related()`, `nso_forms()`, `nso_classification()`, and `nso_metadata_dictionary()` expose official definitions and collection context, preserving original dates, units, source identifiers, and quality flags.
+* `nso_portal_data()` retrieves explicit public aggregate series, while `nso_portal_datamarts()` discovers available datamarts. Source codes and official labels remain distinct; no automatic portal-to-PXWeb equivalence is assumed.
+* `nso_provenance()`, `nso_table_info()`, `nso_citation()`, `nso_write_manifest()`, and `nso_read_manifest()` support inspecting and exporting source records. `nso_value_status()` preserves original observation symbols alongside numeric values.
+* `nso_search(live = TRUE)` searches beyond the bundled catalogue. `nso_catalogue_status()` describes freshness and coverage; rebuilt indexes preserve build metadata and require explicit opt-in to replace the catalogue after an incomplete crawl.
+* Mapping documentation and validation use the released mongolmaps 0.2.0 or later from CRAN; the GitHub dependency override has been removed.
+
 # mongolstats 0.3.0
 
 ## Breaking changes

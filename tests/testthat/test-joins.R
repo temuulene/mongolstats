@@ -26,6 +26,25 @@ fake_boundaries <- function() {
   data.frame(shapeName = c("Ulaanbaatar", "Darkhan-Uul"))
 }
 
+test_that("fuzzy matching explicitly limits distance calculations to one thread", {
+  skip_if_not_installed("stringdist")
+  withr::local_options(lifecycle_verbosity = "quiet")
+  observed_threads <- NULL
+  local_mocked_bindings(
+    stringdistmatrix = function(a, b, method, nthread = NULL, ...) {
+      observed_threads <<- nthread
+      matrix(0, nrow = length(a), ncol = length(b))
+    },
+    .package = "stringdist"
+  )
+  mn_fuzzy_join_by_name(
+    data.frame(aimag = "Ulaanbaatar"),
+    "aimag",
+    boundaries = fake_boundaries()
+  )
+  expect_identical(observed_threads, 1L)
+})
+
 test_that("fuzzy join returns all boundaries when data is empty", {
   withr::local_options(lifecycle_verbosity = "quiet")
   d <- data.frame(name = character(), value = numeric())
@@ -49,13 +68,21 @@ test_that("fuzzy join rejects edit-distance thresholds for method = 'jw'", {
   skip_if_not_installed("stringdist")
   d <- data.frame(aimag = c("Zzzzzzz", "Qqqq"), pop = 1:2)
   expect_snapshot(
-    mn_fuzzy_join_by_name(d, "aimag", boundaries = fake_boundaries(), method = "jw"),
+    mn_fuzzy_join_by_name(
+      d,
+      "aimag",
+      boundaries = fake_boundaries(),
+      method = "jw"
+    ),
     error = TRUE
   )
   d2 <- data.frame(aimag = "Ulanbatar", pop = 1)
   res <- mn_fuzzy_join_by_name(
-    d2, "aimag",
-    boundaries = fake_boundaries(), method = "jw", max_distance = 0.2
+    d2,
+    "aimag",
+    boundaries = fake_boundaries(),
+    method = "jw",
+    max_distance = 0.2
   )
   expect_equal(res$pop[res$shapeName == "Ulaanbaatar"], 1)
 })
@@ -64,7 +91,12 @@ test_that("fuzzy join validates max_distance", {
   withr::local_options(lifecycle_verbosity = "quiet")
   d <- data.frame(aimag = "Ulanbatar", pop = 1)
   expect_snapshot(
-    mn_fuzzy_join_by_name(d, "aimag", boundaries = fake_boundaries(), max_distance = -1),
+    mn_fuzzy_join_by_name(
+      d,
+      "aimag",
+      boundaries = fake_boundaries(),
+      max_distance = -1
+    ),
     error = TRUE
   )
 })

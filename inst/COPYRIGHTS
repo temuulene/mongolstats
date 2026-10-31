@@ -1,0 +1,54 @@
+Software
+--------
+The package software is copyright Temuulen Enebish and is distributed under
+the MIT license in LICENSE. This software license does not replace the source
+conditions applicable to bundled statistical data.
+
+Bundled statistical data and catalogues
+--------------------------------------
+Source and copyright holder: National Statistics Office of Mongolia (NSO).
+Official statistical service: https://data.1212.mn/
+Terms: https://www.nso.mn/en/terms_of_use
+NSO identifies its open data license as Creative Commons Attribution 4.0
+International (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
+
+extdata/px_index.json is a bilingual catalogue extract from the NSO PXWeb API.
+It contains table identifiers, paths, titles, and available period ranges.
+The original retrieval time was not recorded; nso_catalogue_status() reports
+the bundled index's freshness as unknown rather than presenting it as current.
+
+extdata/air_annual_cached.csv is an illustrative extract from NSO table
+DT_NSO_2024_135V01 (annual air pollutant concentrations by station).
+extdata/air_monthly_cached.csv.gz is an illustrative extract from the monthly
+station tables DT_NSO_2400_015V1 through DT_NSO_2400_015V6. The environmental
+surveillance vignette describes the selections it uses, including V1 (sulphur
+dioxide), V2 (nitrogen dioxide), and V5 (fine particulate matter).
+The tables are flattened into CSV
+with source codes, labels, and numeric values. Original retrieval dates were
+not recorded. These are historical teaching snapshots, not current releases;
+consult the source labels for their observation periods and the official
+service for current data. Source missing values remain missing.
+
+extdata/indicators.json contains package-authored definitions and reviewed
+query templates, together with attributed NSO identifiers, official labels,
+and unit text. Each entry records its verification date and source URL.
+No equivalence between different NSO services is implied by matching names.
+
+Public response fixtures
+-----------------------
+Tests include abridged public catalogue and aggregate-response extracts from
+https://data.1212.mn/, https://data.nso.mn/, and https://metadata.nso.mn/, plus
+package-authored edge cases. Source identifiers and official text are retained
+to test parsing and interpretation. Metadata collection records describe
+forms and classifications; they do not contain underlying respondent records.
+Their access and license categories are source metadata, not a grant of access
+to confidential records. Consult each source record and its applicable terms.
+
+Changes and attribution
+-----------------------
+The package reshapes, subsets, and caches source material for discovery,
+illustration, and regression testing. It preserves source identifiers and
+labels where available. These changes are the package maintainer's work and
+do not imply endorsement by NSO. Reusers should attribute the National
+Statistics Office of Mongolia, link the source and applicable license, state
+any further changes, and verify current data before publication.
