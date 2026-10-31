@@ -1,0 +1,7 @@
+[
+  {"id":1,"indicator_id":"DT_NSO_0000_4_4","indicator_name":"GDP","source":"Үндэсний Статистикийн Хороо","measure_type":"сая.төг","graph_type":"line","description":null,"aimag_col":[{"name":"Аймгаар","value":"code"},{"name":"Салбараар","value":"code1"}]},
+  {"id":2,"indicator_id":null,"indicator_name":"Unpublished","measure_type":null},
+  {"id":3,"indicator_id":"../unsafe","indicator_name":"Invalid"},
+  {"id":4,"indicator_id":"DT_NSO_DUPLICATE","indicator_name":"Repeated one"},
+  {"id":5,"indicator_id":"DT_NSO_DUPLICATE","indicator_name":"Repeated two"}
+]

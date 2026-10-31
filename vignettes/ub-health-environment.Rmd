@@ -45,10 +45,10 @@ library(ggplot2)
 library(sf)
 library(tidyr)
 
-nso_options(mongolstats.lang = "en")
+old_options <- nso_options(mongolstats.lang = "en")
 
 # Global theme with proper margins to prevent text cutoff
-theme_set(
+old_theme <- theme_set(
   theme_minimal(base_size = 11) +
     theme(
       plot.margin = margin(10, 10, 10, 10),
@@ -369,3 +369,8 @@ no_station <- if (run_vignette) filter(station_coverage, Stations == 0)
 ## Conclusion
 
 Ulaanbaatar's districts differ widely in density, growth and school capacity, and NSO's district tables plus mongolmaps' boundaries make these differences easy to map. Health outcomes are harder: published district births and deaths follow hospital locations, so district-level rates need data coded by place of residence before they can guide local public health action.
+
+```{r restore-session, include=FALSE}
+options(old_options)
+ggplot2::theme_set(old_theme)
+```

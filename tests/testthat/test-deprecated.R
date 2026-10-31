@@ -12,8 +12,11 @@ test_that("geoBoundaries helpers are deprecated in favour of mongolmaps", {
 })
 
 test_that("mn_boundaries() and mn_boundary_keys() are deprecated", {
+  testthat::skip_if_not_installed("sf")
   withr::local_options(lifecycle_verbosity = "warning")
-  local_mocked_bindings(.gb_gj_url = function(...) cli::cli_abort("no network", class = "mongolstats_http_error"))
+  local_mocked_bindings(.gb_gj_url = function(...) {
+    cli::cli_abort("no network", class = "mongolstats_http_error")
+  })
   .mn_boundaries_env$ADM0 <- NULL
   expect_snapshot(mn_boundaries("ADM0", refresh = TRUE), error = TRUE)
   expect_snapshot(mn_boundary_keys("ADM0"), error = TRUE)

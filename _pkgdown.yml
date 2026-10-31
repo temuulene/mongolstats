@@ -13,7 +13,6 @@ template:
     fg: "#212529"
     enable-dark-mode: true
 url: https://temuulene.github.io/mongolstats/
-llm-docs: false
 development:
   mode: auto
 navbar:
@@ -29,6 +28,8 @@ navbar:
       menu:
         - text: Discovering Public Health Data
           href: articles/discovery.html
+        - text: Sources, Metadata and Reproducible Exports
+          href: articles/data-provenance.html
         - text: Spatial Epidemiology with mongolstats
           href: articles/mapping.html
         - text: Mortality Seasonality Analysis
@@ -45,7 +46,7 @@ navbar:
       href: https://github.com/temuulene/mongolstats
 home:
   title: mongolstats
-  description: Tidy access to the statistics of the National Statistics Office of Mongolia through its PXWeb API.
+  description: Tidy access to Mongolian official statistics, source provenance, and public metadata.
   links:
     - text: NSO PXWeb
       href: https://data.1212.mn/pxweb/
@@ -62,6 +63,7 @@ articles:
     contents:
       - getting-started
       - discovery
+      - data-provenance
       - mapping
       - articles/mortality-analysis
   - title: Case Studies (Requires API)
@@ -76,6 +78,33 @@ reference:
       - nso_itms_by_sector
       - nso_sectors
       - nso_subsectors
+      - nso_catalogue_status
+  - title: Statistical Concepts and Portal Data
+    desc: Reviewed PXWeb templates and experimental public portal services.
+    contents:
+      - nso_indicators
+      - nso_indicator
+      - nso_indicator_query
+      - nso_portal_data
+      - nso_portal_datamarts
+  - title: Government Metadata
+    desc: Experimental access to official definitions and collection context.
+    contents:
+      - nso_metadata
+      - nso_metadata_search
+      - nso_related
+      - nso_forms
+      - nso_classification
+      - nso_metadata_dictionary
+  - title: Provenance and Data Quality
+    contents:
+      - nso_provenance
+      - nso_table_info
+      - nso_citation
+      - nso_write_manifest
+      - nso_read_manifest
+      - nso_value_status
+      - nso_check_data
   - title: Inspect Tables
     contents:
       - nso_dims
@@ -98,6 +127,7 @@ reference:
   - title: Options, Caching and Offline Mode
     contents:
       - nso_options
+      - nso_api_config
       - nso_cache_enable
       - nso_cache_disable
       - nso_cache_clear

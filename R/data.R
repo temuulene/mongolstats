@@ -23,7 +23,11 @@
     return(df)
   }
   tv <- .px_time_var(meta_fetch$variables)
-  time_code <- if (tv) as.character(meta_fetch$variables[[tv]]$code) else NA_character_
+  time_code <- if (tv) {
+    as.character(meta_fetch$variables[[tv]]$code)
+  } else {
+    NA_character_
+  }
   time_label <- if (tv) {
     stats::setNames(
       .px_chr(meta_fetch$variables[[tv]]$valueTexts),
@@ -56,7 +60,11 @@
       if (!length(codes) || length(codes) != length(lbls)) {
         next
       }
-      key <- if (identical(as.character(v$code), time_code)) unname(time_label[codes]) else codes
+      key <- if (identical(as.character(v$code), time_code)) {
+        unname(time_label[codes])
+      } else {
+        codes
+      }
       map <- tibble::tibble(code = key, lbl = lbls)
       names(map) <- c(col, paste0(col, suffix))
       d <- dplyr::left_join(d, map, by = col)
@@ -90,7 +98,9 @@
 #'   "code" is accepted as an alias for "none" (matching [nso_fetch()]).
 #' @param value_name Name of the numeric value column in the result (default: "value").
 #' @param include_raw If TRUE, attach the raw PX payload as attribute `px_raw`
-#'   (a list of payloads when the request was split, see below).
+#'   (a list of payloads when the request was split, see below). Source
+#'   provenance and observation status are retained separately in every result;
+#'   inspect them with [nso_provenance()] and [nso_value_status()].
 #' @section Time dimensions:
 #' NSO codes periods by position: in every table, code `"0"` is the latest
 #' period, so a period's code changes whenever a new one is published. The
@@ -104,9 +114,10 @@
 #' [nso_latest_periods()]. Periods match whatever format the table uses, so
 #' `"202403"`, `"2024-03"` and `"2024M3"` select the same month.
 #' @section Large requests:
-#' data.1212.mn answers at most 1,000,000 cells per request. Larger
-#' selections are split into several requests and the results combined;
-#' set `options(mongolstats.max_cells = )` to change the limit.
+#' Larger selections are split into requests under the configured cell limit.
+#' [nso_api_config()] discovers server limits; cached limits and
+#' `mongolstats.max_cells` are respected. The package coordinates NSO request
+#' attempts on the same computer, including workers, at a conservative rate.
 #' @return A tibble with one column per dimension and a numeric value column.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' # Population of Mongolia by sex in the two latest years
@@ -132,7 +143,9 @@ nso_data <- function(
     labels <- getOption("mongolstats.default_labels", "none")
   }
   # Accept the nso_fetch() vocabulary too: "code" is an alias for "none"
-  if (identical(labels, "code")) labels <- "none"
+  if (identical(labels, "code")) {
+    labels <- "none"
+  }
   labels <- match.arg(labels)
   check_tbl_id(tbl_id)
   check_selections(selections)
@@ -143,7 +156,12 @@ nso_data <- function(
     include_raw = include_raw,
     value_name = value_name
   )
-  .px_add_labels(out, tbl_id, which = labels)
+  tryCatch(.px_add_labels(out, tbl_id, which = labels), error = function(e) {
+    e$nso_manifest <- .nso_manifest(
+      failures = list(.nso_fetch_failure(e, tbl_id, selections, out, "labels"))
+    )
+    stop(e)
+  })
 }
 
 #' Fetch multiple tables and bind (PXWeb)
@@ -151,7 +169,7 @@ nso_data <- function(
 #' @param labels Label handling as in `nso_data()`
 #' @param parallel If TRUE, fetch tables in parallel with
 #'   [purrr::in_parallel()] (requires the mirai and carrier packages). Start
-#'   background workers first with `mirai::daemons(4)`; without them the
+#'   background workers first with `mirai::daemons(2)`; without them the
 #'   tables are fetched one at a time. Workers load the installed copy of
 #'   mongolstats. Defaults to the `mongolstats.parallel` option (`FALSE`).
 #' @param value_name Name of the numeric value column in the result (default: "value").
@@ -160,7 +178,9 @@ nso_data <- function(
 #'   naming them.
 #' @return A tibble combining data from all requested tables, with a `tbl_id` column
 #'   identifying the source table. Tables that failed to fetch are omitted
-#'   (with a warning) unless `strict = TRUE`.
+#'   (with a warning) unless `strict = TRUE`. [nso_provenance()] retains a
+#'   record per successful table plus explicit failure records;
+#'   [nso_value_status()] identifies each source observation by `tbl_id`.
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()
 #' reqs <- list(
 #'   list(tbl_id = "DT_NSO_0300_001V2", selections = list(Year = "2023"))
@@ -178,7 +198,9 @@ nso_package <- function(
     labels <- getOption("mongolstats.default_labels", "none")
   }
   # Accept the nso_fetch() vocabulary too: "code" is an alias for "none"
-  if (identical(labels, "code")) labels <- "none"
+  if (identical(labels, "code")) {
+    labels <- "none"
+  }
   labels <- match.arg(labels)
   reqs <- .nso_package_requests(requests)
   # Parallel workers start with the package defaults from .onLoad(), so the
@@ -189,12 +211,15 @@ nso_package <- function(
     .nso_package_fetch(r, labels = labels, value_name = value_name, opts = opts)
   }
   if (isTRUE(parallel)) {
-    rlang::check_installed(c("mirai", "carrier"), reason = "to fetch tables in parallel.")
+    rlang::check_installed(
+      c("mirai", "carrier"),
+      reason = "to fetch tables in parallel."
+    )
     if (!mirai::daemons_set()) {
       cli_inform(
         c(
           "i" = "No {.pkg mirai} daemons are running, so tables are fetched one at a time.",
-          " " = "Start workers first, e.g. with {.code mirai::daemons(4)}."
+          " " = "Start workers first, e.g. with {.code mirai::daemons(2)}."
         ),
         class = "mongolstats_no_daemons"
       )
@@ -205,7 +230,9 @@ nso_package <- function(
     parts <- purrr::map(
       reqs,
       purrr::in_parallel(
-        function(r) fetch(r, labels = labels, value_name = value_name, opts = opts),
+        function(r) {
+          fetch(r, labels = labels, value_name = value_name, opts = opts)
+        },
         fetch = .nso_package_fetch,
         labels = labels,
         value_name = value_name,
@@ -227,7 +254,12 @@ nso_package <- function(
   } else {
     parts <- lapply(reqs, worker)
   }
+  parts <- lapply(seq_along(parts), function(i) {
+    .nso_batch_context(parts[[i]], reqs[[i]], i)
+  })
   is_failed <- vapply(parts, inherits, logical(1), "mongolstats_failed_fetch")
+  failures <- lapply(parts[is_failed], function(part) part$failure)
+  out <- .nso_bind_results(parts[!is_failed], failures)
   if (any(is_failed)) {
     failed_ids <- vapply(parts[is_failed], function(f) f$tbl_id, character(1)) # nolint object_usage_linter. Used in cli conditions below.
     first_msg <- parts[is_failed][[1]]$message # nolint object_usage_linter. Used in cli conditions below.
@@ -237,7 +269,8 @@ nso_package <- function(
           "Failed to fetch {sum(is_failed)} table{?s}: {.val {failed_ids}}.",
           "x" = "First error: {first_msg}"
         ),
-        class = "mongolstats_http_error"
+        class = "mongolstats_http_error",
+        nso_manifest = nso_provenance(out)
       )
     }
     cli_warn(c(
@@ -246,7 +279,7 @@ nso_package <- function(
       "i" = "Use {.code strict = TRUE} to raise an error instead."
     ))
   }
-  dplyr::bind_rows(parts[!is_failed])
+  out
 }
 
 # `fetch` is bound inside the worker function by purrr::in_parallel() (see
@@ -314,6 +347,7 @@ utils::globalVariables("fetch")
   old <- options(opts)
   on.exit(options(old), add = TRUE)
   tbl <- r$tbl_id
+  df <- NULL
   # Labelling is inside the tryCatch too: a failed metadata request for
   # labels must mark this table as failed, not abort the whole batch.
   tryCatch(
@@ -332,7 +366,17 @@ utils::globalVariables("fetch")
     },
     error = function(e) {
       structure(
-        list(tbl_id = tbl, message = conditionMessage(e)),
+        list(
+          tbl_id = tbl,
+          message = conditionMessage(e),
+          failure = .nso_fetch_failure(
+            e,
+            tbl,
+            r$selections,
+            df,
+            if (is.null(df)) "data" else "labels"
+          )
+        ),
         class = "mongolstats_failed_fetch"
       )
     }

@@ -2,8 +2,11 @@
 # test-deprecated.R, so each test here silences them.
 
 test_that("mn_boundaries() raises mongolstats_http_error when the download fails", {
+  testthat::skip_if_not_installed("sf")
   withr::local_options(lifecycle_verbosity = "quiet")
-  local_mocked_bindings(.gb_gj_url = function(...) "http://127.0.0.1:9/mng.geojson")
+  local_mocked_bindings(.gb_gj_url = function(...) {
+    "http://127.0.0.1:9/mng.geojson"
+  })
   old <- options(mongolstats.retry_tries = 1L, mongolstats.timeout = 2)
   on.exit(options(old), add = TRUE)
   expect_error(

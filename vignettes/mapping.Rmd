@@ -33,10 +33,10 @@ library(mongolstats)
 library(mongolmaps)
 library(dplyr)
 library(ggplot2)
-nso_options(mongolstats.lang = "en")
+old_options <- nso_options(mongolstats.lang = "en")
 
 # Global theme with proper margins to prevent text cutoff
-theme_set(
+old_theme <- theme_set(
   theme_minimal(base_size = 11) +
     theme(
       plot.margin = margin(10, 10, 10, 10),
@@ -321,3 +321,8 @@ With 22 units, about one would fall outside 95% limits by chance alone, so treat
 
 - **Discover Health Data**: Return to the [Discovery Guide](discovery.html)
 - **Learn More**: Explore all functions in the [Reference](https://temuulene.github.io/mongolstats/reference/index.html)
+
+```{r restore-session, include=FALSE}
+options(old_options)
+ggplot2::theme_set(old_theme)
+```

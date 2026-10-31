@@ -4,14 +4,24 @@
 \alias{nso_rebuild_px_index}
 \title{Rebuild PXWeb index and optionally write to a file}
 \usage{
-nso_rebuild_px_index(path = NULL, write = !is.null(path))
+nso_rebuild_px_index(
+  path = NULL,
+  write = !is.null(path),
+  allow_incomplete = FALSE
+)
 }
 \arguments{
 \item{path}{Output path for JSON. If \code{NULL} (default), no file is written.
-For package development, use \code{"inst/extdata/px_index.json"}.}
+For package development, use \code{"inst/extdata/px_index.json"}.
+A companion \verb{<path>.metadata.json} file preserves coverage and build time,
+checked against the index's SHA-256 hash and service identity on reload.}
 
 \item{write}{Whether to write JSON to \code{path}. Defaults to \code{TRUE} if \code{path}
 is provided, \code{FALSE} otherwise.}
+
+\item{allow_incomplete}{Allow a partial crawl to replace the current index
+and be written to disk. Defaults to \code{FALSE}; incomplete crawls raise a
+typed error and leave the previous index and output file intact.}
 }
 \value{
 A tibble containing the rebuilt table index. If some catalogue

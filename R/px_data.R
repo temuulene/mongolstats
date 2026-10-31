@@ -26,7 +26,7 @@
   try(
     {
       seed <- .nso_request(.px_url(paths, px_file, lang = lang)) |>
-        httr2::req_perform()
+        .nso_perform()
       seeded <- TRUE
       setck <- tryCatch(
         httr2::resp_header(seed, "set-cookie"),
@@ -59,29 +59,96 @@
 # Returns tibble with one column per dimension plus a numeric `value` column.
 # Selections larger than the server's cell limit are split into several
 # requests. The time dimension is reported by label (see .px_label_time()).
-nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FALSE, value_name = "value") {
+nso_px_data <- function(
+  tbl_id,
+  selections,
+  lang = .px_lang(),
+  include_raw = FALSE,
+  value_name = "value"
+) {
   check_selections(selections)
   tm <- .px_table_meta(tbl_id, lang = lang)
   vars <- tm$meta$variables
   # Map selections to codes first; errors on unknown dimensions/values
   # before any further network activity.
   resolved_sel <- .px_map_selections(vars, selections)
-  chunks <- .px_chunk_selections(resolved_sel, .nso_max_cells())
+  chunks <- .px_chunk_selections(resolved_sel, .nso_query_limits()$max_cells)
   # Session cookie (e.g., rxid), cached per base URL for the session
   cookie <- .px_session_cookie(tm$paths, tm$px_file, lang = lang)
   show_progress <- length(chunks) > 1L && .nso_progress() && interactive()
   if (show_progress) {
-    cli::cli_progress_bar("Fetching {.val {tbl_id}} in parts", total = length(chunks))
+    cli::cli_progress_bar(
+      "Fetching {.val {tbl_id}} in parts",
+      total = length(chunks)
+    )
   }
   raws <- vector("list", length(chunks))
   parts <- vector("list", length(chunks))
+  responses <- vector("list", length(chunks))
   for (k in seq_along(chunks)) {
     body <- .px_query_body(vars, chunks[[k]])
-    raws[[k]] <- .px_post(tbl_id, tm$paths, tm$px_file, body, cookie = cookie, lang = lang)
-    parts[[k]] <- .px_flatten_response(raws[[k]], value_name = value_name)
+    tryCatch(
+      {
+        raws[[k]] <- .px_post(
+          tbl_id,
+          tm$paths,
+          tm$px_file,
+          body,
+          cookie = cookie,
+          lang = lang
+        )
+        responses[[k]] <- .px_response_context(
+          raws[[k]],
+          body,
+          k,
+          .px_url(tm$paths, tm$px_file, lang = lang)
+        )
+        parts[[k]] <- .px_flatten_response(raws[[k]], value_name = value_name)
+      },
+      error = function(e) {
+        completed <- Filter(Negate(is.null), parts)
+        failure <- .px_data_record(
+          tm,
+          selections,
+          resolved_sel,
+          chunks[seq_len(k)],
+          Filter(Negate(is.null), raws),
+          Filter(Negate(is.null), responses),
+          lang,
+          sum(vapply(completed, nrow, integer(1)))
+        )
+        failure$message <- conditionMessage(e)
+        failure$stage <- "data"
+        failure$chunk_index <- k
+        failure$completed_status <- .px_status_parts(
+          completed,
+          vars,
+          raws[[1]]$columns
+        )
+        e$nso_manifest <- .nso_manifest(failures = list(failure))
+        stop(e)
+      }
+    )
     if (show_progress) cli::cli_progress_update()
   }
   df <- .px_label_time(dplyr::bind_rows(parts), vars, raws[[1]]$columns)
+  attr(df, "nso_value_status") <- .px_status_parts(
+    parts,
+    vars,
+    raws[[1]]$columns
+  )
+  attr(df, "nso_provenance") <- .nso_manifest(list(
+    .px_data_record(
+      tm,
+      selections,
+      resolved_sel,
+      chunks,
+      raws,
+      responses,
+      lang,
+      nrow(df)
+    )
+  ))
   # Optionally attach raw PX payload for debugging/advanced use
   if (isTRUE(include_raw)) {
     attr(df, "px_raw") <- if (length(raws) == 1L) raws[[1]] else raws
@@ -90,7 +157,14 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
 }
 
 # POST one PXWeb query and return the parsed JSON response.
-.px_post <- function(tbl_id, paths, px_file, body, cookie = NULL, lang = .px_lang()) {
+.px_post <- function(
+  tbl_id,
+  paths,
+  px_file,
+  body,
+  cookie = NULL,
+  lang = .px_lang()
+) {
   url <- .px_url(paths, px_file, lang = lang)
   # Try both with and without the .px suffix as some PXWeb servers differ
   url_variants <- unique(c(url, sub("\\.px$", "", url)))
@@ -105,7 +179,6 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
     if (.nso_verbose()) {
       cli_inform(c(
         "mongolstats: POST to {.url {u}}",
-        "Cookie: {if (is.null(cookie)) 'NULL' else cookie}",
         "Body: {substr(jsonlite::toJSON(body, auto_unbox = TRUE), 1, 200)}"
       ))
     }
@@ -122,14 +195,17 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
     # call should reseed rather than reuse a stale session.
     .px_clear_session_cookie(lang)
     # PXWeb explains rejected queries in the response body
-    server_msg <- tryCatch( # nolint object_usage_linter. Used in cli_abort() below.
+    server_msg <- tryCatch(
+      # nolint object_usage_linter. Used in cli_abort() below.
       substr(httr2::resp_body_string(resp$parent$resp), 1, 200),
       error = function(e) NULL
     )
     cli_abort(
       c(
         "PXWeb request failed for {.val {tbl_id}}.",
-        "x" = if (length(server_msg) && nzchar(server_msg)) "Server response: {server_msg}",
+        "x" = if (length(server_msg) && nzchar(server_msg)) {
+          "Server response: {server_msg}"
+        },
         "i" = "Tried both .px and extensionless endpoints.",
         "i" = "Check selections with {.fn nso_dims} or request a smaller subset."
       ),
@@ -138,7 +214,32 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
       parent = resp
     )
   }
-  jsonlite::fromJSON(httr2::resp_body_string(resp), simplifyVector = FALSE)
+  out <- tryCatch(
+    jsonlite::parse_json(
+      .px_strip_bom(httr2::resp_body_string(resp)),
+      simplifyVector = FALSE
+    ),
+    error = function(e) {
+      cli_abort(
+        "PXWeb returned invalid JSON.",
+        class = c("mongolstats_invalid_response", "mongolstats_http_error"),
+        parent = e
+      )
+    }
+  )
+  if (!is.list(out)) {
+    cli_abort(
+      "PXWeb returned an unexpected response.",
+      class = "mongolstats_invalid_response"
+    )
+  }
+  attr(out, "response_url") <- httr2::resp_url(resp)
+  attr(out, "retrieved_at") <- format(
+    Sys.time(),
+    "%Y-%m-%dT%H:%M:%OS3Z",
+    tz = "UTC"
+  )
+  out
 }
 
 # Split resolved selections (named list of value codes, one element per
@@ -190,8 +291,30 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
 # row's $key spans every non-content column; dropping "t" columns would
 # misalign the keys with the column names.
 .px_flatten_response <- function(out, value_name = "value") {
+  valid <- is.list(out) &&
+    all(c("columns", "data") %in% names(out)) &&
+    is.list(out$columns) &&
+    is.list(out$data) &&
+    all(vapply(out$columns, is.list, logical(1))) &&
+    all(vapply(out$data, is.list, logical(1)))
+  if (!valid) {
+    cli_abort(
+      "PXWeb response must contain lists of columns and data records.",
+      class = c("mongolstats_invalid_response", "mongolstats_http_error")
+    )
+  }
   cols <- out$columns
   dat <- out$data
+  content <- Filter(function(col) identical(col$type, "c"), cols)
+  if (
+    length(content) > 1L ||
+      any(lengths(lapply(dat, function(row) row$values)) > 1L)
+  ) {
+    cli_abort(
+      "Multiple content values in a PXWeb response are not supported.",
+      class = c("mongolstats_invalid_response", "mongolstats_http_error")
+    )
+  }
   if (length(dat) == 0) {
     return(tibble::tibble())
   }
@@ -214,7 +337,11 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
     )
   }
   df <- if (n_dim) {
-    key_mat <- matrix(unlist(keys, use.names = FALSE), ncol = n_dim, byrow = TRUE)
+    key_mat <- matrix(
+      unlist(keys, use.names = FALSE),
+      ncol = n_dim,
+      byrow = TRUE
+    )
     tibble::as_tibble(stats::setNames(
       lapply(seq_len(n_dim), function(j) key_mat[, j]),
       dim_names
@@ -225,10 +352,20 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
 
   vals <- vapply(
     dat,
-    function(d) if (length(d$values)) as.character(d$values[[1]]) else NA_character_,
+    function(d) {
+      if (length(d$values)) as.character(d$values[[1]]) else NA_character_
+    },
     character(1)
   )
-  df[[value_name]] <- suppressWarnings(as.numeric(vals))
+  parsed <- .nso_parse_values(vals)
+  if (value_name %in% names(df)) {
+    cli_abort("{.arg value_name} conflicts with a dimension column.")
+  }
+  df[[value_name]] <- parsed$value
+  attr(df, "nso_value_status") <- dplyr::bind_cols(
+    df[setdiff(names(df), value_name)],
+    parsed[c("value_raw", "value_status")]
+  )
   df
 }
 
@@ -243,13 +380,21 @@ nso_px_data <- function(tbl_id, selections, lang = .px_lang(), include_raw = FAL
   names <- vapply(
     seq_along(dim_cols),
     function(i) {
-      .px_first_nonempty(dim_cols[[i]]$text, dim_cols[[i]]$code, paste0("dim", i)) %||%
+      .px_first_nonempty(
+        dim_cols[[i]]$text,
+        dim_cols[[i]]$code,
+        paste0("dim", i)
+      ) %||%
         paste0("dim", i)
     },
     character(1)
   )
   tibble::tibble(
-    code = vapply(dim_cols, function(col) as.character(col$code %||% NA_character_), character(1)),
+    code = vapply(
+      dim_cols,
+      function(col) as.character(col$code %||% NA_character_),
+      character(1)
+    ),
     name = make.unique(names)
   )
 }

@@ -33,7 +33,6 @@ test_that("cache can enable and clear", {
   withr::local_options(lifecycle_verbosity = "quiet")
   skip_if_not_installed("memoise")
   skip_if_not_installed("cachem")
-  skip_if_not_installed("rappdirs")
   # Never touch the user's real cache dir: use a throwaway dir under tempdir()
   dir <- file.path(tempdir(), "mongolstats-test-cache")
   on.exit(

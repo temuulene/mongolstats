@@ -4,11 +4,13 @@
 \name{mongolstats-package}
 \alias{mongolstats}
 \alias{mongolstats-package}
-\title{mongolstats: Tidy Client for the Mongolian NSO PXWeb Statistics API}
+\title{mongolstats: Tidy Access to Mongolian Official Statistics and Metadata}
 \description{
 A tidyverse-friendly client for the National Statistics Office of Mongolia
-PXWeb API (data.1212.mn) with helpers to discover tables, variables, and
-periods, and to fetch statistical data. For maps, join the results to the
+public statistical services, with helpers to discover tables, variables, and
+periods, fetch statistics, and retain source provenance. Experimental clients
+expose the public data and metadata portals, including official definitions,
+collection forms, and classifications. For maps, join the results to the
 boundaries in the companion package mongolmaps by NSO code.
 }
 \section{Main Functions}{
@@ -19,6 +21,10 @@ boundaries in the companion package mongolmaps by NSO code.
 \item{nso_dims, nso_dim_values}{Inspect a table's dimensions and values}
 \item{nso_table_periods, nso_latest_periods}{Periods available in a table}
 \item{nso_data}{Fetch statistical data from a table}
+\item{nso_indicators, nso_indicator_query}{Find reviewed statistical concepts and build queries}
+\item{nso_provenance, nso_citation}{Inspect source provenance and generate citations}
+\item{nso_metadata, nso_metadata_search}{Discover official metadata and collection context}
+\item{nso_portal_data}{Retrieve explicit public portal aggregate series}
 }
 }
 
@@ -37,6 +43,11 @@ Useful links:
 Authors:
 \itemize{
   \item Temuulen Enebish \email{temuulen@gmail.com} [copyright holder]
+}
+
+Other contributors:
+\itemize{
+  \item National Statistics Office of Mongolia (Bundled statistical extracts; see inst/COPYRIGHTS) [copyright holder]
 }
 
 }

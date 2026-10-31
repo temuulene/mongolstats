@@ -49,7 +49,11 @@ nso_px_tables <- function() {
           tbl_nm = title_mn %||% NA_character_,
           strt_prd = rng[1],
           end_prd = rng[2],
-          updated = if (is.null(tables$updated)) NA_character_ else as.character(tables$updated[i])
+          updated = if (is.null(tables$updated)) {
+            NA_character_
+          } else {
+            as.character(tables$updated[i])
+          }
         )
         if (show_progress) cli::cli_progress_update()
       }
@@ -72,7 +76,14 @@ nso_px_tables <- function() {
       class = "mongolstats_incomplete_index"
     )
   }
-  dplyr::bind_rows(out)
+  idx <- dplyr::bind_rows(out)
+  attr(idx, "catalogue") <- list(
+    coverage = if (length(failed)) "partial" else "complete",
+    failed_paths = unique(failed),
+    origin = "live_crawl",
+    indexed_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+  )
+  idx
 }
 
 # Earliest and latest period labels of the time dimension in `vars`, by date
@@ -97,17 +108,59 @@ nso_px_tables <- function() {
     path <- file.path("inst", "extdata", "px_index.json")
   }
   if (file.exists(path)) {
-    df <- tryCatch(
-      {
-        jsonlite::fromJSON(path, simplifyVector = TRUE)
-      },
-      error = function(e) NULL
-    )
-    if (is.data.frame(df)) {
-      return(tibble::as_tibble(df))
-    }
+    return(.px_index_read(path))
   }
   tibble::tibble()
+}
+
+# Keep the historical row-array file compatible with existing readers. Its
+# optional sidecar describes only those exact bytes and the current service.
+.px_index_read <- function(path) {
+  df <- tryCatch(
+    jsonlite::read_json(path, simplifyVector = TRUE),
+    error = function(e) NULL
+  )
+  if (!is.data.frame(df)) {
+    return(tibble::tibble())
+  }
+  out <- tibble::as_tibble(df)
+  if (!file.exists(paste0(path, ".metadata.json"))) {
+    return(out)
+  }
+  stamp <- tryCatch(
+    jsonlite::read_json(paste0(path, ".metadata.json"), simplifyVector = TRUE),
+    error = function(e) NULL
+  )
+  if (!is.list(stamp)) {
+    return(out)
+  }
+  meta <- stamp$catalogue
+  valid <- identical(stamp$schema_version, 1L) &&
+    identical(
+      stamp$index_sha256,
+      digest::digest(file = path, algo = "sha256")
+    ) &&
+    identical(stamp$base_url, .px_base_url()) &&
+    identical(stamp$database, .px_db()) &&
+    is.list(meta) &&
+    is.character(meta$coverage) &&
+    length(meta$coverage) == 1L &&
+    meta$coverage %in% c("complete", "partial") &&
+    is.character(meta$indexed_at) &&
+    length(meta$indexed_at) == 1L &&
+    !is.na(meta$indexed_at) &&
+    grepl("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", meta$indexed_at) &&
+    is.character(meta$origin) &&
+    length(meta$origin) == 1L &&
+    !is.na(meta$origin) &&
+    (!length(meta$failed_paths) || is.character(meta$failed_paths))
+  if (isTRUE(valid)) {
+    if (!length(meta$failed_paths)) {
+      meta$failed_paths <- character()
+    }
+    attr(out, "catalogue") <- meta
+  }
+  out
 }
 .px_index <- function(refresh = FALSE) {
   if (isTRUE(refresh) || is.null(.mongolstats_px_env$idx)) {
@@ -129,8 +182,13 @@ nso_px_tables <- function() {
 #'
 #' @param path Output path for JSON. If `NULL` (default), no file is written.
 #'   For package development, use `"inst/extdata/px_index.json"`.
+#'   A companion `<path>.metadata.json` file preserves coverage and build time,
+#'   checked against the index's SHA-256 hash and service identity on reload.
 #' @param write Whether to write JSON to `path`. Defaults to `TRUE` if `path`
 #'   is provided, `FALSE` otherwise.
+#' @param allow_incomplete Allow a partial crawl to replace the current index
+#'   and be written to disk. Defaults to `FALSE`; incomplete crawls raise a
+#'   typed error and leave the previous index and output file intact.
 #' @return A tibble containing the rebuilt table index. If some catalogue
 #'   requests fail, the index is built from the rest and a warning of class
 #'   `mongolstats_incomplete_index` names the failed paths.
@@ -143,9 +201,31 @@ nso_px_tables <- function() {
 #' @export
 nso_rebuild_px_index <- function(
   path = NULL,
-  write = !is.null(path)
+  write = !is.null(path),
+  allow_incomplete = FALSE
 ) {
+  if (
+    !is.logical(write) ||
+      length(write) != 1L ||
+      is.na(write) ||
+      !is.logical(allow_incomplete) ||
+      length(allow_incomplete) != 1L ||
+      is.na(allow_incomplete)
+  ) {
+    cli_abort("{.arg write} and {.arg allow_incomplete} must be logical flags.")
+  }
+  if (!is.null(path)) {
+    .nso_manifest_path(path)
+  }
   idx <- nso_px_tables()
+  coverage <- attr(idx, "catalogue", exact = TRUE)
+  if (identical(coverage$coverage, "partial") && !allow_incomplete) {
+    cli_abort(
+      "The catalogue crawl was incomplete; the previous index was retained.",
+      class = "mongolstats_incomplete_index",
+      failed_paths = coverage$failed_paths
+    )
+  }
   if (isTRUE(write) && !is.null(path)) {
     dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
     jsonlite::write_json(
@@ -155,8 +235,20 @@ nso_rebuild_px_index <- function(
       auto_unbox = TRUE,
       pretty = FALSE
     )
+    jsonlite::write_json(
+      list(
+        schema_version = 1L,
+        index_sha256 = digest::digest(file = path, algo = "sha256"),
+        base_url = .px_base_url(),
+        database = .px_db(),
+        catalogue = coverage
+      ),
+      paste0(path, ".metadata.json"),
+      auto_unbox = TRUE
+    )
   }
   # refresh in-memory cache
   .mongolstats_px_env$idx <- tibble::as_tibble(idx)
+  attr(.mongolstats_px_env$idx, "catalogue") <- coverage
   .mongolstats_px_env$idx
 }

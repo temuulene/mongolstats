@@ -4,13 +4,13 @@
 \alias{nso_cache_enable}
 \title{Enable or configure caching}
 \usage{
-nso_cache_enable(dir = NULL, ttl = NULL)
+nso_cache_enable(dir = NULL, ttl = 7 * 24 * 60 * 60)
 }
 \arguments{
 \item{dir}{Directory for cache; defaults to user cache dir.}
 
-\item{ttl}{Optional TTL in seconds for cached entries (applies to the
-disk cache). If \code{NULL}, entries persist until cleared.}
+\item{ttl}{Time-to-live in seconds for cached entries. Defaults to seven
+days. \code{NULL} disables age-based expiry; the size limit still applies.}
 }
 \value{
 Cache directory path (invisibly).
@@ -21,17 +21,21 @@ speed up repeated calls, including across R sessions. Entries are keyed by
 the PXWeb base URL, database, and language, so changing
 \code{mongolstats.px_base_url} or \code{mongolstats.px_db} never returns another
 server's metadata. Data fetched with \code{\link[=nso_data]{nso_data()}} is not cached.
-Optionally set a time-to-live (TTL) for cache entries.
+The default cache uses \code{\link[tools:R_user_dir]{tools::R_user_dir()}}, is limited to 10 MiB, and
+removes entries older than seven days. Existing caches in the former
+\code{rappdirs} location are not read or deleted automatically.
 }
 \examples{
-\dontshow{if (rlang::is_installed(c("memoise", "cachem", "rappdirs"))) withAutoprint(\{ # examplesIf}
+\dontshow{if (rlang::is_installed(c("memoise", "cachem"))) withAutoprint(\{ # examplesIf}
 # Enable caching in a temporary directory (for demo purposes)
-cache_dir <- nso_cache_enable(dir = tempdir())
+cache_dir <- tempfile("mongolstats-cache-")
+nso_cache_enable(dir = cache_dir)
 
 # Check status
 nso_cache_status()
 
 # Disable when done
 nso_cache_disable()
+unlink(cache_dir, recursive = TRUE)
 \dontshow{\}) # examplesIf}
 }

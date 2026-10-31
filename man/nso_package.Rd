@@ -19,7 +19,7 @@ nso_package(
 
 \item{parallel}{If TRUE, fetch tables in parallel with
 \code{\link[purrr:in_parallel]{purrr::in_parallel()}} (requires the mirai and carrier packages). Start
-background workers first with \code{mirai::daemons(4)}; without them the
+background workers first with \code{mirai::daemons(2)}; without them the
 tables are fetched one at a time. Workers load the installed copy of
 mongolstats. Defaults to the \code{mongolstats.parallel} option (\code{FALSE}).}
 
@@ -32,7 +32,9 @@ naming them.}
 \value{
 A tibble combining data from all requested tables, with a \code{tbl_id} column
 identifying the source table. Tables that failed to fetch are omitted
-(with a warning) unless \code{strict = TRUE}.
+(with a warning) unless \code{strict = TRUE}. \code{\link[=nso_provenance]{nso_provenance()}} retains a
+record per successful table plus explicit failure records;
+\code{\link[=nso_value_status]{nso_value_status()}} identifies each source observation by \code{tbl_id}.
 }
 \description{
 Fetch multiple tables and bind (PXWeb)

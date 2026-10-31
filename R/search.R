@@ -40,6 +40,10 @@
 #' @param fields Character vector of fields to search within.
 #' @param fixed If `TRUE`, match `query` literally instead of as a regular
 #'   expression, so characters such as `+` or `(` need no escaping.
+#' @param live Use the live PXWeb keyword search instead of the bundled title
+#'   index. The source's search semantics apply; regex matching and `fields`
+#'   apply only to the local index. Results carry a `catalogue` attribute
+#'   identifying the returned search window. Requires network access.
 #' @return Tibble of matching tables.
 #' @examples
 #' nso_search("population")
@@ -50,11 +54,20 @@ nso_search <- function(
   query,
   sector = NULL,
   fields = c("tbl_eng_nm", "tbl_nm"),
-  fixed = FALSE
+  fixed = FALSE,
+  live = FALSE
 ) {
   check_query(query)
   if (!is.logical(fixed) || length(fixed) != 1L || is.na(fixed)) {
     cli_abort("{.arg fixed} must be {.code TRUE} or {.code FALSE}.")
+  }
+  if (!is.logical(live) || length(live) != 1L || is.na(live)) {
+    cli_abort("{.arg live} must be {.code TRUE} or {.code FALSE}.")
+  }
+  if (live) {
+    out <- .nso_live_search(query)
+    if (!is.null(sector)) out <- .in_sector(out, sector)
+    return(out)
   }
   itms <- nso_tables()
   if (!is.null(sector)) {

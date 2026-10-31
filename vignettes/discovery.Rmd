@@ -32,10 +32,10 @@ knitr::opts_chunk$set(
 library(mongolstats)
 library(dplyr)
 library(ggplot2)
-nso_options(mongolstats.lang = "en")
+old_options <- nso_options(mongolstats.lang = "en")
 
 # Global theme with proper margins to prevent text cutoff
-theme_set(
+old_theme <- theme_set(
   theme_minimal(base_size = 11) +
     theme(
       plot.margin = margin(10, 10, 10, 10),
@@ -410,3 +410,8 @@ The notification rate fell from `r if (run_vignette) round(tb_first$rate) else "
 
 - **Mapping Health Outcomes**: See the [Mapping Guide](mapping.html) for spatial epidemiology
 - **Reference Documentation**: Explore all available functions in the [Reference](https://temuulene.github.io/mongolstats/reference/index.html)
+
+```{r restore-session, include=FALSE}
+options(old_options)
+ggplot2::theme_set(old_theme)
+```

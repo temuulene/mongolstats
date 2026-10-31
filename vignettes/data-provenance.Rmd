@@ -1,0 +1,353 @@
+---
+title: "Sources, metadata, and reproducible exports / Эх сурвалж, мета өгөгдөл, давтагдах экспорт"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Sources, metadata, and reproducible exports}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+library(mongolstats)
+knitr::opts_chunk$set(eval = FALSE, collapse = TRUE, comment = "#>")
+```
+
+This guide shows the 0.4 workflow for keeping official statistics connected to
+their source, selected dimensions, observation symbols, and collection context.
+All service requests below are examples that you run deliberately; building
+this vignette does not access the network.
+
+Энэ заавар нь 0.4 хувилбарт албан ёсны статистикийг эх сурвалж, сонгосон хэмжээс,
+анхны тэмдэглэгээ, мэдээлэл цуглуулалтын нөхцөлтэй нь хамт хадгалах дарааллыг
+үзүүлнэ. Доорх үйлчилгээний хүсэлтүүдийг та өөрөө ажиллуулна. Энэхүү зааврыг
+бүтээх үед сүлжээний хүсэлт илгээхгүй.
+
+## Choose the source / Эх сурвалжаа сонгох
+
+| Service / Үйлчилгээ | Use / Хэрэглээ | Identifier / Таних дугаар |
+|---|---|---|
+| PXWeb, `data.1212.mn` | Published statistical tables / Нийтлэгдсэн статистикийн хүснэгт | `DT_NSO_...` |
+| Public data portal, `data.nso.mn` | Experimental aggregate series and datamart discovery / Туршилтын нэгтгэсэн цуваа, өгөгдлийн сангийн жагсаалт | `portal:DT_NSO_...` in discovery results |
+| Metadata catalog, `metadata.nso.mn` | Definitions, forms, classifications and relationships / Тодорхойлолт, маягт, ангилал, холбоос | A typed numeric ID / Төрөлтэй тоон дугаар |
+
+A shared title or table-like identifier does not establish that two services
+publish the same measure. Geographic codes also belong to their source. For
+example, the sampled portal GDP series uses national code `CO9999`; the reviewed
+PXWeb resident-population template uses national code `0`.
+
+Ижил нэр эсвэл хүснэгтийн дугаартай төстэй тэмдэгт мөр нь хоёр үйлчилгээний
+үзүүлэлт адил гэсэн баталгаа биш. Газар зүйн кодыг мөн эх сурвалжтай нь хамт
+ойлгоно. Жишээлбэл, шалгасан порталын ДНБ-ий цуваанд улсын дүн `CO9999`, харин
+PXWeb-ийн суурин хүн амын хянасан загварт улсын дүн `0` кодтой.
+
+## Start with a reviewed concept / Хянасан үзүүлэлтээс эхлэх
+
+`nso_indicators()` searches a small bundled registry of reviewed PXWeb concepts.
+Inspect the definition, unit status, validation date, and caveats before fetching.
+The query template fixes the substantive selections; period labels are supplied
+separately. It does not guess that a similarly named portal series is equivalent.
+
+`nso_indicators()` нь PXWeb-ийн хянасан үзүүлэлтийн багцад дагалдах жижиг
+жагсаалтаас хайна. Татахаасаа өмнө тодорхойлолт, нэгжийн төлөв, шалгасан огноо,
+тайлбарыг үзээрэй. Асуулгын загвар нь үндсэн сонголтыг тогтоож, хугацааны нэрийг
+тусад нь авна. Ижил нэртэй порталын цуваатай автоматаар адилтгахгүй.
+
+```{r curated-concepts}
+old_options <- nso_options(mongolstats.lang = "en")
+nso_indicators("GDP")
+concept <- nso_indicator("gdp_current")
+concept[c("name", "definition", "unit", "unit_status", "verified_at", "caveats")]
+
+query <- nso_indicator_query("gdp_current", periods = c("2023", "2024"))
+gdp <- nso_fetch(query, labels = "both")
+
+# Both sexes and national total are the reviewed defaults.
+# Хянасан үндсэн сонголт: нийт хүйс, улсын дүн.
+population_query <- nso_indicator_query("resident_population", periods = "2024")
+options(old_options)
+```
+
+Use period labels such as `"2024"`, rather than PXWeb positional time codes:
+code `"0"` can refer to a different year after the next update. A source label
+ending in `*` is preserved. Read the source's explanation of that mark before
+assigning a revision status or converting the published number's scale.
+
+Хугацааг PXWeb-ийн байрлалын кодоор бус `"2024"` зэрэг нэрээр сонгоно. Дараагийн
+шинэчлэлээр `"0"` код өөр оныг зааж болно. Эх сурвалжийн `*` төгсгөлтэй нэр
+хадгалагдана. Шинэчлэлийн төлөв оноох, тоон утгын масштабыг өөрчлөхөөс өмнө уг
+тэмдэг болон нэгжийн албан ёсны тайлбарыг шалгана.
+
+## Inspect source information / Эх сурвалжийн мэдээллийг шалгах
+
+Fetch results remain ordinary tibbles. Their provenance attribute records source
+identity, request URL, selections, retrieval time, available source metadata,
+and a metadata fingerprint. `nso_table_info()` provides a compact view;
+`nso_provenance()` exposes the full manifest, including failures in a batch.
+
+Татсан үр дүн энгийн tibble хэвээр байна. Эх сурвалжийн атрибут нь үйлчилгээ,
+таних дугаар, хүсэлтийн хаяг, сонголт, татсан хугацаа, байгаа мета өгөгдөл болон
+мета өгөгдлийн хурууны хээг хадгална. `nso_table_info()` нь товч харагдац,
+`nso_provenance()` нь багц хүсэлтийн алдааг багтаасан бүрэн бүртгэлийг өгнө.
+
+```{r inspect-provenance}
+nso_table_info(gdp)
+manifest <- nso_provenance(gdp)
+manifest$records[[1]]$selections
+manifest$failures
+nso_citation(gdp)
+
+# Metadata-only lookup: no observations are requested.
+# Зөвхөн хүснэгтийн мета өгөгдөл; ажиглалт татахгүй.
+nso_table_info("DT_NSO_0500_001V1")
+```
+
+An absent source statement, update date, or unit remains missing. A metadata-only
+lookup can contain less information than a data response. Citations acknowledge
+the source; the package's software license does not determine the data's reuse
+conditions. Consult [NSO's terms](https://www.nso.mn/en/terms_of_use) and the
+relevant source record.
+
+Эх сурвалж, шинэчилсэн огноо, нэгж байхгүй бол дутуу хэвээр үлдэнэ. Зөвхөн мета
+өгөгдөл авах хүсэлт нь тоон мэдээллийн хариунаас бага тайлбартай байж болно.
+Ишлэл нь эх сурвалжийг дурдана. Багцын программын лиценз нь өгөгдлийг дахин
+ашиглах нөхцөлийг тогтоохгүй. [ҮСХ-ны нөхцөл](https://www.nso.mn/en/terms_of_use)
+болон холбогдох эх сурвалжийн бүртгэлийг шалгана.
+
+## Keep source symbols / Анхны тэмдэглэгээг хадгалах
+
+Numeric `NA` alone cannot distinguish a missing observation from source symbols
+such as `..`. `nso_value_status()` returns observation keys, the original
+`value_raw`, and `value_status`: `"observed"` for finite numbers, `"missing"` for
+empty or missing fields, and `"symbol"` for other text. A symbol's meaning is
+not inferred. Retain these records before filtering or transforming data.
+
+Тоон `NA` нь анхнаасаа дутуу утга болон `..` зэрэг эх сурвалжийн тэмдэглэгээг
+ялгахгүй. `nso_value_status()` нь ажиглалтын түлхүүр, анхны `value_raw`, мөн
+`value_status` баганыг өгнө: төгсгөлөг тоонд `"observed"`, хоосон эсвэл дутуу
+талбарт `"missing"`, бусад текстэд `"symbol"` байна. Тэмдгийн утгыг таамаглахгүй.
+Шүүх, хувиргахаасаа өмнө эдгээрийг хадгална.
+
+```{r observation-integrity}
+status <- nso_value_status(gdp)
+status[status$value_status != "observed", , drop = FALSE]
+
+nso_check_data(
+  gdp,
+  keys = "Year",
+  period = "Year",
+  expected_periods = c("2023", "2024")
+)
+```
+
+This example uses English PXWeb dimension names; inspect `names(gdp)` when using
+another fetch language. Optional `unit` and `geography_level` arguments name
+columns already present in your data. The checker reports concerns without
+changing values. No reported concerns does not establish that populations,
+units, or geographic levels are comparable.
+
+Жишээнд PXWeb-ийн англи хэмжээсийн нэр ашиглав. Өөр хэлээр татсан бол
+`names(gdp)`-г шалгана. Нэмэлт `unit`, `geography_level` аргумент нь таны
+өгөгдөлд байгаа баганын нэрийг авна. Шалгагч утгыг өөрчлөхгүй, анхаарах асуудлыг
+тайлагнана. Асуудал илрээгүй нь хүн амын хамрах хүрээ, нэгж, газар зүйн түвшин
+харьцуулах боломжтой гэсэн баталгаа биш.
+
+## Export a durable record / Тогтвортой бүртгэлтэй экспорт хийх
+
+Transformations and CSV exports can discard attributes. Save the provenance
+sidecar and original status table separately. The JSON manifest contains source
+and request context, not the statistical observations or their raw symbols.
+
+Хувиргалт болон CSV экспорт нь атрибутыг хаяж болно. Эх сурвалжийн дагалдах
+бүртгэл, анхны төлөвийн хүснэгтийг тусад нь хадгална. JSON бүртгэлд эх сурвалж,
+хүсэлтийн нөхцөл орно; статистикийн ажиглалт, анхны тэмдэглэгээ орохгүй.
+
+```{r save-sidecars}
+export_dir <- tempfile("nso-export-")
+dir.create(export_dir)
+utils::write.csv(gdp, file.path(export_dir, "gdp.csv"), row.names = FALSE)
+saveRDS(nso_value_status(gdp), file.path(export_dir, "value-status.rds"))
+nso_write_manifest(gdp, file.path(export_dir, "provenance.json"))
+
+saved_manifest <- nso_read_manifest(file.path(export_dir, "provenance.json"))
+nso_table_info(saved_manifest)
+nso_citation(saved_manifest)
+readRDS(file.path(export_dir, "value-status.rds"))
+```
+
+`nso_write_manifest()` refuses to overwrite a file unless `overwrite = TRUE` is
+explicit. Keep the original result if an analysis also needs exact R types and
+attributes: `saveRDS(gdp, ...)` preserves them together.
+
+`nso_write_manifest()` нь `overwrite = TRUE` гэж заагаагүй бол байгаа файлыг
+дарж бичихгүй. R-ийн төрөл, атрибутыг бүхэлд нь хадгалах шаардлагатай бол анхны
+үр дүнг `saveRDS(gdp, ...)` ашиглан нэмэлтээр хадгална.
+
+## Find definitions and collection context / Тодорхойлолт, цуглуулалтын нөхцөлийг олох
+
+The metadata catalog connects databases, tables, questionnaire fields, forms,
+and classifications. Its `indicator` type can be a question in a collection
+form rather than a published series. Numeric catalog IDs do not identify PXWeb
+tables. Search coverage and pagination attributes describe what was returned,
+not a verified complete inventory.
+
+Мета өгөгдлийн сан нь мэдээллийн сан, хүснэгт, асуулгын талбар, маягт, ангиллыг
+холбоно. Эндэх `indicator` төрөл нь нийтлэгдсэн тоон цуваа бус, маягтын асуулт
+байж болно. Тоон таних дугаар нь PXWeb-ийн хүснэгтийн дугаар биш. Хайлтын хамрах
+хүрээ, хуудасны атрибут нь буцаж ирсэн хэсгийг тайлбарлах бөгөөд бүрэн жагсаалт
+болохыг батлахгүй.
+
+```{r metadata-discovery}
+hits <- nso_metadata_search("хүн ам", type = "all")
+attr(hits, "coverage")
+attr(hits, "pagination")
+
+organizations <- nso_metadata_search(type = "organization")
+databases <- nso_metadata_search(organization = 1, page = 1)
+attr(databases, "pagination")
+
+database <- nso_metadata("database", 526, include_raw = TRUE)
+database$methodology
+database$access
+nso_related(database)
+
+field <- nso_metadata("indicator", 12925, include_raw = TRUE)
+field$quality_flags
+field$context$unit
+field$context$value_type
+field$date_fields
+nso_related(field)
+```
+
+The numeric IDs here are concrete examples from inspected catalog records;
+choose records relevant to your analysis. `nso_related()` reads embedded
+relationships without further requests. Fetch a full supported record with
+`nso_metadata(type, id)`; embedded details may be partial. Quality flags preserve
+suspect source fields for review rather than silently correcting them.
+
+Эндэх тоон дугаарууд нь шалгасан бүртгэлийн жишээ юм. Шинжилгээндээ тохирох
+бүртгэлийг сонгоно. `nso_related()` нь дахин хүсэлт илгээхгүйгээр хавсаргасан
+холбоосыг үзүүлнэ. Бүрэн мэдээллийг `nso_metadata(type, id)`-аар авна; хавсаргасан
+мэдээлэл дутуу байж болно. Чанарын тэмдэглэгээ нь сэжигтэй талбарыг чимээгүй
+засахын оронд шалгахад зориулж анхныхаар нь хадгална.
+
+```{r forms-and-classifications}
+forms <- nso_forms(database_id = 526, include_raw = TRUE)
+forms$records
+form <- nso_metadata("form", 1024, include_raw = TRUE)
+form$dates
+form$years
+form$date_fields
+form$context
+form$quality_flags
+
+classification <- nso_classification(3446, include_raw = TRUE)
+attr(classification, "completeness")
+attr(classification, "quality_flags")
+attr(classification, "metadata")$version
+
+nso_metadata_dictionary("frequency")
+nso_metadata_dictionary("collection-method")
+nso_metadata_dictionary("licence")
+```
+
+Classification codes remain character strings. An empty codebook does not prove
+that the classification has no categories, and a nonempty one does not prove
+completeness. A licence or security category describes the catalog record;
+it does not grant access to underlying records. Missing official translations
+remain missing.
+
+Ангиллын код тэмдэгт мөр хэвээр байна. Хоосон кодын жагсаалт нь ангилал утгагүй
+гэсэн баталгаа биш; хоосон бус жагсаалт ч бүрэн болохыг батлахгүй. Лиценз,
+нууцлалын ангилал нь бүртгэлийг тайлбарлах бөгөөд үндсэн мэдээлэлд хандах эрх
+олгохгүй. Албан ёсны орчуулга байхгүй бол дутуу хэвээр үлдэнэ.
+
+## Check discovery freshness / Хайлтын шинэ байдлыг шалгах
+
+Local PXWeb discovery uses the bundled or session index. Its entry count can
+include the same table under several paths. Live keyword search returns a
+source-defined search window; it does not rebuild the complete index.
+
+PXWeb-ийн дотоод хайлт нь багцын эсвэл тухайн ажиллуулалтын индексийг ашиглана.
+Нэг хүснэгт хэд хэдэн замд орсон байж болно. Шууд түлхүүр үгийн хайлт нь эх
+сурвалжийн буцаасан хэсгийг авна; бүрэн индексийг дахин бүтээхгүй.
+
+```{r catalogue-freshness}
+nso_catalogue_status()
+nso_search("population", fixed = TRUE)
+live_hits <- nso_search("population", live = TRUE)
+attr(live_hits, "catalogue")
+
+config <- nso_api_config(refresh = TRUE)
+config[c("maxCells", "maxValues", "origin", "status")]
+```
+
+The package splits data queries by the cell limit and applies conservative
+request pacing. `maxValues` describes the metadata-value limit advertised by
+PXWeb; it is not a data-query selection limit. Configuration can fall back to
+defaults or a stale cache, so inspect `status`. Processes on one computer share
+request pacing; other computers using the same public address need coordination.
+
+Багц тоон хүсэлтийг нүдний хязгаараар хувааж, хүсэлтүүдийн хоорондын зайг
+баримтална. `maxValues` нь PXWeb-ийн зарласан мета өгөгдлийн утгын хязгаар бөгөөд
+тоон хүсэлтийн сонголтын хязгаар биш. Тохиргоо үндсэн утга эсвэл хуучин кэшээс
+ирж болох тул `status`-ыг шалгана. Нэг компьютерийн процессууд хүсэлтийн зайг
+хамтран баримтална. Ижил нийтийн хаягтай бусад компьютерийг тусад нь зохицуулна.
+
+## Use the public portal explicitly / Нээлттэй порталыг тусад нь ашиглах
+
+The portal registry is experimental. Inspect its `queryable`, `quality_flags`,
+and grouping dimensions; rows with invalid or missing IDs remain discoverable
+but cannot be queried. Portal request parameters are separate from the curated
+PXWeb templates, and the source's summary narratives are not observations.
+
+Порталын жагсаалт туршилтын төлөвтэй. `queryable`, `quality_flags`, бүлэглэх
+хэмжээсийг шалгана. Буруу эсвэл дутуу дугаартай мөр харагдах боловч хүсэлтэд
+ашиглах боломжгүй. Порталын сонголт нь хянасан PXWeb загвараас тусдаа бөгөөд эх
+сурвалжийн тайлбарласан тойм нь статистикийн ажиглалт биш.
+
+```{r portal-series}
+portal_catalog <- nso_indicators(source = "portal", refresh = TRUE)
+portal_catalog[c("id", "name", "unit", "queryable", "quality_flags")]
+nso_indicator("portal:DT_NSO_0000_4_4")
+
+portal_gdp <- nso_portal_data(
+  "DT_NSO_0000_4_4",
+  area = "1",
+  dimension = "code",
+  graph_type = "line",
+  periods = "2024",
+  labels = "both"
+)
+portal_gdp[c("source_id", "period", "code", "code_mn", "code_en", "value", "unit")]
+nso_check_data(portal_gdp, keys = c("period", "code", "code1"), unit = "unit")
+nso_table_info(portal_gdp)
+```
+
+`area`, `dimension`, and `graph_type` are explicit source request parameters;
+the GDP example does not establish their meaning for every indicator. Period
+filtering is performed after retrieval and matches the source label exactly.
+Codes are retained for every label choice. Missing English labels stay `NA`;
+unknown geography codes are preserved. Unpadded periods such as `2025-1` retain
+their label but remain undated when month-versus-quarter meaning is ambiguous.
+
+`area`, `dimension`, `graph_type` нь эх сурвалжийн хүсэлтийн тодорхой параметр
+юм. ДНБ-ий жишээ нь бүх үзүүлэлтийн хувьд тэдгээрийн утгыг тогтоохгүй. Хугацааны
+шүүлт нь татсаны дараа эх сурвалжийн нэртэй яг тохируулна. Ямар хэл сонгосноос
+үл хамааран код хадгалагдана. Англи нэр байхгүй бол `NA`, танигдаагүй газар зүйн
+код анхныхаараа үлдэнэ. `2025-1` зэрэг сар, улирлын утга нь тодорхойгүй нэрийг
+хадгалж, огноо таамаглан оноохгүй.
+
+```{r datamart-discovery}
+datamarts <- nso_portal_datamarts()
+datamarts[c("id", "name", "years", "source", "query_supported")]
+```
+
+Datamart support provides catalog discovery and presentation configuration only.
+The reported year range is source text, not verified coverage. `query_supported`
+is `FALSE`: a stable developer contract for aggregate queries has not been
+verified, and this interface does not retrieve underlying individual records.
+
+Өгөгдлийн сангийн дэмжлэг нь зөвхөн жагсаалт болон дэлгэцийн тохиргоог өгнө.
+Он жилийн хүрээ нь эх сурвалжийн текст бөгөөд шалгасан хамралт биш.
+`query_supported` нь `FALSE`: нэгтгэсэн хүсэлтийн тогтвортой хөгжүүлэгчийн гэрээ
+баталгаажаагүй бөгөөд энэ интерфейс нь хувь хүний анхан шатны бүртгэл татахгүй.

@@ -45,7 +45,7 @@
     Condition
       Warning:
       "mongolstats.langauge" is not a mongolstats option; set anyway.
-      i Known options: "mongolstats.px_base_url", "mongolstats.lang", "mongolstats.px_db", "mongolstats.timeout", "mongolstats.retry_tries", "mongolstats.retry_backoff", "mongolstats.verbose", "mongolstats.offline", "mongolstats.default_labels", "mongolstats.progress", "mongolstats.parallel", "mongolstats.value_name", "mongolstats.attach_raw", and "mongolstats.max_cells".
+      i Known options: "mongolstats.px_base_url", "mongolstats.portal_base_url", "mongolstats.metadata_base_url", "mongolstats.lang", "mongolstats.px_db", "mongolstats.timeout", "mongolstats.retry_tries", "mongolstats.retry_backoff", "mongolstats.verbose", "mongolstats.offline", "mongolstats.default_labels", "mongolstats.progress", "mongolstats.parallel", "mongolstats.value_name", "mongolstats.attach_raw", "mongolstats.max_cells", "mongolstats.max_values", "mongolstats.request_interval", and "mongolstats.rate_limit_dir".
 
 # .px_lang() errors on an unsupported language set via options()
 

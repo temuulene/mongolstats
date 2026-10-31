@@ -102,6 +102,12 @@ nso_itms_by_sector <- function(list_id) {
 #' @param query A single keyword, matched literally and case-insensitively.
 #' @param fields Columns of [nso_tables()] to search.
 #' @return As the newer functions.
+#' @examples
+#' head(nso_itms())
+#' nso_itms_search("population")
+#' if (identical(Sys.getenv("NOT_CRAN"), "true") && curl::has_internet()) {
+#'   nso_itms_detail("DT_NSO_0300_001V2")
+#' }
 #' @keywords internal
 #' @name nso_itms
 NULL
