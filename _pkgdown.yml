@@ -14,12 +14,16 @@ template:
     enable-dark-mode: true
 url: https://temuulene.github.io/mongolstats/
 development:
-  mode: auto
+  mode: release
 navbar:
   structure:
     left: [intro, reference, articles, news]
-    right: [search, github]
+    right: [search, mongolian, github]
   components:
+    mongolian:
+      text: Монгол
+      href: mn/index.html
+      aria-label: Монгол хэлээр унших
     intro:
       text: Getting Started
       href: articles/getting-started.html
