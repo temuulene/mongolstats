@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Environmental Data Analysis • mongolstats</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
@@ -23,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mongolstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +43,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/discovery.html">Discovering Public Health Data</a></li>
+    <li><a class="dropdown-item" href="../articles/data-provenance.html">Sources, Metadata and Reproducible Exports</a></li>
     <li><a class="dropdown-item" href="../articles/mapping.html">Spatial Epidemiology with mongolstats</a></li>
     <li><a class="dropdown-item" href="../articles/mortality-analysis.html">Mortality Seasonality Analysis</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -65,10 +71,10 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Environmental Data Analysis</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Environmental Data Analysis</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/environmental-surveillance.Rmd" class="external-link"><code>vignettes/environmental-surveillance.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/v0.4.0/vignettes/environmental-surveillance.Rmd" class="external-link"><code>vignettes/environmental-surveillance.Rmd</code></a></small>
       <div class="d-none name"><code>environmental-surveillance.Rmd</code></div>
     </div>
 
@@ -76,15 +82,16 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://temuulene.github.io/mongolstats/">mongolstats</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/temuulene/mongolmaps" class="external-link">mongolmaps</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
+<span><span class="va">old_options</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Global theme with proper margins to prevent text cutoff</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/get_theme.html" class="external-link">theme_set</a></span><span class="op">(</span></span>
+<span><span class="va">old_theme</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/get_theme.html" class="external-link">theme_set</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
 <span>      plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>,</span>
@@ -97,65 +104,66 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>Air quality is a primary environmental determinant of health in
-Mongolia. The NSO’s network of monitoring stations provides
-high-resolution data essential for exposure assessment. Unlike
-aggregated regional data, these station-level measurements allow for
-localized exposure assessment—critical for environmental health
-research.</p>
-<p>This guide demonstrates how to: - Analyze air quality trends across
-monitoring stations - Compare pollutant levels against regulatory
-standards - Map water quality across river basins - Track
-climate-related health risks (dust exposure)</p>
+<p>Air pollution is a leading environmental health risk in Mongolia,
+above all in Ulaanbaatar in winter. NSO publishes measurements from air
+quality monitoring stations, river and lake water quality stations, and
+weather stations that count dust days. Station data describe the air or
+water at one place; they are a starting point for exposure assessment,
+not a measure of what people breathe or drink.</p>
+<p>This guide shows how to:</p>
+<ul>
+<li>Track fine particulate matter (PM2.5) and sulphur dioxide (SO₂) at
+Ulaanbaatar stations</li>
+<li>Compare annual concentrations with Mongolia’s air quality
+standards</li>
+<li>Look at river and lake water quality</li>
+<li>Map dust days across the country</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="air-quality-monitoring">Air Quality Monitoring<a class="anchor" aria-label="anchor" href="#air-quality-monitoring"></a>
 </h2>
-<div class="section level3">
-<h3 id="pollutant-concentrations-by-station">Pollutant Concentrations by Station<a class="anchor" aria-label="anchor" href="#pollutant-concentrations-by-station"></a>
-</h3>
-<p>The NSO maintains air quality monitoring stations that measure key
-pollutants. We’ll focus on the <strong>Top 10 most polluted
-stations</strong> in Ulaanbaatar to understand the severity of
-exposure.</p>
 <blockquote>
-<p><strong>Important: Air Quality Table Structures</strong></p>
-<p>The NSO provides two types of air quality tables with different
-dimension structures:</p>
+<p><strong>About the air quality tables</strong></p>
 <ul>
 <li>
 <strong>Annual table</strong> (<code>DT_NSO_2024_135V01</code>):
-Uses a <code>Year</code> dimension for filtering (e.g.,
-<code>selections = list(Year = "2024")</code>)</li>
+annual mean concentration by station and pollutant, selected by
+<code>Year</code>.</li>
 <li>
 <strong>Monthly station tables</strong>
-(e.g. <code>DT_NSO_2400_015V2</code> for NO₂,
-<code>DT_NSO_2400_015V5</code> for PM2.5): Use a running
-<code>Month</code> dimension with internal codes. The ordering of the
-codes is not guaranteed, so map month labels (<code>"YYYY-MM"</code>,
-returned in <code>Month_en</code>) to codes with
-<code><a href="../reference/nso_dim_values.html">nso_dim_values()</a></code> before selecting.</li>
+(<code>DT_NSO_2400_015V2</code> for NO₂, <code>DT_NSO_2400_015V5</code>
+for PM2.5): for each station and month, the monthly average, the monthly
+maximum, the number of measurement days (“MN by day”), and the
+percentage of days above the air quality standard. Month codes count
+back from the latest month, so select months by their
+<code>"YYYY-MM"</code> labels, listed with
+<code><a href="../reference/nso_table_periods.html">nso_table_periods()</a></code>.</li>
 </ul>
-<p>The NSO catalogue currently reuses the ids
-<code>DT_NSO_2400_015V1</code> (SO₂), <code>V3</code> (CO), and
-<code>V4</code> (PM10) for unrelated annual tables in another folder, so
-those monthly series cannot be fetched by table id alone (mongolstats
-warns about the ambiguity). This vignette therefore analyzes live NO₂
-and PM2.5 data and uses a bundled snapshot for SO₂.</p>
+<p>The NSO catalogue reuses the ids <code>DT_NSO_2400_015V1</code>
+(SO₂), <code>V3</code> (CO) and <code>V4</code> (PM10) for unrelated
+tables in another folder, so those monthly series cannot be fetched by
+id alone (mongolstats warns about the ambiguity). This vignette uses a
+snapshot bundled with mongolstats for monthly SO₂.</p>
+<p>NSO reports concentrations in mg/m³. We convert them to µg/m³, the
+unit used by the WHO guidelines (1 mg/m³ = 1,000 µg/m³). Annual means
+are rounded to 0.01 mg/m³ (10 µg/m³), which is coarse next to standards
+of 20–40 µg/m³.</p>
 </blockquote>
+<div class="section level3">
+<h3 id="most-polluted-stations">Most Polluted Stations<a class="anchor" aria-label="anchor" href="#most-polluted-stations"></a>
+</h3>
+<p>We rank Ulaanbaatar stations by their 2024 annual mean PM2.5. We use
+2024 rather than the latest year because several 2025 annual values are
+exact zeros at stations that reported high levels the year before, which
+looks like missing data.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1. Identify Top 10 Polluted Stations in UB (using 2024 annual data)</span></span>
-<span><span class="va">air_annual</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
-<span>  <span class="op">{</span></span>
-<span>    <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>      <span class="st">"DT_NSO_2024_135V01"</span>,</span>
-<span>      selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="st">"2024"</span><span class="op">)</span>,</span>
-<span>      labels <span class="op">=</span> <span class="st">"en"</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">}</span>,</span>
+<code class="sourceCode R"><span><span class="va">air_annual</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span><span class="st">"DT_NSO_2024_135V01"</span>, selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="st">"2024"</span><span class="op">)</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span>,</span>
 <span>  error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Fall back to the bundled snapshot if the API is unavailable</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">air_annual</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">air_annual</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">air_annual</span> <span class="op">&lt;-</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"air_annual_cached.csv"</span>, package <span class="op">=</span> <span class="st">"mongolstats"</span><span class="op">)</span>,</span>
@@ -168,10 +176,11 @@ and PM2.5 data and uses a bundled snapshot for SO₂.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    Station <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html" class="external-link">str_trim</a></span><span class="op">(</span><span class="va">`Station location_en`</span><span class="op">)</span>,</span>
-<span>    Pollutant <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html" class="external-link">str_trim</a></span><span class="op">(</span><span class="va">Indicator_en</span><span class="op">)</span></span>
+<span>    Pollutant <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html" class="external-link">str_trim</a></span><span class="op">(</span><span class="va">Indicator_en</span><span class="op">)</span>,</span>
+<span>    ug_m3 <span class="op">=</span> <span class="va">value</span> <span class="op">*</span> <span class="fl">1000</span> <span class="co"># mg/m3 to ug/m3</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Define UB Stations</span></span>
+<span><span class="co"># Ulaanbaatar stations</span></span>
 <span><span class="va">ub_stations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Misheel-Expo center"</span>, <span class="st">"West crossroad"</span>, <span class="st">"1st micro district"</span>,</span>
 <span>  <span class="st">"13th micro district"</span>, <span class="st">"32nd Toirog"</span>, <span class="st">"Ofitseruudiin ordon"</span>,</span>
@@ -180,52 +189,41 @@ and PM2.5 data and uses a bundled snapshot for SO₂.</p>
 <span>  <span class="st">"Tavan buudal"</span>, <span class="st">"Bayankhoshuu"</span>, <span class="st">"Sharkhad"</span>, <span class="st">"100 ail"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Rank UB stations by PM2.5 levels</span></span>
-<span><span class="va">top_10_stations</span> <span class="op">&lt;-</span> <span class="va">air_annual</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Station</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">ub_stations</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant</span>, <span class="st">"PM2.5"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span><span class="co"># Up to 10 Ulaanbaatar stations with the highest annual PM2.5</span></span>
+<span><span class="va">top_stations</span> <span class="op">&lt;-</span> <span class="va">air_annual</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Station</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">ub_stations</span>, <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant</span>, <span class="st">"PM2.5"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">ug_m3</span>, n <span class="op">=</span> <span class="fl">10</span>, with_ties <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">Station</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Default to key UB stations if ranking fails to ensure facets are not empty</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">top_10_stations</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">top_10_stations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Bayankhoshuu"</span>, <span class="st">"Tolgoit"</span>, <span class="st">"Zuragt"</span>, <span class="st">"Khailaast"</span>, <span class="st">"Amgalan"</span>,</span>
-<span>    <span class="st">"Misheel-Expo center"</span>, <span class="st">"West crossroad"</span>, <span class="st">"1st micro district"</span>, <span class="st">"100 ail"</span>, <span class="st">"Nisekh"</span></span>
-<span>  <span class="op">)</span></span>
+<span><span class="va">top_stations</span></span></code></pre></div>
+<p>Only n/a Ulaanbaatar stations reported an annual PM2.5 mean for 2024,
+so all of them are included.</p>
+</div>
+<div class="section level3">
+<h3 id="pm2-5-monthly-trends">PM2.5: Monthly Trends<a class="anchor" aria-label="anchor" href="#pm2-5-monthly-trends"></a>
+</h3>
+<p>Fine particulate matter (PM2.5) is the air pollutant with the
+strongest evidence of harm: long-term exposure raises the risk of heart
+and lung disease, lung cancer, and death. We keep only months with
+measurements on at least 75% of days, a common completeness rule for a
+valid monthly mean.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Labels of the months from `from` onward</span></span>
+<span><span class="va">recent_months</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tbl</span>, <span class="va">from</span> <span class="op">=</span> <span class="st">"2021-01-01"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">periods</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_table_periods.html">nso_table_periods</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span></span>
+<span>  <span class="va">periods</span><span class="op">$</span><span class="va">label</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">periods</span><span class="op">$</span><span class="va">date</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">periods</span><span class="op">$</span><span class="va">date</span> <span class="op">&gt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">from</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># 2. Fetch Monthly Data for Detailed Trends</span></span>
-<span><span class="co"># Monthly station tables: V2 = NO2, V5 = PM2.5 (see the note above on</span></span>
-<span><span class="co"># reused table ids). Month codes are not in a guaranteed order, so map</span></span>
-<span><span class="co"># month labels ("YYYY-MM") to codes explicitly.</span></span>
-<span><span class="va">recent_month_codes</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tbl</span>, <span class="va">from</span> <span class="op">=</span> <span class="st">"2021-01"</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">mv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">tbl</span>, <span class="st">"Month"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span>  <span class="va">mv</span><span class="op">$</span><span class="va">code</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">mv</span><span class="op">$</span><span class="va">label_en</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">mv</span><span class="op">$</span><span class="va">label_en</span> <span class="op">&gt;=</span> <span class="va">from</span><span class="op">]</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">air_monthly</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
-<span>  <span class="op">{</span></span>
-<span>    <span class="fu"><a href="../reference/nso_package.html">nso_package</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>          tbl_id <span class="op">=</span> <span class="st">"DT_NSO_2400_015V2"</span>, <span class="co"># NO2</span></span>
-<span>          selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Month <span class="op">=</span> <span class="fu">recent_month_codes</span><span class="op">(</span><span class="st">"DT_NSO_2400_015V2"</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="op">)</span>,</span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>          tbl_id <span class="op">=</span> <span class="st">"DT_NSO_2400_015V5"</span>, <span class="co"># PM2.5</span></span>
-<span>          selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Month <span class="op">=</span> <span class="fu">recent_month_codes</span><span class="op">(</span><span class="st">"DT_NSO_2400_015V5"</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="op">)</span></span>
-<span>      <span class="op">)</span>,</span>
-<span>      labels <span class="op">=</span> <span class="st">"en"</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">}</span>,</span>
+<span><span class="va">pm25_monthly</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>    <span class="st">"DT_NSO_2400_015V5"</span>,</span>
+<span>    selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Month <span class="op">=</span> <span class="fu">recent_months</span><span class="op">(</span><span class="st">"DT_NSO_2400_015V5"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    labels <span class="op">=</span> <span class="st">"en"</span></span>
+<span>  <span class="op">)</span>,</span>
 <span>  error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Bundled snapshot: full fallback if the API fails, and the source for</span></span>
-<span><span class="co"># monthly SO2, whose table id is currently ambiguous in the catalogue.</span></span>
+<span><span class="co"># Bundled snapshot: fallback for PM2.5 and the only source of monthly SO2</span></span>
 <span><span class="va">air_cached</span> <span class="op">&lt;-</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span></span>
 <span>  <span class="co"># gzip-compressed to keep the installed package small;</span></span>
 <span>  <span class="co"># read.csv() decompresses transparently</span></span>
@@ -234,481 +232,348 @@ and PM2.5 data and uses a bundled snapshot for SO₂.</p>
 <span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">air_monthly</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">air_monthly</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">air_monthly</span> <span class="op">&lt;-</span> <span class="va">air_cached</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="va">air_monthly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
-<span>    <span class="va">air_monthly</span>,</span>
-<span>    <span class="va">air_cached</span> <span class="op">|&gt;</span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Indicator_en</span>, <span class="st">"Sulphur dioxide"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>      <span class="co"># code columns come back as integers from read.csv()</span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html" class="external-link">any_of</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Indicator"</span>, <span class="st">"Location"</span>, <span class="st">"Month"</span><span class="op">)</span><span class="op">)</span>, <span class="va">as.character</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">pm25_monthly</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pm25_monthly</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">pm25_monthly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">air_cached</span>, <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Indicator_en</span>, <span class="st">"PM2.5"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">air_monthly</span> <span class="op">&lt;-</span> <span class="va">air_monthly</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Standardize indicator column name which can vary between live fetch and cache</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename_with</a></span><span class="op">(</span><span class="op">~</span> <span class="st">"Pollutant_Raw"</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html" class="external-link">any_of</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Indicator_en"</span>, <span class="st">"Indicator of air pollution_en"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    Station <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html" class="external-link">str_trim</a></span><span class="op">(</span><span class="va">Location_en</span><span class="op">)</span>,</span>
-<span>    Pollutant_Raw <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html" class="external-link">str_trim</a></span><span class="op">(</span><span class="va">Pollutant_Raw</span><span class="op">)</span>,</span>
-<span>    <span class="co"># If Month_en is already YYYY-MM, Date will work, else handle gracefully</span></span>
-<span>    Date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">Month_en</span>, <span class="st">"-01"</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Focus on recent years for trends</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Date</span> <span class="op">&gt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-01-01"</span><span class="op">)</span>, <span class="va">Date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-12-31"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Station</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">top_10_stations</span><span class="op">)</span></span>
+<span><span class="co"># One row per station and month, with one column per measure</span></span>
+<span><span class="va">reshape_monthly</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">data</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>      Station <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html" class="external-link">str_trim</a></span><span class="op">(</span><span class="va">Location_en</span><span class="op">)</span>,</span>
+<span>      measure <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_extract.html" class="external-link">str_extract</a></span><span class="op">(</span><span class="va">Indicator_en</span>, <span class="st">"(Average|Maximum|MN by day|Exceeding percent of AQS)$"</span><span class="op">)</span>,</span>
+<span>      date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">Month_en</span>, <span class="st">"-01"</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Station</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">top_stations</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">measure</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Station</span>, <span class="va">date</span>, <span class="va">measure</span>, <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">measure</span>, values_from <span class="op">=</span> <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span></span>
+<span>      average <span class="op">=</span> <span class="va">Average</span>, maximum <span class="op">=</span> <span class="va">Maximum</span>,</span>
+<span>      days_measured <span class="op">=</span> <span class="va">`MN by day`</span>, pct_days_above <span class="op">=</span> <span class="va">`Exceeding percent of AQS`</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>average <span class="op">=</span> <span class="va">average</span> <span class="op">*</span> <span class="fl">1000</span>, maximum <span class="op">=</span> <span class="va">maximum</span> <span class="op">*</span> <span class="fl">1000</span><span class="op">)</span> <span class="co"># mg/m3 to ug/m3</span></span>
+<span><span class="op">}</span></span>
 <span></span>
+<span><span class="va">pm25</span> <span class="op">&lt;-</span> <span class="fu">reshape_monthly</span><span class="op">(</span><span class="va">pm25_monthly</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&gt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-01-01"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>complete <span class="op">=</span> <span class="va">days_measured</span> <span class="op">&gt;=</span> <span class="fl">0.75</span> <span class="op">*</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/days_in_month.html" class="external-link">days_in_month</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Clean and Reshape Data for Ribbons</span></span>
-<span><span class="va">air_trends</span> <span class="op">&lt;-</span> <span class="va">air_monthly</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    Pollutant_Type <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant_Raw</span>, <span class="st">"PM2.5"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"PM2.5"</span>,</span>
-<span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant_Raw</span>, <span class="st">"Sulphur dioxide|SO2"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"SO2"</span>,</span>
-<span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant_Raw</span>, <span class="st">"Nitrogen dioxide|NO2"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"NO2"</span>,</span>
-<span>      <span class="cn">TRUE</span> <span class="op">~</span> <span class="cn">NA_character_</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    Measure <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant_Raw</span>, <span class="st">"Average"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Average"</span>,</span>
-<span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant_Raw</span>, <span class="st">"Maximum"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Maximum"</span>,</span>
-<span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant_Raw</span>, <span class="st">"Minimum"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Minimum"</span>,</span>
-<span>      <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"Other"</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Pollutant_Type</span><span class="op">)</span>, <span class="va">Measure</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Average"</span>, <span class="st">"Maximum"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Use Average for the trend line and Maximum for the upper ribbon bound</span></span>
-<span>  <span class="co"># Outlier Removal: Group by Station and Pollutant to detect anomalies</span></span>
-<span>  <span class="co"># Using IQR method (3 * IQR) to remove extreme outliers while keeping natural spikes</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Station</span>, <span class="va">Pollutant_Type</span>, <span class="va">Measure</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    Q1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">value</span>, <span class="fl">0.25</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    Q3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">value</span>, <span class="fl">0.75</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    IQR <span class="op">=</span> <span class="va">Q3</span> <span class="op">-</span> <span class="va">Q1</span>,</span>
-<span>    Lower <span class="op">=</span> <span class="va">Q1</span> <span class="op">-</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">IQR</span>,</span>
-<span>    Upper <span class="op">=</span> <span class="va">Q3</span> <span class="op">+</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">IQR</span>,</span>
-<span>    Is_Outlier <span class="op">=</span> <span class="va">value</span> <span class="op">&lt;</span> <span class="va">Lower</span> <span class="op">|</span> <span class="va">value</span> <span class="op">&gt;</span> <span class="va">Upper</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">Is_Outlier</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Station</span>, <span class="va">Date</span>, <span class="va">Pollutant_Type</span>, <span class="va">Measure</span>, <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">Measure</span>, values_from <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span><span class="va">pm25_complete</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">pm25</span>, <span class="va">complete</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">average</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Note: If "Minimum" isn't explicitly available, we'll just show Average and Max range</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="pm2-5-trends-high-risk-stations">PM2.5 Trends: High-Risk Stations<a class="anchor" aria-label="anchor" href="#pm2-5-trends-high-risk-stations"></a>
-</h3>
-<p>Fine Particulate Matter (PM2.5) poses the greatest health risk among
-air pollutants due to its ability to penetrate deep into the lungs and
-bloodstream. The following trends reveal <strong>chronic winter
-pollution crisis</strong> across Ulaanbaatar’s most exposed
-neighborhoods.</p>
-<p><strong>What the dashed line means</strong>: The horizontal dashed
-red line is Mongolia’s Maximum Allowable Concentration (MAC) for the
-PM2.5 <strong>annual average</strong> (0.025 mg/m³, MNS 4585:2016),
-shown here for reference. Note the averaging periods differ: formal
-compliance is assessed against the <em>annual mean</em>, not individual
-months, so a monthly average above this line flags an elevated month
-rather than a legal exceedance. For a like-for-like short-term
-benchmark, MNS 4585:2016 also sets a 24-hour PM2.5 limit of 0.050 mg/m³.
-Either way, months well above the annual line indicate heightened health
-risk.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># MAC annual average for PM2.5</span></span>
-<span><span class="va">mac_pm25</span> <span class="op">&lt;-</span> <span class="fl">0.025</span></span>
-<span></span>
-<span><span class="va">p_pm</span> <span class="op">&lt;-</span> <span class="va">air_trends</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Pollutant_Type</span> <span class="op">==</span> <span class="st">"PM2.5"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Date</span>, group <span class="op">=</span> <span class="va">Station</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co"># MAC reference line - regulatory threshold for health protection</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">mac_pm25</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"darkred"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co"># Ribbon shows range from average to maximum - captures daily variability</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">Average</span>, ymax <span class="op">=</span> <span class="va">Maximum</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"red"</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Average</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"firebrick"</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Station</span>, ncol <span class="op">=</span> <span class="fl">2</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># each station on its own scale</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"6 months"</span>, date_labels <span class="op">=</span> <span class="st">"%b %Y"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"PM2.5 Trends in Top 10 Polluted UB Stations (2021-2025)"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Monthly Average (Line), Maximum (Ribbon), and annual-average MAC (Dashed Line, reference)"</span>,</span>
-<span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    y <span class="op">=</span> <span class="st">"Concentration (mg/m³)"</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># y-axis starts at 0 for honest comparison</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
-<span>    strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
-<span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="va">p_pm</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
-<p><img src="environmental-surveillance_files/figure-html/pm25-trends-1.png" class="r-plt" alt="Line plot showing monthly average PM2.5 concentrations for 10 stations from 2021 to 2025. All stations show peaks exceeding the 0.025 mg/m³ dashed regulatory limit line during winter months." width="100%"></p>
-<blockquote>
-<p><strong>Key Findings</strong>: All 10 stations show
-<strong>systematic winter peaks far above the annual-average
-standard</strong>, with monthly averages reaching 4-10x the
-annual-average MAC during heating season (November-February). Even
-during summer months, many stations hover near or above the
-annual-average threshold, indicating <strong>year-round
-exposure</strong> with dangerous seasonal spikes.</p>
-</blockquote>
-</div>
-<div class="section level3">
-<h3 id="sulfur-dioxide-so₂-trends-the-coal-combustion-signature">Sulfur Dioxide (SO₂) Trends: The Coal Combustion Signature<a class="anchor" aria-label="anchor" href="#sulfur-dioxide-so%E2%82%82-trends-the-coal-combustion-signature"></a>
-</h3>
-<p>Sulfur dioxide is a direct tracer of <strong>raw coal
-combustion</strong> for residential heating. Unlike PM2.5 (which has
-multiple sources), SO₂ patterns directly reflect fuel use intensity,
-making it a critical indicator for evaluating clean energy transition
-policies.</p>
-<p><strong>What the dashed line means</strong>: The horizontal dashed
-orange line is Mongolia’s MAC for the SO₂ <strong>annual
-average</strong> (0.020 mg/m³, MNS 4585:2016), shown for reference. As
-with PM2.5, compliance is judged on the <em>annual mean</em>; a monthly
-average above the line marks an elevated month rather than a legal
-exceedance (the comparable 24-hour SO₂ limit is 0.050 mg/m³). Sustained
-winter values far above the line still signal real respiratory-health
-risk, particularly for vulnerable populations (children, elderly,
-asthmatics).</p>
+<span><span class="co"># For line charts: every station-month, with excluded months as gaps (NA)</span></span>
+<span><span class="co"># so lines break instead of joining across missing data</span></span>
+<span><span class="va">pm25_lines</span> <span class="op">&lt;-</span> <span class="va">pm25</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html" class="external-link">complete</a></span><span class="op">(</span><span class="va">Station</span>, date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>average <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">complete</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="cn">TRUE</span>, <span class="va">average</span>, <span class="cn">NA_real_</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Of n/a station-months, n/a meet the completeness rule.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># MAC annual average for SO2</span></span>
-<span><span class="va">mac_so2</span> <span class="op">&lt;-</span> <span class="fl">0.020</span></span>
-<span></span>
-<span><span class="va">p_so2</span> <span class="op">&lt;-</span> <span class="va">air_trends</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Pollutant_Type</span> <span class="op">==</span> <span class="st">"SO2"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Date</span>, group <span class="op">=</span> <span class="va">Station</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co"># MAC reference line - SO2 threshold for respiratory health</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">mac_so2</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"darkorange3"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">Average</span>, ymax <span class="op">=</span> <span class="va">Maximum</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"orange"</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Average</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"darkorange"</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Station</span>, ncol <span class="op">=</span> <span class="fl">2</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"6 months"</span>, date_labels <span class="op">=</span> <span class="st">"%b %Y"</span><span class="op">)</span> <span class="op">+</span></span>
+<code class="sourceCode R"><span><span class="va">pm25_lines</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">average</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">25</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"darkred"</span><span class="op">)</span> <span class="op">+</span> <span class="co"># Mongolia annual standard</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">5</span>, linetype <span class="op">=</span> <span class="st">"dotted"</span>, color <span class="op">=</span> <span class="st">"grey30"</span><span class="op">)</span> <span class="op">+</span> <span class="co"># WHO 2021 annual guideline</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"firebrick"</span>, linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"firebrick"</span>, size <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Station</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"1 year"</span>, date_labels <span class="op">=</span> <span class="st">"%Y"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"SO₂ Trends in Top 10 Polluted UB Stations (2023-2025)"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Bundled snapshot: Monthly Average (Line), Maximum (Ribbon), and annual-average MAC (Dashed Line, reference)"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Monthly Mean PM2.5 at Ulaanbaatar's Most Polluted Stations"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Dashed = Mongolia annual standard (25 µg/m³); dotted = WHO annual guideline (5 µg/m³)"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    y <span class="op">=</span> <span class="st">"Concentration (mg/m³)"</span></span>
+<span>    y <span class="op">=</span> <span class="st">"PM2.5 (µg/m³)"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Months with measurements on at least 75% of days. Source: NSO Mongolia, DT_NSO_2400_015V5"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
-<span>    strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
-<span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="va">p_so2</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
-<p><img src="environmental-surveillance_files/figure-html/so2-trends-1.png" class="r-plt" alt="Line plot showing monthly average SO2 concentrations for 10 stations from 2023 to 2025. Peaks significantly exceed the 0.020 mg/m³ limit during winters, dropping to near zero in summers." width="100%"></p>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The reference lines are for <strong>annual</strong> means, so they
+give scale rather than a test: compliance is judged on the annual mean
+(next section), and a monthly mean above the line marks a polluted
+month, not a legal exceedance. Mongolia’s annual PM2.5 standard (MNS
+4585:2016) is 25 µg/m³; the WHO’s 2021 guideline is 5 µg/m³. The monthly
+maximum that NSO also publishes is left out because its definition
+(highest daily mean or highest single reading) is not documented.</p>
+</div>
+<div class="section level3">
+<h3 id="pm2-5-days-above-the-standard">PM2.5: Days Above the Standard<a class="anchor" aria-label="anchor" href="#pm2-5-days-above-the-standard"></a>
+</h3>
+<p>The monthly tables also report the percentage of measured days on
+which PM2.5 exceeded Mongolia’s air quality standard. Unlike a monthly
+mean, this compares like with like: daily values against a daily
+standard.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pm25_complete</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">Station</span>, fill <span class="op">=</span> <span class="va">pct_days_above</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"white"</span>, linewidth <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient</a></span><span class="op">(</span></span>
+<span>    low <span class="op">=</span> <span class="st">"#fbe3e3"</span>, high <span class="op">=</span> <span class="st">"#8b1a1a"</span>, na.value <span class="op">=</span> <span class="st">"grey90"</span>,</span>
+<span>    limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"% of days\nabove standard"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"1 year"</span>, date_labels <span class="op">=</span> <span class="st">"%Y"</span>, expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Share of Days with PM2.5 Above Mongolia's Standard"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Each tile is one station-month; grey = not reported; blank = fewer than 75% of days measured"</span>,</span>
+<span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2400_015V5"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
-<p><strong>Critical Pattern</strong>: SO₂ shows <strong>extreme seasonal
-variation</strong> (20-30x increase in winter vs. summer), far exceeding
-PM2.5’s seasonal swing. This confirms that residential coal heating is
-the <strong>dominant driver</strong> of winter air pollution. Peak
-concentrations during January-February can reach 10-30x the
-annual-average MAC, representing acute health hazard conditions.</p>
+<p><strong>Key findings:</strong> In December–February, the median
+station-month had <strong>n/a%</strong> of measured days above the PM2.5
+standard, and a mean of n/a µg/m³. In June–August, the median was n/a%
+of days, with a mean of n/a µg/m³. Exposure is concentrated in the
+heating season, when household coal and wood stoves, heating plants and
+temperature inversions combine.</p>
 </blockquote>
 </div>
 <div class="section level3">
-<h3 id="regulatory-compliance-exceedance-factor">Regulatory Compliance: Exceedance Factor<a class="anchor" aria-label="anchor" href="#regulatory-compliance-exceedance-factor"></a>
+<h3 id="sulphur-dioxide-so₂">Sulphur Dioxide (SO₂)<a class="anchor" aria-label="anchor" href="#sulphur-dioxide-so%E2%82%82"></a>
 </h3>
-<p>The Exceedance Factor quantifies <strong>how many times</strong> a
-station’s annual average exceeds the regulatory limit. A factor of 1.0
-represents the threshold; values &gt;1.0 indicate non-compliance.</p>
-<p>To clearly see how much stations exceed safety limits, we calculate
-the <strong>Exceedance Factor</strong> (Ratio of Annual Average to MAC).
-A value &gt; 1.0 indicates non-compliance.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1. Get MAC Standards (MNS 4585:2016 annual-average limits)</span></span>
-<span><span class="va">mac_so2</span> <span class="op">&lt;-</span> <span class="fl">0.020</span> <span class="co"># Annual average mg/m3</span></span>
-<span><span class="va">mac_no2</span> <span class="op">&lt;-</span> <span class="fl">0.040</span> <span class="co"># Annual average mg/m3</span></span>
-<span><span class="va">mac_pm25</span> <span class="op">&lt;-</span> <span class="fl">0.025</span> <span class="co"># Annual average mg/m3 (MNS 4585:2016; also WHO interim target 2)</span></span>
+<p>SO₂ comes mainly from burning coal, so it tracks fuel use for
+heating. Monthly SO₂ comes from the bundled snapshot (see above). Its
+“measurement days” column counts readings rather than days, so we do not
+apply the completeness rule here.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">so2</span> <span class="op">&lt;-</span> <span class="va">air_cached</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Indicator_en</span>, <span class="st">"Sulphur dioxide"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">reshape_monthly</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">average</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 2. Calculate Exceedance for 2024</span></span>
+<span><span class="va">so2</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">average</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">20</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"darkorange3"</span><span class="op">)</span> <span class="op">+</span> <span class="co"># Mongolia annual standard</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"darkorange"</span>, linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"darkorange"</span>, size <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Station</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"1 year"</span>, date_labels <span class="op">=</span> <span class="st">"%Y"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Monthly Mean SO₂ at Ulaanbaatar's Most Polluted Stations"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Bundled snapshot; dashed = Mongolia annual standard (20 µg/m³)"</span>,</span>
+<span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"SO₂ (µg/m³)"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia (snapshot of DT_NSO_2400_015V1)"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p><strong>Seasonal pattern:</strong> Mean SO₂ in December–February is
+n/a to n/a times the June–August mean, depending on the station (median
+n/a times). This swing, larger than for PM2.5, points to coal burning
+for heating as the main winter source.</p>
+</blockquote>
+</div>
+<div class="section level3">
+<h3 id="annual-means-against-the-standards">Annual Means Against the Standards<a class="anchor" aria-label="anchor" href="#annual-means-against-the-standards"></a>
+</h3>
+<p>The exceedance factor is the annual mean divided by Mongolia’s annual
+standard (MNS 4585:2016). A factor above 1 means the station did not
+meet the standard.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Mongolia's annual standards (MNS 4585:2016), ug/m3</span></span>
+<span><span class="va">annual_standard</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PM2.5"</span> <span class="op">=</span> <span class="fl">25</span>, <span class="st">"SO2"</span> <span class="op">=</span> <span class="fl">20</span>, <span class="st">"NO2"</span> <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">compliance</span> <span class="op">&lt;-</span> <span class="va">air_annual</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Station</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">top_10_stations</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Station</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">top_stations</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    Pollutant_Type <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant</span>, <span class="st">"PM2.5"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"PM2.5"</span>,</span>
 <span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant</span>, <span class="st">"Sulphur dioxide"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"SO2"</span>,</span>
 <span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Pollutant</span>, <span class="st">"Nitrogen dioxide"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"NO2"</span>,</span>
-<span>      <span class="cn">TRUE</span> <span class="op">~</span> <span class="cn">NA_character_</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    MAC <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
-<span>      <span class="va">Pollutant_Type</span> <span class="op">==</span> <span class="st">"PM2.5"</span> <span class="op">~</span> <span class="va">mac_pm25</span>,</span>
-<span>      <span class="va">Pollutant_Type</span> <span class="op">==</span> <span class="st">"SO2"</span> <span class="op">~</span> <span class="va">mac_so2</span>,</span>
-<span>      <span class="va">Pollutant_Type</span> <span class="op">==</span> <span class="st">"NO2"</span> <span class="op">~</span> <span class="va">mac_no2</span>,</span>
-<span>      <span class="cn">TRUE</span> <span class="op">~</span> <span class="cn">NA_real_</span></span>
+<span>      .default <span class="op">=</span> <span class="cn">NA_character_</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Pollutant_Type</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    Exceedance_Factor <span class="op">=</span> <span class="va">value</span> <span class="op">/</span> <span class="va">MAC</span>,</span>
-<span>    Status <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">Exceedance_Factor</span> <span class="op">&gt;</span> <span class="fl">1</span>, <span class="st">"Non-Compliant"</span>, <span class="st">"Compliant"</span><span class="op">)</span></span>
+<span>    Standard <span class="op">=</span> <span class="va">annual_standard</span><span class="op">[</span><span class="va">Pollutant_Type</span><span class="op">]</span>,</span>
+<span>    Exceedance_Factor <span class="op">=</span> <span class="va">ug_m3</span> <span class="op">/</span> <span class="va">Standard</span>,</span>
+<span>    Status <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">Exceedance_Factor</span> <span class="op">&gt;</span> <span class="fl">1</span>, <span class="st">"Above standard"</span>, <span class="st">"Meets standard"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 3. Plot regulatory compliance - exceedance factor shows how many times over the limit</span></span>
-<span><span class="va">p_comp</span> <span class="op">&lt;-</span> <span class="va">compliance</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">Station</span>, <span class="va">Exceedance_Factor</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">Exceedance_Factor</span>, fill <span class="op">=</span> <span class="va">Status</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="va">compliance</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Exceedance_Factor</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">Station</span>, <span class="va">Exceedance_Factor</span><span class="op">)</span>, fill <span class="op">=</span> <span class="va">Status</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">1</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># compliance threshold</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Exceedance_Factor</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>, hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.1</span>, size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># inline labels</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">1</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Exceedance_Factor</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>, hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.15</span>, size <span class="op">=</span> <span class="fl">2.8</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Pollutant_Type</span>, scales <span class="op">=</span> <span class="st">"free_x"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Compliant"</span> <span class="op">=</span> <span class="st">"#27ae60"</span>, <span class="st">"Non-Compliant"</span> <span class="op">=</span> <span class="st">"#c0392b"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.15</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Meets standard"</span> <span class="op">=</span> <span class="st">"#2a78d6"</span>, <span class="st">"Above standard"</span> <span class="op">=</span> <span class="st">"#c0392b"</span><span class="op">)</span>, name <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Regulatory Compliance: Exceedance Factors (2024)"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Ratio of Annual Average to Maximum Allowable Concentration (MAC)"</span>,</span>
-<span>    y <span class="op">=</span> <span class="st">"Times above Safety Limit"</span>,</span>
-<span>    x <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Annual Mean Divided by Mongolia's Annual Standard, 2024"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Values above 1 (dashed line) do not meet the standard"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Exceedance factor"</span>, y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Annual means are rounded to 10 µg/m³. Source: NSO Mongolia, DT_NSO_2024_135V01"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
-<span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
-<span>    panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="va">p_comp</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
-<p><img src="environmental-surveillance_files/figure-html/compliance-check-1.png" class="r-plt" alt="Bar chart showing exceedance factors for PM2.5, SO2, and NO2. PM2.5 bars are mostly red (non-compliant) reaching 2.5x times the limit. SO2 bars are all red, reaching over 3x the limit." width="100%"></p>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span>, panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
-<p><strong>Compliance Crisis</strong>: <strong>90% of top stations are
-non-compliant</strong> for PM2.5, with exceedance factors reaching
-2.0-2.5x (equivalent to annual averages of 0.050-0.063 mg/m³). Only the
-<strong>13th micro district</strong> achieves compliance for PM2.5,
-suggesting localized factors (wind patterns, lower housing density, or
-cleaner fuel access) warrant investigation for replication
-elsewhere.</p>
-<p>SO₂ non-compliance is <strong>universal</strong> across all 10
-stations, with factors of 2-4x, underscoring the pervasive reliance on
-raw coal for heating.</p>
+<p><strong>Results:</strong> In 2024, n/a of n/a stations exceeded the
+PM2.5 standard (up to n/a times), n/a of n/a exceeded the SO₂ standard
+(up to n/a times), and n/a of n/a exceeded the NO₂ standard. Because
+annual means are rounded to 10 µg/m³, a factor near 1 cannot separate
+compliance from exceedance: a reported 20 µg/m³ of PM2.5 could be
+anywhere from 15 to 25. All stations remain far above the WHO’s 2021
+annual PM2.5 guideline of 5 µg/m³.</p>
 </blockquote>
 </div>
 </div>
 <div class="section level2">
 <h2 id="water-quality-monitoring">Water Quality Monitoring<a class="anchor" aria-label="anchor" href="#water-quality-monitoring"></a>
 </h2>
-<p>Electrical conductivity serves as a <strong>proxy for total dissolved
-solids</strong> and water mineralization. Values &gt;1,000 µS/cm
-typically indicate significant mineral content; values &gt;10,000 µS/cm
-suggest either natural saline conditions (endorheic basins) or severe
-anthropogenic pollution.</p>
-<p>Water quality is monitored at specific river and lake stations across
-Mongolia’s major basins. We focus on the <strong>Top 15
-stations</strong> with the highest electrical conductivity.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Fetch water quality data</span></span>
-<span><span class="va">water</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>  <span class="st">"DT_NSO_2300_005V12"</span>,</span>
-<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<p>NSO publishes river and lake water quality by station. We look first
+at electrical conductivity, a measure of dissolved minerals and
+salts.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">water</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span><span class="st">"DT_NSO_2300_005V12"</span>, selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    Station <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html" class="external-link">str_trim</a></span><span class="op">(</span><span class="va">`Station location_en`</span><span class="op">)</span>,</span>
 <span>    Indicator <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html" class="external-link">str_trim</a></span><span class="op">(</span><span class="va">Indicator_en</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
+<span><span class="va">water_year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">water</span><span class="op">$</span><span class="va">Year_en</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Focus on electrical conductivity &amp; Top 15</span></span>
 <span><span class="va">conductivity</span> <span class="op">&lt;-</span> <span class="va">water</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Indicator</span>, <span class="st">"Electrical conductivity"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span>order_by <span class="op">=</span> <span class="va">value</span>, n <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Plot water quality - top stations by conductivity</span></span>
-<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">conductivity</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Station <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">Station</span>, <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Station</span>, y <span class="op">=</span> <span class="va">value</span>, fill <span class="op">=</span> <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/comma.html" class="external-link">comma</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span>, hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.1</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># inline labels</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/comma.html" class="external-link">comma</a></span>, expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.15</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="va">conductivity</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">value</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">Station</span>, <span class="va">value</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#2a78d6"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span><span class="op">)</span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span>, hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.1</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span><span class="op">)</span>, expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.15</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Top 15 Water Stations by Conductivity (2023)"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Higher values may indicate increased mineralization or pollution"</span>,</span>
-<span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    y <span class="op">=</span> <span class="st">"Conductivity (μS/cm)"</span></span>
+<span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Top 15 Water Stations by Electrical Conductivity, "</span>, <span class="va">water_year</span><span class="op">)</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Higher values mean more dissolved minerals and salts"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Conductivity (µS/cm)"</span>, y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2300_005V12"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
-<span>    panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The highest values, at n/a, are lakes. Lakes in closed basins with no
+outflow, such as Uvs and Khyargas in western Mongolia, are naturally
+salty, because water leaves by evaporation and the salts stay behind.
+Conductivity has no health-based limit and does not by itself indicate
+pollution. To look for pollution, use indicators of organic waste and
+sewage, such as biochemical oxygen demand (BOD₅) and ammonium nitrogen
+(NH₄-N).</p>
+<div class="section level3">
+<h3 id="the-tuul-river-through-ulaanbaatar">The Tuul River Through Ulaanbaatar<a class="anchor" aria-label="anchor" href="#the-tuul-river-through-ulaanbaatar"></a>
+</h3>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tuul</span> <span class="op">&lt;-</span> <span class="va">water</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_starts.html" class="external-link">str_starts</a></span><span class="op">(</span><span class="va">Station</span>, <span class="st">"Tuul"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Indicator <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Indicator</span>, <span class="st">"BOD5"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"BOD5 (mg/L)"</span>,</span>
+<span>    <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Indicator</span>, <span class="st">"NH4-N"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"NH4-N (mg/L)"</span>,</span>
+<span>    <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">Indicator</span>, <span class="st">"Water quality index"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Water quality index"</span>,</span>
+<span>    .default <span class="op">=</span> <span class="cn">NA_character_</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Indicator</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Station</span>, <span class="va">Indicator</span>, <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">Indicator</span>, values_from <span class="op">=</span> <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">`NH4-N (mg/L)`</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">p</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
-<p><img src="environmental-surveillance_files/figure-html/water-quality-1.png" class="r-plt" alt="Bar chart of water conductivity. Uvs Lake and Khyargas Lake show extremely high values (&gt;10,000), while river stations like Khangal and Tuul show elevated values compared to typical freshwater." width="100%"></p>
-<blockquote>
-<p><strong>Interpreting Conductivity: A Tale of Three
-Sources</strong></p>
-<p>The top 15 stations reveal three distinct environmental stories
-driven by geology, industry, and climate:</p>
-<ol style="list-style-type: decimal">
-<li>
-<strong>Natural Saline Basins (The Extremes &gt; 10,000
-µS/cm)</strong>: The highest values belong to naturally hypersaline,
-endorheic lakes.
-<ul>
-<li>
-<strong>Uvs/Davst &amp; Gashuun</strong>: <strong>Uvs Lake</strong>,
-a UNESCO site and Mongolia’s largest saline lake.</li>
-<li>
-<strong>Khyargas</strong>: A major salt lake in the Great Lakes
-Depression.</li>
-<li>
-<strong>Sangiin dalai</strong>: A saline lake in <strong>Ulziit sum,
-Uvurkhangai province</strong>, distinct from the larger northern lake of
-the same name.</li>
-<li>
-<strong>Taigam/Delger</strong>: Likely a saline wetland or spring in
-the Govi-Altai mineral belt.</li>
-</ul>
-</li>
-<li>
-<strong>Industrial &amp; Urban Pollution (The “Hidden”
-Highs)</strong>: Elevated conductivity in freshwater rivers often
-signals contamination.
-<ul>
-<li>
-<strong>Khangal (Erdenet)</strong>: The <strong>Khangal
-River</strong> is heavily impacted by mining activities and wastewater
-from Erdenet city, showing mineralization 2x higher than historical
-baselines.</li>
-<li>
-<strong>Tuul (Songino) &amp; Dund gol</strong>: These stations
-capture the <strong>urban wastewater footprint</strong> of Ulaanbaatar,
-where treated and untreated effluent raises ion concentrations
-downstream.</li>
-</ul>
-</li>
-<li>
-<strong>Climate-Sensitive Lakes (The “Shrinking” Signals)</strong>:
-<ul>
-<li>
-<strong>Ganga, Duut, &amp; Ugii</strong>: These traditionally
-freshwater/brackish lakes are experiencing <strong>secondary
-salinization</strong>. As water levels drop due to climate change and
-evaporation, mineral concentrations rise, turning them into sensitive
-indicators of regional aridification.</li>
-</ul>
-</li>
-</ol>
-<p><strong>Conclusion</strong>: While Uvs and Khyargas are naturally
-“salty,” the elevated readings in the <strong>Khangal</strong> and
-<strong>Tuul</strong> rivers are actionable signals of anthropogenic
-pressure.</p>
-</blockquote>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">tuul</span>, caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Tuul River stations, "</span>, <span class="va">water_year</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>At <strong>Zaisan</strong>, in the south of Ulaanbaatar, the Tuul has
+a BOD₅ of n/a mg/L and ammonium of n/a mg/L. At
+<strong>Songino</strong>, downstream and west of the city, these rise to
+n/a and n/a mg/L. This gradient is consistent with urban wastewater
+entering the river as it passes the city, and it matters for anyone
+using river water downstream for livestock, irrigation or recreation. A
+single year of measurements per station cannot show trends; check other
+years before drawing conclusions.</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="climate-exposure-dust-days">Climate Exposure: Dust Days<a class="anchor" aria-label="anchor" href="#climate-exposure-dust-days"></a>
+<h2 id="dust-days">Dust Days<a class="anchor" aria-label="anchor" href="#dust-days"></a>
 </h2>
-<p>Dust storms pose <strong>respiratory health risks</strong> through
-coarse particulate (PM10) inhalation and serve as a climate change
-indicator. Desertification and reduced soil moisture amplify dust
-mobilization in Mongolia’s Gobi region.</p>
-<p>Dust storms are a significant environmental health concern. Here are
-the <strong>Top 10 stations</strong> with the highest number of dust
-days in 2024.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Fetch dust day data</span></span>
-<span><span class="va">dust</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>  <span class="st">"DT_NSO_2400_028V1"</span>,</span>
-<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<p>Dust storms carry coarse particles (PM10) and are linked to
+respiratory and cardiovascular illness. Dust is most frequent in the
+Gobi and steppe regions in spring. Dust days vary a lot from year to
+year, so we average over 10 years rather than ranking a single year. NSO
+leaves a cell blank when a station had no dust days in a month, and a
+few months are missing from the table altogether (mostly summer months);
+we count both as zero.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dust</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span><span class="st">"DT_NSO_2400_028V1"</span>, selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    Station <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html" class="external-link">str_trim</a></span><span class="op">(</span><span class="va">`Station location_en`</span><span class="op">)</span>,</span>
-<span>    Month_date <span class="op">=</span> <span class="va">Month_en</span></span>
+<span>    year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">Month_en</span>, <span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Parse dates and aggregate to annual</span></span>
+<span><span class="co"># The last 10 calendar years before the current, partial year</span></span>
+<span><span class="va">dust_years</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">dust</span><span class="op">$</span><span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Blank cells, and the few months missing from the table altogether, are</span></span>
+<span><span class="co"># taken to mean no dust days and count as zero</span></span>
 <span><span class="va">dust_annual</span> <span class="op">&lt;-</span> <span class="va">dust</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_sub.html" class="external-link">str_sub</a></span><span class="op">(</span><span class="va">Month_date</span>, <span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Year</span> <span class="op">==</span> <span class="fl">2024</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Station</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
-<span>    Total_dust_days <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">Total_dust_days</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">dust_years</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>dust_days <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">Station</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Plot dust exposure by station</span></span>
-<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">dust_annual</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Station <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">Station</span>, <span class="va">Total_dust_days</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Station</span>, y <span class="op">=</span> <span class="va">Total_dust_days</span>, fill <span class="op">=</span> <span class="va">Total_dust_days</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">Total_dust_days</span><span class="op">)</span>, hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.2</span>, size <span class="op">=</span> <span class="fl">3.5</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># inline labels</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span>, direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.15</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="va">dust_summary</span> <span class="op">&lt;-</span> <span class="va">dust_annual</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
+<span>    mean_days <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dust_days</span><span class="op">)</span>,</span>
+<span>    min_days <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">dust_days</span><span class="op">)</span>,</span>
+<span>    max_days <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dust_days</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">Station</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">mean_days</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dust_summary</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">mean_days</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mean_days</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">Station</span>, <span class="va">mean_days</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_errorbar</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="va">min_days</span>, xmax <span class="op">=</span> <span class="va">max_days</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">0.3</span>, color <span class="op">=</span> <span class="st">"grey60"</span>, orientation <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#b8860b"</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Top 10 Stations for Dust Exposure (2024)"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Total annual dust days"</span>,</span>
-<span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    y <span class="op">=</span> <span class="st">"Days"</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia"</span></span>
+<span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Stations with the Most Dust Days, "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">dust_years</span><span class="op">)</span>, <span class="st">"–"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dust_years</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Average dust days per year; lines show the lowest and highest year"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Dust days per year"</span>, y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2400_028V1"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
-<span>    panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The three dustiest stations, n/a, average n/a to n/a dust days a
+year. The range bars show how much a single year can mislead: the same
+station can have a handful of dust days one year and several dozen the
+next.</p>
+<div class="section level3">
+<h3 id="mapping-dust-days">Mapping Dust Days<a class="anchor" aria-label="anchor" href="#mapping-dust-days"></a>
+</h3>
+<p>The weather stations are in towns, so mongolmaps’ settlement points
+can place them on a map. Station names are matched to the capital and
+aimag centres first, then to soum centres where the name is unique.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">settlements</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_settlements.html" class="external-link">mn_settlements</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>rank <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">type</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"aimag_centre"</span>, <span class="st">"soum_centre"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">p</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
-<p><img src="environmental-surveillance_files/figure-html/dust-days-1.png" class="r-plt" alt="Bar chart showing annual dust days for 2024. Sainshand leads with 30 days, followed by Dalanzadgad with 21 days." width="100%"></p>
-<blockquote>
-<p><strong>Gobi Dust Belt</strong>: <strong>Sainshand</strong> (30
-days/year) and <strong>Dalanzadgad</strong> (21 days/year) represent the
-core of Mongolia’s dust exposure zone. Chronic dust exposure at this
-frequency (equivalent to ~6-8% of the year) contributes to elevated
-respiratory disease burden. Climate projections suggest
-<strong>increasing dust frequency</strong> due to reduced precipitation
-and vegetation loss, particularly in the Gobi-steppe ecotone.</p>
-</blockquote>
+<span><span class="co"># Khentii's aimag centre, Undurkhaan, was renamed Chinggis city in 2013</span></span>
+<span><span class="va">dust_points</span> <span class="op">&lt;-</span> <span class="va">dust_summary</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>name <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">Station</span> <span class="op">==</span> <span class="st">"Undurkhaan"</span>, <span class="st">"Chingis"</span>, <span class="va">Station</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">settlements</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span>, relationship <span class="op">=</span> <span class="st">"one-to-many"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># Keep the highest-ranked match; drop names shared by several soum centres</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">rank</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">rank</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">Station</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span>, .by <span class="op">=</span> <span class="va">Station</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">unplaced</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="va">dust_summary</span><span class="op">$</span><span class="va">Station</span>, <span class="va">dust_points</span><span class="op">$</span><span class="va">Station</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span><span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_aimags.html" class="external-link">mn_aimags</a></span><span class="op">(</span><span class="op">)</span>, title <span class="op">=</span> <span class="st">"Average Dust Days per Year"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dust_points</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>size <span class="op">=</span> <span class="va">mean_days</span>, color <span class="op">=</span> <span class="va">mean_days</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.85</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_color_gradient</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#f3d9a4"</span>, high <span class="op">=</span> <span class="st">"#8a5a00"</span>, name <span class="op">=</span> <span class="st">"Dust days\nper year"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_size.html" class="external-link">scale_size_area</a></span><span class="op">(</span>max_size <span class="op">=</span> <span class="fl">8</span>, guide <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">dust_years</span><span class="op">)</span>, <span class="st">"–"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dust_years</span><span class="op">)</span>, <span class="st">". Data: NSO Mongolia, DT_NSO_2400_028V1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>n/a station(s) could not be placed from settlement names (n/a). For
+exposure studies, use the weather stations’ own coordinates from the
+National Agency for Meteorology and Environmental Monitoring.</p>
 </div>
-<div class="section level2">
-<h2 id="geographic-context">Geographic Context<a class="anchor" aria-label="anchor" href="#geographic-context"></a>
-</h2>
-<p>For spatial analysis, station-level environmental data ideally should
-be joined with geographic coordinates. While the NSO data provides
-station names, a separate lookup table with lat/lon coordinates would
-enable:</p>
-<ul>
-<li>Spatial interpolation of pollutant concentrations</li>
-<li>Distance-based exposure assignment for health studies</li>
-<li>Hot spot identification using spatial statistics</li>
-</ul>
-<p><strong>Example workflow:</strong></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Hypothetical station metadata table (user would compile this)</span></span>
-<span><span class="va">station_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
-<span>  <span class="op">~</span><span class="va">Station_name</span>, <span class="op">~</span><span class="va">Latitude</span>, <span class="op">~</span><span class="va">Longitude</span>, <span class="op">~</span><span class="va">Aimag</span>,</span>
-<span>  <span class="st">"Ulaanbaatar"</span>, <span class="fl">47.9221</span>, <span class="fl">106.9155</span>, <span class="st">"Ulaanbaatar"</span>,</span>
-<span>  <span class="st">"Darkhan"</span>, <span class="fl">49.4869</span>, <span class="fl">105.9228</span>, <span class="st">"Darkhan-Uul"</span>,</span>
-<span>  <span class="st">"Erdenet"</span>, <span class="fl">49.0333</span>, <span class="fl">104.0833</span>, <span class="st">"Orkhon"</span></span>
-<span>  <span class="co"># ... add all stations</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Join with environmental data</span></span>
-<span><span class="va">air_with_location</span> <span class="op">&lt;-</span> <span class="va">air_quality</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">station_metadata</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Station"</span> <span class="op">=</span> <span class="st">"Station_name"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Now you can create maps, calculate distances, etc.</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
 <ul>
 <li>
-<strong>Discover More Tables</strong>: See <a href="discovery.html">Discovery Guide</a> for search techniques</li>
+<strong>Ulaanbaatar districts</strong>: See the <a href="ub-health-environment.html">UB District Analysis</a> for the
+monitoring network by district</li>
 <li>
-<strong>Mapping</strong>: Learn spatial analysis in <a href="mapping.html">Mapping Guide</a>
+<strong>Discover More Tables</strong>: See the <a href="discovery.html">Discovery Guide</a> for search techniques</li>
+<li>
+<strong>Mapping</strong>: Learn spatial analysis in the <a href="mapping.html">Mapping Guide</a>
 </li>
 <li>
 <strong>Reference</strong>: Browse all functions in the <a href="https://temuulene.github.io/mongolstats/reference/index.html">Reference</a>
@@ -718,45 +583,6 @@ enable:</p>
 <div class="section level2">
 <h2 id="key-environmental-tables">Key Environmental Tables<a class="anchor" aria-label="anchor" href="#key-environmental-tables"></a>
 </h2>
-<table class="table">
-<colgroup>
-<col width="47%">
-<col width="27%">
-<col width="24%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">Indicator</th>
-<th align="left">Table_ID</th>
-<th align="left">Geographic_Level</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Air Pollutant Concentrations</td>
-<td align="left">DT_NSO_2024_135V01</td>
-<td align="left">Station</td>
-</tr>
-<tr class="even">
-<td align="left">Maximum Allowable Concentrations</td>
-<td align="left">DT_NSO_2400_015V1</td>
-<td align="left">Standard</td>
-</tr>
-<tr class="odd">
-<td align="left">Water Quality</td>
-<td align="left">DT_NSO_2300_005V12</td>
-<td align="left">Station</td>
-</tr>
-<tr class="even">
-<td align="left">Dust Days</td>
-<td align="left">DT_NSO_2400_028V1</td>
-<td align="left">Station</td>
-</tr>
-<tr class="odd">
-<td align="left">Forest Fires</td>
-<td align="left">DT_NSO_2400_005V1</td>
-<td align="left">Aimag</td>
-</tr>
-</tbody>
-</table>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -769,7 +595,7 @@ enable:</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

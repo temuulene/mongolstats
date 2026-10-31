@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Spatial Epidemiology with mongolstats • mongolstats</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
@@ -23,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mongolstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +43,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/discovery.html">Discovering Public Health Data</a></li>
+    <li><a class="dropdown-item" href="../articles/data-provenance.html">Sources, Metadata and Reproducible Exports</a></li>
     <li><a class="dropdown-item" href="../articles/mapping.html">Spatial Epidemiology with mongolstats</a></li>
     <li><a class="dropdown-item" href="../articles/mortality-analysis.html">Mortality Seasonality Analysis</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -65,10 +71,10 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Spatial Epidemiology with mongolstats</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Spatial Epidemiology with mongolstats</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/mapping.Rmd" class="external-link"><code>vignettes/mapping.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/v0.4.0/vignettes/mapping.Rmd" class="external-link"><code>vignettes/mapping.Rmd</code></a></small>
       <div class="d-none name"><code>mapping.Rmd</code></div>
     </div>
 
@@ -76,13 +82,13 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://temuulene.github.io/mongolstats/">mongolstats</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/temuulene/mongolmaps" class="external-link">mongolmaps</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
+<span><span class="va">old_options</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Global theme with proper margins to prevent text cutoff</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/get_theme.html" class="external-link">theme_set</a></span><span class="op">(</span></span>
+<span><span class="va">old_theme</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/get_theme.html" class="external-link">theme_set</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
 <span>      plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>,</span>
@@ -95,218 +101,307 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>Geographic analysis is essential for understanding health disparities
-and targeting interventions. This guide demonstrates spatial
-epidemiology using Mongolia’s aimag-level (provincial) health data.</p>
+<p>Geographic analysis helps find health disparities and target
+interventions. This guide maps two aimag-level indicators, maternal and
+infant mortality, and shows the steps that keep such maps honest:
+checking the counts, pooling small numbers, showing uncertainty, and
+comparing areas with a funnel plot rather than fixed colour bands.</p>
 </div>
 <div class="section level2">
 <h2 id="getting-boundary-data">Getting Boundary Data<a class="anchor" aria-label="anchor" href="#getting-boundary-data"></a>
 </h2>
-<p>Mongolia’s administrative boundaries are available at three
-levels:</p>
+<p><a href="https://github.com/temuulene/mongolmaps" class="external-link">mongolmaps</a>
+ships boundaries for every administrative level. Each unit carries its
+NSO code, so tables from mongolstats join by code rather than by
+name.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># ADM0: National boundary</span></span>
-<span><span class="va">country</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_boundaries.html">mn_boundaries</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"ADM0"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># ADM1: Aimags (21 provinces + Ulaanbaatar)</span></span>
-<span><span class="va">aimags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_boundaries.html">mn_boundaries</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"ADM1"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># ADM2: Soums (districts)</span></span>
-<span><span class="va">soums</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_boundaries.html">mn_boundaries</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"ADM2"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Quick preview</span></span>
+<code class="sourceCode R"><span><span class="va">aimags</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_aimags.html" class="external-link">mn_aimags</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># 21 aimags and Ulaanbaatar</span></span>
 <span><span class="va">aimags</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"white"</span>, color <span class="op">=</span> <span class="st">"grey30"</span>, size <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Mongolia's 21 Aimags + Ulaanbaatar"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mapping_files/figure-html/boundaries-1.png" class="r-plt" alt="Map showing the 21 aimags (provinces) and Ulaanbaatar capital of Mongolia with white fill and grey borders" width="100%"></p>
+<span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">nso_code</span>, <span class="va">iso_code</span>, <span class="va">area_km2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span><span class="va">aimags</span>, label <span class="op">=</span> <span class="cn">TRUE</span>, title <span class="op">=</span> <span class="st">"Mongolia's 21 Aimags and Ulaanbaatar"</span><span class="op">)</span></span></code></pre></div>
+<p>Other levels work the same way: <code><a href="https://temuulene.github.io/mongolmaps/reference/mn_country.html" class="external-link">mn_regions()</a></code>,
+<code><a href="https://temuulene.github.io/mongolmaps/reference/mn_soums.html" class="external-link">mn_soums()</a></code>, <code><a href="https://temuulene.github.io/mongolmaps/reference/mn_ub.html" class="external-link">mn_ub_districts()</a></code> and
+<code><a href="https://temuulene.github.io/mongolmaps/reference/mn_ub.html" class="external-link">mn_khoroos()</a></code>. (mongolstats’ own geoBoundaries helpers,
+<code><a href="../reference/mn_boundaries.html">mn_boundaries()</a></code> and the name-based joins, are deprecated in
+favour of mongolmaps.)</p>
+<div class="section level3">
+<h3 id="region-codes-in-nso-tables">Region codes in NSO tables<a class="anchor" aria-label="anchor" href="#region-codes-in-nso-tables"></a>
+</h3>
+<p>NSO’s <code>Region</code> dimension mixes levels: <code>"0"</code> is
+the national total, <code>"1"</code>–<code>"4"</code> are the four
+economic regions, <code>"5"</code> is Ulaanbaatar as a region, and
+three-digit codes are aimags. <code><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join()</a></code> keeps the aimag
+level and drops the rest. Many health tables store Ulaanbaatar’s figures
+only under the region code <code>"5"</code> and leave its aimag-level
+code <code>"511"</code> empty; <code><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join()</a></code> notices this and
+takes the capital’s values from the region row, with a message, so no
+recoding is needed.</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="case-study-maternal-mortality-geography">Case Study: Maternal Mortality Geography<a class="anchor" aria-label="anchor" href="#case-study-maternal-mortality-geography"></a>
+<h2 id="case-study-maternal-mortality">Case Study: Maternal Mortality<a class="anchor" aria-label="anchor" href="#case-study-maternal-mortality"></a>
 </h2>
+<p>Maternal deaths are rare: Mongolia records a few dozen a year, and
+most aimags record none in a typical year. A single year’s maternal
+mortality ratio (MMR) by aimag is therefore mostly noise. We pool 10
+years of counts and attach confidence intervals.</p>
 <div class="section level3">
-<h3 id="understanding-regional-disparities">Understanding Regional Disparities<a class="anchor" aria-label="anchor" href="#understanding-regional-disparities"></a>
+<h3 id="check-the-counts-before-mapping">Check the counts before mapping<a class="anchor" aria-label="anchor" href="#check-the-counts-before-mapping"></a>
 </h3>
-<p>Maternal mortality is a critical indicator of health system
-performance and equity.</p>
+<p>Aimag codes start with their region’s digit (<code>1xx</code> =
+Western, <code>2xx</code> = Khangai, <code>3xx</code> = Central,
+<code>4xx</code> = Eastern), so aimag counts should add up to their
+regional subtotal. Checking this catches data entry errors before they
+reach a map.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Fetch maternal mortality data for all aimags (2020-2024)</span></span>
-<span><span class="co"># We'll calculate a 5-year average to smooth out year-to-year variability</span></span>
-<span><span class="co"># This is important because small populations can have unstable rates</span></span>
+<code class="sourceCode R"><span><span class="co"># Rows where the aimag counts do not add up to the regional subtotal</span></span>
+<span><span class="va">subtotal_mismatches</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">aimag_sums</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">Region</span><span class="op">)</span> <span class="op">==</span> <span class="fl">3</span>, <span class="va">Region</span> <span class="op">!=</span> <span class="st">"511"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">Region</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>aimag_sum <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">region</span>, <span class="va">period</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">region_totals</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Region</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>region <span class="op">=</span> <span class="va">Region</span>, <span class="va">period</span>, region_total <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">aimag_sums</span>, <span class="va">region_totals</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">region</span>, <span class="va">period</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">aimag_sum</span> <span class="op">!=</span> <span class="va">region_total</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># The table is monthly; map month labels ("YYYY-MM") to codes for 2020-2024</span></span>
-<span><span class="va">mmr_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_2100_050V1"</span> <span class="co"># MMR per 100,000 live births</span></span>
-<span><span class="va">mmr_months</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">mmr_tbl</span>, <span class="st">"Month"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">label_en</span> <span class="op">&gt;=</span> <span class="st">"2020-01"</span>, <span class="va">label_en</span> <span class="op">&lt;=</span> <span class="st">"2024-12"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">code</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">mmr_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>  tbl_id <span class="op">=</span> <span class="va">mmr_tbl</span>,</span>
+<span><span class="co"># Annual maternal deaths by aimag</span></span>
+<span><span class="va">annual_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_2100_002V1"</span></span>
+<span><span class="va">maternal_annual</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  <span class="va">annual_tbl</span>,</span>
 <span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Region"</span> <span class="op">=</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">mmr_tbl</span>, <span class="st">"Region"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span>,</span>
-<span>    <span class="st">"Month"</span> <span class="op">=</span> <span class="va">mmr_months</span></span>
+<span>    Region <span class="op">=</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">annual_tbl</span>, <span class="st">"Region"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span>,</span>
+<span>    Year <span class="op">=</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">annual_tbl</span>, <span class="st">"Year"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">Region</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span>, <span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"511"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Exclude Total, Regions, and duplicate UB</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Region_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Average the monthly values across 2020-2024 to reduce random variation.</span></span>
-<span>  <span class="co"># Caveat: maternal deaths are rare events, so monthly "MMR per 100,000" is</span></span>
-<span>  <span class="co"># extremely noisy at the aimag level. A mean of monthly ratios is a</span></span>
-<span>  <span class="co"># smoothing device, not a true pooled 5-year ratio (which would be total</span></span>
-<span>  <span class="co"># maternal deaths / total live births x 100,000). Read the map as relative,</span></span>
-<span>  <span class="co"># not as exact rates.</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">value</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>period <span class="op">=</span> <span class="va">Year_en</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Preview data</span></span>
-<span><span class="va">mmr_data</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region_en</span>, <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
-<span><span class="co">#&gt;    Region_en   value</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Arkhangai    75.9</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Dornogovi    67.8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Khovd        67.6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Bayan-Ulgii  65.2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Tuv          63.8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Dornod       54.1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Khuvsgul     53.2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Sukhbaatar   50.6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Ulaanbaatar  48.6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Selenge      48.0</span></span></code></pre></div>
+<span><span class="co"># Monthly maternal deaths by aimag</span></span>
+<span><span class="va">monthly_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_2100_002V2"</span></span>
+<span><span class="va">maternal_monthly</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  <span class="va">monthly_tbl</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    Region <span class="op">=</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">monthly_tbl</span>, <span class="st">"Region"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span>,</span>
+<span>    Month <span class="op">=</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">monthly_tbl</span>, <span class="st">"Month"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>period <span class="op">=</span> <span class="va">Month_en</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">subtotal_mismatches</span><span class="op">(</span><span class="va">maternal_annual</span><span class="op">)</span></span>
+<span><span class="fu">subtotal_mismatches</span><span class="op">(</span><span class="va">maternal_monthly</span><span class="op">)</span></span></code></pre></div>
+<p>The annual table has some region-year(s) where the aimags do not add
+up to their region; the monthly table has none. An aimag count larger
+than its whole region’s total is an entry error, and pooled over 10
+years it would make that aimag look like a hot spot. We use the monthly
+table, which adds up, and report any mismatch to NSO.</p>
 </div>
 <div class="section level3">
-<h3 id="creating-a-choropleth-map">Creating a Choropleth Map<a class="anchor" aria-label="anchor" href="#creating-a-choropleth-map"></a>
+<h3 id="pooled-maternal-mortality-ratio">Pooled maternal mortality ratio<a class="anchor" aria-label="anchor" href="#pooled-maternal-mortality-ratio"></a>
 </h3>
+<p>The MMR divides maternal deaths by live births
+(<code>DT_NSO_2100_018V5</code>), both summed over the same 10 complete
+years:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Join health data to geographic boundaries for spatial analysis.</span></span>
-<span><span class="co"># mn_fuzzy_join_by_name() reconciles transliteration differences between the</span></span>
-<span><span class="co"># NSO English names and the boundary spellings automatically (normalize +</span></span>
-<span><span class="co"># fuzzy match), so we don't maintain a hand-written name crosswalk that would</span></span>
-<span><span class="co"># silently drop provinces to grey when a spelling doesn't match exactly.</span></span>
-<span><span class="co"># max_distance = 3 is needed because NSO's "Khuvsgul" is string distance 3</span></span>
-<span><span class="co"># from the boundary spelling "Hovsgel"; all other pairs match at &lt;= 2.</span></span>
-<span><span class="va">mmr_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_fuzzy_join_by_name.html">mn_fuzzy_join_by_name</a></span><span class="op">(</span></span>
-<span>  <span class="va">mmr_data</span>,</span>
-<span>  name_col <span class="op">=</span> <span class="st">"Region_en"</span>, level <span class="op">=</span> <span class="st">"ADM1"</span>, max_distance <span class="op">=</span> <span class="fl">3</span></span>
-<span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Sum a monthly count table over whole years, by region code. Blank cells</span></span>
+<span><span class="co"># are counted as zero and reported in `n_blank` (see below).</span></span>
+<span><span class="va">pooled_counts</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tbl</span>, <span class="va">years</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">months</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">tbl</span>, <span class="st">"Month"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>    <span class="va">tbl</span>,</span>
+<span>    selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>      Region <span class="op">=</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">tbl</span>, <span class="st">"Region"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span>,</span>
+<span>      Month <span class="op">=</span> <span class="va">months</span><span class="op">$</span><span class="va">code</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">months</span><span class="op">$</span><span class="va">label_en</span>, <span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">years</span><span class="op">]</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    labels <span class="op">=</span> <span class="st">"en"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Region</span> <span class="op">!=</span> <span class="st">"511"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># empty duplicate of Ulaanbaatar</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
+<span>      count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>      n_blank <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>      n_cells <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>      .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">Region</span>, <span class="va">Region_en</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># Create choropleth map</span></span>
-<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">mmr_map</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">value</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span></span>
-<span>    option <span class="op">=</span> <span class="st">"rocket"</span>,</span>
-<span>    direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,  <span class="co"># dark = high mortality (concerning)</span></span>
-<span>    name <span class="op">=</span> <span class="st">"MMR\n(per 100k)"</span>,</span>
-<span>    labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"5-Year Average Maternal Mortality Ratio (2020-2024)"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Deaths per 100,000 live births (Mean)"</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia"</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># removes axes for clean map appearance</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span>,</span>
-<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
-<span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span>,          <span class="co"># bottom legend maximizes map width</span></span>
-<span>    legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
-<span>    legend.key.width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="st">"cm"</span><span class="op">)</span>   <span class="co"># wider legend key for continuous scale</span></span>
+<span><span class="co"># The 10 most recent years with all 12 months published</span></span>
+<span><span class="va">month_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">monthly_tbl</span>, <span class="st">"Month"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span><span class="op">$</span><span class="va">label_en</span></span>
+<span><span class="va">complete_years</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">month_labels</span>, <span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">mmr_years</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">complete_years</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">mmr_period</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">mmr_years</span><span class="op">)</span>, <span class="st">"–"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">mmr_years</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">maternal_deaths</span> <span class="op">&lt;-</span> <span class="fu">pooled_counts</span><span class="op">(</span><span class="va">monthly_tbl</span>, <span class="va">mmr_years</span><span class="op">)</span></span>
+<span><span class="va">live_births</span> <span class="op">&lt;-</span> <span class="fu">pooled_counts</span><span class="op">(</span><span class="st">"DT_NSO_2100_018V5"</span>, <span class="va">mmr_years</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mmr</span> <span class="op">&lt;-</span> <span class="va">maternal_deaths</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region</span>, <span class="va">Region_en</span>, deaths <span class="op">=</span> <span class="va">count</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">live_births</span>, <span class="va">Region</span>, births <span class="op">=</span> <span class="va">count</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">Region</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    Region_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span>,</span>
+<span>    mmr <span class="op">=</span> <span class="va">deaths</span> <span class="op">/</span> <span class="va">births</span> <span class="op">*</span> <span class="fl">1e5</span>,</span>
+<span>    <span class="co"># Exact Poisson 95% confidence interval</span></span>
+<span>    lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Chisquare.html" class="external-link">qchisq</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">2</span> <span class="op">*</span> <span class="va">deaths</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span> <span class="op">/</span> <span class="va">births</span> <span class="op">*</span> <span class="fl">1e5</span>,</span>
+<span>    upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Chisquare.html" class="external-link">qchisq</a></span><span class="op">(</span><span class="fl">0.975</span>, <span class="fl">2</span> <span class="op">*</span> <span class="op">(</span><span class="va">deaths</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span> <span class="op">/</span> <span class="va">births</span> <span class="op">*</span> <span class="fl">1e5</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="va">p</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
-<p><img src="mapping_files/figure-html/maternal-map-1.png" class="r-plt" alt="" width="100%"></p>
+<span><span class="va">national_mmr</span> <span class="op">&lt;-</span> <span class="va">mmr</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Region</span> <span class="op">==</span> <span class="st">"0"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Aimags and the capital (Ulaanbaatar's figures are on region code "5")</span></span>
+<span><span class="va">mmr_units</span> <span class="op">&lt;-</span> <span class="va">mmr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">Region</span><span class="op">)</span> <span class="op">==</span> <span class="fl">3</span> <span class="op">|</span> <span class="va">Region</span> <span class="op">==</span> <span class="st">"5"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mmr_units</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">mmr</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region_en</span>, <span class="va">deaths</span>, <span class="va">births</span>, <span class="va">mmr</span>, <span class="va">lower</span>, <span class="va">upper</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<p>NSO leaves some cells blank rather than entering 0 (some of all
+region-months here). Counting blanks as zero is safe for this table: the
+monthly sums reproduce the national annual totals in
+<code>DT_NSO_2100_002V1</code>. Check this for any table before you
+treat blanks as zero.</p>
+<p>Over the period, the national MMR was - per 100,000 live births (-
+maternal deaths). Many of the 22 areas (21 aimags and the capital)
+recorded 5 or fewer maternal deaths in 10 years.</p>
 </div>
-</div>
-<div class="section level2">
-<h2 id="case-study-infant-mortality-hot-spots">Case Study: Infant Mortality Hot Spots<a class="anchor" aria-label="anchor" href="#case-study-infant-mortality-hot-spots"></a>
-</h2>
 <div class="section level3">
-<h3 id="identifying-high-risk-regions">Identifying High-Risk Regions<a class="anchor" aria-label="anchor" href="#identifying-high-risk-regions"></a>
+<h3 id="choropleth-and-confidence-intervals">Choropleth and confidence intervals<a class="anchor" aria-label="anchor" href="#choropleth-and-confidence-intervals"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get infant mortality rates</span></span>
-<span><span class="va">imr_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_2100_015V1"</span> <span class="co"># IMR per 1,000 live births (Monthly)</span></span>
+<code class="sourceCode R"><span><span class="va">mmr_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join</a></span><span class="op">(</span><span class="va">mmr_units</span>, by <span class="op">=</span> <span class="st">"Region"</span>, level <span class="op">=</span> <span class="st">"aimag"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Get metadata</span></span>
-<span><span class="va">months</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">imr_tbl</span>, <span class="st">"Month"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span><span class="va">months_2024</span> <span class="op">&lt;-</span> <span class="va">months</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"2024"</span>, <span class="va">label_en</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">code</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">imr_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>  tbl_id <span class="op">=</span> <span class="va">imr_tbl</span>,</span>
-<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Region"</span> <span class="op">=</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">imr_tbl</span>, <span class="st">"Region"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span>,</span>
-<span>    <span class="st">"Month"</span> <span class="op">=</span> <span class="va">months_2024</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Exclude Total ("0"), regional aggregates ("1"-"4"), and "511" -- a</span></span>
-<span>  <span class="co"># duplicate Ulaanbaatar entry whose values are all missing in this table.</span></span>
-<span>  <span class="co"># Ulaanbaatar's actual data lives under code "5", so filtering by</span></span>
-<span>  <span class="co"># nchar(Region) == 3 would keep the empty duplicate and drop the real one.</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">Region</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span>, <span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"511"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Region_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Average the monthly rates for 2024. Caveat: a mean of monthly IMR values</span></span>
-<span>  <span class="co"># is not the true annual IMR (total infant deaths / total live births x</span></span>
-<span>  <span class="co"># 1,000); for small aimags a month with few births can produce an extreme</span></span>
-<span>  <span class="co"># ratio, so treat these as indicative rather than exact.</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">value</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    <span class="co"># Classify risk levels</span></span>
-<span>    risk_category <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
-<span>      <span class="va">value</span> <span class="op">&lt;</span> <span class="fl">10</span> <span class="op">~</span> <span class="st">"Low (&lt;10)"</span>,</span>
-<span>      <span class="va">value</span> <span class="op">&lt;</span> <span class="fl">20</span> <span class="op">~</span> <span class="st">"Medium (10-20)"</span>,</span>
-<span>      <span class="va">value</span> <span class="op">&lt;</span> <span class="fl">30</span> <span class="op">~</span> <span class="st">"High (20-30)"</span>,</span>
-<span>      <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"Very High (≥30)"</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    risk_category <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
-<span>      <span class="va">risk_category</span>,</span>
-<span>      levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Low (&lt;10)"</span>, <span class="st">"Medium (10-20)"</span>, <span class="st">"High (20-30)"</span>, <span class="st">"Very High (≥30)"</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Create risk category map (fuzzy name join reconciles spelling differences;</span></span>
-<span><span class="co"># max_distance = 3 covers the Khuvsgul/Hovsgel spelling gap)</span></span>
-<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mn_fuzzy_join_by_name.html">mn_fuzzy_join_by_name</a></span><span class="op">(</span></span>
-<span>  <span class="va">imr_data</span>,</span>
-<span>  name_col <span class="op">=</span> <span class="st">"Region_en"</span>, level <span class="op">=</span> <span class="st">"ADM1"</span>, max_distance <span class="op">=</span> <span class="fl">3</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">risk_category</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span></span>
-<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>      <span class="st">"Low (&lt;10)"</span> <span class="op">=</span> <span class="st">"#27ae60"</span>,       <span class="co"># green = good outcome</span></span>
-<span>      <span class="st">"Medium (10-20)"</span> <span class="op">=</span> <span class="st">"#f1c40f"</span>,  <span class="co"># yellow = caution</span></span>
-<span>      <span class="st">"High (20-30)"</span> <span class="op">=</span> <span class="st">"#e67e22"</span>,    <span class="co"># orange = concerning</span></span>
-<span>      <span class="st">"Very High (≥30)"</span> <span class="op">=</span> <span class="st">"#c0392b"</span>  <span class="co"># red = critical</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    na.value <span class="op">=</span> <span class="st">"grey90"</span>,  <span class="co"># missing data shown in light grey</span></span>
-<span>    name <span class="op">=</span> <span class="st">"Risk Level\n(IMR)"</span>,</span>
-<span>    drop <span class="op">=</span> <span class="cn">FALSE</span>  <span class="co"># show all levels even if not present in data</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span><span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span><span class="va">mmr_map</span>, fill <span class="op">=</span> <span class="va">mmr</span>, title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Maternal Mortality Ratio, "</span>, <span class="va">mmr_period</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Infant Mortality Risk Categories (2024 Average)"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Deaths per 1,000 live births"</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia"</span></span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Maternal deaths per 100,000 live births, 10 years pooled. Data: NSO Mongolia"</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"MMR\n(per 100k)"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p>A map shows point estimates only. The interval plot shows how
+uncertain each one is:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mmr_units</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Region_en <span class="op">=</span> <span class="fu">forcats</span><span class="fu">::</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html" class="external-link">fct_reorder</a></span><span class="op">(</span><span class="va">Region_en</span>, <span class="va">mmr</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mmr</span>, y <span class="op">=</span> <span class="va">Region_en</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">national_mmr</span><span class="op">$</span><span class="va">mmr</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_errorbar</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="va">lower</span>, xmax <span class="op">=</span> <span class="va">upper</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">0.3</span>, color <span class="op">=</span> <span class="st">"grey60"</span>, orientation <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#c0392b"</span>, size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Maternal Mortality Ratio by Aimag, "</span>, <span class="va">mmr_period</span><span class="op">)</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Per 100,000 live births, with exact 95% CIs; dashed line = national ratio"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Maternal deaths per 100,000 live births"</span>,</span>
+<span>    y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_002V2 and DT_NSO_2100_018V5"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span>,</span>
-<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
-<span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span>,          <span class="co"># bottom legend maximizes map width</span></span>
-<span>    legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Even with 10 years pooled, most intervals overlap the national ratio.
+An aimag with no maternal deaths has an estimate of 0 but an upper limit
+well above zero; it is not evidence of zero risk. The pooled period also
+includes 2021, when maternal deaths rose sharply during the COVID-19
+pandemic.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="case-study-infant-mortality">Case Study: Infant Mortality<a class="anchor" aria-label="anchor" href="#case-study-infant-mortality"></a>
+</h2>
+<div class="section level3">
+<h3 id="funnel-plot">Funnel plot<a class="anchor" aria-label="anchor" href="#funnel-plot"></a>
+</h3>
+<p>Ranking aimags or colouring them by fixed cut-offs (for example, “IMR
+above 20”) treats a rate from 300 births the same as one from 30,000. A
+<strong>funnel plot</strong> sets each aimag’s rate against its number
+of births and adds control limits around the national rate. The limits
+are wide for small aimags and narrow for large ones. Points outside the
+limits differ from the national rate by more than chance alone would
+explain.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Latest year with all 12 months published</span></span>
+<span><span class="va">imr_year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">complete_years</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">infant_deaths</span> <span class="op">&lt;-</span> <span class="fu">pooled_counts</span><span class="op">(</span><span class="st">"DT_NSO_2100_014V1"</span>, <span class="va">imr_year</span><span class="op">)</span></span>
+<span><span class="va">imr_births</span> <span class="op">&lt;-</span> <span class="fu">pooled_counts</span><span class="op">(</span><span class="st">"DT_NSO_2100_018V5"</span>, <span class="va">imr_year</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">imr</span> <span class="op">&lt;-</span> <span class="va">infant_deaths</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region</span>, <span class="va">Region_en</span>, deaths <span class="op">=</span> <span class="va">count</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">imr_births</span>, <span class="va">Region</span>, births <span class="op">=</span> <span class="va">count</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">Region</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Region_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span>, imr <span class="op">=</span> <span class="va">deaths</span> <span class="op">/</span> <span class="va">births</span> <span class="op">*</span> <span class="fl">1000</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">national_rate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">imr</span>, <span class="va">Region</span> <span class="op">==</span> <span class="st">"0"</span><span class="op">)</span>, <span class="va">deaths</span> <span class="op">/</span> <span class="va">births</span><span class="op">)</span> <span class="co"># per live birth</span></span>
+<span></span>
+<span><span class="co"># Poisson control limits around the national rate, for any number of births.</span></span>
+<span><span class="co"># Spiegelhalter's interpolation smooths the steps of the discrete Poisson</span></span>
+<span><span class="co"># quantiles (Spiegelhalter 2005, Statistics in Medicine 24:1185-1202).</span></span>
+<span><span class="va">funnel_limit</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">births</span>, <span class="va">p</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">lambda</span> <span class="op">&lt;-</span> <span class="va">births</span> <span class="op">*</span> <span class="va">national_rate</span></span>
+<span>  <span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">qpois</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">lambda</span><span class="op">)</span></span>
+<span>  <span class="va">alpha</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">ppois</a></span><span class="op">(</span><span class="va">r</span>, <span class="va">lambda</span><span class="op">)</span> <span class="op">-</span> <span class="va">p</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">dpois</a></span><span class="op">(</span><span class="va">r</span>, <span class="va">lambda</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="va">r</span> <span class="op">-</span> <span class="va">alpha</span>, <span class="fl">0</span><span class="op">)</span> <span class="op">/</span> <span class="va">births</span> <span class="op">*</span> <span class="fl">1000</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">imr_units</span> <span class="op">&lt;-</span> <span class="va">imr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">Region</span><span class="op">)</span> <span class="op">==</span> <span class="fl">3</span> <span class="op">|</span> <span class="va">Region</span> <span class="op">==</span> <span class="st">"5"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    signal <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>      <span class="va">imr</span> <span class="op">&gt;</span> <span class="fu">funnel_limit</span><span class="op">(</span><span class="va">births</span>, <span class="fl">0.975</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Above 95% limit"</span>,</span>
+<span>      <span class="va">imr</span> <span class="op">&lt;</span> <span class="fu">funnel_limit</span><span class="op">(</span><span class="va">births</span>, <span class="fl">0.025</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Below 95% limit"</span>,</span>
+<span>      .default <span class="op">=</span> <span class="st">"Within limits"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    signal <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">signal</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Above 95% limit"</span>, <span class="st">"Within limits"</span>, <span class="st">"Below 95% limit"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="va">p</span>  <span class="co"># print static ggplot</span></span></code></pre></div>
-<p><img src="mapping_files/figure-html/imr-hotspots-1.png" class="r-plt" alt="" width="100%"></p>
+<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">imr_units</span>, <span class="va">signal</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">funnel</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>births <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">200</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">imr_units</span><span class="op">$</span><span class="va">births</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1.1</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">300</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    lower_998 <span class="op">=</span> <span class="fu">funnel_limit</span><span class="op">(</span><span class="va">births</span>, <span class="fl">0.001</span><span class="op">)</span>, upper_998 <span class="op">=</span> <span class="fu">funnel_limit</span><span class="op">(</span><span class="va">births</span>, <span class="fl">0.999</span><span class="op">)</span>,</span>
+<span>    lower_95 <span class="op">=</span> <span class="fu">funnel_limit</span><span class="op">(</span><span class="va">births</span>, <span class="fl">0.025</span><span class="op">)</span>, upper_95 <span class="op">=</span> <span class="fu">funnel_limit</span><span class="op">(</span><span class="va">births</span>, <span class="fl">0.975</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">signal_colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Above 95% limit"</span> <span class="op">=</span> <span class="st">"#e34948"</span>, <span class="st">"Within limits"</span> <span class="op">=</span> <span class="st">"grey55"</span>, <span class="st">"Below 95% limit"</span> <span class="op">=</span> <span class="st">"#2a78d6"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">imr_units</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">births</span>, y <span class="op">=</span> <span class="va">imr</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">funnel</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">upper_998</span><span class="op">)</span>, linetype <span class="op">=</span> <span class="st">"dotted"</span>, color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">funnel</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">lower_998</span><span class="op">)</span>, linetype <span class="op">=</span> <span class="st">"dotted"</span>, color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">funnel</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">upper_95</span><span class="op">)</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">funnel</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">lower_95</span><span class="op">)</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">national_rate</span> <span class="op">*</span> <span class="fl">1000</span>, color <span class="op">=</span> <span class="st">"grey20"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">signal</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggrepel</span><span class="fu">::</span><span class="fu"><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html" class="external-link">geom_text_repel</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">imr_units</span>, <span class="va">signal</span> <span class="op">!=</span> <span class="st">"Within limits"</span> <span class="op">|</span> <span class="va">Region</span> <span class="op">==</span> <span class="st">"5"</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">Region_en</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">3</span>, color <span class="op">=</span> <span class="st">"grey20"</span>, min.segment.length <span class="op">=</span> <span class="fl">0</span>, seed <span class="op">=</span> <span class="fl">1</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_log10</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">signal_colors</span>, name <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Funnel Plot of Infant Mortality by Aimag, "</span>, <span class="va">imr_year</span><span class="op">)</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Solid line = national rate; dashed = 95% limits; dotted = 99.8% limits"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Live births (log scale)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Infant deaths per 1,000 live births"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_014V1 and DT_NSO_2100_018V5"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"top"</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="mapping-the-signals">Mapping the signals<a class="anchor" aria-label="anchor" href="#mapping-the-signals"></a>
+</h3>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">imr_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join</a></span><span class="op">(</span><span class="va">imr_units</span>, by <span class="op">=</span> <span class="st">"Region"</span>, level <span class="op">=</span> <span class="st">"aimag"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span><span class="va">imr_map</span>, fill <span class="op">=</span> <span class="va">signal</span>, title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Infant Mortality Compared with the National Rate, "</span>, <span class="va">imr_year</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">signal_colors</span>, na.value <span class="op">=</span> <span class="st">"grey90"</span>, name <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Classified by 95% funnel limits around the national rate. Data: NSO Mongolia"</span><span class="op">)</span></span></code></pre></div>
+<p>With 22 units, about one would fall outside 95% limits by chance
+alone, so treat a single point just past the 95% limit with caution; the
+99.8% limits are a stricter screen. A signal is a reason to look closer,
+for example at data quality, referral patterns, or access to care, not
+proof that care is worse. Infant deaths and births are counted where
+they are recorded, so referrals of high-risk births to Ulaanbaatar can
+raise the capital’s rate and lower the rate of the aimag the mother came
+from.</p>
 </div>
 </div>
 <div class="section level2">
@@ -314,20 +409,26 @@ performance and equity.</p>
 </h2>
 <ol style="list-style-type: decimal">
 <li>
-<strong>Check data completeness</strong>: Not all aimags may have
-data for all indicators</li>
+<strong>Check the counts first</strong>: Make sure aimags add up to
+regional and national totals before you pool or map.</li>
 <li>
-<strong>Use appropriate scales</strong>: Choose color scales that
-highlight health disparities</li>
+<strong>Build rates from counts</strong>: Sum numerators and
+denominators over the period, then divide. Do not average monthly or
+annual rates.</li>
 <li>
-<strong>Add context</strong>: Include reference lines (e.g.,
-national average) when relevant</li>
+<strong>Pool rare events</strong>: Combine several years for rare
+outcomes such as maternal deaths.</li>
 <li>
-<strong>Consider population size</strong>: Normalize rates by
-population when comparing regions</li>
+<strong>Show uncertainty</strong>: Pair every choropleth with
+confidence intervals or a funnel plot.</li>
 <li>
-<strong>Temporal analysis</strong>: Create animated maps to show
-geographic trends over time</li>
+<strong>Compare against chance, not fixed cut-offs</strong>: Funnel
+plots account for different population sizes; fixed colour bands do
+not.</li>
+<li>
+<strong>Join by code</strong>: <code><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mongolmaps::mn_join()</a></code>
+matches NSO <code>Region</code> codes, so spelling differences cannot
+drop an aimag from the map.</li>
 </ol>
 </div>
 <div class="section level2">
@@ -353,7 +454,7 @@ geographic trends over time</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

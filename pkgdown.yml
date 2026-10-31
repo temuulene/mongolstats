@@ -1,14 +1,15 @@
 pandoc: 3.8.3
-pkgdown: 2.2.1
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
+  data-provenance: data-provenance.html
   discovery: discovery.html
   environmental-surveillance: environmental-surveillance.html
   getting-started: getting-started.html
   mapping: mapping.html
-  mortality-analysis: mortality-analysis.html
+  articles/mortality-analysis: mortality-analysis.html
   ub-health-environment: ub-health-environment.html
-last_built: 2026-07-15T04:37Z
+last_built: 2026-10-31T04:20Z
 urls:
   reference: https://temuulene.github.io/mongolstats/reference
   article: https://temuulene.github.io/mongolstats/articles
