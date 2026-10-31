@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mongolstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,6 +58,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="nav-link" href="../mn/index.html" aria-label="Монгол хэлээр унших">Монгол</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
@@ -74,7 +75,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Discovering Public Health Data</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/v0.4.0/vignettes/discovery.Rmd" class="external-link"><code>vignettes/discovery.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/discovery.Rmd" class="external-link"><code>vignettes/discovery.Rmd</code></a></small>
       <div class="d-none name"><code>discovery.Rmd</code></div>
     </div>
 
@@ -120,14 +121,41 @@ catalogue. Some tables are listed in more than one folder, so
 <span><span class="va">mortality</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
+<span><span class="co">#&gt;    tbl_id            tbl_eng_nm                                                 </span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> DT_NSO_2100_014V1 NUMBER OF INFANT MORTALITY, aimags and the Capital and by …</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> DT_NSO_2100_014V2 NUMBER OF INFANT MORTALITY, by soum and discrict, and by y…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> DT_NSO_2100_014V4 INFANT MORTALITY, by sex, by soum, and by year             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> DT_NSO_2100_014V5 INFANT MORTALITY RATE, per 1000 live births, by sex, by so…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> DT_NSO_2100_015V1 INFANT MORTALITY RATE, per 1000 live births, aimags and th…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> DT_NSO_2100_015V2 INFANT MORTALITY, per 1000 live births, by soum, and by ye…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> DT_NSO_2100_023V1 MATERNAL MORTALITY RATIO, per 100000 live births, by soum,…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> DT_NSO_2100_030V2 UNDER-FIVE MORTALITY, per 1000 live births, aimags and the…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> DT_NSO_2100_040V1 NEONATAL MORTALITY, aimags and the Capital and by month    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> DT_NSO_2100_040V2 NEONATAL MORTALITY RATE, per 1000 live births, aimags and …</span></span>
 <span></span>
 <span><span class="co"># Cancer</span></span>
 <span><span class="va">cancer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_search.html">nso_search</a></span><span class="op">(</span><span class="st">"cancer"</span><span class="op">)</span></span>
 <span><span class="va">cancer</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span></span>
+<span><span class="co">#&gt;   tbl_id            tbl_eng_nm                                                  </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> DT_NSO_2100_012V1 NEW CASES OF CANCER, per 10000 population, by type of cance…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> DT_NSO_2100_013V1 DEATHS OF CANCER, per 10000 population, by type of cancer, …</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> DT_NSO_2100_044V1 NEW CASES OF CANCER, by age group, by year                  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> DT_NSO_2100_045V1 NEW CASES AND MORTALITY OF CANCER, per 10000 population, ai…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> DT_NSO_2100_045V1 NEW CASES AND MORTALITY OF CANCER, per 10000 population, ai…</span></span>
 <span></span>
 <span><span class="co"># Communicable diseases</span></span>
 <span><span class="va">infectious</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_search.html">nso_search</a></span><span class="op">(</span><span class="st">"communicable"</span><span class="op">)</span></span>
-<span><span class="va">infectious</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">infectious</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
+<span><span class="co">#&gt;   tbl_id            tbl_eng_nm                                                  </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> DT_NSO_2100_020V2 INCIDENCE OF COMMUNICABLE DISEASES, by type of diseases, by…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> DT_NSO_2100_028V1 INCIDENCE OF COMMUNICABLE DISEASES, aimags and the Capital,…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> DT_NSO_2100_035V1 CASES OF COMMUNICABLE DISEASES, by type of selected disease…</span></span></code></pre></div>
 <p>Read the title before you fetch: it tells you whether a table holds
 <strong>counts</strong> (“NUMBER OF …”, “CASES OF …”) or
 <strong>rates</strong> (“per 1000 live births”, “per 10000 population”),
@@ -141,13 +169,33 @@ and at which level (“aimags and the Capital”, “by soum”).</p>
 <code class="sourceCode R"><span><span class="co"># View all sectors</span></span>
 <span><span class="va">sectors</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_sectors.html">nso_sectors</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">sectors</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 3</span></span></span>
+<span><span class="co">#&gt;   id                    type  text                 </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Economy, environment  l     Economy, environment </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Education, health     l     Education, health    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Historical data       l     Historical data      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Industry, service     l     Industry, service    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Labour, business      l     Labour, business     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Population, household l     Population, household</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> Regional development  l     Regional development </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> Society, development  l     Society, development</span></span>
 <span></span>
 <span><span class="co"># Find health-related subsectors</span></span>
 <span><span class="va">health_sector</span> <span class="op">&lt;-</span> <span class="va">sectors</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"health"</span>, <span class="va">text</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">health_sector</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">subsectors</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_subsectors.html">nso_subsectors</a></span><span class="op">(</span><span class="va">health_sector</span><span class="op">$</span><span class="va">id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span>  <span class="va">subsectors</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
+<span><span class="co">#&gt;   id                                type  text                             </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Births, deaths                    l     Births, deaths                   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Disease                           l     Disease                          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> General educational schools       l     General educational schools      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> General indicators for Education  l     General indicators for Education </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Health insurance                  l     Health insurance                 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Main indicators for Health sector l     Main indicators for Health sector</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -162,14 +210,30 @@ and at which level (“aimags and the Capital”, “by soum”).</p>
 <span><span class="co"># Examine available dimensions</span></span>
 <span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_table_meta.html">nso_table_meta</a></span><span class="op">(</span><span class="va">cancer_tbl</span><span class="op">)</span></span>
 <span><span class="va">meta</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 5</span></span></span>
+<span><span class="co">#&gt;   dim                      code               is_time n_values codes            </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Type malignant neoplasms Хорт хавдрын төрөл FALSE          7 <span style="color: #949494;">&lt;tibble [7 × 3]&gt;</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Year                     Он                 TRUE          26 <span style="color: #949494;">&lt;tibble [26 × 3]&gt;</span></span></span>
 <span></span>
 <span><span class="co"># Cancer types: codes are not in a meaningful order, so read the labels</span></span>
 <span><span class="va">cancer_types</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">cancer_tbl</span>, <span class="st">"Type malignant neoplasms"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="va">cancer_types</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 2</span></span></span>
+<span><span class="co">#&gt;   code  label_en       </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 0     <span style="color: #949494;">"</span>Total<span style="color: #949494;">"</span>        </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 1     <span style="color: #949494;">"</span> Liver<span style="color: #949494;">"</span>       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2     <span style="color: #949494;">"</span> Cervix uteri<span style="color: #949494;">"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 3     <span style="color: #949494;">"</span> Stomach<span style="color: #949494;">"</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 4     <span style="color: #949494;">"</span> Lung<span style="color: #949494;">"</span>        </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 5     <span style="color: #949494;">"</span> Oesophagus<span style="color: #949494;">"</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> 6     <span style="color: #949494;">"</span> Other<span style="color: #949494;">"</span></span></span>
 <span></span>
 <span><span class="co"># Year codes are internal ids; the labels hold the years</span></span>
 <span><span class="va">annual_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">cancer_tbl</span>, <span class="st">"Year"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">annual_meta</span><span class="op">$</span><span class="va">label_en</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">annual_meta</span><span class="op">$</span><span class="va">label_en</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "2000" "2025"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="incidence-by-site">Incidence by Site<a class="anchor" aria-label="anchor" href="#incidence-by-site"></a>
@@ -213,8 +277,9 @@ and at which level (“aimags and the Capital”, “by soum”).</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_012V1"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.spacing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1</span>, <span class="st">"lines"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Over these years, one site cancer has the highest average incidence,
-followed by another cancer. Two cautions apply to this table:</p>
+<p><img src="discovery_files/figure-html/cancer-analysis-1.png" alt="Small multiples of crude cancer incidence per 10,000 population in Mongolia over the last 10 years, one panel each for cervical, liver, lung, oesophageal and stomach cancer" width="100%"></p>
+<p>Over these years, liver cancer has the highest average incidence,
+followed by stomach cancer. Two cautions apply to this table:</p>
 <ul>
 <li>
 <strong>Rounding.</strong> NSO rounds these rates to whole numbers
@@ -311,7 +376,26 @@ age group (<code>DT_NSO_0300_003V1</code>).</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">cancer_asr</span></span></code></pre></div>
+<span><span class="va">cancer_asr</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 16 × 3</span></span></span>
+<span><span class="co">#&gt;     year crude standardised</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">2</span>010  16.2         26.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">2</span>011  16.2         26.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">2</span>012  15.8         25.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">2</span>013  17.9         28.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">2</span>014  17.7         27.0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">2</span>015  18.2         29.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">2</span>016  18.4         29.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">2</span>017  18.3         27.9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">2</span>018  17.9         27.1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>019  18.3         26.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span>  <span style="text-decoration: underline;">2</span>020  19.1         26.7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span>  <span style="text-decoration: underline;">2</span>021  17.5         23.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span>  <span style="text-decoration: underline;">2</span>022  19.9         26.0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span>  <span style="text-decoration: underline;">2</span>023  20.6         26.0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span>  <span style="text-decoration: underline;">2</span>024  23.0         28.0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span>  <span style="text-decoration: underline;">2</span>025  22.3         26.1</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cancer_asr</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">crude</span>, <span class="va">standardised</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"measure"</span>, values_to <span class="op">=</span> <span class="st">"rate"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -329,8 +413,9 @@ age group (<code>DT_NSO_0300_003V1</code>).</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_044V1 and DT_NSO_0300_003V1"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"top"</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Between the first year and the latest year, the crude rate changed by
--, but the age-standardised rate changed by -. Most of the rise in crude
+<p><img src="discovery_files/figure-html/cancer-asr-plot-1.png" alt="Line chart comparing crude and age-standardised cancer incidence per 10,000 in Mongolia. The crude rate rises over the period while the age-standardised rate stays roughly flat." width="100%"></p>
+<p>Between 2010 and 2025, the crude rate changed by +38.0%, but the
+age-standardised rate changed by -0.5%. Most of the rise in crude
 incidence reflects an older population, not a higher risk of cancer at
 any given age. The age-standardised rate is higher than the crude rate
 because Mongolia’s population is younger than the WHO standard
@@ -396,9 +481,22 @@ reproduce the published ones:</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>calculated <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">deaths</span> <span class="op">/</span> <span class="va">births</span> <span class="op">*</span> <span class="fl">1000</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">imr_check</span></span></code></pre></div>
-<p>The calculated rates differ from the published ones by at most - per
-1,000, because NSO rounds the published rate to a whole number. The
+<span><span class="va">imr_check</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 5</span></span></span>
+<span><span class="co">#&gt;    year  deaths births published calculated</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2016    <span style="text-decoration: underline;">1</span>315  <span style="text-decoration: underline;">78</span>194        17       16.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2017    <span style="text-decoration: underline;">1</span>008  <span style="text-decoration: underline;">74</span>328        14       13.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2018    <span style="text-decoration: underline;">1</span>037  <span style="text-decoration: underline;">77</span>528        13       13.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2019    <span style="text-decoration: underline;">1</span>041  <span style="text-decoration: underline;">78</span>223        13       13.3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2020     878  <span style="text-decoration: underline;">76</span>261        12       11.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2021     829  <span style="text-decoration: underline;">71</span>659        12       11.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2022     814  <span style="text-decoration: underline;">65</span>586        12       12.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2023     793  <span style="text-decoration: underline;">64</span>306        12       12.3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2024     702  <span style="text-decoration: underline;">57</span>756        12       12.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2025     738  <span style="text-decoration: underline;">54</span>137        14       13.6</span></span></code></pre></div>
+<p>The calculated rates differ from the published ones by at most 0.5
+per 1,000, because NSO rounds the published rate to a whole number. The
 count tables can be trusted to give the same answer. The <a href="getting-started.html">Getting Started</a> and <a href="mapping.html">Mapping</a> guides use them to compare aimags.</p>
 </div>
 <div class="section level2">
@@ -445,7 +543,20 @@ the national mid-year population.</p>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">tb_rate</span></span></code></pre></div>
+<span><span class="va">tb_rate</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 7</span></span></span>
+<span><span class="co">#&gt;     year cases n_months population  rate lower upper</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">2</span>016  <span style="text-decoration: underline;">4</span>045       12    3<span style="text-decoration: underline;">088</span>856 131.  127.  135. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">2</span>017  <span style="text-decoration: underline;">3</span>779       12    3<span style="text-decoration: underline;">148</span>917 120.  116.  124. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">2</span>018  <span style="text-decoration: underline;">3</span>498       12    3<span style="text-decoration: underline;">208</span>189 109.  105.  113. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">2</span>019  <span style="text-decoration: underline;">3</span>624       12    3<span style="text-decoration: underline;">267</span>673 111.  107.  115. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">2</span>020  <span style="text-decoration: underline;">3</span>339       12    3<span style="text-decoration: underline;">332</span>062 100.   96.8 104. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">2</span>021  <span style="text-decoration: underline;">2</span>331       12    3<span style="text-decoration: underline;">393</span>455  68.7  65.9  71.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">2</span>022  <span style="text-decoration: underline;">2</span>355       12    3<span style="text-decoration: underline;">443</span>458  68.4  65.7  71.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">2</span>023  <span style="text-decoration: underline;">2</span>357       12    3<span style="text-decoration: underline;">490</span>859  67.5  64.8  70.3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">2</span>024  <span style="text-decoration: underline;">2</span>232       12    3<span style="text-decoration: underline;">534</span>503  63.1  60.6  65.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>025  <span style="text-decoration: underline;">2</span>104       12    3<span style="text-decoration: underline;">572</span>835  58.9  56.4  61.5</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tb_rate</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">rate</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -462,8 +573,9 @@ the national mid-year population.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_035V1 and DT_NSO_0300_002V1"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>The notification rate fell from - per 100,000 in the first year to -
-in the latest year.</p>
+<p><img src="discovery_files/figure-html/tb-plot-1.png" alt="Line chart of the annual tuberculosis notification rate per 100,000 population in Mongolia, falling over the period with a sharp drop in 2021" width="100%"></p>
+<p>The notification rate fell from 131 per 100,000 in 2016 to 59 in
+2025.</p>
 <blockquote>
 <p><strong>Biostatistical note:</strong> A notification rate counts
 cases that were <strong>diagnosed and reported</strong>, not all new

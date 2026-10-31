@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mongolstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,6 +58,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="nav-link" href="../mn/index.html" aria-label="Монгол хэлээр унших">Монгол</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
@@ -74,7 +75,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Spatial Epidemiology with mongolstats</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/v0.4.0/vignettes/mapping.Rmd" class="external-link"><code>vignettes/mapping.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/mapping.Rmd" class="external-link"><code>vignettes/mapping.Rmd</code></a></small>
       <div class="d-none name"><code>mapping.Rmd</code></div>
     </div>
 
@@ -120,8 +121,18 @@ name.</p>
 <span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">nso_code</span>, <span class="va">iso_code</span>, <span class="va">area_km2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">#&gt;   name        nso_code iso_code area_km2</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Ulaanbaatar 511      MN-1        <span style="text-decoration: underline;">4</span>736.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Dornod      421      MN-061    <span style="text-decoration: underline;">123</span>523.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sukhbaatar  422      MN-051     <span style="text-decoration: underline;">82</span>321.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Khentii     423      MN-039     <span style="text-decoration: underline;">80</span>743.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Tuv         341      MN-047     <span style="text-decoration: underline;">73</span>986.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Govisumber  342      MN-064      <span style="text-decoration: underline;">5</span>540.</span></span>
 <span></span>
 <span><span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span><span class="va">aimags</span>, label <span class="op">=</span> <span class="cn">TRUE</span>, title <span class="op">=</span> <span class="st">"Mongolia's 21 Aimags and Ulaanbaatar"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mapping_files/figure-html/boundaries-1.png" alt="Map of Mongolia's 21 aimags and the capital, Ulaanbaatar, with each unit labelled" width="100%"></p>
 <p>Other levels work the same way: <code><a href="https://temuulene.github.io/mongolmaps/reference/mn_country.html" class="external-link">mn_regions()</a></code>,
 <code><a href="https://temuulene.github.io/mongolmaps/reference/mn_soums.html" class="external-link">mn_soums()</a></code>, <code><a href="https://temuulene.github.io/mongolmaps/reference/mn_ub.html" class="external-link">mn_ub_districts()</a></code> and
 <code><a href="https://temuulene.github.io/mongolmaps/reference/mn_ub.html" class="external-link">mn_khoroos()</a></code>. (mongolstats’ own geoBoundaries helpers,
@@ -195,12 +206,19 @@ reach a map.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>period <span class="op">=</span> <span class="va">Month_en</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">subtotal_mismatches</span><span class="op">(</span><span class="va">maternal_annual</span><span class="op">)</span></span>
-<span><span class="fu">subtotal_mismatches</span><span class="op">(</span><span class="va">maternal_monthly</span><span class="op">)</span></span></code></pre></div>
-<p>The annual table has some region-year(s) where the aimags do not add
-up to their region; the monthly table has none. An aimag count larger
-than its whole region’s total is an entry error, and pooled over 10
-years it would make that aimag look like a hot spot. We use the monthly
-table, which adds up, and report any mismatch to NSO.</p>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 4</span></span></span>
+<span><span class="co">#&gt;   region period aimag_sum region_total</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 4      2017          22            2</span></span>
+<span><span class="fu">subtotal_mismatches</span><span class="op">(</span><span class="va">maternal_monthly</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 0 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 variables: region &lt;chr&gt;, period &lt;chr&gt;, aimag_sum &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   region_total &lt;dbl&gt;</span></span></span></code></pre></div>
+<p>The annual table has 1 region-year(s) where the aimags do not add up
+to their region; the monthly table has 0. An aimag count larger than its
+whole region’s total is an entry error, and pooled over 10 years it
+would make that aimag look like a hot spot. We use the monthly table,
+which adds up, and report any mismatch to NSO.</p>
 </div>
 <div class="section level3">
 <h3 id="pooled-maternal-mortality-ratio">Pooled maternal mortality ratio<a class="anchor" aria-label="anchor" href="#pooled-maternal-mortality-ratio"></a>
@@ -259,14 +277,27 @@ years:</p>
 <span><span class="va">mmr_units</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">mmr</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region_en</span>, <span class="va">deaths</span>, <span class="va">births</span>, <span class="va">mmr</span>, <span class="va">lower</span>, <span class="va">upper</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p>NSO leaves some cells blank rather than entering 0 (some of all
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 6</span></span></span>
+<span><span class="co">#&gt;    Region_en   deaths births   mmr lower upper</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Arkhangai       11  <span style="text-decoration: underline;">15</span>327  71.8  35.8 128. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Khovd           14  <span style="text-decoration: underline;">20</span>452  68.5  37.4 115. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Sukhbaatar       7  <span style="text-decoration: underline;">11</span>948  58.6  23.6 121. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Selenge          8  <span style="text-decoration: underline;">15</span>059  53.1  22.9 105. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Khuvsgul        12  <span style="text-decoration: underline;">24</span>983  48.0  24.8  83.9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Tuv              4   <span style="text-decoration: underline;">9</span>873  40.5  11.0 104. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Dornogovi        5  <span style="text-decoration: underline;">12</span>603  39.7  12.9  92.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Bayan-Ulgii     11  <span style="text-decoration: underline;">27</span>847  39.5  19.7  70.7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Ulaanbaatar    145 <span style="text-decoration: underline;">367</span>781  39.4  33.3  46.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Darkhan-Uul      8  <span style="text-decoration: underline;">21</span>621  37.0  16.0  72.9</span></span></code></pre></div>
+<p>NSO leaves some cells blank rather than entering 0 (296 of 3240
 region-months here). Counting blanks as zero is safe for this table: the
 monthly sums reproduce the national annual totals in
 <code>DT_NSO_2100_002V1</code>. Check this for any table before you
 treat blanks as zero.</p>
-<p>Over the period, the national MMR was - per 100,000 live births (-
-maternal deaths). Many of the 22 areas (21 aimags and the capital)
+<p>Over 2016–2025, the national MMR was 37 per 100,000 live births (258
+maternal deaths). 12 of the 22 areas (21 aimags and the capital)
 recorded 5 or fewer maternal deaths in 10 years.</p>
 </div>
 <div class="section level3">
@@ -280,6 +311,7 @@ recorded 5 or fewer maternal deaths in 10 years.</p>
 <span>    subtitle <span class="op">=</span> <span class="st">"Maternal deaths per 100,000 live births, 10 years pooled. Data: NSO Mongolia"</span>,</span>
 <span>    fill <span class="op">=</span> <span class="st">"MMR\n(per 100k)"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="mapping_files/figure-html/maternal-map-1.png" alt="Choropleth map of the pooled maternal mortality ratio by aimag and Ulaanbaatar over the last 10 complete years" width="100%"></p>
 <p>A map shows point estimates only. The interval plot shows how
 uncertain each one is:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -297,6 +329,7 @@ uncertain each one is:</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_002V2 and DT_NSO_2100_018V5"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mapping_files/figure-html/maternal-intervals-1.png" alt="Dot plot of the pooled maternal mortality ratio by aimag with exact 95% confidence intervals and a dashed line at the national ratio" width="100%"></p>
 <p>Even with 10 years pooled, most intervals overlap the national ratio.
 An aimag with no maternal deaths has an estimate of 0 but an upper limit
 well above zero; it is not evidence of zero risk. The pooled period also
@@ -352,7 +385,13 @@ explain.</p>
 <span>    signal <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">signal</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Above 95% limit"</span>, <span class="st">"Within limits"</span>, <span class="st">"Below 95% limit"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">imr_units</span>, <span class="va">signal</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">imr_units</span>, <span class="va">signal</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
+<span><span class="co">#&gt;   signal              n</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Above 95% limit     1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Within limits      18</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Below 95% limit     3</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">funnel</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>births <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">200</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">imr_units</span><span class="op">$</span><span class="va">births</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1.1</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">300</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
@@ -384,6 +423,7 @@ explain.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_014V1 and DT_NSO_2100_018V5"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"top"</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mapping_files/figure-html/imr-funnel-plot-1.png" alt="Funnel plot of infant mortality rate against number of live births by aimag, with 95% and 99.8% control limits around the national rate" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="mapping-the-signals">Mapping the signals<a class="anchor" aria-label="anchor" href="#mapping-the-signals"></a>
@@ -394,6 +434,7 @@ explain.</p>
 <span><span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span><span class="va">imr_map</span>, fill <span class="op">=</span> <span class="va">signal</span>, title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Infant Mortality Compared with the National Rate, "</span>, <span class="va">imr_year</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">signal_colors</span>, na.value <span class="op">=</span> <span class="st">"grey90"</span>, name <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Classified by 95% funnel limits around the national rate. Data: NSO Mongolia"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mapping_files/figure-html/imr-signal-map-1.png" alt="Map of aimags classified as above, within, or below the 95% funnel limits for infant mortality" width="100%"></p>
 <p>With 22 units, about one would fall outside 95% limits by chance
 alone, so treat a single point just past the 95% limit with caution; the
 99.8% limits are a stricter screen. A signal is a reason to look closer,

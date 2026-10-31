@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mongolstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,6 +58,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="nav-link" href="../mn/index.html" aria-label="Монгол хэлээр унших">Монгол</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
@@ -74,7 +75,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Ulaanbaatar District-Level Analysis</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/v0.4.0/vignettes/ub-health-environment.Rmd" class="external-link"><code>vignettes/ub-health-environment.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/ub-health-environment.Rmd" class="external-link"><code>vignettes/ub-health-environment.Rmd</code></a></small>
       <div class="d-none name"><code>ub-health-environment.Rmd</code></div>
     </div>
 
@@ -121,6 +122,18 @@ tables join without matching names.</p>
 <span><span class="va">ub_districts</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">nso_code</span>, <span class="va">area_km2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 × 3</span></span></span>
+<span><span class="co">#&gt;   name             nso_code area_km2</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Baganuur         51101       625. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Bagakhangai      51104       156. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Bayangol         51107        24.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Bayanzurkh       51110      <span style="text-decoration: underline;">1</span>237. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Nalaikh          51113       689. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Songinokhairkhan 51116      <span style="text-decoration: underline;">1</span>204. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> Sukhbaatar       51119       211. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> Khan-Uul         51122       498. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">9</span> Chingeltei       51125        91.1</span></span>
 <span></span>
 <span><span class="co"># Fetch an NSO table for the nine districts only</span></span>
 <span><span class="va">get_ub_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">selections</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -166,11 +179,12 @@ which is the khoroo-level table and also includes the districts.)</p>
 <span>    subtitle <span class="op">=</span> <span class="st">"Residents per km² (log scale). Data: NSO Mongolia, DT_NSO_0300_002V4"</span>,</span>
 <span>    fill <span class="op">=</span> <span class="st">"Residents\nper km²"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><strong>n/a</strong> is the densest district, with about n/a
-residents per km². <strong>n/a</strong> is the least dense, at about n/a
-per km². Districts such as Bayanzurkh and Songinokhairkhan include large
-areas of mountain and pasture, so a district average hides very dense
-neighbourhoods. Khoroo-level data show more detail:</p>
+<p><img src="ub-health-environment_files/figure-html/demog-density-1.png" alt="Map of population density by Ulaanbaatar district on a log scale, with each district labelled" width="100%"></p>
+<p><strong>Bayangol</strong> is the densest district, with about 10,400
+residents per km². <strong>Bagakhangai</strong> is the least dense, at
+about 28 per km². Districts such as Bayanzurkh and Songinokhairkhan
+include large areas of mountain and pasture, so a district average hides
+very dense neighbourhoods. Khoroo-level data show more detail:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">khoroo_codes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">pop_tbl</span>, <span class="st">"Region"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_subset.html" class="external-link">str_subset</a></span><span class="op">(</span><span class="st">"^511\\d{4}$"</span><span class="op">)</span> <span class="co"># seven-digit codes are khoroos</span></span>
@@ -189,6 +203,7 @@ neighbourhoods. Khoroo-level data show more detail:</p>
 <span>  title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Population Density by Khoroo, Central Ulaanbaatar, "</span>, <span class="va">pop_year</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Residents per km² (log scale), six central districts"</span>, fill <span class="op">=</span> <span class="st">"Residents\nper km²"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ub-health-environment_files/figure-html/khoroo-density-1.png" alt="Map of population density by khoroo in Ulaanbaatar's six central districts on a log scale" width="100%"></p>
 <p>The khoroo boundaries in mongolmaps come from an open project that
 does not state their source, so treat them as unofficial.</p>
 </div>
@@ -214,11 +229,12 @@ does not state their source, so treat them as unofficial.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_0300_002V4"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Over these 10 years, <strong>n/a</strong> grew fastest (n/a),
-followed by <strong>n/a</strong> (n/a). <strong>n/a</strong> changed the
-least (n/a). Growth this uneven means services planned on older
-population figures may now be under strain in the fastest-growing
-districts.</p>
+<p><img src="ub-health-environment_files/figure-html/demog-trend-1.png" alt="Line chart of resident population by Ulaanbaatar district over the last 10 years" width="100%"></p>
+<p>Over these 10 years, <strong>Khan-Uul</strong> grew fastest (+79%),
+followed by <strong>Bayanzurkh</strong> (+40%).
+<strong>Chingeltei</strong> changed the least (-16%). Growth this uneven
+means services planned on older population figures may now be under
+strain in the fastest-growing districts.</p>
 </div>
 </div>
 <div class="section level2">
@@ -248,6 +264,7 @@ on public services.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2001_002V2 and DT_NSO_2002_057V2"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ub-health-environment_files/figure-html/socio-edu-1.png" alt="Bar chart of students per general education school by Ulaanbaatar district" width="100%"></p>
 <p>Schools differ in size and shift system, so a high ratio points to
 crowding but does not measure it directly.</p>
 </div>
@@ -296,13 +313,15 @@ district’s births and deaths by its residents:</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_018V6, DT_NSO_2100_027V1 and DT_NSO_0300_002V4"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>These numbers cannot describe the residents. <strong>n/a</strong>,
-with n/a residents, recorded n/a live births in n/a, while
-<strong>n/a</strong> recorded n/a per 1,000 residents. Recorded deaths
-range from n/a per 1,000 residents in n/a to n/a in n/a. The pattern
-fits counting by <strong>place of occurrence</strong>: births and deaths
-are recorded in the districts that have maternity and general hospitals,
-not in the districts where the mother or the person who died lived.</p>
+<p><img src="ub-health-environment_files/figure-html/health-check-1.png" alt="Two-panel bar chart of live births and deaths per 1,000 residents by Ulaanbaatar district, showing implausible differences between districts" width="100%"></p>
+<p>These numbers cannot describe the residents.
+<strong>Songinokhairkhan</strong>, with 341,746 residents, recorded 0
+live births in 2025, while <strong>Sukhbaatar</strong> recorded 62 per
+1,000 residents. Recorded deaths range from 2 per 1,000 residents in
+Bagakhangai to 23 in Sukhbaatar. The pattern fits counting by
+<strong>place of occurrence</strong>: births and deaths are recorded in
+the districts that have maternity and general hospitals, not in the
+districts where the mother or the person who died lived.</p>
 <p>So district-level rates built from these tables, such as infant
 mortality or deaths from respiratory disease per 10,000 residents, mix
 up where people live with where hospitals are. Correlating them with
@@ -360,6 +379,51 @@ assignment.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">Stations</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">station_count</span>, caption <span class="op">=</span> <span class="st">"Air quality monitoring stations by district"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Air quality monitoring stations by district</caption>
+<thead><tr class="header">
+<th align="left">District</th>
+<th align="right">Stations</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Bayanzurkh</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">Bayangol</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">Songinokhairkhan</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">Sukhbaatar</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">Khan-Uul</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Chingeltei</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Baganuur</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Bagakhangai</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Nalaikh</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
 <p>Stations are assigned by their coordinates, using mongolmaps’
 simplified district boundaries. A station within a few hundred metres of
 a district border may fall on the other side.</p>
@@ -386,6 +450,7 @@ a district border may fall on the other side.</p>
 <span>    xlim <span class="op">=</span> <span class="va">station_box</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"xmin"</span>, <span class="st">"xmax"</span><span class="op">)</span><span class="op">]</span>, ylim <span class="op">=</span> <span class="va">station_box</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ymin"</span>, <span class="st">"ymax"</span><span class="op">)</span><span class="op">]</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Red points = monitoring stations (approximate locations)"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ub-health-environment_files/figure-html/aq-network-map-1.png" alt="Map of Ulaanbaatar's central districts with air quality monitoring stations shown as red points" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="coverage">Coverage<a class="anchor" aria-label="anchor" href="#coverage"></a>
@@ -408,13 +473,14 @@ a district border may fall on the other side.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Districts with no station are not shown"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>n/a districts, n/a, have no station in this network. About n/a
-residents (n/a% of the city) live there. Residents per station is a
-crude measure: pollution varies with distance from sources and with
-terrain, so the location of stations matters as much as their number.
-The ger areas on the city’s northern and eastern edges, where most
-household coal and wood burning happens, are where denser monitoring
-would add the most to exposure estimates.</p>
+<p><img src="ub-health-environment_files/figure-html/station-coverage-1.png" alt="Bar chart of residents per monitoring station for each Ulaanbaatar district that has at least one station" width="100%"></p>
+<p>3 districts, Baganuur, Bagakhangai, and Nalaikh, have no station in
+this network. About 74,000 residents (4% of the city) live there.
+Residents per station is a crude measure: pollution varies with distance
+from sources and with terrain, so the location of stations matters as
+much as their number. The ger areas on the city’s northern and eastern
+edges, where most household coal and wood burning happens, are where
+denser monitoring would add the most to exposure estimates.</p>
 </div>
 </div>
 <div class="section level2">

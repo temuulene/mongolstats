@@ -22,6 +22,8 @@
 <meta name="description" content="Tidy access to Mongolian official statistics, source provenance, and public metadata.">
 <meta property="og:description" content="Tidy access to Mongolian official statistics, source provenance, and public metadata.">
 <meta property="og:image" content="https://temuulene.github.io/mongolstats/logo.svg">
+<link rel="alternate" hreflang="en" href="index.html">
+<link rel="alternate" hreflang="mn" href="mn/index.html">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -31,7 +33,7 @@
 
     <a class="navbar-brand me-2" href="index.html">mongolstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,6 +63,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
+<li class="nav-item"><a class="nav-link" href="mn/index.html" aria-label="Монгол хэлээр унших">Монгол</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
@@ -74,6 +77,9 @@
 <img src="logo.svg" class="logo" alt=""><h1 id="mongolstats-">mongolstats <a class="anchor" aria-label="anchor" href="#mongolstats-"></a>
 </h1>
 </div>
+<p class="language-switch">
+<a href="https://temuulene.github.io/mongolstats/mn/" lang="mn" hreflang="mn">Монгол хэлээр</a>
+</p>
 <!-- badges: start -->
 
 <p><strong>mongolstats</strong> is your gateway to the <a href="https://data.1212.mn/" class="external-link">National Statistics Office of Mongolia (NSO)</a>. Access official data, analyze economic trends, and map regional statistics—all from within R.</p>
@@ -169,7 +175,7 @@
 <span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
 <span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-gdp-example-1.png" alt="" width="100%"></p>
+<p><img src="reference/figures/README-gdp-example-1.png" alt="Mongolia's annual GDP at current prices from 2010 to 2025, in trillion MNT" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="id_2-mapping-regional-population">2. Mapping Regional Population<a class="anchor" aria-label="anchor" href="#id_2-mapping-regional-population"></a>
@@ -185,32 +191,29 @@
 <span></span>
 <span><span class="va">pop</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"Region"</span>, level <span class="op">=</span> <span class="st">"aimag"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">value</span>, trans <span class="op">=</span> <span class="st">"log10"</span>, title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Population by aimag,"</span>, <span class="va">latest</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">value</span>, trans <span class="op">=</span> <span class="st">"log10"</span>, lang <span class="op">=</span> <span class="st">"en"</span>, title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Population by aimag,"</span>, <span class="va">latest</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"Population\n(log scale)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-pop-map-example-1.png" alt="" width="100%"></p>
+<p><img src="reference/figures/README-pop-map-example-1.png" alt="Aimag-level resident population across Mongolia on a logarithmic colour scale" width="100%"></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="sources-and-metadata--эх-сурвалж-ба-мета-өгөгдөл">Sources and metadata / Эх сурвалж ба мета өгөгдөл<a class="anchor" aria-label="anchor" href="#sources-and-metadata--%D1%8D%D1%85-%D1%81%D1%83%D1%80%D0%B2%D0%B0%D0%BB%D0%B6-%D0%B1%D0%B0-%D0%BC%D0%B5%D1%82%D0%B0-%D3%A9%D0%B3%D3%A9%D0%B3%D0%B4%D3%A9%D0%BB"></a>
+<h2 id="sources-and-metadata">Sources and metadata<a class="anchor" aria-label="anchor" href="#sources-and-metadata"></a>
 </h2>
 <p>The 0.4 workflow adds reviewed indicator queries, source citations, durable provenance manifests, and source-value status. Start with a concept, inspect its definition and unit, then keep the original status records alongside an export.</p>
-<p>0.4 хувилбарт хянасан үзүүлэлтийн асуулга, эх сурвалжийн ишлэл, хадгалж болох бүртгэл, анхны утгын төлөв нэмэгдсэн. Үзүүлэлтийн тодорхойлолт, нэгжийг шалгаж, экспортын хамт анхны тэмдэглэгээний мэдээллийг хадгалаарай.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/nso_indicators.html">nso_indicators</a></span><span class="op">(</span><span class="st">"GDP"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/nso_indicator.html">nso_indicator</a></span><span class="op">(</span><span class="st">"gdp_current"</span><span class="op">)</span></span>
 <span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_indicator_query.html">nso_indicator_query</a></span><span class="op">(</span><span class="st">"gdp_current"</span>, periods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2023"</span>, <span class="st">"2024"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/nso_fetch.html">nso_fetch</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="reference/nso_fetch.html">nso_fetch</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/nso_table_info.html">nso_table_info</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/nso_citation.html">nso_citation</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/nso_value_status.html">nso_value_status</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/nso_write_manifest.html">nso_write_manifest</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="st">"gdp-provenance.json"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Discover definitions and the separate public portal.</span></span>
-<span><span class="co"># Тодорхойлолт болон тусдаа нээлттэй порталаас хайх.</span></span>
-<span><span class="fu"><a href="reference/nso_metadata_search.html">nso_metadata_search</a></span><span class="op">(</span><span class="st">"хүн ам"</span>, type <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/nso_metadata.html">nso_metadata</a></span><span class="op">(</span><span class="st">"indicator"</span>, <span class="fl">12925</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/nso_indicators.html">nso_indicators</a></span><span class="op">(</span>source <span class="op">=</span> <span class="st">"portal"</span><span class="op">)</span></span></code></pre></div>
 <p>Portal identifiers and geography codes use their own source scheme; missing official labels remain missing. Datamart support provides discovery only. Open the bilingual source and metadata guide with <code><a href="articles/data-provenance.html">vignette("data-provenance", package = "mongolstats")</a></code> for exports, quality checks, classification codebooks, catalog freshness, and the limits of the experimental services.</p>
-<p>Порталын дугаар, газар зүйн код нь өөрийн эх сурвалжийн тогтолцоотой. Албан ёсны нэр байхгүй бол дутуу хэвээр үлдэнэ. Өгөгдлийн сангийн дэмжлэг нь зөвхөн жагсаалт үзүүлнэ. Экспорт, чанарын шалгалт, ангиллын код, хайлтын шинэ байдал, туршилтын үйлчилгээний хязгаарыг хоёр хэл дээрх заавраас үзээрэй: <code><a href="articles/data-provenance.html">vignette("data-provenance", package = "mongolstats")</a></code>.</p>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>

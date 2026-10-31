@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mongolstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,6 +58,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="nav-link" href="../mn/index.html" aria-label="Монгол хэлээр унших">Монгол</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
@@ -74,7 +75,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Getting Started</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/v0.4.0/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
       <div class="d-none name"><code>getting-started.Rmd</code></div>
     </div>
 
@@ -125,7 +126,18 @@ calculate rates, and map them.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mortality_tables</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_search.html">nso_search</a></span><span class="op">(</span><span class="st">"infant mortality"</span><span class="op">)</span></span>
 <span><span class="va">mortality_tables</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 2</span></span></span>
+<span><span class="co">#&gt;   tbl_id            tbl_eng_nm                                                  </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> DT_NSO_2100_014V1 NUMBER OF INFANT MORTALITY, aimags and the Capital and by m…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> DT_NSO_2100_014V2 NUMBER OF INFANT MORTALITY, by soum and discrict, and by ye…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> DT_NSO_2100_014V4 INFANT MORTALITY, by sex, by soum, and by year              </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> DT_NSO_2100_014V5 INFANT MORTALITY RATE, per 1000 live births, by sex, by sou…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> DT_NSO_2100_015V1 INFANT MORTALITY RATE, per 1000 live births, aimags and the…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> DT_NSO_2100_015V2 INFANT MORTALITY, per 1000 live births, by soum, and by year</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> DT_NSO_2100_015V2 INFANT MORTALITY, per 1000 live births, by year             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> DT_NSO_2800_019V1 INFANT MORTALITY RATE PER 1000 LIVE BIRTHS</span></span></code></pre></div>
 <p>NSO publishes both <strong>rates</strong> (per 1,000 live births) and
 the <strong>counts</strong> behind them (infant deaths). We start with
 the monthly rate table, <code>DT_NSO_2100_015V1</code>, and later use
@@ -139,12 +151,27 @@ the counts to compare aimags.</p>
 <code class="sourceCode R"><span><span class="co"># View table structure</span></span>
 <span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_table_meta.html">nso_table_meta</a></span><span class="op">(</span><span class="st">"DT_NSO_2100_015V1"</span><span class="op">)</span></span>
 <span><span class="va">meta</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 5</span></span></span>
+<span><span class="co">#&gt;   dim    code  is_time n_values codes             </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Region Бүс   FALSE         28 <span style="color: #949494;">&lt;tibble [28 × 3]&gt;</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Month  Сар   TRUE         128 <span style="color: #949494;">&lt;tibble [128 × 3]&gt;</span></span></span>
 <span></span>
 <span><span class="co"># Periods oldest first, with their dates. Month labels are "YYYY-MM"; the</span></span>
 <span><span class="co"># codes count back from the latest month ("0"), so select periods by label.</span></span>
 <span><span class="va">months</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_table_periods.html">nso_table_periods</a></span><span class="op">(</span><span class="st">"DT_NSO_2100_015V1"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">months</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">months</span><span class="op">$</span><span class="va">label</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">#&gt;   code  label   date       frequency</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 13    2016-01 2016-01-01 month    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 14    2016-02 2016-02-01 month    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 15    2016-03 2016-03-01 month    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 16    2016-04 2016-04-01 month    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 17    2016-05 2016-05-01 month    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 18    2016-06 2016-06-01 month</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">months</span><span class="op">$</span><span class="va">label</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "2016-01" "2026-08"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="step-4-fetch-data">Step 4: Fetch Data<a class="anchor" aria-label="anchor" href="#step-4-fetch-data"></a>
@@ -164,7 +191,20 @@ the counts to compare aimags.</p>
 <span><span class="co"># when NSO publishes a new month</span></span>
 <span><span class="va">imr_national</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">Month</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 5</span></span></span>
+<span><span class="co">#&gt;    Region Month   value Region_en Month_en</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 0      2016-01    12 Total     2016-01 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 0      2016-02    13 Total     2016-02 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 0      2016-03    14 Total     2016-03 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 0      2016-04    15 Total     2016-04 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 0      2016-05    15 Total     2016-05 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 0      2016-06    14 Total     2016-06 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 0      2016-07    14 Total     2016-07 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 0      2016-08    15 Total     2016-08 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 0      2016-09    12 Total     2016-09 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 0      2016-10    12 Total     2016-10</span></span></code></pre></div>
 <p>NSO rounds these monthly rates to whole numbers, which is coarse for
 a measure that sits around 10 to 20 per 1,000.</p>
 </div>
@@ -195,6 +235,7 @@ a measure that sits around 10 to 20 per 1,000.</p>
 <span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># vertical gridlines clutter time series</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="getting-started_files/figure-html/plot-trend-1.png" alt="Line plot of Mongolia's monthly infant mortality rate since 2016, with a LOESS smoother showing the overall direction" width="100%"></p>
 </div>
 </div>
 <div class="section level2">
@@ -259,10 +300,23 @@ for the year, then divide:</p>
 <span><span class="va">imr_units</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">imr</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region_en</span>, <span class="va">deaths</span>, <span class="va">births</span>, <span class="va">imr</span>, <span class="va">lower</span>, <span class="va">upper</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p>In the latest year, the national IMR was - per 1,000 live births.
-Many aimags record only a few dozen infant deaths a year, so their rates
-come with wide confidence intervals.</p>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 6</span></span></span>
+<span><span class="co">#&gt;    Region_en   deaths births   imr lower upper</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Uvs             28   <span style="text-decoration: underline;">1</span>366  20.5 13.6   29.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Khuvsgul        32   <span style="text-decoration: underline;">1</span>764  18.1 12.4   25.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Tuv             12    666  18.0  9.31  31.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Uvurkhangai     28   <span style="text-decoration: underline;">1</span>609  17.4 11.6   25.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Bayan-Ulgii     41   <span style="text-decoration: underline;">2</span>449  16.7 12.0   22.7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Arkhangai       16    999  16.0  9.15  26.0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Bulgan           7    460  15.2  6.12  31.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Dornogovi       13    862  15.1  8.03  25.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Ulaanbaatar    423  <span style="text-decoration: underline;">29</span>671  14.3 12.9   15.7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Govi-Altai      11    813  13.5  6.75  24.2</span></span></code></pre></div>
+<p>In 2025, the national IMR was 13.6 per 1,000 live births. Many aimags
+record only a few dozen infant deaths a year, so their rates come with
+wide confidence intervals.</p>
 <div class="section level3">
 <h3 id="visualize-regional-differences">Visualize Regional Differences<a class="anchor" aria-label="anchor" href="#visualize-regional-differences"></a>
 </h3>
@@ -286,6 +340,7 @@ come with wide confidence intervals.</p>
 <span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    legend.position <span class="op">=</span> <span class="st">"top"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="getting-started_files/figure-html/regional-plot-1.png" alt="Dot plot of infant mortality rates by aimag and Ulaanbaatar for the latest complete year, with 95% confidence intervals and a dashed line at the national rate" width="100%"></p>
 <p>Where an interval crosses the dashed line, that aimag’s rate is
 consistent with the national rate. Infant deaths and births are counted
 where they are recorded, so referrals of high-risk births to hospitals
@@ -311,6 +366,7 @@ column joins without matching names.</p>
 <span>  title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Infant Mortality Rate, "</span>, <span class="va">latest_year</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Infant deaths per 1,000 live births. Data: NSO Mongolia"</span>, fill <span class="op">=</span> <span class="st">"IMR\n(per 1,000)"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting-started_files/figure-html/map-example-1.png" alt="Choropleth map of infant mortality rates across Mongolia's aimags and Ulaanbaatar for the latest complete year" width="100%"></p>
 <p>The map shows point estimates only. Read it with the confidence
 intervals above: in small aimags, a few more or fewer infant deaths can
 move the colour a long way.</p>
@@ -461,6 +517,82 @@ techniques</li>
 <div class="section level2">
 <h2 id="quick-reference-common-health-tables">Quick Reference: Common Health Tables<a class="anchor" aria-label="anchor" href="#quick-reference-common-health-tables"></a>
 </h2>
+<table class="table">
+<colgroup>
+<col width="42%">
+<col width="15%">
+<col width="23%">
+<col width="17%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Indicator</th>
+<th align="left">Table_ID</th>
+<th align="left">Measure</th>
+<th align="left">Detail</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Infant mortality rate</td>
+<td align="left">DT_NSO_2100_015V1</td>
+<td align="left">Rate per 1,000 live births</td>
+<td align="left">Aimag, month</td>
+</tr>
+<tr class="even">
+<td align="left">Infant deaths</td>
+<td align="left">DT_NSO_2100_014V1</td>
+<td align="left">Count</td>
+<td align="left">Aimag, month</td>
+</tr>
+<tr class="odd">
+<td align="left">Live births</td>
+<td align="left">DT_NSO_2100_018V5</td>
+<td align="left">Count</td>
+<td align="left">Aimag, month</td>
+</tr>
+<tr class="even">
+<td align="left">Under-5 mortality rate</td>
+<td align="left">DT_NSO_2100_030V2</td>
+<td align="left">Rate per 1,000 live births</td>
+<td align="left">Aimag, month</td>
+</tr>
+<tr class="odd">
+<td align="left">Maternal deaths</td>
+<td align="left">DT_NSO_2100_002V2</td>
+<td align="left">Count</td>
+<td align="left">Aimag, month</td>
+</tr>
+<tr class="even">
+<td align="left">Deaths by leading cause</td>
+<td align="left">DT_NSO_2100_027V1</td>
+<td align="left">Count</td>
+<td align="left">Soum, year</td>
+</tr>
+<tr class="odd">
+<td align="left">Cancer incidence</td>
+<td align="left">DT_NSO_2100_012V1</td>
+<td align="left">Rate per 10,000 population</td>
+<td align="left">Cancer type, year</td>
+</tr>
+<tr class="even">
+<td align="left">Communicable disease cases (incl. tuberculosis)</td>
+<td align="left">DT_NSO_2100_035V1</td>
+<td align="left">Count</td>
+<td align="left">Disease, month</td>
+</tr>
+<tr class="odd">
+<td align="left">Communicable disease cases</td>
+<td align="left">DT_NSO_2100_020V2</td>
+<td align="left">Count</td>
+<td align="left">Disease, soum, year</td>
+</tr>
+<tr class="even">
+<td align="left">Mid-year population</td>
+<td align="left">DT_NSO_0300_002V1</td>
+<td align="left">Count</td>
+<td align="left">Aimag, year</td>
+</tr>
+</tbody>
+</table>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

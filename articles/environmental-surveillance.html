@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mongolstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,6 +58,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="nav-link" href="../mn/index.html" aria-label="Монгол хэлээр унших">Монгол</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
@@ -74,7 +75,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Environmental Data Analysis</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/v0.4.0/vignettes/environmental-surveillance.Rmd" class="external-link"><code>vignettes/environmental-surveillance.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/environmental-surveillance.Rmd" class="external-link"><code>vignettes/environmental-surveillance.Rmd</code></a></small>
       <div class="d-none name"><code>environmental-surveillance.Rmd</code></div>
     </div>
 
@@ -195,8 +196,11 @@ looks like missing data.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">ug_m3</span>, n <span class="op">=</span> <span class="fl">10</span>, with_ties <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">Station</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">top_stations</span></span></code></pre></div>
-<p>Only n/a Ulaanbaatar stations reported an annual PM2.5 mean for 2024,
+<span><span class="va">top_stations</span></span>
+<span><span class="co">#&gt; [1] "Khailaast"           "Zuragt"              "1st micro district" </span></span>
+<span><span class="co">#&gt; [4] "West crossroad"      "Tolgoit"             "Amgalan"            </span></span>
+<span><span class="co">#&gt; [7] "Nisekh"              "13th micro district"</span></span></code></pre></div>
+<p>Only 8 Ulaanbaatar stations reported an annual PM2.5 mean for 2024,
 so all of them are included.</p>
 </div>
 <div class="section level3">
@@ -265,7 +269,7 @@ valid monthly mean.</p>
 <span><span class="va">pm25_lines</span> <span class="op">&lt;-</span> <span class="va">pm25</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html" class="external-link">complete</a></span><span class="op">(</span><span class="va">Station</span>, date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>average <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">complete</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="cn">TRUE</span>, <span class="va">average</span>, <span class="cn">NA_real_</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Of n/a station-months, n/a meet the completeness rule.</p>
+<p>Of 483 station-months, 399 meet the completeness rule.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pm25_lines</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">average</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -284,6 +288,7 @@ valid monthly mean.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Months with measurements on at least 75% of days. Source: NSO Mongolia, DT_NSO_2400_015V5"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="environmental-surveillance_files/figure-html/pm25-trends-1.png" alt="Small multiples of monthly mean PM2.5 at the most polluted Ulaanbaatar stations since 2021, with reference lines at Mongolia's annual standard of 25 micrograms per cubic metre and the WHO guideline of 5. Every station shows large winter peaks." width="100%"></p>
 <p>The reference lines are for <strong>annual</strong> means, so they
 give scale rather than a test: compliance is judged on the annual mean
 (next section), and a monthly mean above the line marks a polluted
@@ -315,12 +320,13 @@ standard.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2400_015V5"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="environmental-surveillance_files/figure-html/pm25-exceedance-1.png" alt="Heat map of the percentage of days above the PM2.5 standard by station and month. Winter months are dark red at every station, and summer months are near zero." width="100%"></p>
 <blockquote>
 <p><strong>Key findings:</strong> In December–February, the median
-station-month had <strong>n/a%</strong> of measured days above the PM2.5
-standard, and a mean of n/a µg/m³. In June–August, the median was n/a%
-of days, with a mean of n/a µg/m³. Exposure is concentrated in the
-heating season, when household coal and wood stoves, heating plants and
+station-month had <strong>80%</strong> of measured days above the PM2.5
+standard, and a mean of 84 µg/m³. In June–August, the median was 0% of
+days, with a mean of 10 µg/m³. Exposure is concentrated in the heating
+season, when household coal and wood stoves, heating plants and
 temperature inversions combine.</p>
 </blockquote>
 </div>
@@ -353,11 +359,12 @@ apply the completeness rule here.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia (snapshot of DT_NSO_2400_015V1)"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="environmental-surveillance_files/figure-html/so2-trends-1.png" alt="Small multiples of monthly mean SO2 at the most polluted Ulaanbaatar stations from the bundled snapshot, with a reference line at Mongolia's annual standard of 20 micrograms per cubic metre. Concentrations rise sharply each winter." width="100%"></p>
 <blockquote>
-<p><strong>Seasonal pattern:</strong> Mean SO₂ in December–February is
-n/a to n/a times the June–August mean, depending on the station (median
-n/a times). This swing, larger than for PM2.5, points to coal burning
-for heating as the main winter source.</p>
+<p><strong>Seasonal pattern:</strong> Mean SO₂ in December–February is 3
+to 29 times the June–August mean, depending on the station (median 13
+times). This swing, larger than for PM2.5, points to coal burning for
+heating as the main winter source.</p>
 </blockquote>
 </div>
 <div class="section level3">
@@ -402,14 +409,15 @@ meet the standard.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Annual means are rounded to 10 µg/m³. Source: NSO Mongolia, DT_NSO_2024_135V01"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span>, panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="environmental-surveillance_files/figure-html/compliance-check-1.png" alt="Bar chart of exceedance factors (annual mean divided by Mongolia's annual standard) for PM2.5, SO2 and NO2 at the most polluted Ulaanbaatar stations in 2024" width="100%"></p>
 <blockquote>
-<p><strong>Results:</strong> In 2024, n/a of n/a stations exceeded the
-PM2.5 standard (up to n/a times), n/a of n/a exceeded the SO₂ standard
-(up to n/a times), and n/a of n/a exceeded the NO₂ standard. Because
-annual means are rounded to 10 µg/m³, a factor near 1 cannot separate
-compliance from exceedance: a reported 20 µg/m³ of PM2.5 could be
-anywhere from 15 to 25. All stations remain far above the WHO’s 2021
-annual PM2.5 guideline of 5 µg/m³.</p>
+<p><strong>Results:</strong> In 2024, 7 of 8 stations exceeded the PM2.5
+standard (up to 2.4 times), 5 of 5 exceeded the SO₂ standard (up to 5.5
+times), and 3 of 8 exceeded the NO₂ standard. Because annual means are
+rounded to 10 µg/m³, a factor near 1 cannot separate compliance from
+exceedance: a reported 20 µg/m³ of PM2.5 could be anywhere from 15 to
+25. All stations remain far above the WHO’s 2021 annual PM2.5 guideline
+of 5 µg/m³.</p>
 </blockquote>
 </div>
 </div>
@@ -444,13 +452,14 @@ salts.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2300_005V12"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>The highest values, at n/a, are lakes. Lakes in closed basins with no
-outflow, such as Uvs and Khyargas in western Mongolia, are naturally
-salty, because water leaves by evaporation and the salts stay behind.
-Conductivity has no health-based limit and does not by itself indicate
-pollution. To look for pollution, use indicators of organic waste and
-sewage, such as biochemical oxygen demand (BOD₅) and ammonium nitrogen
-(NH₄-N).</p>
+<p><img src="environmental-surveillance_files/figure-html/water-quality-1.png" alt="Bar chart of the 15 water quality stations with the highest electrical conductivity" width="100%"></p>
+<p>The highest values, at Taigam, Uvs, and Khyargas, are lakes. Lakes in
+closed basins with no outflow, such as Uvs and Khyargas in western
+Mongolia, are naturally salty, because water leaves by evaporation and
+the salts stay behind. Conductivity has no health-based limit and does
+not by itself indicate pollution. To look for pollution, use indicators
+of organic waste and sewage, such as biochemical oxygen demand (BOD₅)
+and ammonium nitrogen (NH₄-N).</p>
 <div class="section level3">
 <h3 id="the-tuul-river-through-ulaanbaatar">The Tuul River Through Ulaanbaatar<a class="anchor" aria-label="anchor" href="#the-tuul-river-through-ulaanbaatar"></a>
 </h3>
@@ -469,10 +478,57 @@ sewage, such as biochemical oxygen demand (BOD₅) and ammonium nitrogen
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">`NH4-N (mg/L)`</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">tuul</span>, caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Tuul River stations, "</span>, <span class="va">water_year</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Tuul River stations, 2023</caption>
+<thead><tr class="header">
+<th align="left">Station</th>
+<th align="right">BOD5 (mg/L)</th>
+<th align="right">NH4-N (mg/L)</th>
+<th align="right">Water quality index</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Tuul, Uubulan</td>
+<td align="right">2.1</td>
+<td align="right">0.13</td>
+<td align="right">0.29</td>
+</tr>
+<tr class="even">
+<td align="left">Tuul, Zaisan</td>
+<td align="right">2.1</td>
+<td align="right">0.14</td>
+<td align="right">0.29</td>
+</tr>
+<tr class="odd">
+<td align="left">Tuul, Zaamar</td>
+<td align="right">NA</td>
+<td align="right">0.34</td>
+<td align="right">0.59</td>
+</tr>
+<tr class="even">
+<td align="left">Tuul, Lun</td>
+<td align="right">5.3</td>
+<td align="right">0.51</td>
+<td align="right">1.23</td>
+</tr>
+<tr class="odd">
+<td align="left">Tuul, Altanbulag</td>
+<td align="right">6.0</td>
+<td align="right">1.38</td>
+<td align="right">1.12</td>
+</tr>
+<tr class="even">
+<td align="left">Tuul, Songino</td>
+<td align="right">93.5</td>
+<td align="right">8.20</td>
+<td align="right">10.29</td>
+</tr>
+</tbody>
+</table>
 <p>At <strong>Zaisan</strong>, in the south of Ulaanbaatar, the Tuul has
-a BOD₅ of n/a mg/L and ammonium of n/a mg/L. At
+a BOD₅ of 2.1 mg/L and ammonium of 0.14 mg/L. At
 <strong>Songino</strong>, downstream and west of the city, these rise to
-n/a and n/a mg/L. This gradient is consistent with urban wastewater
+93.5 and 8.2 mg/L. This gradient is consistent with urban wastewater
 entering the river as it passes the city, and it matters for anyone
 using river water downstream for livestock, irrigation or recreation. A
 single year of measurements per station cannot show trends; check other
@@ -528,10 +584,11 @@ we count both as zero.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2400_028V1"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>The three dustiest stations, n/a, average n/a to n/a dust days a
-year. The range bars show how much a single year can mislead: the same
-station can have a handful of dust days one year and several dozen the
-next.</p>
+<p><img src="environmental-surveillance_files/figure-html/dust-days-1.png" alt="Bar chart of the 10 weather stations with the most dust days per year on average over the last 10 complete years, with lines showing the lowest and highest year" width="100%"></p>
+<p>The three dustiest stations, Khanbogd, Dalanzadgad, and Sainshand,
+average 28 to 29 dust days a year. The range bars show how much a single
+year can mislead: the same station can have a handful of dust days one
+year and several dozen the next.</p>
 <div class="section level3">
 <h3 id="mapping-dust-days">Mapping Dust Days<a class="anchor" aria-label="anchor" href="#mapping-dust-days"></a>
 </h3>
@@ -558,9 +615,11 @@ aimag centres first, then to soum centres where the name is unique.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_color_gradient</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#f3d9a4"</span>, high <span class="op">=</span> <span class="st">"#8a5a00"</span>, name <span class="op">=</span> <span class="st">"Dust days\nper year"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_size.html" class="external-link">scale_size_area</a></span><span class="op">(</span>max_size <span class="op">=</span> <span class="fl">8</span>, guide <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">dust_years</span><span class="op">)</span>, <span class="st">"–"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dust_years</span><span class="op">)</span>, <span class="st">". Data: NSO Mongolia, DT_NSO_2400_028V1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>n/a station(s) could not be placed from settlement names (n/a). For
-exposure studies, use the weather stations’ own coordinates from the
-National Agency for Meteorology and Environmental Monitoring.</p>
+<p><img src="environmental-surveillance_files/figure-html/dust-map-1.png" alt="Map of Mongolia with weather stations shown as points sized and coloured by average dust days per year; the largest values are in the Gobi in the south" width="100%"></p>
+<p>4 station(s) could not be placed from settlement names (Tosontsengel,
+Khatgal, Zuunkharaa, and Baruunkharaa). For exposure studies, use the
+weather stations’ own coordinates from the National Agency for
+Meteorology and Environmental Monitoring.</p>
 </div>
 </div>
 <div class="section level2">
@@ -583,6 +642,50 @@ monitoring network by district</li>
 <div class="section level2">
 <h2 id="key-environmental-tables">Key Environmental Tables<a class="anchor" aria-label="anchor" href="#key-environmental-tables"></a>
 </h2>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="53%">
+<col width="24%">
+<col width="22%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Indicator</th>
+<th align="left">Table_ID</th>
+<th align="left">Geographic_Level</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Annual mean air pollutant concentrations</td>
+<td align="left">DT_NSO_2024_135V01</td>
+<td align="left">Station</td>
+</tr>
+<tr class="even">
+<td align="left">Monthly NO2 by station</td>
+<td align="left">DT_NSO_2400_015V2</td>
+<td align="left">Station</td>
+</tr>
+<tr class="odd">
+<td align="left">Monthly PM2.5 by station</td>
+<td align="left">DT_NSO_2400_015V5</td>
+<td align="left">Station</td>
+</tr>
+<tr class="even">
+<td align="left">Water quality</td>
+<td align="left">DT_NSO_2300_005V12</td>
+<td align="left">Station</td>
+</tr>
+<tr class="odd">
+<td align="left">Dust days</td>
+<td align="left">DT_NSO_2400_028V1</td>
+<td align="left">Station</td>
+</tr>
+<tr class="even">
+<td align="left">Forest fires</td>
+<td align="left">DT_NSO_2400_005V1</td>
+<td align="left">Aimag</td>
+</tr>
+</tbody>
+</table>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
