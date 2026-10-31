@@ -1,7 +1,7 @@
 Package: mongolstats
 Type: Package
 Title: Tidy Access to Mongolian Official Statistics and Metadata
-Version: 0.4.0
+Version: 0.4.0.9000
 Authors@R:
     c(person(given = "Temuulen",
              family = "Enebish",
