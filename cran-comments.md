@@ -22,8 +22,8 @@ including the PDF reference manual, examples, tests, and vignette rebuilding.
 URL and spelling checks pass. The complete offline suite has 867 passing
 expectations; coverage is 92.91%.
 
-The same source archive was checked by win-builder on Windows Server 2022,
-R Under development (2026-10-28 r90783 ucrt), UTF-8:
+The source package was checked by win-builder on Windows Server 2022,
+R Under development, UTF-8:
 
 0 errors | 0 warnings | 1 note
 

@@ -1,5 +1,5 @@
 portal_fixture <- function(name) {
-  jsonlite::fromJSON(test_path("fixtures", paste0("portal-", name, ".json")), simplifyVector = FALSE)
+  jsonlite::fromJSON(testthat::test_path("fixtures", paste0("portal-", name, ".json")), simplifyVector = FALSE)
 }
 
 test_that("portal observations preserve source identity, labels, and symbols", {

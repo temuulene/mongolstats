@@ -21,7 +21,7 @@
   The identical incoming-version warning concerns rechecking a released package.
 - Source content and commit-metadata audits contain no prohibited references.
 
-## Immutable release source
+## Initial checked source
 
 Filename: `mongolstats_0.4.0.tar.gz`
 
@@ -39,3 +39,13 @@ Final release-packet review: 2026-10-30.
 At this preparation checkpoint, no commit, remote push, CRAN submission, or
 website publication had been performed. Subsequent publication status is
 recorded with the release packet.
+
+## Final selected source, 2026-10-30
+
+The archive was rebuilt after qualifying a test helper with its namespace to
+pass lint in a clean session. Package R code is unchanged. Final verification
+results and submission status are recorded with the release packet.
+
+Filename: `mongolstats_0.4.0.tar.gz`
+
+SHA256: `dd6b43d46adfb34ae7c3c326bbd6b7fe3d67b22e4de6b9dda23fb13b466be264`
