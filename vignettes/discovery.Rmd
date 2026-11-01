@@ -19,10 +19,10 @@ knitr::opts_chunk$set(eval = run_vignette, purl = run_vignette)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7,        # standardized width that fits vignette text column
-  fig.height = 5,       # default height, override in individual chunks as needed
-  fig.dpi = 150,        # higher resolution for crisp rendering
-  out.width = "100%",   # constrain to page width, prevents overflow
+  fig.width = 7, # standardized width that fits vignette text column
+  fig.height = 5, # default height, override in individual chunks as needed
+  fig.dpi = 150, # higher resolution for crisp rendering
+  out.width = "100%", # constrain to page width, prevents overflow
   warning = FALSE,
   message = FALSE
 )
@@ -32,6 +32,8 @@ knitr::opts_chunk$set(
 library(mongolstats)
 library(dplyr)
 library(ggplot2)
+# Checked teaching helpers are shipped with the package and can be inspected.
+source(system.file("examples", "analysis-helpers.R", package = "mongolstats"), local = TRUE)
 old_options <- nso_options(mongolstats.lang = "en")
 
 # Global theme with proper margins to prevent text cutoff
@@ -163,14 +165,16 @@ site_ranking <- if (run_vignette) {
 }
 ```
 
-Over these years, `r if (run_vignette) tolower(site_ranking$site[1]) else "one site"` cancer has the highest average incidence, followed by `r if (run_vignette) tolower(site_ranking$site[2]) else "another"` cancer. Two cautions apply to this table:
+Over these years, `r if (run_vignette) tolower(site_ranking$site[1]) else "one site"` cancer has the highest mean of the published annual rates. This equal-year mean is a descriptive summary, not a pooled incidence rate. Two cautions apply to this table:
 
 * **Rounding.** NSO rounds these rates to whole numbers per 10,000, so a change of 1 between years can be rounding alone.
-* **Single-year spikes.** A value that jumps and then returns to its old level the next year, such as two sites trading places for one year, is more likely a data entry problem than a real change. Check such values with NSO before you interpret them.
+* **Single-year spikes.** An isolated spike is a reason to check source definitions and records. It can reflect ascertainment, screening, classification, data errors or real variation; do not remove it solely because it looks unusual.
+
+The denominator for a sex-specific cancer, such as cervical cancer, must be checked in the source documentation. A rate per total population must not be interpreted as a rate among women. Use compatible sex-specific counts and denominators for that question.
 
 ### Crude versus Age-Standardised Incidence
 
-The rates above are **crude**: new cases divided by the whole population. Cancer risk rises steeply with age, so a crude rate climbs as a population ages even when the risk at each age is flat. Age-standardisation removes this effect. It applies each year's age-specific rates to one fixed standard population, here the WHO World Standard Population (2000–2025).
+The rates above are **crude**: new cases divided by the whole population. Cancer risk rises steeply with age, so a crude rate climbs as a population ages even when the risk at each age is flat. Age-standardisation reduces the effect of differences in age composition between the groups used. It applies each year's age-specific rates to one fixed standard population, here the WHO World Standard Population (2000–2025).
 
 NSO publishes the numerators and denominators needed: new cancer cases by age group (`DT_NSO_2100_044V1`) and population by age group (`DT_NSO_0300_003V1`).
 
@@ -179,33 +183,37 @@ NSO publishes the numerators and denominators needed: new cancer cases by age gr
 case_years <- nso_dim_values("DT_NSO_2100_044V1", "Year", labels = "en")
 case_ages <- nso_dim_values("DT_NSO_2100_044V1", "Age group", labels = "en")
 indicator <- nso_dim_values("DT_NSO_2100_044V1", "Indicator", labels = "en")
-cancer_cases <- nso_data(
+cancer_case_source <- nso_data(
   "DT_NSO_2100_044V1",
   selections = list(
     Indicator = indicator$code[trimws(indicator$label_en) == "New cases of cancer"],
     "Age group" = case_ages$code,
-    Year = case_years$code
+    Year = case_years$label_en
   ),
   labels = "en"
-) |>
-  transmute(year = Year_en, age = trimws(`Age group_en`), cases = value) |>
-  filter(age != "Total")
+)
+cancer_case_status <- nso_value_status(cancer_case_source)
+cancer_case_raw <- cancer_case_source |>
+  transmute(year = Year_en, age = trimws(`Age group_en`), cases = value)
+cancer_cases <- filter(cancer_case_raw, age != "Total")
 
 # Population by age group, same years, both sexes
 pop_years <- nso_dim_values("DT_NSO_0300_003V1", "Year", labels = "en")
 pop_ages <- nso_dim_values("DT_NSO_0300_003V1", "Age group", labels = "en")
 pop_sex <- nso_dim_values("DT_NSO_0300_003V1", "Sex", labels = "en")
-population <- nso_data(
+cancer_pop_source <- nso_data(
   "DT_NSO_0300_003V1",
   selections = list(
     Sex = pop_sex$code[trimws(pop_sex$label_en) == "Total"],
     "Age group" = pop_ages$code,
-    Year = pop_years$code[pop_years$label_en %in% case_years$label_en]
+    Year = pop_years$label_en[pop_years$label_en %in% case_years$label_en]
   ),
   labels = "en"
-) |>
-  transmute(year = Year_en, age = trimws(`Age group_en`), population = value) |>
-  filter(age != "Total")
+)
+cancer_pop_status <- nso_value_status(cancer_pop_source)
+cancer_pop_raw <- cancer_pop_source |>
+  transmute(year = Year_en, age = trimws(`Age group_en`), population = value)
+population <- filter(cancer_pop_raw, age != "Total")
 
 # The two tables use different age groups; collapse both to the cancer
 # table's groups (0-4, 5-14, 15-19, ..., 60-64, 65+)
@@ -217,7 +225,9 @@ to_cancer_groups <- function(age) {
   )
 }
 
-# WHO World Standard Population (2000-2025), per million
+# WHO 2000-2025 standard-million representation used by SEER.
+# https://seer.cancer.gov/stdpopulations/world.who.html
+# These weights sum to 1,000,000 before and after grouping.
 who_standard <- tibble::tibble(
   age = c(
     "0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44",
@@ -231,26 +241,38 @@ who_standard <- tibble::tibble(
   mutate(age = to_cancer_groups(age)) |>
   summarise(weight = sum(weight), .by = age)
 
+# Require mutually exclusive source groups before collapsing the population.
+stopifnot(!any(population$age == "70+") ||
+            !any(population$age %in% c("70-74", "75-79", "80-84", "85+")))
+analysis_keys(cancer_cases, c("year", "age"))
+analysis_keys(population, c("year", "age"))
 population <- population |>
   mutate(age = to_cancer_groups(age)) |>
-  summarise(population = sum(population), .by = c(year, age))
+  summarise(population = analysis_sum(population), .by = c(year, age))
 
-cancer_asr <- cancer_cases |>
-  inner_join(population, by = join_by(year, age)) |>
-  inner_join(who_standard, by = join_by(age)) |>
-  summarise(
-    crude = sum(cases) / sum(population) * 1e4,
-    # Direct standardisation: weighted mean of age-specific rates
-    standardised = sum(weight * cases / population) / sum(weight) * 1e4,
-    .by = year
-  ) |>
+# Both sources must contain the same years and every target age group.
+# An inner join must not silently select the analysis population.
+cancer_asr <- analysis_asr(cancer_cases, population, who_standard) |>
   mutate(year = as.integer(year)) |>
   arrange(year)
+stopifnot(all(cancer_asr$standard_weight == 1e6))
+
+# Reconcile sums against any supplied, compatible all-age total.
+case_totals <- filter(cancer_case_raw, age == "Total") |> select(year, total = cases)
+pop_totals <- filter(cancer_pop_raw, age == "Total") |> select(year, total = population)
+if (nrow(case_totals)) {
+  check <- analysis_pair(summarise(cancer_cases, calculated = analysis_sum(cases), .by = year), case_totals, "year")
+  stopifnot(all(is.finite(check$total)), all(check$calculated == check$total))
+}
+if (nrow(pop_totals)) {
+  check <- analysis_pair(summarise(population, calculated = analysis_sum(population), .by = year), pop_totals, "year")
+  stopifnot(all(is.finite(check$total)), all(check$calculated == check$total))
+}
 
 cancer_asr
 ```
 
-```{r cancer-asr-plot, fig.alt="Line chart comparing crude and age-standardised cancer incidence per 10,000 in Mongolia. The crude rate rises over the period while the age-standardised rate stays roughly flat.", fig.height=4.5}
+```{r cancer-asr-plot, fig.alt="Line chart comparing crude and age-standardised cancer incidence per 10,000 in Mongolia. The series compare descriptive rates on a common standard; endpoint changes do not establish an unchanged trajectory.", fig.height=4.5}
 cancer_asr |>
   tidyr::pivot_longer(c(crude, standardised), names_to = "measure", values_to = "rate") |>
   mutate(measure = if_else(measure == "crude", "Crude", "Age-standardised (WHO World)")) |>
@@ -275,9 +297,9 @@ asr_last <- if (run_vignette) slice_max(cancer_asr, year) else NULL
 pct_change <- function(from, to) sprintf("%+.1f%%", (to / from - 1) * 100)
 ```
 
-Between `r if (run_vignette) asr_first$year else "the first year"` and `r if (run_vignette) asr_last$year else "the latest year"`, the crude rate changed by `r if (run_vignette) pct_change(asr_first$crude, asr_last$crude) else "-"`, but the age-standardised rate changed by `r if (run_vignette) pct_change(asr_first$standardised, asr_last$standardised) else "-"`. Most of the rise in crude incidence reflects an older population, not a higher risk of cancer at any given age. The age-standardised rate is higher than the crude rate because Mongolia's population is younger than the WHO standard population.
+Between `r if (run_vignette) asr_first$year else "the first year"` and `r if (run_vignette) asr_last$year else "the latest year"`, the crude rate changed by `r if (run_vignette) pct_change(asr_first$crude, asr_last$crude) else "-"` and the standardised rate by `r if (run_vignette) pct_change(asr_first$standardised, asr_last$standardised) else "-"`. A smaller change after standardisation is consistent with ageing contributing to the crude change. It does not establish unchanged risk in every age group or quantify how much of the change is attributable to ageing. These are descriptive estimates, not a formal trend test. Broad groups, especially 65+, retain some differences in age composition.
 
-> **Biostatistical note:** Age-standardised rates are for comparison only: between years, between countries, or between groups with different age structures. They depend on the standard population chosen. Report the crude rate, or the number of cases, when the question is about the actual burden on health services. The 2021 dip in both rates coincides with the COVID-19 pandemic, when fewer people were diagnosed.
+> **Biostatistical note:** Age-standardised rates are for comparison only: between years, between countries, or between groups with different age structures. They depend on the standard population chosen. Report the crude rate, or the number of cases, when the question is about the actual burden on health services. The 2021 dip coincides with the pandemic; these counts do not separate changes in disease occurrence from diagnosis and reporting. Confirm the population table's reference date and resident/total-population coverage against the cancer source before publication.
 
 ## Finding Numerators and Denominators
 
@@ -290,17 +312,13 @@ Many NSO rate tables have matching count tables. With counts you can pool years,
 Before you rely on rates you build yourself, check that they reproduce the published ones:
 
 ```{r numerators-denominators}
-# National annual totals from a monthly count table
-national_annual <- function(tbl) {
-  months <- nso_dim_values(tbl, "Month", labels = "en")
-  nso_data(tbl, selections = list(Region = "0", Month = months$code), labels = "en") |>
-    mutate(year = substr(Month_en, 1, 4)) |>
-    summarise(count = sum(value), n_months = n(), .by = year) |>
-    filter(n_months == 12) # complete years only
-}
-
-infant_deaths <- national_annual("DT_NSO_2100_014V1")
-live_births <- national_annual("DT_NSO_2100_018V5")
+# Preserve source status and require complete observed national years.
+national_deaths <- analysis_fetch_counts("DT_NSO_2100_014V1", "0")
+national_births <- analysis_fetch_counts("DT_NSO_2100_018V5", "0")
+valid_years <- analysis_common_years(national_deaths$annual, national_births$annual, require_values = TRUE)
+stopifnot(length(valid_years) > 0)
+infant_deaths <- filter(national_deaths$annual, year %in% valid_years)
+live_births <- filter(national_births$annual, year %in% valid_years)
 
 # Published annual rate. This id names two tables in the catalogue, so
 # mongolstats warns and uses the first match ("by soum, and by year"),
@@ -308,26 +326,34 @@ live_births <- national_annual("DT_NSO_2100_018V5")
 imr_years <- nso_dim_values("DT_NSO_2100_015V2", "Year", labels = "en")
 imr_published <- nso_data(
   "DT_NSO_2100_015V2",
-  selections = list(Region = "0", Year = imr_years$code),
+  selections = list(Region = "0", Year = intersect(imr_years$label_en, valid_years)),
   labels = "en"
 ) |>
   select(year = Year_en, published = value)
 
-imr_check <- infant_deaths |>
-  select(year, deaths = count) |>
-  inner_join(select(live_births, year, births = count), by = join_by(year)) |>
-  inner_join(imr_published, by = join_by(year)) |>
-  mutate(calculated = round(deaths / births * 1000, 1)) |>
+published_years <- imr_published$year
+imr_check <- analysis_pair(
+  select(filter(infant_deaths, year %in% published_years), year, deaths = count),
+  select(filter(live_births, year %in% published_years), year, births = count), "year"
+) |>
+  analysis_pair(imr_published, by = "year") |>
+  mutate(
+    calculated = deaths / births * 1000,
+    difference = calculated - published,
+    # Whole-number published rounding permits up to half a unit.
+    agrees_with_rounding = is.finite(difference) & abs(difference) <= 0.5 + 1e-8
+  ) |>
   arrange(year)
+stopifnot(all(imr_check$births > 0))
 
 imr_check
 ```
 
-The calculated rates differ from the published ones by at most `r if (run_vignette) max(abs(imr_check$calculated - imr_check$published)) else "-"` per 1,000, because NSO rounds the published rate to a whole number. The count tables can be trusted to give the same answer. The [Getting Started](getting-started.html) and [Mapping](mapping.html) guides use them to compare aimags.
+The table explicitly shows whether each comparable year agrees within half a unit, the tolerance for a whole-number rounded rate. `r if (run_vignette) sum(!imr_check$agrees_with_rounding) else "Any"` year(s) need review under this check. Differences outside that tolerance cannot be explained by whole-number rounding alone. Agreement is a reconciliation check, not proof that registration and population coverage are complete. The [Getting Started](getting-started.html) and [Mapping](mapping.html) guides retain these limitations.
 
 ## Case Study: Tuberculosis Notifications
 
-The monthly communicable disease table counts reported (notified) cases. To compare years, divide by the population at risk. Here we use the national mid-year population.
+The monthly communicable disease table counts reported (notified) cases. Annual summation assumes these are monthly increments, not cumulative year-to-date values; confirm that reporting convention with the source before using the estimates. To compare years, divide by the population at risk. Here we use the national mid-year population.
 
 ```{r tb-data}
 tb_tbl <- "DT_NSO_2100_035V1" # Cases of communicable diseases, by type and by month
@@ -338,15 +364,14 @@ tb_code <- indicators |>
   filter(trimws(label_en) == "Tuberculosis") |>
   pull(code)
 
-tb_months <- nso_dim_values(tb_tbl, "Month", labels = "en")
-tb_annual <- nso_data(
-  tbl_id = tb_tbl,
-  selections = list(Indicators = tb_code, Month = tb_months$code),
-  labels = "en"
-) |>
-  mutate(year = substr(Month_en, 1, 4)) |>
-  summarise(cases = sum(value), n_months = n(), .by = year) |>
-  filter(n_months == 12)
+stopifnot(length(tb_code) == 1L)
+tb_months <- nso_table_periods(tb_tbl)$label
+tb_raw <- nso_data(tb_tbl, list(Indicators = tb_code, Month = tb_months), labels = "en")
+tb_status <- nso_value_status(tb_raw)
+tb_annual <- analysis_annual_counts(mutate(tb_raw, Region = "0"), "0") |>
+  filter(usable) |>
+  transmute(year, cases = count, n_months)
+stopifnot(nrow(tb_annual) > 0L)
 
 # Mid-year population (denominator)
 population <- nso_data(
@@ -356,8 +381,9 @@ population <- nso_data(
 ) |>
   select(year = Year_en, population = value)
 
-tb_rate <- tb_annual |>
-  inner_join(population, by = join_by(year)) |>
+tb_rate <- analysis_pair(tb_annual, population, "year")
+stopifnot(all(is.finite(tb_rate$population)), all(tb_rate$population > 0))
+tb_rate <- tb_rate |>
   mutate(
     year = as.integer(year),
     rate = cases / population * 1e5,
@@ -395,7 +421,7 @@ tb_last <- if (run_vignette) slice_max(tb_rate, year) else NULL
 
 The notification rate fell from `r if (run_vignette) round(tb_first$rate) else "-"` per 100,000 in `r if (run_vignette) tb_first$year else "the first year"` to `r if (run_vignette) round(tb_last$rate) else "-"` in `r if (run_vignette) tb_last$year else "the latest year"`.
 
-> **Biostatistical note:** A notification rate counts cases that were **diagnosed and reported**, not all new cases (incidence). It falls when case finding falls, as well as when transmission falls. The sharp drop in 2021 coincides with the COVID-19 pandemic, which disrupted tuberculosis services in many countries. These data cannot separate a true decline from missed diagnoses. For incidence, see the World Health Organization's country estimates, which adjust for under-reporting.
+> **Biostatistical note:** A notification rate counts cases that were **diagnosed and reported**, not all new cases (incidence). It falls when case finding falls, as well as when transmission falls. The intervals describe count variation conditional on the notification process and population denominator; they do not include missed diagnoses or reporting error. The sharp drop in 2021 coincides with the COVID-19 pandemic, which disrupted tuberculosis services in many countries. These data cannot separate a true decline from missed diagnoses. For incidence, see the World Health Organization's country estimates, which adjust for under-reporting.
 
 ## Tips for Epidemiological Research
 

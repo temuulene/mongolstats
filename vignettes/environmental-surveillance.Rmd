@@ -15,12 +15,13 @@ run_vignette <- !nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_")) &&
 knitr::opts_chunk$set(eval = run_vignette, purl = run_vignette)
 # Inline `r` code runs even when chunks are skipped (eval = FALSE), so
 # values computed in chunks go through this helper. `expr` is only
-# evaluated when the chunks ran, and falls back if it cannot be computed.
+# evaluated when chunks ran; actual computation errors remain visible.
 inline_value <- function(expr, fallback = "n/a") {
   if (!run_vignette) {
     return(fallback)
   }
-  tryCatch(expr, error = function(e) fallback)
+  value <- expr
+  if (!length(value) || all(is.na(value))) fallback else value
 }
 ```
 
@@ -28,10 +29,10 @@ inline_value <- function(expr, fallback = "n/a") {
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7,        # standardized width that fits vignette text column
-  fig.height = 5,       # default height, override in individual chunks as needed
-  fig.dpi = 150,        # higher resolution for crisp rendering
-  out.width = "100%",   # constrain to page width, prevents overflow
+  fig.width = 7, # standardized width that fits vignette text column
+  fig.height = 5, # default height, override in individual chunks as needed
+  fig.dpi = 150, # higher resolution for crisp rendering
+  out.width = "100%", # constrain to page width, prevents overflow
   warning = FALSE,
   message = FALSE
 )
@@ -45,6 +46,8 @@ library(ggplot2)
 library(tidyr)
 library(stringr)
 
+# Checked teaching helpers are shipped with the package and can be inspected.
+source(system.file("examples", "analysis-helpers.R", package = "mongolstats"), local = TRUE)
 old_options <- nso_options(mongolstats.lang = "en")
 
 # Global theme with proper margins to prevent text cutoff
@@ -67,7 +70,7 @@ Air pollution is a leading environmental health risk in Mongolia, above all in U
 This guide shows how to:
 
 - Track fine particulate matter (PM2.5) and sulphur dioxide (SO₂) at Ulaanbaatar stations
-- Compare annual concentrations with Mongolia's air quality standards
+- Compare rounded annual concentrations with a dated reference benchmark
 - Look at river and lake water quality
 - Map dust days across the country
 
@@ -76,7 +79,7 @@ This guide shows how to:
 > **About the air quality tables**
 >
 > - **Annual table** (`DT_NSO_2024_135V01`): annual mean concentration by station and pollutant, selected by `Year`.
-> - **Monthly station tables** (`DT_NSO_2400_015V2` for NO₂, `DT_NSO_2400_015V5` for PM2.5): for each station and month, the monthly average, the monthly maximum, the number of measurement days ("MN by day"), and the percentage of days above the air quality standard. Month codes count back from the latest month, so select months by their `"YYYY-MM"` labels, listed with `nso_table_periods()`.
+> - **Monthly station tables** (`DT_NSO_2400_015V2` for NO₂, `DT_NSO_2400_015V5` for PM2.5): for each station and month, the monthly average, the monthly maximum, a measurement-count field ("MN by day", whose meaning needs pollutant-specific verification), and the percentage of days above the air quality standard. Month codes count back from the latest month, so select months by their `"YYYY-MM"` labels, listed with `nso_table_periods()`.
 >
 > The NSO catalogue reuses the ids `DT_NSO_2400_015V1` (SO₂), `V3` (CO) and `V4` (PM10) for unrelated tables in another folder, so those monthly series cannot be fetched by id alone (mongolstats warns about the ambiguity). This vignette uses a snapshot bundled with mongolstats for monthly SO₂.
 >
@@ -84,22 +87,22 @@ This guide shows how to:
 
 ### Most Polluted Stations
 
-We rank Ulaanbaatar stations by their 2024 annual mean PM2.5. We use 2024 rather than the latest year because several 2025 annual values are exact zeros at stations that reported high levels the year before, which looks like missing data.
+We use a fixed 2024 teaching example and select up to ten stations with the highest reported annual PM2.5 among the listed Ulaanbaatar stations. This is not a current city-wide exposure ranking. Exact zeros in later source releases need verification and must not automatically be reclassified as missing.
 
 ```{r air-quality-data}
-air_annual <- tryCatch(
-  nso_data("DT_NSO_2024_135V01", selections = list(Year = "2024"), labels = "en"),
-  error = function(e) NULL
+air_annual_source <- analysis_air_source(
+  fetch = function() nso_data("DT_NSO_2024_135V01", list(Year = "2024"), labels = "en"),
+  cached = function() {
+    utils::read.csv(
+      system.file("extdata", "air_annual_cached.csv", package = "mongolstats"),
+      check.names = FALSE, stringsAsFactors = FALSE, fileEncoding = "UTF-8"
+    )
+  },
+  required = c("Year_en", "Station location_en", "Indicator_en", "value")
 )
-
-# Fall back to the bundled snapshot if the API is unavailable
-if (is.null(air_annual) || nrow(air_annual) == 0) {
-  air_annual <- utils::read.csv(
-    system.file("extdata", "air_annual_cached.csv", package = "mongolstats"),
-    check.names = FALSE,
-    stringsAsFactors = FALSE
-  )
-}
+air_annual_raw <- analysis_one_year(air_annual_source$data, "2024")
+annual_status <- nso_value_status(air_annual_source$data)
+air_annual <- air_annual_raw
 
 air_annual <- air_annual |>
   filter(!is.na(value)) |>
@@ -118,20 +121,21 @@ ub_stations <- c(
   "Tavan buudal", "Bayankhoshuu", "Sharkhad", "100 ail"
 )
 
-# Up to 10 Ulaanbaatar stations with the highest annual PM2.5
-top_stations <- air_annual |>
-  filter(Station %in% ub_stations, str_detect(Pollutant, "PM2.5")) |>
+eligible_stations <- air_annual |>
+  filter(Station %in% ub_stations, str_detect(Pollutant, fixed("PM2.5")))
+analysis_keys(eligible_stations, "Station")
+top_stations <- eligible_stations |>
   slice_max(ug_m3, n = 10, with_ties = FALSE) |>
   pull(Station)
 
 top_stations
 ```
 
-Only `r inline_value(length(top_stations))` Ulaanbaatar stations reported an annual PM2.5 mean for 2024, so all of them are included.
+**Annual source:** `r inline_value(air_annual_source$mode)`, observation year 2024. Of `r inline_value(nrow(eligible_stations))` eligible stations, `r inline_value(length(top_stations))` are selected. Bundled snapshots have no recorded retrieval date and do not retain original source symbols; see the [provenance guide](data-provenance.html).
 
 ### PM2.5: Monthly Trends
 
-Fine particulate matter (PM2.5) is the air pollutant with the strongest evidence of harm: long-term exposure raises the risk of heart and lung disease, lung cancer, and death. We keep only months with measurements on at least 75% of days, a common completeness rule for a valid monthly mean.
+Fine particulate matter (PM2.5) is the air pollutant with the strongest evidence of harm: long-term exposure raises the risk of heart and lung disease, lung cancer, and death. We keep only months with measurements on at least 75% of days, an illustrative completeness rule. Confirm the source's measurement-count definition and applicable monitoring protocol before treating it as an official validity rule.
 
 ```{r pm25-data}
 # Labels of the months from `from` onward
@@ -140,38 +144,36 @@ recent_months <- function(tbl, from = "2021-01-01") {
   periods$label[!is.na(periods$date) & periods$date >= as.Date(from)]
 }
 
-pm25_monthly <- tryCatch(
-  nso_data(
-    "DT_NSO_2400_015V5",
-    selections = list(Month = recent_months("DT_NSO_2400_015V5")),
-    labels = "en"
-  ),
-  error = function(e) NULL
-)
-
-# Bundled snapshot: fallback for PM2.5 and the only source of monthly SO2
 air_cached <- utils::read.csv(
-  # gzip-compressed to keep the installed package small;
-  # read.csv() decompresses transparently
   system.file("extdata", "air_monthly_cached.csv.gz", package = "mongolstats"),
-  check.names = FALSE,
-  stringsAsFactors = FALSE
+  check.names = FALSE, stringsAsFactors = FALSE, fileEncoding = "UTF-8"
 )
-
-if (is.null(pm25_monthly) || nrow(pm25_monthly) == 0) {
-  pm25_monthly <- filter(air_cached, str_detect(Indicator_en, "PM2.5"))
-}
+pm25_source <- analysis_air_source(
+  fetch = function() {
+    nso_data(
+      "DT_NSO_2400_015V5",
+      list(Month = recent_months("DT_NSO_2400_015V5")),
+      labels = "en"
+    )
+  },
+  cached = function() filter(air_cached, str_detect(Indicator_en, fixed("PM2.5"))),
+  required = c("Location_en", "Month_en", "Indicator_en", "value")
+)
+pm25_monthly <- pm25_source$data
+pm25_status <- nso_value_status(pm25_monthly)
 
 # One row per station and month, with one column per measure
 reshape_monthly <- function(data) {
-  data |>
+  data <- data |>
     mutate(
       Station = str_trim(Location_en),
       measure = str_extract(Indicator_en, "(Average|Maximum|MN by day|Exceeding percent of AQS)$"),
-      date = as.Date(paste0(Month_en, "-01"))
+      date = analysis_month_dates(Month_en)
     ) |>
     filter(Station %in% top_stations, !is.na(measure)) |>
-    select(Station, date, measure, value) |>
+    select(Station, date, measure, value)
+  analysis_keys(data, c("Station", "date", "measure"))
+  data |>
     pivot_wider(names_from = measure, values_from = value) |>
     rename(
       average = Average, maximum = Maximum,
@@ -182,7 +184,10 @@ reshape_monthly <- function(data) {
 
 pm25 <- reshape_monthly(pm25_monthly) |>
   filter(date >= as.Date("2021-01-01")) |>
-  mutate(complete = days_measured >= 0.75 * lubridate::days_in_month(date))
+  mutate(
+    complete = analysis_monitoring_days(days_measured, date),
+    pct_days_above = if_else(is.finite(pct_days_above) & between(pct_days_above, 0, 100), pct_days_above, NA_real_)
+  )
 
 pm25_complete <- filter(pm25, complete, !is.na(average))
 
@@ -193,33 +198,33 @@ pm25_lines <- pm25 |>
   mutate(average = if_else(complete %in% TRUE, average, NA_real_))
 ```
 
-Of `r inline_value(nrow(pm25))` station-months, `r inline_value(nrow(pm25_complete))` meet the completeness rule.
+**Monthly source:** `r inline_value(pm25_source$mode)`, `r inline_value(format(min(pm25$date), "%Y-%m"))` to `r inline_value(format(max(pm25$date), "%Y-%m"))`. Of `r inline_value(nrow(pm25))` station-months, `r inline_value(nrow(pm25_complete))` meet the mean/completeness rule. `r inline_value(sum(is.na(pm25_complete$pct_days_above)))` of those retained station-months have no reported exceedance percentage.
 
-```{r pm25-trends, fig.height=8, fig.alt="Small multiples of monthly mean PM2.5 at the most polluted Ulaanbaatar stations since 2021, with reference lines at Mongolia's annual standard of 25 micrograms per cubic metre and the WHO guideline of 5. Every station shows large winter peaks."}
+```{r pm25-trends, fig.height=8, fig.alt="Small multiples of monthly mean PM2.5 at the selected Ulaanbaatar stations over the displayed observation period, with reference lines at the historical 2016 annual reference of 25 micrograms per cubic metre and the WHO guideline of 5. Missing and excluded observations remain gaps."}
 pm25_lines |>
   ggplot(aes(x = date, y = average)) +
-  geom_hline(yintercept = 25, linetype = "dashed", color = "darkred") + # Mongolia annual standard
+  geom_hline(yintercept = 25, linetype = "dashed", color = "darkred") + # 2016 annual reference
   geom_hline(yintercept = 5, linetype = "dotted", color = "grey30") + # WHO 2021 annual guideline
   geom_line(color = "firebrick", linewidth = 0.6) +
   geom_point(color = "firebrick", size = 0.8) +
   facet_wrap(~Station, ncol = 2) +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(breaks = seq(min(pm25$date), max(pm25$date), by = "year"), date_labels = "%Y") +
   scale_y_continuous(limits = c(0, NA)) +
   labs(
-    title = "Monthly Mean PM2.5 at Ulaanbaatar's Most Polluted Stations",
-    subtitle = "Dashed = Mongolia annual standard (25 µg/m³); dotted = WHO annual guideline (5 µg/m³)",
+    title = "Monthly Mean PM2.5 at Selected Ulaanbaatar Stations",
+    subtitle = "Dashed = 2016 annual reference (25 µg/m³); dotted = WHO annual guideline (5 µg/m³)",
     x = NULL,
     y = "PM2.5 (µg/m³)",
-    caption = "Months with measurements on at least 75% of days. Source: NSO Mongolia, DT_NSO_2400_015V5"
+    caption = paste(pm25_source$mode, "| Illustrative 75% completeness rule | NSO DT_NSO_2400_015V5")
   ) +
   theme(strip.text = element_text(face = "bold"), panel.grid.minor = element_blank())
 ```
 
-The reference lines are for **annual** means, so they give scale rather than a test: compliance is judged on the annual mean (next section), and a monthly mean above the line marks a polluted month, not a legal exceedance. Mongolia's annual PM2.5 standard (MNS 4585:2016) is 25 µg/m³; the WHO's 2021 guideline is 5 µg/m³. The monthly maximum that NSO also publishes is left out because its definition (highest daily mean or highest single reading) is not documented.
+The lines are **annual** reference values for scale, not tests of monthly compliance. The 25 micrograms/m3 line is the historical MNS 4585:2016 annual PM2.5 benchmark; WHO's 2021 annual guideline is 5 micrograms/m3. Mongolia announced a [revised MNS 4585 in June 2025](https://outrageous-green-ffhsb.app.mcloud.gov.mn/en/posts/mns-4585-agaaryn-canaryn-standartyg-sineclen-batluullaa). Verify its effective rules and averaging periods before comparing later observations. The meaning of the source's monthly maximum has not been verified, so it is not analysed here.
 
 ### PM2.5: Days Above the Standard
 
-The monthly tables also report the percentage of measured days on which PM2.5 exceeded Mongolia's air quality standard. Unlike a monthly mean, this compares like with like: daily values against a daily standard.
+The source reports a percentage labelled "Exceeding percent of AQS". Its threshold version, measurement denominator and averaging convention need confirmation, particularly across the 2025 standard revision. We preserve it as a source-reported indicator rather than reconstructing daily exceedance counts or a city-wide percentage.
 
 ```{r pm25-exceedance, fig.height=4.5, fig.alt="Heat map of the percentage of days above the PM2.5 standard by station and month. Winter months are dark red at every station, and summer months are near zero."}
 pm25_complete |>
@@ -231,10 +236,10 @@ pm25_complete |>
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y", expand = c(0, 0)) +
   labs(
-    title = "Share of Days with PM2.5 Above Mongolia's Standard",
-    subtitle = "Each tile is one station-month; grey = not reported; blank = fewer than 75% of days measured",
+    title = "Source-Reported PM2.5 Exceedance Percentages",
+    subtitle = "Each tile is one station-month; grey = percentage not reported; blank = excluded or absent station-month",
     x = NULL, y = NULL,
-    caption = "Source: NSO Mongolia, DT_NSO_2400_015V5"
+    caption = paste(pm25_source$mode, "| Source threshold version needs confirmation | NSO DT_NSO_2400_015V5")
   ) +
   theme(panel.grid = element_blank())
 ```
@@ -248,37 +253,60 @@ pm25_season <- if (run_vignette) {
   pm25_complete |>
     mutate(season = season_of(date)) |>
     summarise(
-      median_pct_above = median(pct_days_above, na.rm = TRUE),
+      n_station_months = n(),
+      n_percent_reported = sum(is.finite(pct_days_above)),
+      median_pct_above = if (any(is.finite(pct_days_above))) median(pct_days_above, na.rm = TRUE) else NA_real_,
       mean_ug = mean(average),
       .by = season
     )
 }
+# Sensitivity panel: the same station/year must have all six winter/summer
+# months and reported percentages. Incomplete panels are not filled with zero.
+panel_candidates <- pm25_complete |>
+  mutate(year = format(date, "%Y"), season = season_of(date)) |>
+  filter(season != "Other")
+panel_keys <- panel_candidates |>
+  summarise(valid = n_distinct(date) == 6L & all(is.finite(pct_days_above)), .by = c(Station, year)) |>
+  filter(valid)
+balanced_panel <- semi_join(panel_candidates, panel_keys, by = join_by(Station, year))
+balanced_summary <- balanced_panel |>
+  summarise(
+    n_station_months = n(), mean_ug = mean(average),
+    median_pct_above = median(pct_days_above), .by = season
+  )
+pm25_season
+balanced_summary
 season_value <- function(s, col) pm25_season[[col]][pm25_season$season == s]
 ```
 
-> **Key findings:** In December–February, the median station-month had **`r inline_value(round(season_value("Dec-Feb", "median_pct_above")))`%** of measured days above the PM2.5 standard, and a mean of `r inline_value(round(season_value("Dec-Feb", "mean_ug")))` µg/m³. In June–August, the median was `r inline_value(round(season_value("Jun-Aug", "median_pct_above")))`% of days, with a mean of `r inline_value(round(season_value("Jun-Aug", "mean_ug")))` µg/m³. Exposure is concentrated in the heating season, when household coal and wood stoves, heating plants and temperature inversions combine.
+```{r pm25-coverage}
+knitr::kable(pm25_season, digits = 1, caption = "Available station-months and reported percentage counts")
+knitr::kable(balanced_summary, digits = 1, caption = "Sensitivity panel with all six winter/summer months per station-year")
+```
+
+> **Descriptive summary:** In December-February, the median reported station-month percentage is `r inline_value(round(season_value("Dec-Feb", "median_pct_above")))`%; in June-August it is `r inline_value(round(season_value("Jun-Aug", "median_pct_above")))`%. The corresponding unweighted means of available station-month concentrations are `r inline_value(round(season_value("Dec-Feb", "mean_ug")))` and `r inline_value(round(season_value("Jun-Aug", "mean_ug")))` micrograms/m3. The coverage table and balanced-panel sensitivity above show which records contribute. These summaries do not measure personal exposure or the proportion of all city days exceeding a threshold. Missing percentages remain unknown.
 
 ### Sulphur Dioxide (SO₂)
 
-SO₂ comes mainly from burning coal, so it tracks fuel use for heating. Monthly SO₂ comes from the bundled snapshot (see above). Its "measurement days" column counts readings rather than days, so we do not apply the completeness rule here.
+SO2 is associated with combustion, including heating fuels. The monthly series below uses the historical bundled snapshot. Its measurement-count field sometimes exceeds the number of days in a month, so a day-based completeness rule cannot be applied without a verified definition.
 
-```{r so2-trends, fig.height=8, fig.alt="Small multiples of monthly mean SO2 at the most polluted Ulaanbaatar stations from the bundled snapshot, with a reference line at Mongolia's annual standard of 20 micrograms per cubic metre. Concentrations rise sharply each winter."}
+```{r so2-trends, fig.height=8, fig.alt="Small multiples of monthly mean SO2 at selected Ulaanbaatar stations from the bundled snapshot, with a reference line at the historical 2016 annual reference of 20 micrograms per cubic metre. Concentrations rise sharply each winter."}
 so2 <- air_cached |>
   filter(str_detect(Indicator_en, "Sulphur dioxide")) |>
   reshape_monthly() |>
-  filter(!is.na(average))
+  complete(Station, date = seq(min(date), max(date), by = "month"))
 
 so2 |>
   ggplot(aes(x = date, y = average)) +
-  geom_hline(yintercept = 20, linetype = "dashed", color = "darkorange3") + # Mongolia annual standard
+  geom_hline(yintercept = 20, linetype = "dashed", color = "darkorange3") + # 2016 annual reference
   geom_line(color = "darkorange", linewidth = 0.6) +
   geom_point(color = "darkorange", size = 0.8) +
   facet_wrap(~Station, ncol = 2) +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(breaks = seq(min(so2$date), max(so2$date), by = "year"), date_labels = "%Y") +
   scale_y_continuous(limits = c(0, NA)) +
   labs(
-    title = "Monthly Mean SO₂ at Ulaanbaatar's Most Polluted Stations",
-    subtitle = "Bundled snapshot; dashed = Mongolia annual standard (20 µg/m³)",
+    title = "Monthly Mean SO₂ at Selected Ulaanbaatar Stations",
+    subtitle = "Bundled snapshot; dashed = 2016 annual reference (20 µg/m³)",
     x = NULL,
     y = "SO₂ (µg/m³)",
     caption = "Source: NSO Mongolia (snapshot of DT_NSO_2400_015V1)"
@@ -291,21 +319,27 @@ so2_ratio <- if (run_vignette) {
   so2 |>
     mutate(season = season_of(date)) |>
     summarise(
-      winter = mean(average[season == "Dec-Feb"]),
-      summer = mean(average[season == "Jun-Aug"]),
+      winter_n = sum(season == "Dec-Feb" & is.finite(average)),
+      summer_n = sum(season == "Jun-Aug" & is.finite(average)),
+      winter = mean(average[season == "Dec-Feb"], na.rm = TRUE),
+      summer = mean(average[season == "Jun-Aug"], na.rm = TRUE),
       .by = Station
     ) |>
-    mutate(ratio = winter / summer)
+    mutate(ratio = if_else(winter_n >= 3 & summer_n >= 3 & is.finite(summer) & summer > 0, winter / summer, NA_real_))
 }
 ```
 
-> **Seasonal pattern:** Mean SO₂ in December–February is `r inline_value(round(min(so2_ratio$ratio)))` to `r inline_value(round(max(so2_ratio$ratio)))` times the June–August mean, depending on the station (median `r inline_value(round(median(so2_ratio$ratio)))` times). This swing, larger than for PM2.5, points to coal burning for heating as the main winter source.
+```{r so2-coverage}
+so2_ratio
+```
 
-### Annual Means Against the Standards
+> **Seasonal pattern:** The table reports winter/summer contrasts only when both seasons have at least three observed means and a positive summer mean. Coverage differs across stations, so these are exploratory comparisons. A winter increase is consistent with a heating contribution but does not identify the main source without separate evidence.
 
-The exceedance factor is the annual mean divided by Mongolia's annual standard (MNS 4585:2016). A factor above 1 means the station did not meet the standard.
+### Rounded Annual Means and a Historical Reference
 
-```{r compliance-check, fig.alt="Bar chart of exceedance factors (annual mean divided by Mongolia's annual standard) for PM2.5, SO2 and NO2 at the most polluted Ulaanbaatar stations in 2024"}
+The reference factor is the rounded annual mean divided by a **historical 2024 benchmark** from MNS 4585:2016. It describes the published value relative to a reference; it does not establish legal compliance or adequate annual monitoring coverage.
+
+```{r compliance-check, fig.alt="Bar chart of exceedance factors (annual mean divided by Mongolia's annual standard) for PM2.5, SO2 and NO2 at selected Ulaanbaatar stations in 2024"}
 # Mongolia's annual standards (MNS 4585:2016), ug/m3
 annual_standard <- c("PM2.5" = 25, "SO2" = 20, "NO2" = 40)
 
@@ -323,7 +357,7 @@ compliance <- air_annual |>
   mutate(
     Standard = annual_standard[Pollutant_Type],
     Exceedance_Factor = ug_m3 / Standard,
-    Status = if_else(Exceedance_Factor > 1, "Above standard", "Meets standard")
+    Status = if_else(Exceedance_Factor > 1, "Reported mean above reference", "Reported mean at/below reference")
   )
 
 compliance |>
@@ -332,11 +366,11 @@ compliance |>
   geom_vline(xintercept = 1, linetype = "dashed", color = "black") +
   geom_text(aes(label = round(Exceedance_Factor, 1)), hjust = -0.15, size = 2.8) +
   facet_wrap(~Pollutant_Type, scales = "free_x") +
-  scale_fill_manual(values = c("Meets standard" = "#2a78d6", "Above standard" = "#c0392b"), name = NULL) +
+  scale_fill_manual(values = c("Reported mean at/below reference" = "#2a78d6", "Reported mean above reference" = "#c0392b"), name = NULL) +
   scale_x_continuous(expand = expansion(mult = c(0, 0.2))) +
   labs(
-    title = "Annual Mean Divided by Mongolia's Annual Standard, 2024",
-    subtitle = "Values above 1 (dashed line) do not meet the standard",
+    title = "Rounded Annual Mean Relative to the 2016 Reference, 2024",
+    subtitle = "Rounded values relative to the historical benchmark; no compliance determination",
     x = "Exceedance factor", y = NULL,
     caption = "Annual means are rounded to 10 µg/m³. Source: NSO Mongolia, DT_NSO_2024_135V01"
   ) +
@@ -346,29 +380,32 @@ compliance |>
 ```{r compliance-facts, include = FALSE}
 compliance_summary <- if (run_vignette) {
   compliance |>
-    summarise(n = n(), above = sum(Status == "Above standard"), max_factor = max(Exceedance_Factor), .by = Pollutant_Type)
+    summarise(n = n(), above = sum(Status == "Reported mean above reference"), max_factor = max(Exceedance_Factor), .by = Pollutant_Type)
 }
 cs <- function(p, col) compliance_summary[[col]][compliance_summary$Pollutant_Type == p]
 ```
 
-> **Results:** In 2024, `r inline_value(cs("PM2.5", "above"))` of `r inline_value(cs("PM2.5", "n"))` stations exceeded the PM2.5 standard (up to `r inline_value(round(cs("PM2.5", "max_factor"), 1))` times), `r inline_value(cs("SO2", "above"))` of `r inline_value(cs("SO2", "n"))` exceeded the SO₂ standard (up to `r inline_value(round(cs("SO2", "max_factor"), 1))` times), and `r inline_value(cs("NO2", "above"))` of `r inline_value(cs("NO2", "n"))` exceeded the NO₂ standard. Because annual means are rounded to 10 µg/m³, a factor near 1 cannot separate compliance from exceedance: a reported 20 µg/m³ of PM2.5 could be anywhere from 15 to 25. All stations remain far above the WHO's 2021 annual PM2.5 guideline of 5 µg/m³.
+> **Interpretation:** The table counts rounded published values above the historical benchmark. Values near a reference cannot resolve the position of the unrounded concentration; for example, a reported NO2 annual mean of 40 micrograms/m3 may lie on either side of a 40 micrograms/m3 reference. Exact compliance also depends on the applicable monitoring protocol. The 2025 revision and WHO health-based guidelines should be described separately.
 
 ## Water Quality Monitoring
 
 NSO publishes river and lake water quality by station. We look first at electrical conductivity, a measure of dissolved minerals and salts.
 
 ```{r water-quality, fig.alt="Bar chart of the 15 water quality stations with the highest electrical conductivity"}
-water <- nso_data("DT_NSO_2300_005V12", selections = list(), labels = "en") |>
+water_year <- analysis_latest_common_year("DT_NSO_2300_005V12")
+water_raw <- nso_data("DT_NSO_2300_005V12", list(Year = water_year), labels = "en")
+water_status <- nso_value_status(water_raw)
+water <- analysis_one_year(water_raw, water_year) |>
   filter(!is.na(value)) |>
   mutate(
     Station = str_trim(`Station location_en`),
     Indicator = str_trim(Indicator_en)
   )
-water_year <- max(water$Year_en)
+analysis_keys(water, c("Station location", "Indicator", "Year_en"))
 
 conductivity <- water |>
   filter(str_detect(Indicator, "Electrical conductivity")) |>
-  slice_max(order_by = value, n = 15)
+  slice_max(order_by = value, n = 15, with_ties = FALSE)
 
 conductivity |>
   ggplot(aes(x = value, y = reorder(Station, value))) +
@@ -384,7 +421,7 @@ conductivity |>
   theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
 ```
 
-The highest values, at `r inline_value(knitr::combine_words(str_extract(conductivity$Station[1:3], "^[^,]+")))`, are lakes. Lakes in closed basins with no outflow, such as Uvs and Khyargas in western Mongolia, are naturally salty, because water leaves by evaporation and the salts stay behind. Conductivity has no health-based limit and does not by itself indicate pollution. To look for pollution, use indicators of organic waste and sewage, such as biochemical oxygen demand (BOD₅) and ammonium nitrogen (NH₄-N).
+High conductivity can reflect natural dissolved minerals and salts, including in closed-basin lakes where evaporation concentrates salts. Conductivity alone does not establish pollution or drinking-water safety. Other indicators, such as BOD5 and ammonium nitrogen, provide different information and also require appropriate source definitions.
 
 ### The Tuul River Through Ulaanbaatar
 
@@ -409,82 +446,85 @@ knitr::kable(tuul, caption = paste0("Tuul River stations, ", water_year))
 tuul_value <- function(station, col) tuul[[col]][tuul$Station == station]
 ```
 
-At **Zaisan**, in the south of Ulaanbaatar, the Tuul has a BOD₅ of `r inline_value(tuul_value("Tuul, Zaisan", "BOD5 (mg/L)"))` mg/L and ammonium of `r inline_value(tuul_value("Tuul, Zaisan", "NH4-N (mg/L)"))` mg/L. At **Songino**, downstream and west of the city, these rise to `r inline_value(tuul_value("Tuul, Songino", "BOD5 (mg/L)"))` and `r inline_value(tuul_value("Tuul, Songino", "NH4-N (mg/L)"))` mg/L. This gradient is consistent with urban wastewater entering the river as it passes the city, and it matters for anyone using river water downstream for livestock, irrigation or recreation. A single year of measurements per station cannot show trends; check other years before drawing conclusions.
+At **Zaisan**, BOD5 is `r inline_value(tuul_value("Tuul, Zaisan", "BOD5 (mg/L)"))` mg/L and ammonium is `r inline_value(tuul_value("Tuul, Zaisan", "NH4-N (mg/L)"))` mg/L. The values at **Songino** are `r inline_value(tuul_value("Tuul, Songino", "BOD5 (mg/L)"))` and `r inline_value(tuul_value("Tuul, Songino", "NH4-N (mg/L)"))` mg/L. Differences among sites can have several explanations, including wastewater inputs. These station-year summaries cannot identify a contribution or establish a trend. Verify whether values are annual means, individual samples or another summary before further interpretation.
 
 ## Dust Days
 
-Dust storms carry coarse particles (PM10) and are linked to respiratory and cardiovascular illness. Dust is most frequent in the Gobi and steppe regions in spring. Dust days vary a lot from year to year, so we average over 10 years rather than ranking a single year. NSO leaves a cell blank when a station had no dust days in a month, and a few months are missing from the table altogether (mostly summer months); we count both as zero.
+Dust storms carry particles associated with adverse health effects. This example summarises **observed complete station-years** only. Blank cells and absent months are unknown unless NSO documents otherwise; they are never automatically counted as no dust days. Rankings depend on the number of usable years at each station and should not be treated as a uniform ten-year climatology.
 
-```{r dust-days, fig.alt="Bar chart of the 10 weather stations with the most dust days per year on average over the last 10 complete years, with lines showing the lowest and highest year"}
-dust <- nso_data("DT_NSO_2400_028V1", selections = list(), labels = "en") |>
+```{r dust-days, fig.alt="Bar chart of the 10 weather stations with the most dust days per year on average over usable observed years within the selected window, with lines showing the lowest and highest year"}
+dust_raw <- nso_data("DT_NSO_2400_028V1", list(), labels = "en")
+dust_status <- nso_value_status(dust_raw)
+dust <- dust_raw |>
   mutate(
     Station = str_trim(`Station location_en`),
-    year = as.integer(substr(Month_en, 1, 4))
+    Region = `Station location`, Region_en = Station
   )
-
-# The last 10 calendar years before the current, partial year
-dust_years <- sort(unique(dust$year)) |>
-  head(-1) |>
-  tail(10)
-
-# Blank cells, and the few months missing from the table altogether, are
-# taken to mean no dust days and count as zero
-dust_annual <- dust |>
-  filter(year %in% dust_years) |>
-  summarise(dust_days = sum(value, na.rm = TRUE), .by = c(Station, year))
-
+analysis_month_dates(dust$Month_en)
+available_years <- sort(unique(substr(dust$Month_en, 1, 4)))
+# Exclude an ongoing calendar year, but keep a complete latest year if the
+# source is lagged. Absent months are filled as unknown by the helper.
+available_years <- available_years[as.integer(available_years) < as.integer(format(Sys.Date(), "%Y"))]
+dust_years <- tail(available_years, 10L)
+stopifnot(length(dust_years) > 0L)
+dust_annual <- analysis_annual_counts(dust, unique(dust$Region), dust_years) |>
+  rename(Station = Region_en, dust_days = count)
+dust_coverage <- dust_annual |>
+  summarise(n_years = n(), n_valid_years = sum(usable), missing_months = sum(n_missing), .by = c(Region, Station))
+knitr::kable(dust_coverage, caption = "Dust observation coverage; unresolved months remain missing")
 dust_summary <- dust_annual |>
+  filter(usable) |>
   summarise(
-    mean_days = mean(dust_days),
-    min_days = min(dust_days),
-    max_days = max(dust_days),
-    .by = Station
+    mean_days = mean(dust_days), min_days = min(dust_days),
+    max_days = max(dust_days), n_valid_years = n(), .by = c(Region, Station)
   ) |>
   arrange(desc(mean_days))
 
 dust_summary |>
-  slice_max(mean_days, n = 10) |>
+  slice_max(mean_days, n = 10, with_ties = FALSE) |>
   ggplot(aes(x = mean_days, y = reorder(Station, mean_days))) +
   geom_errorbar(aes(xmin = min_days, xmax = max_days), width = 0.3, color = "grey60", orientation = "y") +
   geom_point(color = "#b8860b", size = 3) +
   labs(
     title = paste0("Stations with the Most Dust Days, ", min(dust_years), "–", max(dust_years)),
-    subtitle = "Average dust days per year; lines show the lowest and highest year",
+    subtitle = "Usable observed years only; lines show min/max, not confidence intervals",
     x = "Dust days per year", y = NULL,
     caption = "Source: NSO Mongolia, DT_NSO_2400_028V1"
   ) +
   theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
 ```
 
-The three dustiest stations, `r inline_value(knitr::combine_words(dust_summary$Station[1:3]))`, average `r inline_value(round(min(dust_summary$mean_days[1:3])))` to `r inline_value(round(max(dust_summary$mean_days[1:3])))` dust days a year. The range bars show how much a single year can mislead: the same station can have a handful of dust days one year and several dozen the next.
+Only complete observed station-years contribute to these means and ranges. The coverage table shows how many years are usable at each station; some stations may have none. A ranking based on unequal sets of years is descriptive and may change with the observation window. An empty result means this source cannot support a complete-year comparison under these conservative rules.
 
 ### Mapping Dust Days
 
 The weather stations are in towns, so mongolmaps' settlement points can place them on a map. Station names are matched to the capital and aimag centres first, then to soum centres where the name is unique.
 
-```{r dust-map, fig.alt="Map of Mongolia with weather stations shown as points sized and coloured by average dust days per year; the largest values are in the Gobi in the south"}
+```{r dust-map, fig.alt="Map of Mongolia with weather stations shown as points sized and coloured by average dust days per year; only stations with usable complete-year observations are included"}
 settlements <- mn_settlements() |>
   mutate(rank = match(type, c("capital", "aimag_centre", "soum_centre")))
 
 # Khentii's aimag centre, Undurkhaan, was renamed Chinggis city in 2013
 dust_points <- dust_summary |>
   mutate(name = if_else(Station == "Undurkhaan", "Chingis", Station)) |>
+  add_count(name, name = "station_name_n") |>
+  filter(station_name_n == 1L) |> # duplicate station names cannot locate a site
   inner_join(settlements, by = join_by(name), relationship = "one-to-many") |>
   # Keep the highest-ranked match; drop names shared by several soum centres
   filter(rank == min(rank), .by = Station) |>
   filter(n() == 1, .by = Station) |>
   sf::st_as_sf()
 
-unplaced <- setdiff(dust_summary$Station, dust_points$Station)
+unplaced <- dust_summary$Station[!dust_summary$Region %in% dust_points$Region]
 
-mn_map(mn_aimags(), title = "Average Dust Days per Year") +
+mn_map(mn_aimags(), title = "Dust Days in Complete Observed Station-Years") +
   geom_sf(data = dust_points, aes(size = mean_days, color = mean_days), alpha = 0.85) +
   scale_color_gradient(low = "#f3d9a4", high = "#8a5a00", name = "Dust days\nper year") +
   scale_size_area(max_size = 8, guide = "none") +
   labs(subtitle = paste0(min(dust_years), "–", max(dust_years), ". Data: NSO Mongolia, DT_NSO_2400_028V1"))
 ```
 
-`r inline_value(length(unplaced))` station(s) could not be placed from settlement names (`r inline_value(knitr::combine_words(unplaced))`). For exposure studies, use the weather stations' own coordinates from the National Agency for Meteorology and Environmental Monitoring.
+`r inline_value(nrow(dust_points))` of `r inline_value(nrow(dust_summary))` stations with usable years were placed. `r inline_value(length(unplaced))` station(s) could not be placed from settlement names (`r inline_value(knitr::combine_words(unplaced))`). Mapped settlement centres are illustrative positions, not measured station coordinates. Compare the coverage and summaries of placed and omitted stations before generalising. For exposure studies, use the weather stations' own coordinates from the National Agency for Meteorology and Environmental Monitoring.
 
 ## Next Steps
 

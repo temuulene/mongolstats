@@ -1,5 +1,12 @@
 # mongolstats (development version)
 
+* Strengthened all analytical tutorials with checked observation keys, common
+  calendar periods, strict missing-count aggregation and denominator validation.
+* Qualified cancer, mortality, geographic and pollution interpretations; added
+  explicit source/fallback coverage and conservative discrete funnel screening.
+* Added reusable teaching helpers, offline analytical regression checks and
+  a maintainer warning log for website builds.
+
 # mongolstats 0.4.0
 
 * Experimental clients now expose the public data and metadata portals alongside PXWeb. The bundled data include an installed source, copyright, and license notice.

@@ -19,10 +19,10 @@ knitr::opts_chunk$set(eval = run_vignette, purl = run_vignette)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7,        # standardized width that fits vignette text column
-  fig.height = 5,       # default height, override in individual chunks as needed
-  fig.dpi = 150,        # higher resolution for crisp rendering
-  out.width = "100%",   # constrain to page width, prevents overflow
+  fig.width = 7, # standardized width that fits vignette text column
+  fig.height = 5, # default height, override in individual chunks as needed
+  fig.dpi = 150, # higher resolution for crisp rendering
+  out.width = "100%", # constrain to page width, prevents overflow
   warning = FALSE,
   message = FALSE
 )
@@ -49,6 +49,8 @@ library(dplyr)
 library(ggplot2)
 
 # Set language to English for readable output
+# Checked teaching helpers are shipped with the package and can be inspected.
+source(system.file("examples", "analysis-helpers.R", package = "mongolstats"), local = TRUE)
 old_options <- nso_options(mongolstats.lang = "en")
 
 # Set global ggplot2 theme with proper margins to prevent text cutoff
@@ -123,9 +125,9 @@ imr_national |>
   ggplot(aes(x = date, y = value)) +
   geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) + # dim raw data so trend stands out
   geom_point(color = "#e74c3c", size = 2, shape = 21, fill = "white", stroke = 1, alpha = 0.6) +
-  # LOESS reveals the trend through month-to-month noise
+  # Descriptive smooth only: no model-based uncertainty ribbon
   geom_smooth(
-    method = "loess", formula = y ~ x, se = TRUE,
+    method = "loess", formula = y ~ x, se = FALSE,
     color = "#3498db", fill = "#3498db", alpha = 0.2, linewidth = 1.5
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
@@ -143,73 +145,54 @@ imr_national |>
   )
 ```
 
+The smooth is an exploratory summary of rounded monthly rates. It does not account for different numbers of births or dependence between neighbouring months.
+
 ## Regional Comparison
 
 To compare aimags over a year, do not average the 12 monthly rates. A mean of monthly rates gives a month with few births the same weight as a busy month, and NSO's rounding makes small aimags' monthly rates jump between values. Instead, add up the infant deaths and the live births for the year, then divide:
 
 $$\text{IMR} = \frac{\text{infant deaths in the year}}{\text{live births in the year}} \times 1{,}000$$
 
-The counts come from two monthly tables: infant deaths (`DT_NSO_2100_014V1`) and live births (`DT_NSO_2100_018V5`).
+This conventional same-period vital-statistics IMR is not a linked birth-cohort probability: infant deaths can include children born in the preceding year. The counts come from two monthly tables: infant deaths (`DT_NSO_2100_014V1`) and live births (`DT_NSO_2100_018V5`).
 
 ```{r regional}
-# Sum a monthly count table over one calendar year, for every region code
-annual_counts <- function(tbl, year) {
-  months <- nso_dim_values(tbl, "Month", labels = "en")
-  nso_data(
-    tbl_id = tbl,
-    selections = list(
-      Region = nso_dim_values(tbl, "Region")$code,
-      Month = months$code[startsWith(months$label_en, year)]
-    ),
-    labels = "en"
-  ) |>
-    summarise(count = sum(value), n_months = n(), .by = c(Region, Region_en))
-}
+# Expected independent units: national total, 21 aimags and capital code 5.
+aimag_codes <- setdiff(mn_aimags()$nso_code, "511")
+units <- c("0", aimag_codes, "5")
+death_source <- analysis_fetch_counts("DT_NSO_2100_014V1", units)
+birth_source <- analysis_fetch_counts("DT_NSO_2100_018V5", units)
 
-# Latest year with all 12 months published
-birth_months <- nso_dim_values("DT_NSO_2100_018V5", "Month", labels = "en")$label_en
-latest_year <- names(which(table(substr(birth_months, 1, 4)) == 12)) |> max()
-
-infant_deaths <- annual_counts("DT_NSO_2100_014V1", latest_year)
-live_births <- annual_counts("DT_NSO_2100_018V5", latest_year)
-
-imr_regional <- infant_deaths |>
-  select(Region, Region_en, deaths = count) |>
-  inner_join(select(live_births, Region, births = count), by = join_by(Region)) |>
+# A year must have every calendar month in both tables for all expected units.
+# Unresolved observations are retained as missing, never assumed to be zero.
+latest_year <- analysis_latest(analysis_common_years(death_source$annual, birth_source$annual))
+infant_deaths <- filter(death_source$annual, year == latest_year)
+live_births <- filter(birth_source$annual, year == latest_year)
+imr_regional <- analysis_pair(
+  select(infant_deaths, Region, Region_en, deaths = count, missing_deaths = n_missing),
+  select(live_births, Region, births = count, missing_births = n_missing),
+  by = "Region"
+) |>
   mutate(
     Region_en = trimws(Region_en),
-    level = case_when(
-      Region == "0" ~ "National",
-      Region %in% c("1", "2", "3", "4") ~ "Region",
-      # Ulaanbaatar's figures sit under code "5"; code "511" is an empty duplicate
-      Region == "5" ~ "Capital",
-      Region == "511" ~ "Duplicate",
-      .default = "Aimag"
-    ),
-    imr = deaths / births * 1000,
-    # Exact Poisson 95% confidence interval for the rate
-    lower = qchisq(0.025, 2 * deaths) / 2 / births * 1000,
-    upper = qchisq(0.975, 2 * (deaths + 1)) / 2 / births * 1000
+    level = case_when(Region == "0" ~ "National", Region == "5" ~ "Capital", .default = "Aimag")
   )
+imr_regional <- bind_cols(imr_regional, analysis_poisson(imr_regional$deaths, imr_regional$births)) |>
+  rename(imr = rate)
 
-national_imr <- imr_regional$imr[imr_regional$level == "National"]
-
-imr_units <- imr_regional |>
-  filter(level %in% c("Aimag", "Capital"))
-
-# Highest rates
-imr_units |>
-  arrange(desc(imr)) |>
-  select(Region_en, deaths, births, imr, lower, upper) |>
-  head(10)
+national_imr <- imr_regional$imr[imr_regional$Region == "0"]
+stopifnot(length(national_imr) == 1L, is.finite(national_imr))
+imr_units <- filter(imr_regional, Region != "0")
+stopifnot(nrow(imr_units) == 22L)
+imr_units |> select(Region_en, deaths, births, missing_deaths, missing_births, imr, lower, upper)
 ```
 
-In `r if (run_vignette) latest_year else "the latest year"`, the national IMR was `r if (run_vignette) round(national_imr, 1) else "-"` per 1,000 live births. Many aimags record only a few dozen infant deaths a year, so their rates come with wide confidence intervals.
+In `r if (run_vignette) latest_year else "the latest common calendar year"`, the national recorded IMR was `r if (run_vignette) round(national_imr, 1) else "-"` per 1,000 live births. `r if (run_vignette) sum(!is.finite(imr_units$imr)) else "Some"` areas have insufficient observations for an annual estimate. The source objects retain raw observations, symbols and provenance for inspection.
 
 ### Visualize Regional Differences
 
 ```{r regional-plot, fig.alt="Dot plot of infant mortality rates by aimag and Ulaanbaatar for the latest complete year, with 95% confidence intervals and a dashed line at the national rate", fig.height=7}
 imr_units |>
+  filter(is.finite(imr)) |>
   mutate(Region_en = forcats::fct_reorder(Region_en, imr)) |> # order by rate, not alphabet
   ggplot(aes(x = imr, y = Region_en)) +
   geom_vline(xintercept = national_imr, linetype = "dashed", color = "grey50") +
@@ -230,7 +213,7 @@ imr_units |>
   )
 ```
 
-Where an interval crosses the dashed line, that aimag's rate is consistent with the national rate. Infant deaths and births are counted where they are recorded, so referrals of high-risk births to hospitals in Ulaanbaatar can raise the capital's rate and lower the rate of the aimag the mother came from.
+The intervals describe Poisson count variation conditional on the recorded counts and birth denominator. They do not include under-registration, revisions or geographic mismatch. Crossing the estimated national line is a descriptive comparison, not an independent two-sample test: the national total includes each aimag. If births or deaths are assigned by place of occurrence rather than residence, referral patterns can distort area comparisons; confirm the definitions of these specific source tables before interpreting differences.
 
 ## Adding Geographic Context
 
@@ -241,6 +224,7 @@ Where an interval crosses the dashed line, that aimag's rate is consistent with 
 # capital's own code "511" is empty, as it is in this table
 imr_map <- imr_units |>
   mn_join(by = "Region", level = "aimag")
+stopifnot(nrow(imr_map) == 22L, !anyDuplicated(imr_map$nso_code))
 
 mn_map(
   imr_map,
@@ -250,7 +234,7 @@ mn_map(
   labs(subtitle = "Infant deaths per 1,000 live births. Data: NSO Mongolia", fill = "IMR\n(per 1,000)")
 ```
 
-The map shows point estimates only. Read it with the confidence intervals above: in small aimags, a few more or fewer infant deaths can move the colour a long way.
+Grey areas have insufficient data. The map shows point estimates only. Read it with the confidence intervals above: in small aimags, a few more or fewer infant deaths can move the colour a long way.
 
 ## Key Functions Summary
 

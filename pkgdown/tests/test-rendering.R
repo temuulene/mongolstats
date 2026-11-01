@@ -32,7 +32,8 @@ articles <- c(
   "discovery",
   "mapping",
   "environmental-surveillance",
-  "ub-health-environment"
+  "ub-health-environment",
+  "articles/mortality-analysis"
 )
 
 for (article in articles) {
