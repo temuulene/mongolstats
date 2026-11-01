@@ -1377,7 +1377,7 @@
 {"id":"f5e65825147c4ee343b0","source":"deprecated","target":"хуучирсан"}
 {"id":"748be63c87c9fad252fb","source":"experimental","target":"туршилтын"}
 {"id":"f379ccb92b9116442dc6","source":"stable","target":"тогтвортой"}
-{"id":"f31168c67a1482e74cb9","source":"lifecycle","target":"ашиглалтын төлөв"}
+{"id":"f31168c67a1482e74cb9","source":"lifecycle","target":"төлөв"}
 {"id":"444bd9c51d51643ccd93","source":"superseded","target":"шинэ функцээр орлуулсан"}
 {"id":"a2395f346ac4381c8736","source":"Gross domestic product at current prices (trillion MNT)","target":"Оны үнээрх дотоодын нийт бүтээгдэхүүн (их наяд төгрөг)"}
 {"id":"688f15ffd9558240be88","source":"Mongolia's GDP, {1}","target":"Монголын ДНБ, {1}"}
@@ -1396,3 +1396,11 @@
 {"id":"92df3e423c45942990f4","source":"{1}Continue to the documentation{2}","target":"{1}Баримтжуулалт руу очих{2}"}
 {"id":"e05fe8464525f1d95268","source":"Current documentation","target":"Одоогийн баримтжуулалт"}
 {"id":"fb2060cd23411251e1fd","source":"The Mongolian site now mirrors all English articles, references, figures and navigation, with translation coverage checks and matching-page language links.","target":"Монгол сайт англи сайтын бүх өгүүлэл, функцийн лавлах, зураг, цэсийг хамардаг болов. Орчуулгын хамралтыг шалгаж, хэл солихдоо ижил хуудсанд шилждэг холбоостой."}
+{"id":"f8235c1f99c321bbf8c0","source":"mongolstats hex sticker","target":"mongolstats багцын зургаан өнцөгт наалт"}
+{"id":"9b212490c0ac2e8c1276","source":"{1}Sources, metadata, and reproducible exports / Эх сурвалж, мета өгөгдөл, давтагдах экспорт{2}","target":"{1}Эх сурвалж, мета өгөгдөл ба давтагдах экспорт{2}"}
+{"id":"b36f0bcbc0f14d5a8706","source":"{1} {2}deprecated{3}","target":"{1} {2}хуучирсан{3}"}
+{"id":"b638ab7a608f43790cba","source":"{1} {2}experimental{3}","target":"{1} {2}туршилтын{3}"}
+{"id":"7329c9ebab5e0acc4bc1","source":"{1} {2} {3} {4}superseded{5}","target":"{1} {2} {3} {4}шинэ функцээр орлуулсан{5}"}
+{"id":"3e4933ac9936a98ff415","source":"{1}Environmental Data Analysis{2}","target":"{1}Байгаль орчны өгөгдлийн шинжилгээ{2}"}
+{"id":"8f6f6d958ef0a08ac519","source":"{1}Ulaanbaatar District-Level Analysis{2}","target":"{1}Улаанбаатарын дүүргийн түвшний шинжилгээ{2}"}
+{"id":"f4193947ae421ffe77a1","source":"{1}Does December Have the Most Recorded Deaths?{2}","target":"{1}Арван хоёрдугаар сард бүртгэгдсэн нас баралт хамгийн олон уу?{2}"}

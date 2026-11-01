@@ -15,6 +15,20 @@ testthat::test_that("translation templates retain prose and protect numeric valu
   testthat::expect_error(env$mn_unbind("A different value", template), "protected")
 })
 
+testthat::test_that("SVG badge titles and accessible labels are translated", {
+  env <- translation_helpers()
+  root <- normalizePath(testthat::test_path("..", ".."), winslash = "/")
+  path <- file.path(withr::local_tempdir(), "badge.svg")
+  file.copy(file.path(root, "man", "figures", "lifecycle-experimental.svg"), path)
+  catalogue <- env$mn_catalogue(root)
+  env$mn_translate_svg(path, "badge.svg", catalogue)
+  doc <- xml2::read_xml(path)
+  testthat::expect_identical(xml2::xml_text(xml2::xml_find_first(doc, "//*[local-name()='title']")), "төлөв: туршилтын")
+  testthat::expect_identical(xml2::xml_attr(xml2::xml_root(doc), "aria-label"), "төлөв: туршилтын")
+  node <- xml2::xml_find_all(doc, "//*[local-name()='text']")[[2]]
+  testthat::expect_gt(as.numeric(xml2::xml_attr(node, "textLength")), 150)
+})
+
 testthat::test_that("old development URLs resolve within the selected language", {
   root <- normalizePath(testthat::test_path("..", ".."), winslash = "/")
   env <- new.env(parent = globalenv())
@@ -110,4 +124,40 @@ testthat::test_that("missing translations stop publication instead of falling ba
     "untranslated documentation"
   )
   testthat::expect_true(file.exists(file.path(directory, "source.json")))
+})
+
+testthat::test_that("article-list titles are translated while argument names stay intact", {
+  env <- translation_helpers()
+  doc <- xml2::read_html(paste0(
+    "<html><body><dl>",
+    '<dt><a href="mapping.html">Spatial Epidemiology with mongolstats</a></dt>',
+    '<dt id="arg-labels">labels</dt>',
+    "</dl></body></html>"
+  ))
+  seen <- character()
+  catalogue <- list(translate = function(template, ...) {
+    seen <<- c(seen, template$source)
+    if (identical(template$source, "{1}Spatial Epidemiology with mongolstats{2}")) {
+      env$mn_unbind("{1}mongolstats ашигласан орон зайн эпидемиологи{2}", template, html = TRUE)
+    }
+  })
+  env$mn_translate_document(doc, "articles/index.html", catalogue)
+  terms <- xml2::xml_text(xml2::xml_find_all(doc, "//dt"))
+  testthat::expect_identical(terms, c("mongolstats ашигласан орон зайн эпидемиологи", "labels"))
+  testthat::expect_false("labels" %in% seen)
+  testthat::expect_identical(
+    xml2::xml_attr(xml2::xml_find_first(doc, "//dt/a"), "href"), "mapping.html"
+  )
+})
+
+testthat::test_that("protected code keeps backslashes and brace text literally", {
+  env <- translation_helpers()
+  doc <- xml2::read_html('<p>Match <code>grepl("\\d{2}", x)</code> or <code>[0-9]{1}</code>.</p>')
+  template <- env$mn_template(xml2::xml_find_first(doc, "//p"))
+  testthat::expect_identical(template$source, "Match {1} or {2}.")
+  restored <- env$mn_unbind("{2} эсвэл {1}-ийг тааруулна.", template, html = TRUE)
+  testthat::expect_identical(
+    restored,
+    '<code>[0-9]{1}</code> эсвэл <code>grepl("\\d{2}", x)</code>-ийг тааруулна.'
+  )
 })

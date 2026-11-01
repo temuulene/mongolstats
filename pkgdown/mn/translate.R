@@ -45,8 +45,8 @@ mn_template <- function(node, plain = FALSE) {
     }
     name <- xml2::xml_name(n)
     if (name %in% c("code", "img", "svg", "math", "br", "wbr") ||
-      grepl("(^| )math( |$)", xml2::xml_attr(n, "class") %||% "") ||
-      (name == "a" && grepl("\\(\\)$|_", xml2::xml_text(n)))) {
+          grepl("(^| )math( |$)", xml2::xml_attr(n, "class") %||% "") ||
+          (name == "a" && grepl("\\(\\)$|_", xml2::xml_text(n)))) {
       return(bind(as.character(n)))
     }
     raw <- as.character(n)
@@ -78,9 +78,12 @@ mn_unbind <- function(target, template, html = FALSE) {
     target <- gsub("<", "&lt;", target, fixed = TRUE)
     target <- gsub(">", "&gt;", target, fixed = TRUE)
   }
-  for (i in rev(seq_along(template$values))) {
-    target <- gsub(paste0("{", i, "}"), template$values[[i]], target, fixed = TRUE)
-  }
+  # One pass keeps backslashes and brace text inside protected values literal.
+  found <- gregexpr("\\{[0-9]+\\}", target)
+  tokens <- regmatches(target, found)[[1]]
+  regmatches(target, found) <- list(vapply(tokens, function(token) {
+    template$values[[as.integer(substr(token, 2L, nchar(token) - 1L))]]
+  }, "", USE.NAMES = FALSE))
   target
 }
 
@@ -119,8 +122,11 @@ mn_replace_html <- function(node, value) {
 }
 
 mn_translate_document <- function(doc, page, catalogue) {
-  inline <- c("a", "em", "strong", "code", "span", "small", "sup", "sub", "br", "wbr", "img", "svg", "math", "b", "i", "s", "kbd", "abbr", "time")
-  skip <- c("script", "style", "pre", "code", "svg", "math", "noscript", "dt")
+  inline <- c(
+    "a", "em", "strong", "code", "span", "small", "sup", "sub", "br", "wbr",
+    "img", "svg", "math", "b", "i", "s", "kbd", "abbr", "time"
+  )
+  skip <- c("script", "style", "pre", "code", "svg", "math", "noscript")
   visit <- function(node) {
     if (inherits(node, "xml_missing")) {
       return(invisible(NULL))
@@ -137,6 +143,10 @@ mn_translate_document <- function(doc, page, catalogue) {
       return(invisible(NULL))
     }
     if (name %in% skip || xml2::xml_type(node) != "element") {
+      return(invisible(NULL))
+    }
+    # Argument names are R identifiers; other terms, such as article titles, are prose.
+    if (name == "dt" && startsWith(xml2::xml_attr(node, "id") %||% "", "arg-")) {
       return(invisible(NULL))
     }
     descendants <- xml2::xml_find_all(node, ".//*")
@@ -159,9 +169,12 @@ mn_translate_document <- function(doc, page, catalogue) {
   if (!is.na(heading)) {
     titles <- xml2::xml_find_all(doc, "//title")
     xml2::xml_text(titles) <- paste0(heading, " • mongolstats")
-    xml2::xml_set_attr(xml2::xml_find_all(doc, "//meta[@property='og:title']"), "content", heading)
+    xml2::xml_set_attr(xml2::xml_find_all(doc, "//meta[@property='og:title' or @name='twitter:title']"), "content", heading)
     description <- mn_normalise(xml2::xml_text(xml2::xml_find_first(doc, "//main//p")))
-    if (!is.na(description)) xml2::xml_set_attr(xml2::xml_find_all(doc, "//meta[@name='description' or @property='og:description']"), "content", description)
+    if (!is.na(description)) {
+      meta <- "//meta[@name='description' or @property='og:description' or @name='twitter:description']"
+      xml2::xml_set_attr(xml2::xml_find_all(doc, meta), "content", description)
+    }
   } else {
     for (node in xml2::xml_find_all(doc, "//title")) {
       value <- catalogue$translate(mn_template(xml2::xml_text(node), plain = TRUE), page, "title")
@@ -181,6 +194,25 @@ mn_translate_document <- function(doc, page, catalogue) {
 
 mn_translate_svg <- function(path, page, catalogue) {
   doc <- xml2::read_xml(path, options = "NONET")
+  metadata <- function(source) {
+    if (startsWith(source, "lifecycle: ")) {
+      prefix <- catalogue$translate(mn_template("lifecycle", plain = TRUE), page, "figure")
+      state <- catalogue$translate(mn_template(sub("^lifecycle: *", "", source), plain = TRUE), page, "figure")
+      if (!is.null(prefix) && !is.null(state)) {
+        return(paste0(prefix, ": ", state))
+      }
+      return(NULL)
+    }
+    catalogue$translate(mn_template(source, plain = TRUE), page, "svg-accessibility")
+  }
+  for (node in xml2::xml_find_all(doc, "//*[local-name()='title' or local-name()='desc']")) {
+    value <- metadata(xml2::xml_text(node))
+    if (!is.null(value)) xml2::xml_text(node) <- value
+  }
+  for (node in xml2::xml_find_all(doc, "//*[@aria-label]")) {
+    value <- metadata(xml2::xml_attr(node, "aria-label"))
+    if (!is.null(value)) xml2::xml_set_attr(node, "aria-label", value)
+  }
   nodes <- xml2::xml_find_all(doc, "//*[local-name()='text']")
   x <- suppressWarnings(as.numeric(xml2::xml_attr(nodes, "x")))
   y <- suppressWarnings(as.numeric(xml2::xml_attr(nodes, "y")))
@@ -196,14 +228,17 @@ mn_translate_svg <- function(path, page, catalogue) {
     font <- if (grepl("font-size:", style)) {
       suppressWarnings(as.numeric(sub(".*font-size: *([0-9.]+)px.*", "\\1", style)))
     } else {
-      11
+      suppressWarnings(as.numeric(xml2::xml_attr(
+        xml2::xml_find_first(node, "ancestor-or-self::*[@font-size][1]"), "font-size"
+      )))
     }
     if (!is.finite(font)) font <- 11
     family <- if (grepl("font-family:", style)) {
       sub(".*font-family: *['\"]?([^;'\"<>]+).*", "\\1", style)
     } else {
-      "sans"
+      xml2::xml_attr(xml2::xml_find_first(node, "ancestor-or-self::*[@font-family][1]"), "font-family") %||% "sans"
     }
+    family <- strsplit(family, ",", fixed = TRUE)[[1]][[1]]
     measure <- function(text) {
       as.numeric(systemfonts::string_width(
         text,
@@ -213,7 +248,7 @@ mn_translate_svg <- function(path, page, catalogue) {
     width <- suppressWarnings(as.numeric(sub("px$", "", xml2::xml_attr(node, "textLength"))))
     if (!is.finite(width)) width <- measure(original)
     if (!is.finite(width) || width <= 0) width <- max(1, nchar(original)) * font * 0.52
-    available <- width * 1.4
+    available <- width
     if (is.finite(x[[i]]) && is.finite(y[[i]]) && is.na(xml2::xml_attr(node, "transform"))) {
       peers <- x[is.finite(x) & is.finite(y) & abs(y - y[[i]]) < 0.25 & seq_along(x) != i]
       previous <- max(c(4, peers[peers < x[[i]]]))

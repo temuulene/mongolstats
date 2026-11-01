@@ -54,6 +54,7 @@ build_mongolian_site <- function(
     xml2::xml_remove(xml2::xml_find_all(doc, "//*[contains(concat(' ', @class, ' '), ' language-switch ')]"))
     doc <- env$mn_translate_document(doc, page, catalogue)
     xml2::xml_set_attr(xml2::xml_find_first(doc, "//html"), "lang", "mn")
+    xml2::xml_set_attr(xml2::xml_find_all(doc, "//meta[@property='og:locale']"), "content", "mn_MN")
     for (attribute in c("href", "src", "content")) {
       nodes <- xml2::xml_find_all(doc, paste0("//*[@", attribute, "]"))
       values <- xml2::xml_attr(nodes, attribute)

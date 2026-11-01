@@ -11,6 +11,9 @@ build_package_site <- function(
     stop("Build the website outside package checks.")
   }
   dir.create(destination, recursive = TRUE, showWarnings = FALSE)
+  # rmarkdown replaces knit hooks, so render README before forcing warnings on;
+  # otherwise its hidden warnings would be printed into the published page.
+  rmarkdown::render("README.Rmd", envir = new.env(), quiet = TRUE)
   # Keep the destination empty until pkgdown has initialised it.
   warning_log <- tempfile("mongolstats-build-warnings-", fileext = ".log")
   writeLines("Warnings captured while building the documentation:", warning_log)
@@ -45,7 +48,6 @@ build_package_site <- function(
   })
   source("tools/site_helpers.R", local = TRUE)
   source("pkgdown/build-mn.R", local = TRUE)
-  rmarkdown::render("README.Rmd", envir = new.env(), quiet = TRUE)
   pkgdown::build_site(
     override = list(destination = destination),
     preview = FALSE,
