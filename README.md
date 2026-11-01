@@ -114,7 +114,7 @@ gdp |>
   )
 ```
 
-<img src="man/figures/README-gdp-example-1.png" alt="Mongolia's annual GDP at current prices from 2010 to 2025, in trillion MNT" width="100%" />
+<img src="man/figures/README-gdp-example-1.svg" alt="Mongolia's annual GDP at current prices from 2010 to 2025, in trillion MNT" width="100%" />
 
 ### 2. Mapping Regional Population
 
@@ -137,7 +137,7 @@ pop |>
   labs(fill = "Population\n(log scale)")
 ```
 
-<img src="man/figures/README-pop-map-example-1.png" alt="Aimag-level resident population across Mongolia on a logarithmic colour scale" width="100%" />
+<img src="man/figures/README-pop-map-example-1.svg" alt="Aimag-level resident population across Mongolia on a logarithmic colour scale" width="100%" />
 
 ## Sources and metadata
 

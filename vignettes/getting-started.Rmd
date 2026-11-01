@@ -190,7 +190,7 @@ In `r if (run_vignette) latest_year else "the latest common calendar year"`, the
 
 ### Visualize Regional Differences
 
-```{r regional-plot, fig.alt="Dot plot of infant mortality rates by aimag and Ulaanbaatar for the latest complete year, with 95% confidence intervals and a dashed line at the national rate", fig.height=7}
+```{r regional-plot, fig.alt="Dot plot of infant mortality rates by aimag and Ulaanbaatar over the selected common calendar period, with 95% confidence intervals and a dashed line at the national rate", fig.height=7}
 imr_units |>
   filter(is.finite(imr)) |>
   mutate(Region_en = forcats::fct_reorder(Region_en, imr)) |> # order by rate, not alphabet
@@ -219,7 +219,7 @@ The intervals describe Poisson count variation conditional on the recorded count
 
 [mongolmaps](https://github.com/temuulene/mongolmaps) provides boundaries that carry NSO codes, so the `Region` column joins without matching names.
 
-```{r map-example, fig.alt="Choropleth map of infant mortality rates across Mongolia's aimags and Ulaanbaatar for the latest complete year"}
+```{r map-example, fig.alt="Choropleth map of infant mortality rates across Mongolia's aimags and Ulaanbaatar over the selected common calendar period"}
 # mn_join() takes Ulaanbaatar's figures from region code "5" when the
 # capital's own code "511" is empty, as it is in this table
 imr_map <- imr_units |>

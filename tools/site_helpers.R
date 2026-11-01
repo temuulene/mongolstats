@@ -151,6 +151,42 @@ check_site_links <- function(directory) {
   length(pages)
 }
 
+check_language_parity <- function(directory) {
+  pages <- list.files(directory, "[.]html$", recursive = TRUE)
+  english <- pages[!startsWith(pages, "mn/")]
+  mongolian <- sub("^mn/", "", pages[startsWith(pages, "mn/")])
+  if (!setequal(english, mongolian)) {
+    describe <- function(label, missing) {
+      if (length(missing)) paste0(label, ": ", paste(missing, collapse = ", "))
+    }
+    stop("English and Mongolian page coverage differs. ",
+      paste(c(
+        describe("No Mongolian copy", setdiff(english, mongolian)),
+        describe("No English counterpart", file.path("mn", setdiff(mongolian, english)))
+      ), collapse = "; "),
+      call. = FALSE
+    )
+  }
+  base <- "https://temuulene.github.io/mongolstats/"
+  for (page in english) {
+    en <- xml2::read_html(file.path(directory, page))
+    mn <- xml2::read_html(file.path(directory, "mn", page))
+    if (!identical(xml2::xml_attr(xml2::xml_find_first(mn, "//html"), "lang"), "mn")) {
+      stop("Mongolian page does not declare lang=mn: ", page, call. = FALSE)
+    }
+    en_alternate <- xml2::xml_attr(xml2::xml_find_all(en, "//link[@hreflang='mn']"), "href")
+    mn_alternate <- xml2::xml_attr(xml2::xml_find_all(mn, "//link[@hreflang='en']"), "href")
+    if (!paste0(base, "mn/", page) %in% en_alternate || !paste0(base, page) %in% mn_alternate) {
+      stop("Missing matching-page language links: ", page, call. = FALSE)
+    }
+    images <- function(doc) xml2::xml_attr(xml2::xml_find_all(doc, "//main//img"), "src")
+    if (length(images(en)) != length(images(mn))) {
+      stop("Figure coverage differs between languages: ", page, call. = FALSE)
+    }
+  }
+  length(english)
+}
+
 check_site <- function(directory = "docs") {
   minimums <- c(
     "index.html" = 2L,
@@ -162,6 +198,9 @@ check_site <- function(directory = "docs") {
     "articles/ub-health-environment.html" = 7L,
     "articles/mortality-analysis.html" = 9L
   )
+  translated <- minimums[!startsWith(names(minimums), "mn/")]
+  names(translated) <- paste0("mn/", names(translated))
+  minimums <- c(minimums, translated[!names(translated) %in% names(minimums)])
   figures <- check_site_figures(directory, minimums)
   check_english_home(file.path(directory, "index.html"))
   mongolian <- xml2::read_html(file.path(directory, "mn", "index.html"))
@@ -210,5 +249,9 @@ check_site <- function(directory = "docs") {
     stop("The sitemap must include the Mongolian landing page", call. = FALSE)
   }
   pages <- check_site_links(directory)
-  list(html_pages = pages, figures = figures, broken_local_references = 0L)
+  translated_pages <- check_language_parity(directory)
+  list(
+    html_pages = pages, translated_pages = translated_pages,
+    figures = figures, broken_local_references = 0L
+  )
 }

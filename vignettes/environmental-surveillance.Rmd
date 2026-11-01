@@ -226,7 +226,7 @@ The lines are **annual** reference values for scale, not tests of monthly compli
 
 The source reports a percentage labelled "Exceeding percent of AQS". Its threshold version, measurement denominator and averaging convention need confirmation, particularly across the 2025 standard revision. We preserve it as a source-reported indicator rather than reconstructing daily exceedance counts or a city-wide percentage.
 
-```{r pm25-exceedance, fig.height=4.5, fig.alt="Heat map of the percentage of days above the PM2.5 standard by station and month. Winter months are dark red at every station, and summer months are near zero."}
+```{r pm25-exceedance, fig.height=4.5, fig.alt="Heat map of source-reported PM2.5 exceedance percentages by station and month. Grey cells identify missing percentages; absent station-months remain blank."}
 pm25_complete |>
   ggplot(aes(x = date, y = Station, fill = pct_days_above)) +
   geom_tile(color = "white", linewidth = 0.2) +
