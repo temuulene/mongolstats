@@ -156,8 +156,14 @@ check_language_parity <- function(directory) {
   english <- pages[!startsWith(pages, "mn/")]
   mongolian <- sub("^mn/", "", pages[startsWith(pages, "mn/")])
   if (!setequal(english, mongolian)) {
-    stop("English and Mongolian page coverage differs: ",
-      paste(setdiff(english, mongolian), collapse = ", "),
+    describe <- function(label, missing) {
+      if (length(missing)) paste0(label, ": ", paste(missing, collapse = ", "))
+    }
+    stop("English and Mongolian page coverage differs. ",
+      paste(c(
+        describe("No Mongolian copy", setdiff(english, mongolian)),
+        describe("No English counterpart", file.path("mn", setdiff(mongolian, english)))
+      ), collapse = "; "),
       call. = FALSE
     )
   }
