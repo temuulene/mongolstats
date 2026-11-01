@@ -15,6 +15,9 @@ template:
 url: https://temuulene.github.io/mongolstats/
 development:
   mode: release
+figures:
+  dev: svglite::svglite
+  fig.ext: svg
 navbar:
   structure:
     left: [intro, reference, articles, news]

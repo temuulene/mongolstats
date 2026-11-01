@@ -9,6 +9,8 @@ always_allow_html: true
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
+  dev = "svglite",
+  fig.ext = "svg",
   fig.path = "man/figures/README-",
   fig.width = 7,        # standardized width
   fig.height = 5,       # default height
