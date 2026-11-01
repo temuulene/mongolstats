@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Is December Mongolia's Deadliest Month? A Look at Monthly Mortality Data • mongolstats</title>
+<title>Does December Have the Most Recorded Deaths? • mongolstats</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -18,7 +18,7 @@
 <link href="../deps/Inter_Tight-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Is December Mongolia's Deadliest Month? A Look at Monthly Mortality Data">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Does December Have the Most Recorded Deaths?">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -72,7 +72,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Is December Mongolia's Deadliest Month? A Look at Monthly Mortality Data</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Does December Have the Most Recorded Deaths?</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/articles/mortality-analysis.Rmd" class="external-link"><code>vignettes/articles/mortality-analysis.Rmd</code></a></small>
@@ -97,6 +97,8 @@ statistics, not as evidence that more people die in December.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://scales.r-lib.org" class="external-link">scales</a></span><span class="op">)</span></span>
+<span><span class="co"># Checked teaching helpers are shipped with the package and can be inspected.</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"analysis-helpers.R"</span>, package <span class="op">=</span> <span class="st">"mongolstats"</span><span class="op">)</span>, local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">old_options</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Reusable theme for all plots in this analysis</span></span>
@@ -135,8 +137,9 @@ in mind.</p>
 different lengths are put on an equal footing, is December the
 peak?</li>
 <li>
-<strong>Is winter in general deadlier?</strong> Mongolia’s winters
-are severe, so a broad cold-season rise would be expected.</li>
+<strong>How do recorded winter and nonwinter averages
+differ?</strong> Calendar patterns can be described, but these data
+alone cannot estimate a cold effect.</li>
 <li>
 <strong>Can these data explain why?</strong> What can monthly
 totals, annual causes of death, regional and hospital data tell us, and
@@ -181,8 +184,9 @@ month</td>
 </table>
 <p>All figures are <strong>counts</strong>, not rates. Mongolia’s
 population grew over the period, so slow upward trends partly reflect
-population growth and ageing. This does not affect comparisons between
-months within a year.</p>
+population growth and ageing. Dividing by days adjusts month length, not
+population at risk. Within-year changes and age composition can still
+affect comparisons.</p>
 <hr>
 </div>
 <div class="section level2">
@@ -211,16 +215,21 @@ months within a year.</p>
 <span><span class="co"># National deaths (Region code "0" = total) for every published month</span></span>
 <span><span class="va">deaths_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
 <span>  tbl_id <span class="op">=</span> <span class="va">death_tbl</span>,</span>
-<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="st">"0"</span>, Month <span class="op">=</span> <span class="va">months_meta</span><span class="op">$</span><span class="va">code</span><span class="op">)</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="st">"0"</span>, Month <span class="op">=</span> <span class="va">months_meta</span><span class="op">$</span><span class="va">label_en</span><span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">parse_months</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Keep complete calendar years only</span></span>
-<span><span class="va">complete_years</span> <span class="op">&lt;-</span> <span class="va">deaths_all</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">n</span> <span class="op">==</span> <span class="fl">12</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">complete_years</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">analysis_keys</span><span class="op">(</span><span class="va">deaths_all</span>, <span class="st">"date"</span><span class="op">)</span></span>
+<span><span class="fu">analysis_count_values</span><span class="op">(</span><span class="va">deaths_all</span><span class="op">$</span><span class="va">value</span><span class="op">)</span></span>
+<span><span class="co"># Keep twelve distinct observed months in a year, not merely twelve rows.</span></span>
+<span><span class="va">complete_years</span> <span class="op">&lt;-</span> <span class="va">deaths_all</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>, n_months <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html" class="external-link">n_distinct</a></span><span class="op">(</span><span class="va">month</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">n</span> <span class="op">==</span> <span class="fl">12</span>, <span class="va">n_months</span> <span class="op">==</span> <span class="fl">12</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">complete_years</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">3L</span>, <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">complete_years</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">first_year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">complete_years</span><span class="op">)</span></span>
 <span><span class="va">last_year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">complete_years</span><span class="op">)</span></span>
 <span><span class="va">n_years</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">complete_years</span><span class="op">)</span></span>
@@ -232,7 +241,15 @@ months within a year.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    Month_Type <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">month</span> <span class="op">==</span> <span class="fl">12</span>, <span class="st">"December"</span>, <span class="st">"Other months"</span><span class="op">)</span>,</span>
 <span>    Season <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">month</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">11</span>, <span class="fl">12</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, <span class="st">"Winter (Nov–Mar)"</span>, <span class="st">"Non-winter"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
+<span>  <span class="op">)</span></span>
+<span><span class="co"># Require a regular monthly index before time-series decomposition.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span></span>
+<span>  <span class="va">deaths_monthly</span><span class="op">$</span><span class="va">date</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">first_year</span>, <span class="st">"-01-01"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">last_year</span>, <span class="st">"-12-01"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    by <span class="op">=</span> <span class="st">"month"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The monthly series begins in January 2016. This analysis uses the 10
 complete years from 2016 to 2025.</p>
 <blockquote>
@@ -250,9 +267,7 @@ change how those two compare.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">covid_periods</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">Start</span>, <span class="op">~</span><span class="va">End</span>, <span class="op">~</span><span class="va">Phase</span>,</span>
-<span>  <span class="st">"2020-01-27"</span>, <span class="st">"2020-11-11"</span>, <span class="st">"Prevention (no local cases)"</span>,</span>
-<span>  <span class="st">"2020-11-12"</span>, <span class="st">"2021-05-08"</span>, <span class="st">"Lockdowns and first wave"</span>,</span>
-<span>  <span class="st">"2021-05-09"</span>, <span class="st">"2022-02-16"</span>, <span class="st">"Delta and Omicron waves"</span></span>
+<span>  <span class="st">"2020-01-01"</span>, <span class="st">"2022-12-31"</span>, <span class="st">"2020-2022 sensitivity window"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">Start</span>, <span class="va">End</span><span class="op">)</span>, <span class="va">as.Date</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -275,17 +290,15 @@ change how those two compare.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span></span>
 <span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>      <span class="st">"Prevention (no local cases)"</span> <span class="op">=</span> <span class="st">"#a5d6a7"</span>,</span>
-<span>      <span class="st">"Lockdowns and first wave"</span> <span class="op">=</span> <span class="st">"#ef9a9a"</span>,</span>
-<span>      <span class="st">"Delta and Omicron waves"</span> <span class="op">=</span> <span class="st">"#ffcc80"</span></span>
+<span>      <span class="st">"2020-2022 sensitivity window"</span> <span class="op">=</span> <span class="st">"#ffcc80"</span></span>
 <span>    <span class="op">)</span>,</span>
-<span>    name <span class="op">=</span> <span class="st">"COVID-19 phase"</span></span>
+<span>    name <span class="op">=</span> <span class="st">"Sensitivity analysis"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"1 year"</span>, date_labels <span class="op">=</span> <span class="st">"%Y"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="va">comma</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_min</span>, <span class="va">y_max</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Deaths per Day in Mongolia, "</span>, <span class="va">period</span><span class="op">)</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Monthly deaths divided by days in month; shading marks COVID-19 phases"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Recorded deaths divided by days; shading marks years excluded in sensitivity analyses"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"Deaths per day"</span>,</span>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_027V2"</span></span>
@@ -295,22 +308,21 @@ change how those two compare.</p>
 <span>    color <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>order <span class="op">=</span> <span class="fl">1</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>    fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>order <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/time-series-plot-1.png" alt="Monthly deaths per day in Mongolia across all complete years of data, with COVID-19 phases shaded and December points in red. The series is fairly flat apart from a large rise in mid to late 2021, a dip around the turn of 2020 and 2021, and a gradual upward drift." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/time-series-plot-1.png" alt="Monthly recorded deaths per day with December highlighted and historical pandemic-period context shaded." width="100%"></p>
 <p><strong>What the series shows:</strong></p>
 <ul>
 <li>
-<strong>Level:</strong> Most months fall between about 40 and 55
-deaths per day, drifting upward over time as the population grows and
-ages.</li>
+<strong>Level:</strong> These are recorded counts per day, not
+population mortality rates. Population growth and ageing can contribute
+to changes in the series.</li>
 <li>
-<strong>COVID-19:</strong> The highest month in the series is
-October 2021 (74.3 deaths/day), during the Delta wave. The lowest is
-January 2021 (37.1), during the first lockdowns. Without an expected
-baseline, these data cannot say whether lockdowns prevented deaths or
-whether registration was disrupted.</li>
+<strong>Extremes:</strong> The highest observed month is October
+2021, at 74.3 deaths per day; the lowest is January 2021, at 37.1.
+Timing alone cannot distinguish changes in deaths from reporting
+disruption.</li>
 <li>
-<strong>December:</strong> The red points are often among the
-highest of their year, but not every year.</li>
+<strong>December:</strong> Red points identify December observations
+for comparison with other months.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -319,6 +331,7 @@ highest of their year, but not every year.</li>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">monthly_stats</span> <span class="op">&lt;-</span> <span class="va">deaths_monthly</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
+<span>    deaths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, days <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">days</span><span class="op">)</span>,</span>
 <span>    mean_daily <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">daily_avg</span><span class="op">)</span>,</span>
 <span>    sd_daily <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">daily_avg</span><span class="op">)</span>,</span>
 <span>    n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -357,13 +370,14 @@ highest of their year, but not every year.</li>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, color <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>order <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/monthly-boxplot-1.png" alt="Box plots of deaths per day for each calendar month, with winter months (November to March) in red and other months in blue, and individual years as points with 2021 highlighted. December sits higher than other months, but the other winter months are not systematically higher than summer months; 2021 points are high outliers from June to December." width="100%"></p>
-<p><strong>Reading the boxes:</strong> December’s box sits above the
-others. The rest of winter does not: January, March and November look
-much like the summer months. Averaged over all five winter months,
-deaths per day are -0.2% relative to the other seven months. Without
-December, the remaining winter months are -1.7%. The purple 2021 points
-show the Delta wave pushing up mid-year and autumn months.</p>
+<p><img src="mortality-analysis_files/figure-html/monthly-boxplot-1.png" alt="Distributions of monthly recorded deaths per day across years, with individual years and 2021 highlighted." width="100%"></p>
+<p><strong>Reading the boxes:</strong> Each distribution contains one
+recorded deaths/day value per year for that calendar month. The pooled
+winter versus nonwinter contrast, calculated as total deaths divided by
+total days in each season, is -0.1%. Excluding December from winter
+gives -1.7%. Highlighted 2021 observations allow the reader to see that
+year’s influence; these comparisons do not identify temperature
+effects.</p>
 </div>
 <div class="section level3">
 <h3 id="monthly-averages-with-confidence-intervals">Monthly Averages with Confidence Intervals<a class="anchor" aria-label="anchor" href="#monthly-averages-with-confidence-intervals"></a>
@@ -388,17 +402,20 @@ only.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="va">comma</span>, expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Mean Deaths per Day with 95% Confidence Intervals"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Peak: "</span>, <span class="va">peak_month</span><span class="op">$</span><span class="va">month_name</span>, <span class="st">" ("</span>, <span class="fu">fmt_num</span><span class="op">(</span><span class="va">peak_month</span><span class="op">$</span><span class="va">mean_daily</span><span class="op">)</span>,</span>
-<span>                      <span class="st">"/day); lowest: "</span>, <span class="va">trough_month</span><span class="op">$</span><span class="va">month_name</span>, <span class="st">" ("</span>, <span class="fu">fmt_num</span><span class="op">(</span><span class="va">trough_month</span><span class="op">$</span><span class="va">mean_daily</span><span class="op">)</span>, <span class="st">"/day)"</span><span class="op">)</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>      <span class="st">"Peak: "</span>, <span class="va">peak_month</span><span class="op">$</span><span class="va">month_name</span>, <span class="st">" ("</span>, <span class="fu">fmt_num</span><span class="op">(</span><span class="va">peak_month</span><span class="op">$</span><span class="va">mean_daily</span><span class="op">)</span>,</span>
+<span>      <span class="st">"/day); lowest: "</span>, <span class="va">trough_month</span><span class="op">$</span><span class="va">month_name</span>, <span class="st">" ("</span>, <span class="fu">fmt_num</span><span class="op">(</span><span class="va">trough_month</span><span class="op">$</span><span class="va">mean_daily</span><span class="op">)</span>, <span class="st">"/day)"</span></span>
+<span>    <span class="op">)</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"Mean deaths per day"</span>,</span>
 <span>    caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Dashed line = average of all months, "</span>, <span class="va">period</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/monthly-means-plot-1.png" alt="Bar chart of mean deaths per day for each calendar month with 95% confidence intervals and a dashed line at the overall average. December is the highest bar and January the lowest, but the intervals overlap widely across months." width="100%"></p>
-<p>December averages 50.6 deaths per day, +6.8% relative to the average
-of the other eleven months. Leaving out the pandemic years 2020–2022,
-December is still the peak month, at +8.7% relative to the other months,
-so the December result does not depend on the pandemic.</p>
+<p><img src="mortality-analysis_files/figure-html/monthly-means-plot-1.png" alt="Equal-year monthly means of recorded deaths per day with approximate independent-year confidence intervals." width="100%"></p>
+<p>December averages 50.6 recorded deaths per day, +6.8% relative to
+total deaths divided by total days in the other eleven months. Excluding
+2020-2022, the highest equal-year monthly mean is in December and
+December’s contrast is +8.7%. These are descriptive contrasts; they do
+not establish their cause.</p>
 <hr>
 </div>
 </div>
@@ -431,7 +448,7 @@ so the December result does not depend on the pandemic.</p>
 <span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
 <span>    legend.key.width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="st">"cm"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/heatmap-1.png" alt="Heat map of deaths per day by year and month, standardised within each year so red means above that year's average and blue below. December is red in most years but not all, January is often blue, and in 2021 the late summer and autumn months stand out in red." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/heatmap-1.png" alt="Within-year standardised recorded deaths per day, allowing calendar patterns to be compared across years." width="100%"></p>
 <p>Each column is standardised within its year, so this shows each
 month’s position <em>within</em> its year rather than absolute levels.
 December is above its year’s average in 8 of 10 years. January is above
@@ -473,8 +490,10 @@ into a smooth <strong>trend</strong>, a repeating
 <span></span>
 <span><span class="va">decomp_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">zero_lines</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">yintercept</span><span class="op">)</span>,</span>
-<span>             linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"grey60"</span>, linewidth <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">zero_lines</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">yintercept</span><span class="op">)</span>,</span>
+<span>    linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"grey60"</span>, linewidth <span class="op">=</span> <span class="fl">0.3</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#2c3e50"</span>, linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">component</span>, ncol <span class="op">=</span> <span class="fl">1</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"2 years"</span>, date_labels <span class="op">=</span> <span class="st">"%Y"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -485,7 +504,7 @@ into a smooth <strong>trend</strong>, a repeating
 <span>    y <span class="op">=</span> <span class="st">"Deaths per day"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span>, panel.spacing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="st">"lines"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/stl-decomposition-1.png" alt="Four stacked panels showing the observed deaths-per-day series, its smooth trend, the repeating seasonal pattern, and the remainder. The seasonal pattern is flat for eleven months with a single sharp spike each December; the trend rises during 2021, and the remainder shows the 2021 surge and the early 2021 dip." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/stl-decomposition-1.png" alt="Observed series, smooth trend, fitted repeating seasonal component and remainder from a descriptive STL decomposition." width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="the-seasonal-pattern">The Seasonal Pattern<a class="anchor" aria-label="anchor" href="#the-seasonal-pattern"></a>
@@ -513,20 +532,21 @@ into a smooth <strong>trend</strong>, a repeating
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Estimated Seasonal Effect by Month"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Peak: "</span>, <span class="va">peak_seasonal</span><span class="op">$</span><span class="va">month_name</span>, <span class="st">" ("</span>, <span class="fu">fmt_num</span><span class="op">(</span><span class="va">peak_seasonal</span><span class="op">$</span><span class="va">seasonal_effect</span><span class="op">)</span>,</span>
-<span>                      <span class="st">" deaths/day); lowest: "</span>, <span class="va">trough_seasonal</span><span class="op">$</span><span class="va">month_name</span>, <span class="st">" ("</span>,</span>
-<span>                      <span class="fu">fmt_num</span><span class="op">(</span><span class="va">trough_seasonal</span><span class="op">$</span><span class="va">seasonal_effect</span><span class="op">)</span>, <span class="st">" deaths/day)"</span><span class="op">)</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>      <span class="st">"Peak: "</span>, <span class="va">peak_seasonal</span><span class="op">$</span><span class="va">month_name</span>, <span class="st">" ("</span>, <span class="fu">fmt_num</span><span class="op">(</span><span class="va">peak_seasonal</span><span class="op">$</span><span class="va">seasonal_effect</span><span class="op">)</span>,</span>
+<span>      <span class="st">" deaths/day); lowest: "</span>, <span class="va">trough_seasonal</span><span class="op">$</span><span class="va">month_name</span>, <span class="st">" ("</span>,</span>
+<span>      <span class="fu">fmt_num</span><span class="op">(</span><span class="va">trough_seasonal</span><span class="op">$</span><span class="va">seasonal_effect</span><span class="op">)</span>, <span class="st">" deaths/day)"</span></span>
+<span>    <span class="op">)</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"Deaths per day above or below trend"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/seasonal-pattern-1.png" alt="Bar chart of the estimated seasonal effect for each calendar month in deaths per day. December has a large positive effect while every other month is within about one death per day of zero." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/seasonal-pattern-1.png" alt="Estimated periodic monthly component of recorded deaths per day from the descriptive STL model." width="100%"></p>
 <blockquote>
-<p><strong>Key finding:</strong> The seasonal pattern is a
-<strong>single spike</strong> in December, about 4.7 deaths per day
-above trend. Every other month is within ±1.2 deaths per day, and the
-lowest month, June, is only -1.2 deaths per day. There is no broad
-winter rise.</p>
+<p><strong>STL description:</strong> The largest fitted periodic
+component is in December, about 4.7 recorded deaths per day above the
+smooth trend. STL imposes one repeating seasonal pattern here. It does
+not identify a temperature effect or establish the absence of one.</p>
 </blockquote>
 </div>
 <div class="section level3">
@@ -589,10 +609,44 @@ pandemic years 2020–2022.</p>
 </tr>
 </tbody>
 </table>
-<p>December sits 3.7 deaths per day above the average month (95% CI 1.7
-to 5.7), and January -0.3 (-2.3 to 1.7). The intervals ignore
-correlation between neighbouring months, so they are somewhat too
-narrow.</p>
+<p>December has an estimated deviation of 3.7 deaths per day from the
+average month (95% CI 1.7 to 5.7), and January -0.3 (-2.3 to 1.7). These
+model-based intervals may be miscalibrated because they ignore serial
+dependence and unequal residual variation. Year effects remove overall
+differences between years, not all changes within a year or changes in
+age composition.</p>
+</div>
+<div class="section level3">
+<h3 id="count-model-sensitivity-and-residual-checks">Count-model sensitivity and residual checks<a class="anchor" aria-label="anchor" href="#count-model-sensitivity-and-residual-checks"></a>
+</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">count_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">value</span> <span class="op">~</span> <span class="va">year_f</span> <span class="op">+</span> <span class="va">month_f</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">days</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">quasipoisson</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">fit_data</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">pearson</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html" class="external-link">residuals</a></span><span class="op">(</span><span class="va">count_fit</span>, type <span class="op">=</span> <span class="st">"pearson"</span><span class="op">)</span></span>
+<span><span class="va">dispersion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">pearson</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/df.residual.html" class="external-link">df.residual</a></span><span class="op">(</span><span class="va">count_fit</span><span class="op">)</span></span>
+<span><span class="co"># Excluding pandemic years leaves gaps: do not pretend observations on</span></span>
+<span><span class="co"># either side of a gap are consecutive when inspecting residual correlation.</span></span>
+<span><span class="va">diagnostic_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">fit_data</span>, residual <span class="op">=</span> <span class="va">pearson</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span></span>
+<span><span class="va">residual_pairs</span> <span class="op">&lt;-</span> <span class="va">diagnostic_data</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>previous_date <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>, previous_residual <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">residual</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">==</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/mplus.html" class="external-link">add_with_rollback</a></span><span class="op">(</span><span class="va">previous_date</span>, <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html" class="external-link">period</a></span><span class="op">(</span>months <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">lag1_correlation</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">residual_pairs</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">3L</span> <span class="op">&amp;&amp;</span></span>
+<span>                          <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">residual_pairs</span><span class="op">$</span><span class="va">residual</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">residual_pairs</span><span class="op">$</span><span class="va">previous_residual</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">residual_pairs</span><span class="op">$</span><span class="va">residual</span>, <span class="va">residual_pairs</span><span class="op">$</span><span class="va">previous_residual</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="cn">NA_real_</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>Pearson_dispersion <span class="op">=</span> <span class="va">dispersion</span>, adjacent_month_residual_correlation <span class="op">=</span> <span class="va">lag1_correlation</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 2</span></span></span>
+<span><span class="co">#&gt;   Pearson_dispersion adjacent_month_residual_correlation</span></span>
+<span><span class="co">#&gt;                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>               4.91                             -<span style="color: #BB0000;">0.064</span><span style="color: #BB0000; text-decoration: underline;">8</span></span></span></code></pre></div>
+<p>The quasi-Poisson model uses the actual counts and a month-length
+offset. Dispersion adjustment alone does not correct serial dependence.
+These diagnostics are a sensitivity check, not a validated inferential
+model; robust or block-based inference would also need caution with so
+few years. Counts/day are not population mortality rates.</p>
 </div>
 <div class="section level3">
 <h3 id="harmonic-regression">Harmonic Regression<a class="anchor" aria-label="anchor" href="#harmonic-regression"></a>
@@ -600,8 +654,9 @@ narrow.</p>
 <p>A harmonic regression fits a smooth annual wave plus a linear trend.
 It is a useful check on whether there is a broad, gradual seasonal
 cycle.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">harmonic_data</span> <span class="op">&lt;-</span> <span class="va">deaths_monthly</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">covid_years</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    time_index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">date</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">365.25</span>,</span>
 <span>    sin_annual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">month</span> <span class="op">/</span> <span class="fl">12</span><span class="op">)</span>,</span>
@@ -631,44 +686,39 @@ cycle.</p>
 <tbody>
 <tr class="odd">
 <td align="left"><strong>Estimated peak of the smooth wave</strong></td>
-<td align="left">October</td>
+<td align="left">December</td>
 </tr>
 <tr class="even">
 <td align="left"><strong>Seasonal amplitude</strong></td>
-<td align="left">±1.4 deaths/day (2.9% of the mean)</td>
+<td align="left">±0.9 deaths/day (2.0% of the mean)</td>
 </tr>
 <tr class="odd">
 <td align="left"><strong>Model fit (R², including trend)</strong></td>
-<td align="left">17.5%</td>
+<td align="left">33.7%</td>
 </tr>
 </tbody>
 </table>
-<p>The smooth wave is small and explains little of the variation. A
-one-month spike cannot be captured by a gradual wave, so the estimated
-peak timing is pulled by other features of the data, including the
-autumn 2021 Delta wave. This is further evidence against a broad
-seasonal cycle, not a reason to doubt the December spike.</p>
+<p>This sensitivity fit excludes 2020-2022. A single annual harmonic can
+miss narrow peaks and changes over time; a small fitted wave does not
+establish the absence of seasonality or a cold effect. It summarises
+these recorded counts under a restricted model.</p>
 <hr>
 </div>
 </div>
 <div class="section level2">
 <h2 id="is-the-december-spike-real">4. Is the December Spike Real?<a class="anchor" aria-label="anchor" href="#is-the-december-spike-real"></a>
 </h2>
-<p>A rise in deaths caused by cold would be expected to last through the
-coldest months. January, not December, is usually Mongolia’s coldest
-month, yet January deaths per day are no higher than an average month.
-The table below compares each December with the average of the November
-before it and the January after it.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">december_check</span> <span class="op">&lt;-</span> <span class="va">deaths_all</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>neighbours <span class="op">=</span> <span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">daily_avg</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lead</a></span><span class="op">(</span><span class="va">daily_avg</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">month</span> <span class="op">==</span> <span class="fl">12</span>, <span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">complete_years</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">neighbours</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<p>The following compares December with the preceding November and
+following January. Exact calendar neighbours are required. It is a local
+descriptive contrast, not a test of cold exposure, holiday effects or
+mortality displacement.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">december_check</span> <span class="op">&lt;-</span> <span class="fu">analysis_neighbours</span><span class="op">(</span><span class="va">deaths_all</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">complete_years</span>, <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">neighbours</span><span class="op">)</span>, <span class="va">neighbours</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>ratio <span class="op">=</span> <span class="op">(</span><span class="va">daily_avg</span> <span class="op">/</span> <span class="va">neighbours</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span><span class="op">)</span></span>
-<span></span>
 <span><span class="va">december_check</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span></span>
-<span>    Year <span class="op">=</span> <span class="va">year</span>,</span>
-<span>    `December deaths/day` <span class="op">=</span> <span class="fu">fmt_num</span><span class="op">(</span><span class="va">daily_avg</span><span class="op">)</span>,</span>
+<span>    Year <span class="op">=</span> <span class="va">year</span>, `December deaths/day` <span class="op">=</span> <span class="fu">fmt_num</span><span class="op">(</span><span class="va">daily_avg</span><span class="op">)</span>,</span>
 <span>    `Average of Nov and next Jan` <span class="op">=</span> <span class="fu">fmt_num</span><span class="op">(</span><span class="va">neighbours</span><span class="op">)</span>,</span>
 <span>    `December vs neighbours` <span class="op">=</span> <span class="fu">fmt_pct</span><span class="op">(</span><span class="va">ratio</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -749,8 +799,8 @@ before it and the January after it.</p>
 </tr>
 </tbody>
 </table>
-<p>December is at least 5% above its neighbours in 7 of 10 years. Three
-explanations fit a spike confined to one month:</p>
+<p>December is at least 5% above its neighbours in 7 of 10 years.
+Possible explanations remain hypotheses:</p>
 <ul>
 <li>
 <strong>Recording timing.</strong> If deaths are counted by
@@ -758,15 +808,11 @@ registration month, deaths from earlier in the year may be registered in
 December as offices close their annual records. This would produce a
 December-only spike without any change in how many people die.</li>
 <li>
-<strong>Short-term harvesting.</strong> A December cold snap could
-bring forward deaths among the frailest, leaving fewer in January. But
-the December excess (about 116 deaths over the month) is much larger
-than the January deficit (about 9 deaths), so harvesting alone does not
-balance the books.</li>
-<li>
-<strong>Holiday-period behaviour.</strong> Year-end celebrations,
-alcohol and travel could raise injuries and other deaths. Monthly
-cause-of-death data would be needed to test this.</li>
+<strong>Mortality displacement.</strong> A short-term exposure can
+advance some deaths. Deviations from an overall month mean are not
+counterfactual excess and deficit estimates, and displacement need not
+be confined to the following January. These monthly comparisons cannot
+test that mechanism.</li>
 </ul>
 <p>The first explanation can be checked directly: NSO’s metadata or
 staff can confirm whether <code>DT_NSO_2100_027V2</code> counts deaths
@@ -778,15 +824,15 @@ should not be read as a change in risk.</p>
 <h2 id="causes-of-death-annual-data-only">5. Causes of Death (Annual Data Only)<a class="anchor" aria-label="anchor" href="#causes-of-death-annual-data-only"></a>
 </h2>
 <blockquote>
-<p><strong>Data availability:</strong> NSO publishes deaths by cause
-only by <strong>year</strong>, not by month, so these data cannot show
-which causes drive a monthly peak. NSO’s monthly communicable disease
-table (<code>DT_NSO_2100_035V1</code>) is not a usable proxy for
-respiratory infection: its total includes COVID-19 cases and is
-otherwise made up mostly of sexually transmitted infections, varicella,
-and hand, foot and mouth disease.</p>
+<p><strong>Data availability:</strong> The NSO tables inspected for this
+article provide deaths by cause by <strong>year</strong>, not by month,
+so these data cannot show which causes drive a monthly peak. NSO’s
+monthly communicable disease table (<code>DT_NSO_2100_035V1</code>) is
+not a usable proxy for respiratory infection: its total includes
+COVID-19 cases and is otherwise made up mostly of sexually transmitted
+infections, varicella, and hand, foot and mouth disease.</p>
 </blockquote>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cause_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_2100_027V1"</span></span>
 <span><span class="va">indicators</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">cause_tbl</span>, <span class="st">"Indicator"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="va">cause_years</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">cause_tbl</span>, <span class="st">"Year"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
@@ -809,7 +855,7 @@ and hand, foot and mouth disease.</p>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Cause</span> <span class="op">!=</span> <span class="st">"Deaths"</span>, <span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">complete_years</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cause_deaths</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">value</span>, color <span class="op">=</span> <span class="va">Cause</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
@@ -819,13 +865,13 @@ and hand, foot and mouth disease.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="va">complete_years</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Annual Deaths by Leading Cause, "</span>, <span class="va">period</span><span class="op">)</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Annual totals; NSO does not publish monthly deaths by cause"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Annual totals; Monthly cause detail was not available in the inspected tables"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"Deaths per year"</span>,</span>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_027V1"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/cause-trends-plot-1.png" alt="Line chart of annual deaths by cause in Mongolia. Cardiovascular disease is the leading cause every year, followed by cancer; injuries and poisoning rise over the period; the Other category spikes in 2021; digestive and respiratory deaths are lowest." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/cause-trends-plot-1.png" alt="Annual recorded deaths by leading cause over the selected common period." width="100%"></p>
 <ul>
 <li>
 <strong>Cardiovascular disease</strong> is the leading cause every
@@ -837,8 +883,9 @@ and 2025.</li>
 <strong>Injuries and poisoning</strong> changed by +34% over the
 same period. This rise deserves attention in its own right.</li>
 <li>
-<strong>“Other”</strong> spikes in 2021, most likely because
-COVID-19 deaths are not included in the other listed groups.</li>
+<strong>“Other”</strong> spikes in 2021, during the pandemic. The
+cause classification needs confirmation before attributing that change
+to COVID-19.</li>
 </ul>
 <p>None of this tells us whether any cause peaks in December. Annual
 totals cannot support or rule out a New Year effect.</p>
@@ -847,35 +894,40 @@ totals cannot support or rule out a New Year effect.</p>
 <div class="section level2">
 <h2 id="ulaanbaatar-and-the-aimags">6. Ulaanbaatar and the Aimags<a class="anchor" aria-label="anchor" href="#ulaanbaatar-and-the-aimags"></a>
 </h2>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">regions_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">death_tbl</span>, <span class="st">"Region"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">regional_deaths</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>  tbl_id <span class="op">=</span> <span class="va">death_tbl</span>,</span>
-<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="va">regions_meta</span><span class="op">$</span><span class="va">code</span>, Month <span class="op">=</span> <span class="va">months_meta</span><span class="op">$</span><span class="va">code</span><span class="op">)</span>,</span>
+<span><span class="va">region_units</span> <span class="op">&lt;-</span> <span class="va">regions_meta</span><span class="op">$</span><span class="va">code</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">regions_meta</span><span class="op">$</span><span class="va">code</span><span class="op">)</span> <span class="op">==</span> <span class="fl">3</span> <span class="op">&amp;</span> <span class="va">regions_meta</span><span class="op">$</span><span class="va">code</span> <span class="op">!=</span> <span class="st">"511"</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">region_units</span><span class="op">)</span> <span class="op">==</span> <span class="fl">21L</span><span class="op">)</span></span>
+<span><span class="va">regional_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span><span class="va">death_tbl</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"5"</span>, <span class="va">region_units</span><span class="op">)</span>, Month <span class="op">=</span> <span class="va">months_meta</span><span class="op">$</span><span class="va">label_en</span><span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Keep the capital (code "5") and the 21 aimags (three-digit codes); drop the</span></span>
-<span>  <span class="co"># national total and regional subtotals, which would double count deaths</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Region</span> <span class="op">==</span> <span class="st">"5"</span> <span class="op">|</span> <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">Region</span><span class="op">)</span> <span class="op">==</span> <span class="fl">3</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">regional_status</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_value_status.html">nso_value_status</a></span><span class="op">(</span><span class="va">regional_raw</span><span class="op">)</span></span>
+<span><span class="fu">analysis_keys</span><span class="op">(</span></span>
+<span>  <span class="va">regional_raw</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Region"</span>, <span class="st">"Month_en"</span><span class="op">)</span>,</span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand_grid.html" class="external-link">expand_grid</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"5"</span>, <span class="va">region_units</span><span class="op">)</span>, Month_en <span class="op">=</span> <span class="va">months_meta</span><span class="op">$</span><span class="va">label_en</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">regional_deaths</span> <span class="op">&lt;-</span> <span class="va">regional_raw</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>area <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">Region</span> <span class="op">==</span> <span class="st">"5"</span>, <span class="st">"Ulaanbaatar"</span>, <span class="st">"Aimags (combined)"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">parse_months</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">complete_years</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">area</span>, <span class="va">date</span>, <span class="va">year</span>, <span class="va">month</span>, <span class="va">month_name</span>, <span class="va">days</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu">analysis_sum</span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">area</span>, <span class="va">date</span>, <span class="va">year</span>, <span class="va">month</span>, <span class="va">month_name</span>, <span class="va">days</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>daily_avg <span class="op">=</span> <span class="va">value</span> <span class="op">/</span> <span class="va">days</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># The capital and aimags together should reproduce the national total</span></span>
 <span><span class="va">regional_check</span> <span class="op">&lt;-</span> <span class="va">regional_deaths</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">deaths_monthly</span>, <span class="va">date</span>, national <span class="op">=</span> <span class="va">value</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">regional_check</span><span class="op">$</span><span class="va">value</span>, <span class="va">regional_check</span><span class="op">$</span><span class="va">national</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">area_monthly</span> <span class="op">&lt;-</span> <span class="va">regional_deaths</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>mean_daily <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">daily_avg</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">area</span>, <span class="va">month</span>, <span class="va">month_name</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct_of_mean <span class="op">=</span> <span class="op">(</span><span class="va">mean_daily</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">mean_daily</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, .by <span class="op">=</span> <span class="va">area</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu">analysis_sum</span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">analysis_pair</span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">deaths_monthly</span>, <span class="va">date</span>, national <span class="op">=</span> <span class="va">value</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"date"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">regional_check</span><span class="op">$</span><span class="va">value</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">regional_check</span><span class="op">$</span><span class="va">value</span> <span class="op">==</span> <span class="va">regional_check</span><span class="op">$</span><span class="va">national</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">area_monthly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">regional_deaths</span>, analysis <span class="op">=</span> <span class="st">"All valid years"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">regional_deaths</span>, <span class="op">!</span><span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">covid_years</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>analysis <span class="op">=</span> <span class="st">"Excluding 2020-2022"</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>mean_daily <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">daily_avg</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">analysis</span>, <span class="va">area</span>, <span class="va">month</span>, <span class="va">month_name</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct_of_mean <span class="op">=</span> <span class="op">(</span><span class="va">mean_daily</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">mean_daily</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">analysis</span>, <span class="va">area</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">area_monthly</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">month_name</span>, y <span class="op">=</span> <span class="va">pct_of_mean</span>, color <span class="op">=</span> <span class="va">area</span>, group <span class="op">=</span> <span class="va">area</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">analysis</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
@@ -889,47 +941,52 @@ totals cannot support or rule out a New Year effect.</p>
 <span>    y <span class="op">=</span> <span class="st">"% from area's average"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/urban-rural-comparison-1.png" alt="Line chart of deaths per day by calendar month for Ulaanbaatar and for the aimags combined, each shown as a percentage above or below its own average. Ulaanbaatar rises steadily from September to a December peak about 12% above its average, while the aimags combined show no December peak." width="100%"></p>
-<p>December is +12% in Ulaanbaatar and +1% in the aimags. The national
-December peak comes almost entirely from the capital, where deaths per
-day climb from September to December and then fall in January and
-February. In the aimags combined, December is barely above average. Cold
-alone would not explain this difference, since winters are at least as
-harsh across most of the country. Part of the capital’s autumn rise
-reflects the 2021 Delta wave, which is included in these averages.</p>
+<p><img src="mortality-analysis_files/figure-html/urban-rural-comparison-1.png" alt="Calendar-month profiles for the capital and aimags combined, shown with and without 2020-2022." width="100%"></p>
+<p>The panels repeat the regional comparison with and without 2020-2022.
+The all-year December deviations are +12% in the capital and +1% in the
+aimags combined. Differences in calendar patterns do not identify
+exposure effects: population composition, referral, recording practices
+and other factors may differ. The aimags combined are not a uniformly
+rural population.</p>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="hospital-and-all-deaths">7. Hospital and All Deaths<a class="anchor" aria-label="anchor" href="#hospital-and-all-deaths"></a>
 </h2>
-<p>If the December spike reflected registration catch-up, it might
-differ between hospital deaths, which are likely to be certified
-promptly, and deaths at home.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<p>Hospital and all-death profiles can be compared only over identical
+observed months with compatible definitions. Hospital deaths are a
+subset of all deaths, so these series are dependent. Certification speed
+and registration delay are unverified hypotheses.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hospital_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_2100_027V3"</span></span>
 <span><span class="va">hospital_months</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">hospital_tbl</span>, <span class="st">"Month"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">hospital_deaths</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
 <span>  tbl_id <span class="op">=</span> <span class="va">hospital_tbl</span>,</span>
-<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="st">"0"</span>, Month <span class="op">=</span> <span class="va">hospital_months</span><span class="op">$</span><span class="va">code</span><span class="op">)</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="st">"0"</span>, Month <span class="op">=</span> <span class="va">hospital_months</span><span class="op">$</span><span class="va">label_en</span><span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">parse_months</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">complete_years</span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">hospital_pair</span> <span class="op">&lt;-</span> <span class="fu">analysis_hospital_pair</span><span class="op">(</span><span class="va">deaths_monthly</span>, <span class="va">hospital_deaths</span><span class="op">)</span></span>
 <span><span class="va">comparison_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
 <span>  <span class="va">deaths_monthly</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"All deaths"</span><span class="op">)</span>,</span>
 <span>  <span class="va">hospital_deaths</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"Hospital deaths"</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">year</span>, <span class="va">month</span>, <span class="va">month_name</span>, <span class="va">value</span>, <span class="va">daily_avg</span>, <span class="va">type</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">type_monthly</span> <span class="op">&lt;-</span> <span class="va">comparison_data</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>mean_daily <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">daily_avg</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">type</span>, <span class="va">month</span>, <span class="va">month_name</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct_of_mean <span class="op">=</span> <span class="op">(</span><span class="va">mean_daily</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">mean_daily</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, .by <span class="op">=</span> <span class="va">type</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">type_monthly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">comparison_data</span>, analysis <span class="op">=</span> <span class="st">"All valid years"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">comparison_data</span>, <span class="op">!</span><span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">covid_years</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>analysis <span class="op">=</span> <span class="st">"Excluding 2020-2022"</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>mean_daily <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">daily_avg</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">analysis</span>, <span class="va">type</span>, <span class="va">month</span>, <span class="va">month_name</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct_of_mean <span class="op">=</span> <span class="op">(</span><span class="va">mean_daily</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">mean_daily</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">analysis</span>, <span class="va">type</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">type_monthly</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">month_name</span>, y <span class="op">=</span> <span class="va">pct_of_mean</span>, color <span class="op">=</span> <span class="va">type</span>, group <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">analysis</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
@@ -943,14 +1000,12 @@ promptly, and deaths at home.</p>
 <span>    y <span class="op">=</span> <span class="st">"% from series average"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/hospital-comparison-1.png" alt="Line chart of deaths per day by calendar month for all deaths and for hospital deaths, each shown as a percentage above or below its own average. Hospital deaths peak in September and October, while all deaths peak in December; December stands out more for all deaths than for hospital deaths." width="100%"></p>
-<p>December is +6% for all deaths and +3% for hospital deaths. Hospitals
-account for 29.3% of December deaths, compared with 30.2% in other
-months. So the December excess is slightly larger outside hospitals.
-That fits the registration explanation, but the difference is small, and
-deaths at home during a cold snap or the holidays would produce the same
-pattern. Hospital deaths peak instead in September and October, most
-likely because of the 2021 Delta wave.</p>
+<p><img src="mortality-analysis_files/figure-html/hospital-comparison-1.png" alt="Dependent hospital and all-death calendar profiles over matched observations, with pandemic-excluded sensitivity." width="100%"></p>
+<p>Hospitals account for 29.3% of recorded December deaths versus 30.2%
+in other months over matched observations. The panels show sensitivity
+to exclusion of 2020-2022. Neither the shares nor differences between
+these dependent profiles establish a registration mechanism, a
+location-of-death effect or a cause of the December pattern.</p>
 <hr>
 </div>
 <div class="section level2">
@@ -980,7 +1035,7 @@ likely because of the 2021 Delta wave.</p>
 </tr>
 <tr class="odd">
 <td align="left"><strong>Winter (Nov–Mar) vs other months</strong></td>
-<td align="left">-0.2%</td>
+<td align="left">-0.1%</td>
 </tr>
 <tr class="even">
 <td align="left"><strong>Winter without December vs other
@@ -1000,23 +1055,24 @@ higher</strong></td>
 <h2 id="conclusions">9. Conclusions<a class="anchor" aria-label="anchor" href="#conclusions"></a>
 </h2>
 <ol style="list-style-type: decimal">
-<li><p><strong>Does December have the most deaths?</strong> In NSO’s
-monthly statistics, yes: December has the highest average deaths per day
-(50.6), with or without the pandemic years. But it is not higher every
-year, and whether it reflects more deaths or later registration is still
-open.</p></li>
-<li><p><strong>Is winter deadlier?</strong> Not in these data. Apart
-from December, winter months are no higher than the rest of the year,
-and January is no higher than an average month once differences between
-years are removed. A cold-driven rise would be expected to last through
-January. The December rise is also concentrated in Ulaanbaatar rather
-than spread across the country.</p></li>
-<li><p><strong>Is it because of New Year celebrations?</strong> These
-data cannot tell. NSO publishes causes of death only by year, so neither
-a holiday effect nor a cold effect can be tested.</p></li>
-<li><p><strong>COVID-19:</strong> The 2021 Delta wave produced the
-highest death counts in the series. The dip around the first lockdowns
-could reflect fewer deaths, disrupted registration, or both.</p></li>
+<li><p><strong>Which month has the highest recorded average?</strong>
+The highest equal-year monthly mean is in December, at 50.6 deaths per
+day. Excluding 2020-2022, it is in December. These findings apply to the
+selected recorded series, not necessarily to occurrence-dated
+mortality.</p></li>
+<li><p><strong>What does the winter comparison mean?</strong> The
+observed winter/nonwinter contrast is descriptive. It does not estimate
+the effect of cold or establish that cold-related deaths are absent.
+Temperature, delayed effects and other time-varying factors are not
+modelled.</p></li>
+<li><p><strong>What explains the pattern?</strong> These tables cannot
+establish a holiday, registration or mortality-displacement explanation.
+Occurrence-dated deaths, compatible exposure data and finer cause detail
+are needed.</p></li>
+<li><p><strong>How robust is it?</strong> The article reports
+pandemic-excluded comparisons, a count-model sensitivity and residual
+diagnostics. Remaining uncertainty includes reporting conventions,
+temporal dependence, population change and source revisions.</p></li>
 </ol>
 <div class="section level3">
 <h3 id="data-limitations">Data Limitations<a class="anchor" aria-label="anchor" href="#data-limitations"></a>
@@ -1037,18 +1093,17 @@ registration</strong>
 cause and date of death, which may require working directly with
 NSO.</p>
 </blockquote>
-<p><strong>Verdict:</strong> The claim that December has the most deaths
-is <strong>true of the published monthly statistics</strong>, but the
-December spike is not part of a broader winter rise and may partly
-reflect how deaths are recorded. Its cause cannot be determined from
-public data.</p>
+<p><strong>Interpretation:</strong> This article describes patterns in
+published recorded counts. The date used to assign a death to a month
+remains unresolved. The analysis does not identify the effects of cold
+weather, holidays or registration delays.</p>
 <hr>
 </div>
 </div>
 <div class="section level2">
 <h2 id="appendix-reproducibility">Appendix: Reproducibility<a class="anchor" aria-label="anchor" href="#appendix-reproducibility"></a>
 </h2>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.6.2 (2026-10-29)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>

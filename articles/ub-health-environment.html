@@ -89,6 +89,8 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Checked teaching helpers are shipped with the package and can be inspected.</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"analysis-helpers.R"</span>, package <span class="op">=</span> <span class="st">"mongolstats"</span><span class="op">)</span>, local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">old_options</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Global theme with proper margins to prevent text cutoff</span></span>
@@ -137,17 +139,23 @@ tables join without matching names.</p>
 <span></span>
 <span><span class="co"># Fetch an NSO table for the nine districts only</span></span>
 <span><span class="va">get_ub_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">selections</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
 <span>    <span class="va">tbl_id</span>,</span>
 <span>    selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="va">ub_districts</span><span class="op">$</span><span class="va">nso_code</span><span class="op">)</span>, <span class="va">selections</span><span class="op">)</span>,</span>
 <span>    labels <span class="op">=</span> <span class="st">"en"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>District <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">Region_en</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">expected</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand_grid.html" class="external-link">expand_grid</a></span><span class="op">(</span></span>
+<span>    Region <span class="op">=</span> <span class="va">ub_districts</span><span class="op">$</span><span class="va">nso_code</span>,</span>
+<span>    Year_en <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">selections</span><span class="op">$</span><span class="va">Year</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu">analysis_keys</span><span class="op">(</span><span class="va">data</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Region"</span>, <span class="st">"Year_en"</span><span class="op">)</span>, <span class="va">expected</span><span class="op">)</span></span>
+<span>  <span class="va">data</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="co"># Latest year a table covers</span></span>
 <span><span class="va">latest_year</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tbl_id</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="st">"Year"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span><span class="op">$</span><span class="va">label_en</span><span class="op">)</span></span>
+<span>  <span class="fu">analysis_latest_common_year</span><span class="op">(</span><span class="va">tbl_id</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -168,7 +176,11 @@ which is the khoroo-level table and also includes the districts.)</p>
 <span></span>
 <span><span class="va">ub_pop_map</span> <span class="op">&lt;-</span> <span class="va">pop_data</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"Region"</span>, level <span class="op">=</span> <span class="st">"soum"</span>, within <span class="op">=</span> <span class="st">"Ulaanbaatar"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>density <span class="op">=</span> <span class="va">value</span> <span class="op">/</span> <span class="va">area_km2</span><span class="op">)</span> <span class="co"># residents per km2</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>density <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">value</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">area_km2</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">area_km2</span> <span class="op">&gt;</span> <span class="fl">0</span>,</span>
+<span>    <span class="va">value</span> <span class="op">/</span> <span class="va">area_km2</span>, <span class="cn">NA_real_</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ub_pop_map</span><span class="op">)</span> <span class="op">==</span> <span class="fl">9L</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html" class="external-link">anyDuplicated</a></span><span class="op">(</span><span class="va">ub_pop_map</span><span class="op">$</span><span class="va">nso_code</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span></span>
 <span>  <span class="va">ub_pop_map</span>,</span>
@@ -189,29 +201,115 @@ very dense neighbourhoods. Khoroo-level data show more detail:</p>
 <code class="sourceCode R"><span><span class="va">khoroo_codes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">pop_tbl</span>, <span class="st">"Region"</span><span class="op">)</span><span class="op">$</span><span class="va">code</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_subset.html" class="external-link">str_subset</a></span><span class="op">(</span><span class="st">"^511\\d{4}$"</span><span class="op">)</span> <span class="co"># seven-digit codes are khoroos</span></span>
 <span></span>
-<span><span class="va">khoroo_pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>  <span class="va">pop_tbl</span>,</span>
-<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="va">khoroo_codes</span>, Year <span class="op">=</span> <span class="va">pop_year</span><span class="op">)</span>,</span>
+<span><span class="va">khoroo_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  <span class="va">pop_tbl</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="va">khoroo_codes</span>, Year <span class="op">=</span> <span class="va">pop_year</span><span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"Region"</span>, level <span class="op">=</span> <span class="st">"bag"</span>, within <span class="op">=</span> <span class="st">"Ulaanbaatar"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">analysis_keys</span><span class="op">(</span><span class="va">khoroo_raw</span>, <span class="st">"Region"</span>, <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="va">khoroo_codes</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">khoroo_status</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_value_status.html">nso_value_status</a></span><span class="op">(</span><span class="va">khoroo_raw</span><span class="op">)</span></span>
+<span><span class="va">khoroo_check</span> <span class="op">&lt;-</span> <span class="va">khoroo_raw</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">Region</span>, <span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>khoroo_sum <span class="op">=</span> <span class="fu">analysis_sum</span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">Region</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">full_join</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">pop_data</span>, <span class="va">Region</span>, district_total <span class="op">=</span> <span class="va">value</span><span class="op">)</span>,</span>
+<span>    by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">Region</span><span class="op">)</span>, relationship <span class="op">=</span> <span class="st">"one-to-one"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>agrees <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">khoroo_sum</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">district_total</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">khoroo_sum</span> <span class="op">==</span> <span class="va">district_total</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">khoroo_check</span>, caption <span class="op">=</span> <span class="st">"Population reconciliation before using the illustrative khoroo map"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Population reconciliation before using the illustrative khoroo
+map</caption>
+<thead><tr class="header">
+<th align="left">Region</th>
+<th align="right">khoroo_sum</th>
+<th align="right">district_total</th>
+<th align="left">agrees</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">51101</td>
+<td align="right">29076</td>
+<td align="right">29076</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">51104</td>
+<td align="right">4401</td>
+<td align="right">4401</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">51107</td>
+<td align="right">257391</td>
+<td align="right">257391</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">51110</td>
+<td align="right">452084</td>
+<td align="right">452084</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">51113</td>
+<td align="right">40781</td>
+<td align="right">40781</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">51116</td>
+<td align="right">341746</td>
+<td align="right">341746</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">51119</td>
+<td align="right">142356</td>
+<td align="right">142356</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">51122</td>
+<td align="right">278532</td>
+<td align="right">278532</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">51125</td>
+<td align="right">131278</td>
+<td align="right">131278</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">khoroo_pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join</a></span><span class="op">(</span><span class="va">khoroo_raw</span>, by <span class="op">=</span> <span class="st">"Region"</span>, level <span class="op">=</span> <span class="st">"bag"</span>, within <span class="op">=</span> <span class="st">"Ulaanbaatar"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>density <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">value</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">area_km2</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">area_km2</span> <span class="op">&gt;</span> <span class="fl">0</span>,</span>
+<span>    <span class="va">value</span> <span class="op">/</span> <span class="va">area_km2</span>, <span class="cn">NA_real_</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html" class="external-link">anyDuplicated</a></span><span class="op">(</span><span class="va">khoroo_pop</span><span class="op">$</span><span class="va">nso_code</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">unmapped_khoroos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="va">khoroo_raw</span><span class="op">$</span><span class="va">Region</span>, <span class="va">khoroo_pop</span><span class="op">$</span><span class="va">nso_code</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">central</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bayangol"</span>, <span class="st">"Bayanzurkh"</span>, <span class="st">"Chingeltei"</span>, <span class="st">"Khan-Uul"</span>, <span class="st">"Songinokhairkhan"</span>, <span class="st">"Sukhbaatar"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">khoroo_pop</span>, <span class="va">parent_pcode</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">ub_districts</span><span class="op">$</span><span class="va">pcode</span><span class="op">[</span><span class="va">ub_districts</span><span class="op">$</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">central</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>  fill <span class="op">=</span> <span class="va">value</span> <span class="op">/</span> <span class="va">area_km2</span>, trans <span class="op">=</span> <span class="st">"log10"</span>,</span>
+<span>  fill <span class="op">=</span> <span class="va">density</span>, trans <span class="op">=</span> <span class="st">"log10"</span>,</span>
 <span>  title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Population Density by Khoroo, Central Ulaanbaatar, "</span>, <span class="va">pop_year</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Residents per km² (log scale), six central districts"</span>, fill <span class="op">=</span> <span class="st">"Residents\nper km²"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ub-health-environment_files/figure-html/khoroo-density-1.png" alt="Map of population density by khoroo in Ulaanbaatar's six central districts on a log scale" width="100%"></p>
-<p>The khoroo boundaries in mongolmaps come from an open project that
-does not state their source, so treat them as unofficial.</p>
+<p>The khoroo boundaries are unofficial. 0 source codes lack a matched
+boundary. The reconciliation table does not establish a matching
+boundary vintage: splits, mergers and changed codes still need review.
+This is an illustrative density map, not validated fine-scale risk or
+exposure data. Missing or nonpositive values are not plotted on the log
+scale.</p>
 </div>
 <div class="section level3">
 <h3 id="population-growth-trends">Population Growth Trends<a class="anchor" aria-label="anchor" href="#population-growth-trends"></a>
 </h3>
 <p>Rapid growth can strain local health and school services.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trend_years</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">pop_year</span><span class="op">)</span> <span class="op">-</span> <span class="fl">9</span><span class="op">:</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="va">pop_trend</span> <span class="op">&lt;-</span> <span class="fu">get_ub_data</span><span class="op">(</span><span class="va">pop_tbl</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="va">trend_years</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">Year_en</span><span class="op">)</span><span class="op">)</span></span>
@@ -230,28 +328,101 @@ does not state their source, so treat them as unofficial.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ub-health-environment_files/figure-html/demog-trend-1.png" alt="Line chart of resident population by Ulaanbaatar district over the last 10 years" width="100%"></p>
-<p>Over these 10 years, <strong>Khan-Uul</strong> grew fastest (+79%),
-followed by <strong>Bayanzurkh</strong> (+40%).
-<strong>Chingeltei</strong> changed the least (-16%). Growth this uneven
-means services planned on older population figures may now be under
-strain in the fastest-growing districts.</p>
+<p>Across the ten annual observations from 2016 to 2025, there are nine
+elapsed years. The table below shows signed total and annualised
+changes; negative values are declines. Baganuur had the smallest
+absolute percentage change. Changes in these totals do not identify
+migration or service capacity by themselves.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">growth</span>, digits <span class="op">=</span> <span class="fl">1</span>, caption <span class="op">=</span> <span class="st">"Population change over the observed interval"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Population change over the observed interval</caption>
+<thead><tr class="header">
+<th align="left">District</th>
+<th align="right">elapsed_years</th>
+<th align="right">change</th>
+<th align="right">annual_change</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Khan-Uul</td>
+<td align="right">9</td>
+<td align="right">79.5</td>
+<td align="right">6.7</td>
+</tr>
+<tr class="even">
+<td align="left">Bayanzurkh</td>
+<td align="right">9</td>
+<td align="right">39.5</td>
+<td align="right">3.8</td>
+</tr>
+<tr class="odd">
+<td align="left">Bayangol</td>
+<td align="right">9</td>
+<td align="right">22.6</td>
+<td align="right">2.3</td>
+</tr>
+<tr class="even">
+<td align="left">Nalaikh</td>
+<td align="right">9</td>
+<td align="right">12.9</td>
+<td align="right">1.4</td>
+</tr>
+<tr class="odd">
+<td align="left">Songinokhairkhan</td>
+<td align="right">9</td>
+<td align="right">9.7</td>
+<td align="right">1.0</td>
+</tr>
+<tr class="even">
+<td align="left">Bagakhangai</td>
+<td align="right">9</td>
+<td align="right">6.4</td>
+<td align="right">0.7</td>
+</tr>
+<tr class="odd">
+<td align="left">Sukhbaatar</td>
+<td align="right">9</td>
+<td align="right">3.8</td>
+<td align="right">0.4</td>
+</tr>
+<tr class="even">
+<td align="left">Baganuur</td>
+<td align="right">9</td>
+<td align="right">1.3</td>
+<td align="right">0.1</td>
+</tr>
+<tr class="odd">
+<td align="left">Chingeltei</td>
+<td align="right">9</td>
+<td align="right">-16.1</td>
+<td align="right">-1.9</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="section level2">
-<h2 id="school-capacity">2. School Capacity<a class="anchor" aria-label="anchor" href="#school-capacity"></a>
+<h2 id="school-enrolment">2. School Enrolment<a class="anchor" aria-label="anchor" href="#school-enrolment"></a>
 </h2>
 <p>NSO publishes few socioeconomic indicators by district. The number of
 students per general education school gives a rough measure of pressure
 on public services.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">edu_year</span> <span class="op">&lt;-</span> <span class="fu">latest_year</span><span class="op">(</span><span class="st">"DT_NSO_2002_057V2"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">edu_year</span> <span class="op">&lt;-</span> <span class="fu">analysis_latest_common_year</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DT_NSO_2001_002V2"</span>, <span class="st">"DT_NSO_2002_057V2"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu">get_ub_data</span><span class="op">(</span><span class="st">"DT_NSO_2001_002V2"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="va">edu_year</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">District</span>, Schools <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region</span>, <span class="va">District</span>, Schools <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="va">students</span> <span class="op">&lt;-</span> <span class="fu">get_ub_data</span><span class="op">(</span><span class="st">"DT_NSO_2002_057V2"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="va">edu_year</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">District</span>, Students <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region</span>, Students <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">edu_load</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">schools</span>, <span class="va">students</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">District</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Students_Per_School <span class="op">=</span> <span class="va">Students</span> <span class="op">/</span> <span class="va">Schools</span><span class="op">)</span></span>
+<span><span class="va">edu_load</span> <span class="op">&lt;-</span> <span class="fu">analysis_pair</span><span class="op">(</span><span class="va">schools</span>, <span class="va">students</span>, <span class="st">"Region"</span><span class="op">)</span></span>
+<span><span class="fu">analysis_count_values</span><span class="op">(</span><span class="va">edu_load</span><span class="op">$</span><span class="va">Schools</span><span class="op">)</span></span>
+<span><span class="fu">analysis_count_values</span><span class="op">(</span><span class="va">edu_load</span><span class="op">$</span><span class="va">Students</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">edu_load</span><span class="op">$</span><span class="va">Schools</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">edu_load</span><span class="op">$</span><span class="va">Schools</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">edu_load</span><span class="op">$</span><span class="va">Students</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">edu_load</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">edu_load</span>, Students_Per_School <span class="op">=</span> <span class="va">Students</span> <span class="op">/</span> <span class="va">Schools</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">edu_load</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Students_Per_School</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">District</span>, <span class="va">Students_Per_School</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#2a78d6"</span>, width <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
@@ -265,40 +436,48 @@ on public services.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ub-health-environment_files/figure-html/socio-edu-1.png" alt="Bar chart of students per general education school by Ulaanbaatar district" width="100%"></p>
-<p>Schools differ in size and shift system, so a high ratio points to
-crowding but does not measure it directly.</p>
+<p>This ratio is mean enrolment per institution, not classroom size,
+spare capacity, crowding or deprivation. Schools differ in size, sector
+and shift system. Confirm that the school-year definition and
+institutional coverage match between the two sources.</p>
 </div>
 <div class="section level2">
 <h2 id="health-statistics-by-district-a-caution">3. Health Statistics by District: A Caution<a class="anchor" aria-label="anchor" href="#health-statistics-by-district-a-caution"></a>
 </h2>
-<p>Rates need a numerator and a denominator for the <strong>same
-population</strong>. NSO’s district tables count residents by where they
-live, but births and deaths can be counted where they happen, which is
-often a hospital in another district. A quick check is to divide each
-district’s births and deaths by its residents:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">vital_year</span> <span class="op">&lt;-</span> <span class="fu">latest_year</span><span class="op">(</span><span class="st">"DT_NSO_2100_027V1"</span><span class="op">)</span></span>
+<p>Rates need a numerator and denominator for the <strong>same
+population</strong>. Very uneven recorded births or deaths per resident
+can reveal incompatible geographic assignment or coverage. The
+diagnostic below is not a comparison of resident health risks;
+source-specific residence versus occurrence definitions still need
+confirmation.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">vital_year</span> <span class="op">&lt;-</span> <span class="fu">analysis_latest_common_year</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DT_NSO_2100_027V1"</span>, <span class="st">"DT_NSO_2100_018V6"</span>, <span class="va">pop_tbl</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">births</span> <span class="op">&lt;-</span> <span class="fu">get_ub_data</span><span class="op">(</span></span>
 <span>  <span class="st">"DT_NSO_2100_018V6"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Indicator <span class="op">=</span> <span class="st">"0"</span>, Year <span class="op">=</span> <span class="va">vital_year</span><span class="op">)</span> <span class="co"># Indicator "0" = both sexes</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">District</span>, count <span class="op">=</span> <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region</span>, <span class="va">District</span>, count <span class="op">=</span> <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>measure <span class="op">=</span> <span class="st">"Live births per 1,000 residents"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">deaths</span> <span class="op">&lt;-</span> <span class="fu">get_ub_data</span><span class="op">(</span></span>
 <span>  <span class="st">"DT_NSO_2100_027V1"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Indicator <span class="op">=</span> <span class="st">"0"</span>, Year <span class="op">=</span> <span class="va">vital_year</span><span class="op">)</span> <span class="co"># Indicator "0" = all deaths</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">District</span>, count <span class="op">=</span> <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region</span>, <span class="va">District</span>, count <span class="op">=</span> <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>measure <span class="op">=</span> <span class="st">"Deaths per 1,000 residents"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">residents</span> <span class="op">&lt;-</span> <span class="fu">get_ub_data</span><span class="op">(</span><span class="va">pop_tbl</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="va">vital_year</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">District</span>, residents <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Region</span>, residents <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">vital_rates</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">births</span>, <span class="va">deaths</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">residents</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">District</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">residents</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">Region</span><span class="op">)</span>, relationship <span class="op">=</span> <span class="st">"many-to-one"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>rate <span class="op">=</span> <span class="va">count</span> <span class="op">/</span> <span class="va">residents</span> <span class="op">*</span> <span class="fl">1000</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">vital_rates</span><span class="op">$</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">vital_rates</span><span class="op">$</span><span class="va">residents</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">vital_rates</span><span class="op">$</span><span class="va">residents</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">vital_rates</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">rate</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">District</span>, <span class="va">residents</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -314,35 +493,29 @@ district’s births and deaths by its residents:</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ub-health-environment_files/figure-html/health-check-1.png" alt="Two-panel bar chart of live births and deaths per 1,000 residents by Ulaanbaatar district, showing implausible differences between districts" width="100%"></p>
-<p>These numbers cannot describe the residents.
-<strong>Songinokhairkhan</strong>, with 341,746 residents, recorded 0
-live births in 2025, while <strong>Sukhbaatar</strong> recorded 62 per
-1,000 residents. Recorded deaths range from 2 per 1,000 residents in
-Bagakhangai to 23 in Sukhbaatar. The pattern fits counting by
-<strong>place of occurrence</strong>: births and deaths are recorded in
-the districts that have maternity and general hospitals, not in the
-districts where the mother or the person who died lived.</p>
-<p>So district-level rates built from these tables, such as infant
-mortality or deaths from respiratory disease per 10,000 residents, mix
-up where people live with where hospitals are. Correlating them with
-district density or other indicators would produce misleading results.
-For district comparisons, use data coded by <strong>place of
-residence</strong>, which may need a request to the Health Development
-Center or NSO. City-wide rates for Ulaanbaatar as a whole are less
-affected, though referrals of patients from the aimags to the capital’s
-hospitals still raise its counts.</p>
+<p>The observed differences are consistent with occurrence-based
+reporting or another mismatch in coverage. They do not establish the
+precise assignment rule. Do not interpret the diagnostic ratios as
+resident birth or death rates until NSO or the Health Development Center
+confirms the definitions for each table.</p>
+<p>Do not correlate these diagnostic ratios with density or
+environmental measures as though they describe residents. Obtain
+compatible residence-coded events and populations for district
+comparisons. City-wide aggregation may reduce internal district
+mismatch, but does not by itself resolve referrals into the capital or
+inconsistent source coverage.</p>
 </div>
 <div class="section level2">
 <h2 id="air-quality-monitoring-network">4. Air Quality Monitoring Network<a class="anchor" aria-label="anchor" href="#air-quality-monitoring-network"></a>
 </h2>
-<p>Station-level air quality data (see the <a href="environmental-surveillance.html">Environmental Analysis</a>
-vignette) can only be linked to people if we know where the stations
-are. NSO does not publish station coordinates, so the table below lists
-approximate locations for 18 Ulaanbaatar stations, compiled from public
-station listings, including the World Air Quality Index project
-(api.waqi.info). Check them before using them for exposure
-assignment.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p>The following is an <strong>illustrative inventory of 18 approximate
+station locations</strong>, not a verified list of active monitoring
+sites. The original compilation referred to public listings, including
+the World Air Quality Index project, but did not retain a per-coordinate
+URL or verification date. Those fields remain unknown; verify official
+coordinates, operating periods and pollutant coverage before exposure
+assignment or network planning.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ub_aq_stations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">Station</span>, <span class="op">~</span><span class="va">Latitude</span>, <span class="op">~</span><span class="va">Longitude</span>,</span>
 <span>  <span class="st">"Misheel-Expo center"</span>, <span class="fl">47.89428</span>, <span class="fl">106.8825</span>,</span>
@@ -365,11 +538,48 @@ assignment.</p>
 <span>  <span class="st">"100 ail"</span>, <span class="fl">47.93291</span>, <span class="fl">106.9214</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Assign each station to the district polygon it falls in</span></span>
-<span><span class="va">ub_stations_sf</span> <span class="op">&lt;-</span> <span class="va">ub_aq_stations</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Longitude"</span>, <span class="st">"Latitude"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_join</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ub_districts</span>, District <span class="op">=</span> <span class="va">name</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Keep missing provenance explicit rather than inventing sources or dates.</span></span>
+<span><span class="va">ub_aq_stations</span> <span class="op">&lt;-</span> <span class="va">ub_aq_stations</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    coordinate_source <span class="op">=</span> <span class="st">"Historical illustrative compilation; unverified"</span>,</span>
+<span>    verified_at <span class="op">=</span> <span class="cn">NA_character_</span>, operating_period <span class="op">=</span> <span class="cn">NA_character_</span>,</span>
+<span>    pollutant_coverage <span class="op">=</span> <span class="cn">NA_character_</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Only unique polygon assignments count toward a district's inventory.</span></span>
+<span><span class="va">station_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">ub_aq_stations</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Longitude"</span>, <span class="st">"Latitude"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
+<span><span class="va">polygon_matches</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html" class="external-link">st_intersects</a></span><span class="op">(</span><span class="va">station_points</span>, <span class="va">ub_districts</span><span class="op">)</span></span>
+<span><span class="va">station_points</span><span class="op">$</span><span class="va">assignment</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lengths.html" class="external-link">lengths</a></span><span class="op">(</span><span class="va">polygon_matches</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1L</span>, <span class="st">"Unique"</span>, <span class="st">"Unresolved"</span><span class="op">)</span></span>
+<span><span class="co"># Assign each uniquely located station to a district</span></span>
+<span><span class="va">ub_stations_sf</span> <span class="op">&lt;-</span> <span class="va">station_points</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">assignment</span> <span class="op">==</span> <span class="st">"Unique"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_join</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ub_districts</span>, District <span class="op">=</span> <span class="va">name</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">analysis_keys</span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="va">ub_stations_sf</span><span class="op">)</span>, <span class="st">"Station"</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">station_points</span>, <span class="va">assignment</span> <span class="op">!=</span> <span class="st">"Unique"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"Stations with unresolved district assignments"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Stations with unresolved district assignments</caption>
+<colgroup>
+<col width="9%">
+<col width="21%">
+<col width="14%">
+<col width="20%">
+<col width="22%">
+<col width="12%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Station</th>
+<th align="left">coordinate_source</th>
+<th align="left">verified_at</th>
+<th align="left">operating_period</th>
+<th align="left">pollutant_coverage</th>
+<th align="left">assignment</th>
+</tr></thead>
+<tbody></tbody>
+</table>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="co"># Station count for every district, including those with none</span></span>
 <span><span class="va">station_count</span> <span class="op">&lt;-</span> <span class="va">ub_districts</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -378,9 +588,10 @@ assignment.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Stations <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/coalesce.html" class="external-link">coalesce</a></span><span class="op">(</span><span class="va">Stations</span>, <span class="fl">0L</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">Stations</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">station_count</span>, caption <span class="op">=</span> <span class="st">"Air quality monitoring stations by district"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">station_count</span>, caption <span class="op">=</span> <span class="st">"Uniquely assigned locations in the illustrative inventory by district"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<caption>Air quality monitoring stations by district</caption>
+<caption>Uniquely assigned locations in the illustrative inventory by
+district</caption>
 <thead><tr class="header">
 <th align="left">District</th>
 <th align="right">Stations</th>
@@ -430,7 +641,7 @@ a district border may fall on the other side.</p>
 <div class="section level3">
 <h3 id="spatial-distribution">Spatial Distribution<a class="anchor" aria-label="anchor" href="#spatial-distribution"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Zoom to the stations, with a 3 km margin, in UTM zone 48N (metres)</span></span>
 <span><span class="va">utm48n</span> <span class="op">&lt;-</span> <span class="fl">32648</span></span>
 <span><span class="va">station_box</span> <span class="op">&lt;-</span> <span class="va">ub_stations_sf</span> <span class="op">|&gt;</span></span>
@@ -438,8 +649,10 @@ a district border may fall on the other side.</p>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_buffer</a></span><span class="op">(</span><span class="fl">3000</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ub_districts</span>, <span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">central</span><span class="op">)</span>, label <span class="op">=</span> <span class="cn">TRUE</span>, crs <span class="op">=</span> <span class="va">utm48n</span>,</span>
-<span>       title <span class="op">=</span> <span class="st">"Air Quality Monitoring Stations in Central Ulaanbaatar"</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ub_districts</span>, <span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">central</span><span class="op">)</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">TRUE</span>, crs <span class="op">=</span> <span class="va">utm48n</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Air Quality Monitoring Stations in Central Ulaanbaatar"</span></span>
+<span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">ub_stations_sf</span>, color <span class="op">=</span> <span class="st">"#e34948"</span>, size <span class="op">=</span> <span class="fl">2.5</span>, alpha <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggrepel</span><span class="fu">::</span><span class="fu"><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html" class="external-link">geom_text_repel</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">ub_stations_sf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">Station</span>, geometry <span class="op">=</span> <span class="va">geometry</span><span class="op">)</span>, stat <span class="op">=</span> <span class="st">"sf_coordinates"</span>,</span>
@@ -455,11 +668,80 @@ a district border may fall on the other side.</p>
 <div class="section level3">
 <h3 id="coverage">Coverage<a class="anchor" aria-label="anchor" href="#coverage"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">station_coverage</span> <span class="op">&lt;-</span> <span class="va">station_count</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">pop_data</span>, <span class="va">District</span>, Population <span class="op">=</span> <span class="va">value</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">District</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Pop_per_Station <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">Stations</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="va">Population</span> <span class="op">/</span> <span class="va">Stations</span>, <span class="cn">NA_real_</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">station_coverage</span>, caption <span class="op">=</span> <span class="st">"All districts, including those without a listed location"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>All districts, including those without a listed
+location</caption>
+<thead><tr class="header">
+<th align="left">District</th>
+<th align="right">Stations</th>
+<th align="right">Population</th>
+<th align="right">Pop_per_Station</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Bayanzurkh</td>
+<td align="right">5</td>
+<td align="right">452084</td>
+<td align="right">90416.8</td>
+</tr>
+<tr class="even">
+<td align="left">Bayangol</td>
+<td align="right">3</td>
+<td align="right">257391</td>
+<td align="right">85797.0</td>
+</tr>
+<tr class="odd">
+<td align="left">Songinokhairkhan</td>
+<td align="right">3</td>
+<td align="right">341746</td>
+<td align="right">113915.3</td>
+</tr>
+<tr class="even">
+<td align="left">Sukhbaatar</td>
+<td align="right">3</td>
+<td align="right">142356</td>
+<td align="right">47452.0</td>
+</tr>
+<tr class="odd">
+<td align="left">Khan-Uul</td>
+<td align="right">2</td>
+<td align="right">278532</td>
+<td align="right">139266.0</td>
+</tr>
+<tr class="even">
+<td align="left">Chingeltei</td>
+<td align="right">2</td>
+<td align="right">131278</td>
+<td align="right">65639.0</td>
+</tr>
+<tr class="odd">
+<td align="left">Baganuur</td>
+<td align="right">0</td>
+<td align="right">29076</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">Bagakhangai</td>
+<td align="right">0</td>
+<td align="right">4401</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">Nalaikh</td>
+<td align="right">0</td>
+<td align="right">40781</td>
+<td align="right">NA</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="va">station_coverage</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Stations</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Pop_per_Station</span> <span class="op">/</span> <span class="fl">1000</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">District</span>, <span class="va">Pop_per_Station</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -467,31 +749,29 @@ a district border may fall on the other side.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Pop_per_Station</span> <span class="op">/</span> <span class="fl">1000</span><span class="op">)</span>, <span class="st">"k ("</span>, <span class="va">Stations</span>, <span class="st">")"</span><span class="op">)</span><span class="op">)</span>, hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.1</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.25</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Residents per Monitoring Station"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Residents per Listed Station Location"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Thousands of residents per station (number of stations in brackets)"</span>,</span>
 <span>    x <span class="op">=</span> <span class="st">"Residents per station (thousands)"</span>, y <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Districts with no station are not shown"</span></span>
+<span>    caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Population year"</span>, <span class="va">pop_year</span>, <span class="st">"| Districts with no listed location remain in the table"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ub-health-environment_files/figure-html/station-coverage-1.png" alt="Bar chart of residents per monitoring station for each Ulaanbaatar district that has at least one station" width="100%"></p>
-<p>3 districts, Baganuur, Bagakhangai, and Nalaikh, have no station in
-this network. About 74,000 residents (4% of the city) live there.
-Residents per station is a crude measure: pollution varies with distance
-from sources and with terrain, so the location of stations matters as
-much as their number. The ger areas on the city’s northern and eastern
-edges, where most household coal and wood burning happens, are where
-denser monitoring would add the most to exposure estimates.</p>
+<p>3 districts have no uniquely assigned location <strong>in this
+inventory</strong>. This does not establish absence of monitoring.
+Residents per listed location does not measure representativeness;
+operating status, pollutant coverage, terrain and distance from sources
+matter. These ratios cannot determine where another monitor would add
+the most information.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
-<p>Ulaanbaatar’s districts differ widely in density, growth and school
-capacity, and NSO’s district tables plus mongolmaps’ boundaries make
-these differences easy to map. Health outcomes are harder: published
-district births and deaths follow hospital locations, so district-level
-rates need data coded by place of residence before they can guide local
-public health action.</p>
+<p>The tables show differences in recorded population and mean school
+enrolment. Fine-scale density remains illustrative until boundary
+vintages are checked. Health comparisons require compatible
+residence-coded events, and the station inventory needs official
+verification before assessing exposure or monitoring adequacy.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

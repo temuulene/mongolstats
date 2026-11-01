@@ -266,8 +266,21 @@ observations or their raw symbols.</p>
 бүртгэлд эх сурвалж, хүсэлтийн нөхцөл орно; статистикийн ажиглалт, анхны
 тэмдэглэгээ орохгүй.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">export_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"nso-export-"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">export_dir</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Choose an enduring project directory; use a new run directory for each export.</span></span>
+<span><span class="va">export_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"outputs"</span>, <span class="st">"nso"</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"%Y-%m-%d"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">export_dir</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co"># Do not overwrite a previous run accidentally.</span></span>
+<span><span class="va">targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">export_dir</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gdp.csv"</span>, <span class="st">"gdp.rds"</span>, <span class="st">"value-status.rds"</span>, <span class="st">"provenance.json"</span>, <span class="st">"analysis-context.rds"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">targets</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">export_dir</span>, <span class="st">"gdp.rds"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">analysis_context</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  saved_at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, tz <span class="op">=</span> <span class="st">"UTC"</span>, usetz <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  data_sha256 <span class="op">=</span> <span class="fu">digest</span><span class="fu">::</span><span class="fu"><a href="https://eddelbuettel.github.io/digest/man/digest.html" class="external-link">digest</a></span><span class="op">(</span><span class="va">gdp</span>, algo <span class="op">=</span> <span class="st">"sha256"</span><span class="op">)</span>,</span>
+<span>  session <span class="op">=</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  code_revision <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"ANALYSIS_CODE_REVISION"</span>, unset <span class="op">=</span> <span class="cn">NA_character_</span><span class="op">)</span>,</span>
+<span>  manual_recodes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">analysis_context</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">export_dir</span>, <span class="st">"analysis-context.rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">export_dir</span>, <span class="st">"gdp.csv"</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="fu"><a href="../reference/nso_value_status.html">nso_value_status</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">export_dir</span>, <span class="st">"value-status.rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/nso_write_manifest.html">nso_write_manifest</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">export_dir</span>, <span class="st">"provenance.json"</span><span class="op">)</span><span class="op">)</span></span>
@@ -277,13 +290,30 @@ observations or their raw symbols.</p>
 <span><span class="fu"><a href="../reference/nso_citation.html">nso_citation</a></span><span class="op">(</span><span class="va">saved_manifest</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">export_dir</span>, <span class="st">"value-status.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><code><a href="../reference/nso_write_manifest.html">nso_write_manifest()</a></code> refuses to overwrite a file unless
-<code>overwrite = TRUE</code> is explicit. Keep the original result if
-an analysis also needs exact R types and attributes:
-<code>saveRDS(gdp, ...)</code> preserves them together.</p>
+<code>overwrite = TRUE</code> is explicit. The RDS file preserves the
+original R types and attributes. Record the analysis code revision and
+any manual recodes explicitly. A metadata fingerprint alone cannot
+reproduce observations after source revisions.</p>
 <p><code><a href="../reference/nso_write_manifest.html">nso_write_manifest()</a></code> нь <code>overwrite = TRUE</code>
 гэж заагаагүй бол байгаа файлыг дарж бичихгүй. R-ийн төрөл, атрибутыг
 бүхэлд нь хадгалах шаардлагатай бол анхны үр дүнг
 <code>saveRDS(gdp, ...)</code> ашиглан нэмэлтээр хадгална.</p>
+</div>
+<div class="section level2">
+<h2 id="apply-checks-before-calculating-rates">Apply checks before calculating rates<a class="anchor" aria-label="anchor" href="#apply-checks-before-calculating-rates"></a>
+</h2>
+<p>The other tutorials load the inspectable teaching helpers shipped at
+<code>system.file("examples", "analysis-helpers.R", package = "mongolstats")</code>.
+They check expected unit/month grids, unique keys, common periods,
+complete age strata and positive denominators before calculating
+estimates. Missing source observations remain unknown.
+<code><a href="../reference/nso_check_data.html">nso_check_data()</a></code> reports concerns; an empty report does not
+prove that an analytical specification has been met.</p>
+<p>Keep the original fetched object, its <code><a href="../reference/nso_value_status.html">nso_value_status()</a></code>
+result and provenance before transformations. Save the validated
+analytical data and any recoding rules alongside the outputs above.
+Historical teaching snapshots without retrieval dates or raw symbols
+cannot acquire that missing information retrospectively.</p>
 </div>
 <div class="section level2">
 <h2 id="find-definitions-and-collection-context-тодорхойлолт-цуглуулалтын-нөхцөлийг-олох">Find definitions and collection context / Тодорхойлолт, цуглуулалтын

@@ -85,6 +85,8 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://temuulene.github.io/mongolstats/">mongolstats</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="co"># Checked teaching helpers are shipped with the package and can be inspected.</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"analysis-helpers.R"</span>, package <span class="op">=</span> <span class="st">"mongolstats"</span><span class="op">)</span>, local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">old_options</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Global theme with proper margins to prevent text cutoff</span></span>
@@ -278,18 +280,23 @@ and at which level (“aimags and the Capital”, “by soum”).</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.spacing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1</span>, <span class="st">"lines"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="discovery_files/figure-html/cancer-analysis-1.png" alt="Small multiples of crude cancer incidence per 10,000 population in Mongolia over the last 10 years, one panel each for cervical, liver, lung, oesophageal and stomach cancer" width="100%"></p>
-<p>Over these years, liver cancer has the highest average incidence,
-followed by stomach cancer. Two cautions apply to this table:</p>
+<p>Over these years, liver cancer has the highest mean of the published
+annual rates. This equal-year mean is a descriptive summary, not a
+pooled incidence rate. Two cautions apply to this table:</p>
 <ul>
 <li>
 <strong>Rounding.</strong> NSO rounds these rates to whole numbers
 per 10,000, so a change of 1 between years can be rounding alone.</li>
 <li>
-<strong>Single-year spikes.</strong> A value that jumps and then
-returns to its old level the next year, such as two sites trading places
-for one year, is more likely a data entry problem than a real change.
-Check such values with NSO before you interpret them.</li>
+<strong>Single-year spikes.</strong> An isolated spike is a reason
+to check source definitions and records. It can reflect ascertainment,
+screening, classification, data errors or real variation; do not remove
+it solely because it looks unusual.</li>
 </ul>
+<p>The denominator for a sex-specific cancer, such as cervical cancer,
+must be checked in the source documentation. A rate per total population
+must not be interpreted as a rate among women. Use compatible
+sex-specific counts and denominators for that question.</p>
 </div>
 <div class="section level3">
 <h3 id="crude-versus-age-standardised-incidence">Crude versus Age-Standardised Incidence<a class="anchor" aria-label="anchor" href="#crude-versus-age-standardised-incidence"></a>
@@ -297,9 +304,10 @@ Check such values with NSO before you interpret them.</li>
 <p>The rates above are <strong>crude</strong>: new cases divided by the
 whole population. Cancer risk rises steeply with age, so a crude rate
 climbs as a population ages even when the risk at each age is flat.
-Age-standardisation removes this effect. It applies each year’s
-age-specific rates to one fixed standard population, here the WHO World
-Standard Population (2000–2025).</p>
+Age-standardisation reduces the effect of differences in age composition
+between the groups used. It applies each year’s age-specific rates to
+one fixed standard population, here the WHO World Standard Population
+(2000–2025).</p>
 <p>NSO publishes the numerators and denominators needed: new cancer
 cases by age group (<code>DT_NSO_2100_044V1</code>) and population by
 age group (<code>DT_NSO_0300_003V1</code>).</p>
@@ -308,33 +316,37 @@ age group (<code>DT_NSO_0300_003V1</code>).</p>
 <span><span class="va">case_years</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="st">"DT_NSO_2100_044V1"</span>, <span class="st">"Year"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="va">case_ages</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="st">"DT_NSO_2100_044V1"</span>, <span class="st">"Age group"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="va">indicator</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="st">"DT_NSO_2100_044V1"</span>, <span class="st">"Indicator"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span><span class="va">cancer_cases</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span><span class="va">cancer_case_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
 <span>  <span class="st">"DT_NSO_2100_044V1"</span>,</span>
 <span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    Indicator <span class="op">=</span> <span class="va">indicator</span><span class="op">$</span><span class="va">code</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">indicator</span><span class="op">$</span><span class="va">label_en</span><span class="op">)</span> <span class="op">==</span> <span class="st">"New cases of cancer"</span><span class="op">]</span>,</span>
 <span>    <span class="st">"Age group"</span> <span class="op">=</span> <span class="va">case_ages</span><span class="op">$</span><span class="va">code</span>,</span>
-<span>    Year <span class="op">=</span> <span class="va">case_years</span><span class="op">$</span><span class="va">code</span></span>
+<span>    Year <span class="op">=</span> <span class="va">case_years</span><span class="op">$</span><span class="va">label_en</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span>year <span class="op">=</span> <span class="va">Year_en</span>, age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">`Age group_en`</span><span class="op">)</span>, cases <span class="op">=</span> <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">age</span> <span class="op">!=</span> <span class="st">"Total"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">cancer_case_status</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_value_status.html">nso_value_status</a></span><span class="op">(</span><span class="va">cancer_case_source</span><span class="op">)</span></span>
+<span><span class="va">cancer_case_raw</span> <span class="op">&lt;-</span> <span class="va">cancer_case_source</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span>year <span class="op">=</span> <span class="va">Year_en</span>, age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">`Age group_en`</span><span class="op">)</span>, cases <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span><span class="va">cancer_cases</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cancer_case_raw</span>, <span class="va">age</span> <span class="op">!=</span> <span class="st">"Total"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Population by age group, same years, both sexes</span></span>
 <span><span class="va">pop_years</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_003V1"</span>, <span class="st">"Year"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="va">pop_ages</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_003V1"</span>, <span class="st">"Age group"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="va">pop_sex</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="st">"DT_NSO_0300_003V1"</span>, <span class="st">"Sex"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span><span class="va">population</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span><span class="va">cancer_pop_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
 <span>  <span class="st">"DT_NSO_0300_003V1"</span>,</span>
 <span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    Sex <span class="op">=</span> <span class="va">pop_sex</span><span class="op">$</span><span class="va">code</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">pop_sex</span><span class="op">$</span><span class="va">label_en</span><span class="op">)</span> <span class="op">==</span> <span class="st">"Total"</span><span class="op">]</span>,</span>
 <span>    <span class="st">"Age group"</span> <span class="op">=</span> <span class="va">pop_ages</span><span class="op">$</span><span class="va">code</span>,</span>
-<span>    Year <span class="op">=</span> <span class="va">pop_years</span><span class="op">$</span><span class="va">code</span><span class="op">[</span><span class="va">pop_years</span><span class="op">$</span><span class="va">label_en</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">case_years</span><span class="op">$</span><span class="va">label_en</span><span class="op">]</span></span>
+<span>    Year <span class="op">=</span> <span class="va">pop_years</span><span class="op">$</span><span class="va">label_en</span><span class="op">[</span><span class="va">pop_years</span><span class="op">$</span><span class="va">label_en</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">case_years</span><span class="op">$</span><span class="va">label_en</span><span class="op">]</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span>year <span class="op">=</span> <span class="va">Year_en</span>, age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">`Age group_en`</span><span class="op">)</span>, population <span class="op">=</span> <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">age</span> <span class="op">!=</span> <span class="st">"Total"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">cancer_pop_status</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_value_status.html">nso_value_status</a></span><span class="op">(</span><span class="va">cancer_pop_source</span><span class="op">)</span></span>
+<span><span class="va">cancer_pop_raw</span> <span class="op">&lt;-</span> <span class="va">cancer_pop_source</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span>year <span class="op">=</span> <span class="va">Year_en</span>, age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">`Age group_en`</span><span class="op">)</span>, population <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span><span class="va">population</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cancer_pop_raw</span>, <span class="va">age</span> <span class="op">!=</span> <span class="st">"Total"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># The two tables use different age groups; collapse both to the cancer</span></span>
 <span><span class="co"># table's groups (0-4, 5-14, 15-19, ..., 60-64, 65+)</span></span>
@@ -346,7 +358,9 @@ age group (<code>DT_NSO_0300_003V1</code>).</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># WHO World Standard Population (2000-2025), per million</span></span>
+<span><span class="co"># WHO 2000-2025 standard-million representation used by SEER.</span></span>
+<span><span class="co"># https://seer.cancer.gov/stdpopulations/world.who.html</span></span>
+<span><span class="co"># These weights sum to 1,000,000 before and after grouping.</span></span>
 <span><span class="va">who_standard</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"0-4"</span>, <span class="st">"5-9"</span>, <span class="st">"10-14"</span>, <span class="st">"15-19"</span>, <span class="st">"20-24"</span>, <span class="st">"25-29"</span>, <span class="st">"30-34"</span>, <span class="st">"35-39"</span>, <span class="st">"40-44"</span>,</span>
@@ -360,42 +374,54 @@ age group (<code>DT_NSO_0300_003V1</code>).</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>age <span class="op">=</span> <span class="fu">to_cancer_groups</span><span class="op">(</span><span class="va">age</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">weight</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">age</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Require mutually exclusive source groups before collapsing the population.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">population</span><span class="op">$</span><span class="va">age</span> <span class="op">==</span> <span class="st">"70+"</span><span class="op">)</span> <span class="op">||</span></span>
+<span>            <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">population</span><span class="op">$</span><span class="va">age</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"70-74"</span>, <span class="st">"75-79"</span>, <span class="st">"80-84"</span>, <span class="st">"85+"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">analysis_keys</span><span class="op">(</span><span class="va">cancer_cases</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year"</span>, <span class="st">"age"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">analysis_keys</span><span class="op">(</span><span class="va">population</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year"</span>, <span class="st">"age"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">population</span> <span class="op">&lt;-</span> <span class="va">population</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>age <span class="op">=</span> <span class="fu">to_cancer_groups</span><span class="op">(</span><span class="va">age</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>population <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">population</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">age</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>population <span class="op">=</span> <span class="fu">analysis_sum</span><span class="op">(</span><span class="va">population</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">age</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">cancer_asr</span> <span class="op">&lt;-</span> <span class="va">cancer_cases</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">population</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">age</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">who_standard</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
-<span>    crude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">cases</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">population</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1e4</span>,</span>
-<span>    <span class="co"># Direct standardisation: weighted mean of age-specific rates</span></span>
-<span>    standardised <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">weight</span> <span class="op">*</span> <span class="va">cases</span> <span class="op">/</span> <span class="va">population</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">weight</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1e4</span>,</span>
-<span>    .by <span class="op">=</span> <span class="va">year</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span><span class="co"># Both sources must contain the same years and every target age group.</span></span>
+<span><span class="co"># An inner join must not silently select the analysis population.</span></span>
+<span><span class="va">cancer_asr</span> <span class="op">&lt;-</span> <span class="fu">analysis_asr</span><span class="op">(</span><span class="va">cancer_cases</span>, <span class="va">population</span>, <span class="va">who_standard</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">cancer_asr</span><span class="op">$</span><span class="va">standard_weight</span> <span class="op">==</span> <span class="fl">1e6</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Reconcile sums against any supplied, compatible all-age total.</span></span>
+<span><span class="va">case_totals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cancer_case_raw</span>, <span class="va">age</span> <span class="op">==</span> <span class="st">"Total"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, total <span class="op">=</span> <span class="va">cases</span><span class="op">)</span></span>
+<span><span class="va">pop_totals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cancer_pop_raw</span>, <span class="va">age</span> <span class="op">==</span> <span class="st">"Total"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, total <span class="op">=</span> <span class="va">population</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">case_totals</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">check</span> <span class="op">&lt;-</span> <span class="fu">analysis_pair</span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span><span class="va">cancer_cases</span>, calculated <span class="op">=</span> <span class="fu">analysis_sum</span><span class="op">(</span><span class="va">cases</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">year</span><span class="op">)</span>, <span class="va">case_totals</span>, <span class="st">"year"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">check</span><span class="op">$</span><span class="va">total</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">check</span><span class="op">$</span><span class="va">calculated</span> <span class="op">==</span> <span class="va">check</span><span class="op">$</span><span class="va">total</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pop_totals</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">check</span> <span class="op">&lt;-</span> <span class="fu">analysis_pair</span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span><span class="va">population</span>, calculated <span class="op">=</span> <span class="fu">analysis_sum</span><span class="op">(</span><span class="va">population</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">year</span><span class="op">)</span>, <span class="va">pop_totals</span>, <span class="st">"year"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">check</span><span class="op">$</span><span class="va">total</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">check</span><span class="op">$</span><span class="va">calculated</span> <span class="op">==</span> <span class="va">check</span><span class="op">$</span><span class="va">total</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">cancer_asr</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 16 × 3</span></span></span>
-<span><span class="co">#&gt;     year crude standardised</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">2</span>010  16.2         26.2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">2</span>011  16.2         26.4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">2</span>012  15.8         25.5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">2</span>013  17.9         28.6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">2</span>014  17.7         27.0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">2</span>015  18.2         29.4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">2</span>016  18.4         29.2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">2</span>017  18.3         27.9</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">2</span>018  17.9         27.1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>019  18.3         26.4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span>  <span style="text-decoration: underline;">2</span>020  19.1         26.7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span>  <span style="text-decoration: underline;">2</span>021  17.5         23.8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span>  <span style="text-decoration: underline;">2</span>022  19.9         26.0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span>  <span style="text-decoration: underline;">2</span>023  20.6         26.0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span>  <span style="text-decoration: underline;">2</span>024  23.0         28.0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span>  <span style="text-decoration: underline;">2</span>025  22.3         26.1</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 16 × 4</span></span></span>
+<span><span class="co">#&gt;     year crude standardised standard_weight</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">2</span>010  16.2         26.2         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">2</span>011  16.2         26.4         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">2</span>012  15.8         25.5         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">2</span>013  17.9         28.6         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">2</span>014  17.7         27.0         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">2</span>015  18.2         29.4         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">2</span>016  18.4         29.2         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">2</span>017  18.3         27.9         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">2</span>018  17.9         27.1         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>019  18.3         26.4         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span>  <span style="text-decoration: underline;">2</span>020  19.1         26.7         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span>  <span style="text-decoration: underline;">2</span>021  17.5         23.8         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span>  <span style="text-decoration: underline;">2</span>022  19.9         26.0         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span>  <span style="text-decoration: underline;">2</span>023  20.6         26.0         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span>  <span style="text-decoration: underline;">2</span>024  23.0         28.0         1<span style="text-decoration: underline;">000</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span>  <span style="text-decoration: underline;">2</span>025  22.3         26.1         1<span style="text-decoration: underline;">000</span>000</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cancer_asr</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">crude</span>, <span class="va">standardised</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"measure"</span>, values_to <span class="op">=</span> <span class="st">"rate"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -413,21 +439,24 @@ age group (<code>DT_NSO_0300_003V1</code>).</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_044V1 and DT_NSO_0300_003V1"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"top"</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="discovery_files/figure-html/cancer-asr-plot-1.png" alt="Line chart comparing crude and age-standardised cancer incidence per 10,000 in Mongolia. The crude rate rises over the period while the age-standardised rate stays roughly flat." width="100%"></p>
-<p>Between 2010 and 2025, the crude rate changed by +38.0%, but the
-age-standardised rate changed by -0.5%. Most of the rise in crude
-incidence reflects an older population, not a higher risk of cancer at
-any given age. The age-standardised rate is higher than the crude rate
-because Mongolia’s population is younger than the WHO standard
-population.</p>
+<p><img src="discovery_files/figure-html/cancer-asr-plot-1.png" alt="Line chart comparing crude and age-standardised cancer incidence per 10,000 in Mongolia. The series compare descriptive rates on a common standard; endpoint changes do not establish an unchanged trajectory." width="100%"></p>
+<p>Between 2010 and 2025, the crude rate changed by +38.0% and the
+standardised rate by -0.5%. A smaller change after standardisation is
+consistent with ageing contributing to the crude change. It does not
+establish unchanged risk in every age group or quantify how much of the
+change is attributable to ageing. These are descriptive estimates, not a
+formal trend test. Broad groups, especially 65+, retain some differences
+in age composition.</p>
 <blockquote>
 <p><strong>Biostatistical note:</strong> Age-standardised rates are for
 comparison only: between years, between countries, or between groups
 with different age structures. They depend on the standard population
 chosen. Report the crude rate, or the number of cases, when the question
-is about the actual burden on health services. The 2021 dip in both
-rates coincides with the COVID-19 pandemic, when fewer people were
-diagnosed.</p>
+is about the actual burden on health services. The 2021 dip coincides
+with the pandemic; these counts do not separate changes in disease
+occurrence from diagnosis and reporting. Confirm the population table’s
+reference date and resident/total-population coverage against the cancer
+source before publication.</p>
 </blockquote>
 </div>
 </div>
@@ -451,17 +480,13 @@ live births), by soum and year</li>
 <p>Before you rely on rates you build yourself, check that they
 reproduce the published ones:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># National annual totals from a monthly count table</span></span>
-<span><span class="va">national_annual</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">months</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">tbl</span>, <span class="st">"Month"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span><span class="va">tbl</span>, selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="st">"0"</span>, Month <span class="op">=</span> <span class="va">months</span><span class="op">$</span><span class="va">code</span><span class="op">)</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">Month_en</span>, <span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, n_months <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">n_months</span> <span class="op">==</span> <span class="fl">12</span><span class="op">)</span> <span class="co"># complete years only</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">infant_deaths</span> <span class="op">&lt;-</span> <span class="fu">national_annual</span><span class="op">(</span><span class="st">"DT_NSO_2100_014V1"</span><span class="op">)</span></span>
-<span><span class="va">live_births</span> <span class="op">&lt;-</span> <span class="fu">national_annual</span><span class="op">(</span><span class="st">"DT_NSO_2100_018V5"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Preserve source status and require complete observed national years.</span></span>
+<span><span class="va">national_deaths</span> <span class="op">&lt;-</span> <span class="fu">analysis_fetch_counts</span><span class="op">(</span><span class="st">"DT_NSO_2100_014V1"</span>, <span class="st">"0"</span><span class="op">)</span></span>
+<span><span class="va">national_births</span> <span class="op">&lt;-</span> <span class="fu">analysis_fetch_counts</span><span class="op">(</span><span class="st">"DT_NSO_2100_018V5"</span>, <span class="st">"0"</span><span class="op">)</span></span>
+<span><span class="va">valid_years</span> <span class="op">&lt;-</span> <span class="fu">analysis_common_years</span><span class="op">(</span><span class="va">national_deaths</span><span class="op">$</span><span class="va">annual</span>, <span class="va">national_births</span><span class="op">$</span><span class="va">annual</span>, require_values <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">valid_years</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">infant_deaths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">national_deaths</span><span class="op">$</span><span class="va">annual</span>, <span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">valid_years</span><span class="op">)</span></span>
+<span><span class="va">live_births</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">national_births</span><span class="op">$</span><span class="va">annual</span>, <span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">valid_years</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Published annual rate. This id names two tables in the catalogue, so</span></span>
 <span><span class="co"># mongolstats warns and uses the first match ("by soum, and by year"),</span></span>
@@ -469,42 +494,57 @@ reproduce the published ones:</p>
 <span><span class="va">imr_years</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="st">"DT_NSO_2100_015V2"</span>, <span class="st">"Year"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="va">imr_published</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
 <span>  <span class="st">"DT_NSO_2100_015V2"</span>,</span>
-<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="st">"0"</span>, Year <span class="op">=</span> <span class="va">imr_years</span><span class="op">$</span><span class="va">code</span><span class="op">)</span>,</span>
+<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Region <span class="op">=</span> <span class="st">"0"</span>, Year <span class="op">=</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">intersect</a></span><span class="op">(</span><span class="va">imr_years</span><span class="op">$</span><span class="va">label_en</span>, <span class="va">valid_years</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>year <span class="op">=</span> <span class="va">Year_en</span>, published <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">imr_check</span> <span class="op">&lt;-</span> <span class="va">infant_deaths</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, deaths <span class="op">=</span> <span class="va">count</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">live_births</span>, <span class="va">year</span>, births <span class="op">=</span> <span class="va">count</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">imr_published</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>calculated <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">deaths</span> <span class="op">/</span> <span class="va">births</span> <span class="op">*</span> <span class="fl">1000</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span><span class="va">published_years</span> <span class="op">&lt;-</span> <span class="va">imr_published</span><span class="op">$</span><span class="va">year</span></span>
+<span><span class="va">imr_check</span> <span class="op">&lt;-</span> <span class="fu">analysis_pair</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">infant_deaths</span>, <span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">published_years</span><span class="op">)</span>, <span class="va">year</span>, deaths <span class="op">=</span> <span class="va">count</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">live_births</span>, <span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">published_years</span><span class="op">)</span>, <span class="va">year</span>, births <span class="op">=</span> <span class="va">count</span><span class="op">)</span>, <span class="st">"year"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">analysis_pair</span><span class="op">(</span><span class="va">imr_published</span>, by <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    calculated <span class="op">=</span> <span class="va">deaths</span> <span class="op">/</span> <span class="va">births</span> <span class="op">*</span> <span class="fl">1000</span>,</span>
+<span>    difference <span class="op">=</span> <span class="va">calculated</span> <span class="op">-</span> <span class="va">published</span>,</span>
+<span>    <span class="co"># Whole-number published rounding permits up to half a unit.</span></span>
+<span>    agrees_with_rounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">difference</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">difference</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="fl">0.5</span> <span class="op">+</span> <span class="fl">1e-8</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">imr_check</span><span class="op">$</span><span class="va">births</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">imr_check</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 5</span></span></span>
-<span><span class="co">#&gt;    year  deaths births published calculated</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2016    <span style="text-decoration: underline;">1</span>315  <span style="text-decoration: underline;">78</span>194        17       16.8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2017    <span style="text-decoration: underline;">1</span>008  <span style="text-decoration: underline;">74</span>328        14       13.6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2018    <span style="text-decoration: underline;">1</span>037  <span style="text-decoration: underline;">77</span>528        13       13.4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2019    <span style="text-decoration: underline;">1</span>041  <span style="text-decoration: underline;">78</span>223        13       13.3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2020     878  <span style="text-decoration: underline;">76</span>261        12       11.5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2021     829  <span style="text-decoration: underline;">71</span>659        12       11.6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2022     814  <span style="text-decoration: underline;">65</span>586        12       12.4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2023     793  <span style="text-decoration: underline;">64</span>306        12       12.3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2024     702  <span style="text-decoration: underline;">57</span>756        12       12.2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2025     738  <span style="text-decoration: underline;">54</span>137        14       13.6</span></span></code></pre></div>
-<p>The calculated rates differ from the published ones by at most 0.5
-per 1,000, because NSO rounds the published rate to a whole number. The
-count tables can be trusted to give the same answer. The <a href="getting-started.html">Getting Started</a> and <a href="mapping.html">Mapping</a> guides use them to compare aimags.</p>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 7</span></span></span>
+<span><span class="co">#&gt;    year  deaths births published calculated difference agrees_with_rounding</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2016    <span style="text-decoration: underline;">1</span>315  <span style="text-decoration: underline;">78</span>194        17       16.8     -<span style="color: #BB0000;">0.183</span> TRUE                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2017    <span style="text-decoration: underline;">1</span>008  <span style="text-decoration: underline;">74</span>328        14       13.6     -<span style="color: #BB0000;">0.438</span> TRUE                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2018    <span style="text-decoration: underline;">1</span>037  <span style="text-decoration: underline;">77</span>528        13       13.4      0.376 TRUE                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2019    <span style="text-decoration: underline;">1</span>041  <span style="text-decoration: underline;">78</span>223        13       13.3      0.308 TRUE                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2020     878  <span style="text-decoration: underline;">76</span>261        12       11.5     -<span style="color: #BB0000;">0.487</span> TRUE                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2021     829  <span style="text-decoration: underline;">71</span>659        12       11.6     -<span style="color: #BB0000;">0.431</span> TRUE                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2022     814  <span style="text-decoration: underline;">65</span>586        12       12.4      0.411 TRUE                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2023     793  <span style="text-decoration: underline;">64</span>306        12       12.3      0.332 TRUE                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2024     702  <span style="text-decoration: underline;">57</span>756        12       12.2      0.155 TRUE                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2025     738  <span style="text-decoration: underline;">54</span>137        14       13.6     -<span style="color: #BB0000;">0.368</span> TRUE</span></span></code></pre></div>
+<p>The table explicitly shows whether each comparable year agrees within
+half a unit, the tolerance for a whole-number rounded rate. 0 year(s)
+need review under this check. Differences outside that tolerance cannot
+be explained by whole-number rounding alone. Agreement is a
+reconciliation check, not proof that registration and population
+coverage are complete. The <a href="getting-started.html">Getting
+Started</a> and <a href="mapping.html">Mapping</a> guides retain these
+limitations.</p>
 </div>
 <div class="section level2">
 <h2 id="case-study-tuberculosis-notifications">Case Study: Tuberculosis Notifications<a class="anchor" aria-label="anchor" href="#case-study-tuberculosis-notifications"></a>
 </h2>
 <p>The monthly communicable disease table counts reported (notified)
-cases. To compare years, divide by the population at risk. Here we use
-the national mid-year population.</p>
+cases. Annual summation assumes these are monthly increments, not
+cumulative year-to-date values; confirm that reporting convention with
+the source before using the estimates. To compare years, divide by the
+population at risk. Here we use the national mid-year population.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tb_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_2100_035V1"</span> <span class="co"># Cases of communicable diseases, by type and by month</span></span>
 <span></span>
@@ -514,15 +554,14 @@ the national mid-year population.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">label_en</span><span class="op">)</span> <span class="op">==</span> <span class="st">"Tuberculosis"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">code</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">tb_months</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_dim_values.html">nso_dim_values</a></span><span class="op">(</span><span class="va">tb_tbl</span>, <span class="st">"Month"</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span><span class="va">tb_annual</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
-<span>  tbl_id <span class="op">=</span> <span class="va">tb_tbl</span>,</span>
-<span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Indicators <span class="op">=</span> <span class="va">tb_code</span>, Month <span class="op">=</span> <span class="va">tb_months</span><span class="op">$</span><span class="va">code</span><span class="op">)</span>,</span>
-<span>  labels <span class="op">=</span> <span class="st">"en"</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">Month_en</span>, <span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>cases <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, n_months <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">n_months</span> <span class="op">==</span> <span class="fl">12</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">tb_code</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1L</span><span class="op">)</span></span>
+<span><span class="va">tb_months</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_table_periods.html">nso_table_periods</a></span><span class="op">(</span><span class="va">tb_tbl</span><span class="op">)</span><span class="op">$</span><span class="va">label</span></span>
+<span><span class="va">tb_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span><span class="va">tb_tbl</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Indicators <span class="op">=</span> <span class="va">tb_code</span>, Month <span class="op">=</span> <span class="va">tb_months</span><span class="op">)</span>, labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
+<span><span class="va">tb_status</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_value_status.html">nso_value_status</a></span><span class="op">(</span><span class="va">tb_raw</span><span class="op">)</span></span>
+<span><span class="va">tb_annual</span> <span class="op">&lt;-</span> <span class="fu">analysis_annual_counts</span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">tb_raw</span>, Region <span class="op">=</span> <span class="st">"0"</span><span class="op">)</span>, <span class="st">"0"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">usable</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span><span class="va">year</span>, cases <span class="op">=</span> <span class="va">count</span>, <span class="va">n_months</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">tb_annual</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0L</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Mid-year population (denominator)</span></span>
 <span><span class="va">population</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
@@ -532,8 +571,9 @@ the national mid-year population.</p>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>year <span class="op">=</span> <span class="va">Year_en</span>, population <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">tb_rate</span> <span class="op">&lt;-</span> <span class="va">tb_annual</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">population</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span><span class="va">tb_rate</span> <span class="op">&lt;-</span> <span class="fu">analysis_pair</span><span class="op">(</span><span class="va">tb_annual</span>, <span class="va">population</span>, <span class="st">"year"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">tb_rate</span><span class="op">$</span><span class="va">population</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">tb_rate</span><span class="op">$</span><span class="va">population</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tb_rate</span> <span class="op">&lt;-</span> <span class="va">tb_rate</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span>,</span>
 <span>    rate <span class="op">=</span> <span class="va">cases</span> <span class="op">/</span> <span class="va">population</span> <span class="op">*</span> <span class="fl">1e5</span>,</span>
@@ -580,11 +620,13 @@ the national mid-year population.</p>
 <p><strong>Biostatistical note:</strong> A notification rate counts
 cases that were <strong>diagnosed and reported</strong>, not all new
 cases (incidence). It falls when case finding falls, as well as when
-transmission falls. The sharp drop in 2021 coincides with the COVID-19
-pandemic, which disrupted tuberculosis services in many countries. These
-data cannot separate a true decline from missed diagnoses. For
-incidence, see the World Health Organization’s country estimates, which
-adjust for under-reporting.</p>
+transmission falls. The intervals describe count variation conditional
+on the notification process and population denominator; they do not
+include missed diagnoses or reporting error. The sharp drop in 2021
+coincides with the COVID-19 pandemic, which disrupted tuberculosis
+services in many countries. These data cannot separate a true decline
+from missed diagnoses. For incidence, see the World Health
+Organization’s country estimates, which adjust for under-reporting.</p>
 </blockquote>
 </div>
 <div class="section level2">
