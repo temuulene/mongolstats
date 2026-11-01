@@ -20,7 +20,8 @@ inline_value <- function(expr, fallback = "n/a") {
   if (!run_vignette) {
     return(fallback)
   }
-  tryCatch(expr, error = function(e) fallback)
+  value <- expr
+  if (!length(value) || all(is.na(value))) fallback else value
 }
 ```
 
@@ -28,10 +29,10 @@ inline_value <- function(expr, fallback = "n/a") {
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7,        # standardized width that fits vignette text column
-  fig.height = 5,       # default height, override in individual chunks as needed
-  fig.dpi = 150,        # higher resolution for crisp rendering
-  out.width = "100%",   # constrain to page width, prevents overflow
+  fig.width = 7, # standardized width that fits vignette text column
+  fig.height = 5, # default height, override in individual chunks as needed
+  fig.dpi = 150, # higher resolution for crisp rendering
+  out.width = "100%", # constrain to page width, prevents overflow
   warning = FALSE,
   message = FALSE
 )
@@ -45,6 +46,8 @@ library(ggplot2)
 library(sf)
 library(tidyr)
 
+# Checked teaching helpers are shipped with the package and can be inspected.
+source(system.file("examples", "analysis-helpers.R", package = "mongolstats"), local = TRUE)
 old_options <- nso_options(mongolstats.lang = "en")
 
 # Global theme with proper margins to prevent text cutoff
@@ -76,17 +79,23 @@ ub_districts |>
 
 # Fetch an NSO table for the nine districts only
 get_ub_data <- function(tbl_id, selections = list()) {
-  nso_data(
+  data <- nso_data(
     tbl_id,
     selections = c(list(Region = ub_districts$nso_code), selections),
     labels = "en"
   ) |>
     mutate(District = trimws(Region_en))
+  expected <- tidyr::expand_grid(
+    Region = ub_districts$nso_code,
+    Year_en = as.character(selections$Year)
+  )
+  analysis_keys(data, c("Region", "Year_en"), expected)
+  data
 }
 
 # Latest year a table covers
 latest_year <- function(tbl_id) {
-  max(nso_dim_values(tbl_id, "Year", labels = "en")$label_en)
+  analysis_latest_common_year(tbl_id)
 }
 ```
 
@@ -104,7 +113,11 @@ pop_data <- get_ub_data(pop_tbl, list(Year = pop_year))
 
 ub_pop_map <- pop_data |>
   mn_join(by = "Region", level = "soum", within = "Ulaanbaatar") |>
-  mutate(density = value / area_km2) # residents per km2
+  mutate(density = if_else(is.finite(value) & value > 0 &
+      is.finite(area_km2) & area_km2 > 0,
+    value / area_km2, NA_real_
+  ))
+stopifnot(nrow(ub_pop_map) == 9L, !anyDuplicated(ub_pop_map$nso_code))
 
 mn_map(
   ub_pop_map,
@@ -131,23 +144,38 @@ density_rank <- if (run_vignette) {
 khoroo_codes <- nso_dim_values(pop_tbl, "Region")$code |>
   stringr::str_subset("^511\\d{4}$") # seven-digit codes are khoroos
 
-khoroo_pop <- nso_data(
-  pop_tbl,
-  selections = list(Region = khoroo_codes, Year = pop_year),
+khoroo_raw <- nso_data(
+  pop_tbl, list(Region = khoroo_codes, Year = pop_year),
   labels = "en"
-) |>
-  mn_join(by = "Region", level = "bag", within = "Ulaanbaatar")
+)
+analysis_keys(khoroo_raw, "Region", tibble(Region = khoroo_codes))
+khoroo_status <- nso_value_status(khoroo_raw)
+khoroo_check <- khoroo_raw |>
+  mutate(Region = substr(Region, 1, 5)) |>
+  summarise(khoroo_sum = analysis_sum(value), .by = Region) |>
+  full_join(select(pop_data, Region, district_total = value),
+    by = join_by(Region), relationship = "one-to-one"
+  ) |>
+  mutate(agrees = is.finite(khoroo_sum) & is.finite(district_total) & khoroo_sum == district_total)
+knitr::kable(khoroo_check, caption = "Population reconciliation before using the illustrative khoroo map")
+khoroo_pop <- mn_join(khoroo_raw, by = "Region", level = "bag", within = "Ulaanbaatar") |>
+  mutate(density = if_else(is.finite(value) & value > 0 &
+      is.finite(area_km2) & area_km2 > 0,
+    value / area_km2, NA_real_
+  ))
+stopifnot(!anyDuplicated(khoroo_pop$nso_code))
+unmapped_khoroos <- setdiff(khoroo_raw$Region, khoroo_pop$nso_code)
 
 central <- c("Bayangol", "Bayanzurkh", "Chingeltei", "Khan-Uul", "Songinokhairkhan", "Sukhbaatar")
 mn_map(
   filter(khoroo_pop, parent_pcode %in% ub_districts$pcode[ub_districts$name %in% central]),
-  fill = value / area_km2, trans = "log10",
+  fill = density, trans = "log10",
   title = paste0("Population Density by Khoroo, Central Ulaanbaatar, ", pop_year)
 ) +
   labs(subtitle = "Residents per km² (log scale), six central districts", fill = "Residents\nper km²")
 ```
 
-The khoroo boundaries in mongolmaps come from an open project that does not state their source, so treat them as unofficial.
+The khoroo boundaries are unofficial. `r inline_value(length(unmapped_khoroos))` source codes lack a matched boundary. The reconciliation table does not establish a matching boundary vintage: splits, mergers and changed codes still need review. This is an illustrative density map, not validated fine-scale risk or exposure data. Missing or nonpositive values are not plotted on the log scale.
 
 ### Population Growth Trends
 
@@ -178,29 +206,42 @@ growth <- if (run_vignette) {
   pop_trend |>
     filter(Year %in% range(Year)) |>
     summarise(
+      elapsed_years = max(Year) - min(Year),
       change = (value[Year == max(Year)] / value[Year == min(Year)] - 1) * 100,
+      annual_change = ((value[Year == max(Year)] / value[Year == min(Year)])^(1 / elapsed_years) - 1) * 100,
       .by = District
     ) |>
     arrange(desc(change))
 }
+least_change <- if (run_vignette) slice_min(growth, abs(change), n = 1, with_ties = FALSE)
 fmt_change <- function(x) sprintf("%+.0f%%", x)
 ```
 
-Over these 10 years, **`r inline_value(growth$District[1])`** grew fastest (`r inline_value(fmt_change(growth$change[1]))`), followed by **`r inline_value(growth$District[2])`** (`r inline_value(fmt_change(growth$change[2]))`). **`r inline_value(growth$District[9])`** changed the least (`r inline_value(fmt_change(growth$change[9]))`). Growth this uneven means services planned on older population figures may now be under strain in the fastest-growing districts.
+Across the ten annual observations from `r inline_value(min(trend_years))` to `r inline_value(max(trend_years))`, there are nine elapsed years. The table below shows signed total and annualised changes; negative values are declines. `r inline_value(least_change$District)` had the smallest absolute percentage change. Changes in these totals do not identify migration or service capacity by themselves.
 
-## 2. School Capacity
+```{r growth-table}
+knitr::kable(growth, digits = 1, caption = "Population change over the observed interval")
+```
+
+## 2. School Enrolment
 
 NSO publishes few socioeconomic indicators by district. The number of students per general education school gives a rough measure of pressure on public services.
 
 ```{r socio-edu, fig.alt="Bar chart of students per general education school by Ulaanbaatar district"}
-edu_year <- latest_year("DT_NSO_2002_057V2")
+edu_year <- analysis_latest_common_year(c("DT_NSO_2001_002V2", "DT_NSO_2002_057V2"))
 schools <- get_ub_data("DT_NSO_2001_002V2", list(Year = edu_year)) |>
-  select(District, Schools = value)
+  select(Region, District, Schools = value)
 students <- get_ub_data("DT_NSO_2002_057V2", list(Year = edu_year)) |>
-  select(District, Students = value)
+  select(Region, Students = value)
 
-edu_load <- inner_join(schools, students, by = join_by(District)) |>
-  mutate(Students_Per_School = Students / Schools)
+edu_load <- analysis_pair(schools, students, "Region")
+analysis_count_values(edu_load$Schools)
+analysis_count_values(edu_load$Students)
+stopifnot(
+  all(is.finite(edu_load$Schools)), all(edu_load$Schools > 0),
+  all(is.finite(edu_load$Students))
+)
+edu_load <- mutate(edu_load, Students_Per_School = Students / Schools)
 
 ggplot(edu_load, aes(x = Students_Per_School, y = reorder(District, Students_Per_School))) +
   geom_col(fill = "#2a78d6", width = 0.7) +
@@ -215,35 +256,40 @@ ggplot(edu_load, aes(x = Students_Per_School, y = reorder(District, Students_Per
   theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
 ```
 
-Schools differ in size and shift system, so a high ratio points to crowding but does not measure it directly.
+This ratio is mean enrolment per institution, not classroom size, spare capacity, crowding or deprivation. Schools differ in size, sector and shift system. Confirm that the school-year definition and institutional coverage match between the two sources.
 
 ## 3. Health Statistics by District: A Caution
 
-Rates need a numerator and a denominator for the **same population**. NSO's district tables count residents by where they live, but births and deaths can be counted where they happen, which is often a hospital in another district. A quick check is to divide each district's births and deaths by its residents:
+Rates need a numerator and denominator for the **same population**. Very uneven recorded births or deaths per resident can reveal incompatible geographic assignment or coverage. The diagnostic below is not a comparison of resident health risks; source-specific residence versus occurrence definitions still need confirmation.
 
 ```{r health-check, fig.alt="Two-panel bar chart of live births and deaths per 1,000 residents by Ulaanbaatar district, showing implausible differences between districts"}
-vital_year <- latest_year("DT_NSO_2100_027V1")
+vital_year <- analysis_latest_common_year(c("DT_NSO_2100_027V1", "DT_NSO_2100_018V6", pop_tbl))
 
 births <- get_ub_data(
   "DT_NSO_2100_018V6",
   list(Indicator = "0", Year = vital_year) # Indicator "0" = both sexes
 ) |>
-  select(District, count = value) |>
+  select(Region, District, count = value) |>
   mutate(measure = "Live births per 1,000 residents")
 
 deaths <- get_ub_data(
   "DT_NSO_2100_027V1",
   list(Indicator = "0", Year = vital_year) # Indicator "0" = all deaths
 ) |>
-  select(District, count = value) |>
+  select(Region, District, count = value) |>
   mutate(measure = "Deaths per 1,000 residents")
 
 residents <- get_ub_data(pop_tbl, list(Year = vital_year)) |>
-  select(District, residents = value)
+  select(Region, residents = value)
 
 vital_rates <- bind_rows(births, deaths) |>
-  inner_join(residents, by = join_by(District)) |>
+  left_join(residents, by = join_by(Region), relationship = "many-to-one") |>
   mutate(rate = count / residents * 1000)
+
+stopifnot(
+  all(is.finite(vital_rates$count)), all(is.finite(vital_rates$residents)),
+  all(vital_rates$residents > 0)
+)
 
 vital_rates |>
   ggplot(aes(x = rate, y = reorder(District, residents))) +
@@ -265,13 +311,13 @@ birth_rates <- if (run_vignette) filter(vital_rates, startsWith(measure, "Live b
 death_rates <- if (run_vignette) filter(vital_rates, startsWith(measure, "Deaths")) |> arrange(rate)
 ```
 
-These numbers cannot describe the residents. **`r inline_value(birth_rates$District[1])`**, with `r inline_value(scales::label_comma()(birth_rates$residents[1]))` residents, recorded `r inline_value(birth_rates$count[1])` live births in `r inline_value(vital_year)`, while **`r inline_value(birth_rates$District[9])`** recorded `r inline_value(round(birth_rates$rate[9]))` per 1,000 residents. Recorded deaths range from `r inline_value(round(death_rates$rate[1], 1))` per 1,000 residents in `r inline_value(death_rates$District[1])` to `r inline_value(round(death_rates$rate[9], 1))` in `r inline_value(death_rates$District[9])`. The pattern fits counting by **place of occurrence**: births and deaths are recorded in the districts that have maternity and general hospitals, not in the districts where the mother or the person who died lived.
+The observed differences are consistent with occurrence-based reporting or another mismatch in coverage. They do not establish the precise assignment rule. Do not interpret the diagnostic ratios as resident birth or death rates until NSO or the Health Development Center confirms the definitions for each table.
 
-So district-level rates built from these tables, such as infant mortality or deaths from respiratory disease per 10,000 residents, mix up where people live with where hospitals are. Correlating them with district density or other indicators would produce misleading results. For district comparisons, use data coded by **place of residence**, which may need a request to the Health Development Center or NSO. City-wide rates for Ulaanbaatar as a whole are less affected, though referrals of patients from the aimags to the capital's hospitals still raise its counts.
+Do not correlate these diagnostic ratios with density or environmental measures as though they describe residents. Obtain compatible residence-coded events and populations for district comparisons. City-wide aggregation may reduce internal district mismatch, but does not by itself resolve referrals into the capital or inconsistent source coverage.
 
 ## 4. Air Quality Monitoring Network
 
-Station-level air quality data (see the [Environmental Analysis](environmental-surveillance.html) vignette) can only be linked to people if we know where the stations are. NSO does not publish station coordinates, so the table below lists approximate locations for 18 Ulaanbaatar stations, compiled from public station listings, including the World Air Quality Index project (api.waqi.info). Check them before using them for exposure assignment.
+The following is an **illustrative inventory of 18 approximate station locations**, not a verified list of active monitoring sites. The original compilation referred to public listings, including the World Air Quality Index project, but did not retain a per-coordinate URL or verification date. Those fields remain unknown; verify official coordinates, operating periods and pollutant coverage before exposure assignment or network planning.
 
 ```{r aq-station-map}
 ub_aq_stations <- tribble(
@@ -296,10 +342,26 @@ ub_aq_stations <- tribble(
   "100 ail", 47.93291, 106.9214
 )
 
-# Assign each station to the district polygon it falls in
-ub_stations_sf <- ub_aq_stations |>
-  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) |>
+# Keep missing provenance explicit rather than inventing sources or dates.
+ub_aq_stations <- ub_aq_stations |>
+  mutate(
+    coordinate_source = "Historical illustrative compilation; unverified",
+    verified_at = NA_character_, operating_period = NA_character_,
+    pollutant_coverage = NA_character_
+  )
+
+# Only unique polygon assignments count toward a district's inventory.
+station_points <- st_as_sf(ub_aq_stations, coords = c("Longitude", "Latitude"), crs = 4326)
+polygon_matches <- st_intersects(station_points, ub_districts)
+station_points$assignment <- if_else(lengths(polygon_matches) == 1L, "Unique", "Unresolved")
+# Assign each uniquely located station to a district
+ub_stations_sf <- station_points |>
+  filter(assignment == "Unique") |>
   st_join(select(ub_districts, District = name))
+analysis_keys(st_drop_geometry(ub_stations_sf), "Station")
+knitr::kable(st_drop_geometry(filter(station_points, assignment != "Unique")),
+  caption = "Stations with unresolved district assignments"
+)
 
 # Station count for every district, including those with none
 station_count <- ub_districts |>
@@ -309,7 +371,7 @@ station_count <- ub_districts |>
   mutate(Stations = coalesce(Stations, 0L)) |>
   arrange(desc(Stations))
 
-knitr::kable(station_count, caption = "Air quality monitoring stations by district")
+knitr::kable(station_count, caption = "Uniquely assigned locations in the illustrative inventory by district")
 ```
 
 Stations are assigned by their coordinates, using mongolmaps' simplified district boundaries. A station within a few hundred metres of a district border may fall on the other side.
@@ -324,8 +386,10 @@ station_box <- ub_stations_sf |>
   st_buffer(3000) |>
   st_bbox()
 
-mn_map(filter(ub_districts, name %in% central), label = TRUE, crs = utm48n,
-       title = "Air Quality Monitoring Stations in Central Ulaanbaatar") +
+mn_map(filter(ub_districts, name %in% central),
+  label = TRUE, crs = utm48n,
+  title = "Air Quality Monitoring Stations in Central Ulaanbaatar"
+) +
   geom_sf(data = ub_stations_sf, color = "#e34948", size = 2.5, alpha = 0.9) +
   ggrepel::geom_text_repel(
     data = ub_stations_sf, aes(label = Station, geometry = geometry), stat = "sf_coordinates",
@@ -345,6 +409,8 @@ station_coverage <- station_count |>
   left_join(select(pop_data, District, Population = value), by = join_by(District)) |>
   mutate(Pop_per_Station = if_else(Stations > 0, Population / Stations, NA_real_))
 
+knitr::kable(station_coverage, caption = "All districts, including those without a listed location")
+
 station_coverage |>
   filter(Stations > 0) |>
   ggplot(aes(x = Pop_per_Station / 1000, y = reorder(District, Pop_per_Station))) +
@@ -352,10 +418,10 @@ station_coverage |>
   geom_text(aes(label = paste0(round(Pop_per_Station / 1000), "k (", Stations, ")")), hjust = -0.1, size = 3) +
   scale_x_continuous(expand = expansion(mult = c(0, 0.25))) +
   labs(
-    title = "Residents per Monitoring Station",
+    title = "Residents per Listed Station Location",
     subtitle = "Thousands of residents per station (number of stations in brackets)",
     x = "Residents per station (thousands)", y = NULL,
-    caption = "Districts with no station are not shown"
+    caption = paste("Population year", pop_year, "| Districts with no listed location remain in the table")
   ) +
   theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
 ```
@@ -364,11 +430,11 @@ station_coverage |>
 no_station <- if (run_vignette) filter(station_coverage, Stations == 0)
 ```
 
-`r inline_value(nrow(no_station))` districts, `r inline_value(knitr::combine_words(no_station$District))`, have no station in this network. About `r inline_value(scales::label_comma()(round(sum(no_station$Population), -3)))` residents (`r inline_value(round(sum(no_station$Population) / sum(station_coverage$Population) * 100))`% of the city) live there. Residents per station is a crude measure: pollution varies with distance from sources and with terrain, so the location of stations matters as much as their number. The ger areas on the city's northern and eastern edges, where most household coal and wood burning happens, are where denser monitoring would add the most to exposure estimates.
+`r inline_value(nrow(no_station))` districts have no uniquely assigned location **in this inventory**. This does not establish absence of monitoring. Residents per listed location does not measure representativeness; operating status, pollutant coverage, terrain and distance from sources matter. These ratios cannot determine where another monitor would add the most information.
 
 ## Conclusion
 
-Ulaanbaatar's districts differ widely in density, growth and school capacity, and NSO's district tables plus mongolmaps' boundaries make these differences easy to map. Health outcomes are harder: published district births and deaths follow hospital locations, so district-level rates need data coded by place of residence before they can guide local public health action.
+The tables show differences in recorded population and mean school enrolment. Fine-scale density remains illustrative until boundary vintages are checked. Health comparisons require compatible residence-coded events, and the station inventory needs official verification before assessing exposure or monitoring adequacy.
 
 ```{r restore-session, include=FALSE}
 options(old_options)

@@ -19,10 +19,10 @@ knitr::opts_chunk$set(eval = run_vignette, purl = run_vignette)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7,        # standardized width that fits vignette text column
-  fig.height = 5,       # default height for maps
-  fig.dpi = 150,        # higher resolution for crisp rendering
-  out.width = "100%",   # constrain to page width, prevents overflow
+  fig.width = 7, # standardized width that fits vignette text column
+  fig.height = 5, # default height for maps
+  fig.dpi = 150, # higher resolution for crisp rendering
+  out.width = "100%", # constrain to page width, prevents overflow
   warning = FALSE,
   message = FALSE
 )
@@ -33,6 +33,8 @@ library(mongolstats)
 library(mongolmaps)
 library(dplyr)
 library(ggplot2)
+# Checked teaching helpers are shipped with the package and can be inspected.
+source(system.file("examples", "analysis-helpers.R", package = "mongolstats"), local = TRUE)
 old_options <- nso_options(mongolstats.lang = "en")
 
 # Global theme with proper margins to prevent text cutoff
@@ -74,126 +76,100 @@ NSO's `Region` dimension mixes levels: `"0"` is the national total, `"1"`–`"4"
 
 ## Case Study: Maternal Mortality
 
-Maternal deaths are rare: Mongolia records a few dozen a year, and most aimags record none in a typical year. A single year's maternal mortality ratio (MMR) by aimag is therefore mostly noise. We pool 10 years of counts and attach confidence intervals.
+Maternal deaths are rare: Mongolia records a few dozen a year, and most aimags record none in a typical year. A single year's maternal mortality ratio (MMR) by aimag can be very unstable. We pool up to 10 common calendar years, retain incomplete counts as missing, and attach conditional Poisson intervals. A maternal death is a death during pregnancy or within 42 days of its end from a cause related to or aggravated by pregnancy or its management, excluding accidental or incidental causes. Confirm that the source applies this definition. MMR uses live births as its denominator; it is different from maternal mortality per woman-years.
 
 ### Check the counts before mapping
 
-Aimag codes start with their region's digit (`1xx` = Western, `2xx` = Khangai, `3xx` = Central, `4xx` = Eastern), so aimag counts should add up to their regional subtotal. Checking this catches data entry errors before they reach a map.
+Aimag codes start with their region's digit (`1xx` = Western, `2xx` = Khangai, `3xx` = Central, `4xx` = Eastern), so aimag counts should add up to their regional subtotal. Reconciliation detects inconsistencies, but cannot identify which source entry is wrong.
 
 ```{r maternal-check}
-# Rows where the aimag counts do not add up to the regional subtotal
+# Report both inconsistent and uncheckable subtotals. Never infer zero.
 subtotal_mismatches <- function(data) {
+  analysis_keys(data, c("Region", "period"))
   aimag_sums <- data |>
     filter(nchar(Region) == 3, Region != "511") |>
     mutate(region = substr(Region, 1, 1)) |>
-    summarise(aimag_sum = sum(value, na.rm = TRUE), .by = c(region, period))
+    summarise(aimag_sum = analysis_sum(value), .by = c(region, period))
   region_totals <- data |>
-    filter(Region %in% c("1", "2", "3", "4")) |>
+    filter(Region %in% as.character(1:4)) |>
     select(region = Region, period, region_total = value)
-  inner_join(aimag_sums, region_totals, by = join_by(region, period)) |>
-    filter(aimag_sum != region_total)
+  full_join(aimag_sums, region_totals, by = join_by(region, period), relationship = "one-to-one") |>
+    mutate(check = case_when(
+      !is.finite(aimag_sum) | !is.finite(region_total) ~ "Uncheckable",
+      aimag_sum != region_total ~ "Needs review",
+      .default = "Agrees"
+    )) |>
+    filter(check != "Agrees")
 }
-
-# Annual maternal deaths by aimag
 annual_tbl <- "DT_NSO_2100_002V1"
-maternal_annual <- nso_data(
-  annual_tbl,
-  selections = list(
-    Region = nso_dim_values(annual_tbl, "Region")$code,
-    Year = nso_dim_values(annual_tbl, "Year")$code
-  ),
-  labels = "en"
-) |>
-  mutate(period = Year_en)
-
-# Monthly maternal deaths by aimag
 monthly_tbl <- "DT_NSO_2100_002V2"
-maternal_monthly <- nso_data(
-  monthly_tbl,
-  selections = list(
-    Region = nso_dim_values(monthly_tbl, "Region")$code,
-    Month = nso_dim_values(monthly_tbl, "Month")$code
-  ),
-  labels = "en"
-) |>
-  mutate(period = Month_en)
-
-subtotal_mismatches(maternal_annual)
-subtotal_mismatches(maternal_monthly)
+maternal_annual <- nso_data(annual_tbl, list(
+  Region = nso_dim_values(annual_tbl, "Region")$code,
+  Year = nso_dim_values(annual_tbl, "Year", labels = "en")$label_en
+), labels = "en") |> mutate(period = Year_en)
+maternal_monthly <- nso_data(monthly_tbl, list(
+  Region = nso_dim_values(monthly_tbl, "Region")$code,
+  Month = nso_table_periods(monthly_tbl)$label
+), labels = "en") |> mutate(period = Month_en)
+annual_checks <- subtotal_mismatches(maternal_annual)
+monthly_checks <- subtotal_mismatches(maternal_monthly)
+count(annual_checks, check)
+count(monthly_checks, check)
+filter(annual_checks, check == "Needs review")
 ```
 
-The annual table has `r if (run_vignette) nrow(subtotal_mismatches(maternal_annual)) else "some"` region-year(s) where the aimags do not add up to their region; the monthly table has `r if (run_vignette) nrow(subtotal_mismatches(maternal_monthly)) else "none"`. An aimag count larger than its whole region's total is an entry error, and pooled over 10 years it would make that aimag look like a hot spot. We use the monthly table, which adds up, and report any mismatch to NSO.
+An aimag sum larger than its regional total indicates a source inconsistency, not which entry is incorrect. Missing totals or component observations are labelled uncheckable. The monthly source is used provisionally below; national reconciliation cannot establish the meaning of every blank cell. Record unresolved discrepancies for follow-up with NSO before publication.
 
 ### Pooled maternal mortality ratio
 
-The MMR divides maternal deaths by live births (`DT_NSO_2100_018V5`), both summed over the same 10 complete years:
+The MMR divides maternal deaths by live births (`DT_NSO_2100_018V5`) over the same common calendar years. A pooled result is a birth-weighted summary of the selected period, not an estimate of current-year risk.
 
 ```{r maternal-data}
-# Sum a monthly count table over whole years, by region code. Blank cells
-# are counted as zero and reported in `n_blank` (see below).
-pooled_counts <- function(tbl, years) {
-  months <- nso_dim_values(tbl, "Month", labels = "en")
-  nso_data(
-    tbl,
-    selections = list(
-      Region = nso_dim_values(tbl, "Region")$code,
-      Month = months$code[substr(months$label_en, 1, 4) %in% years]
-    ),
-    labels = "en"
-  ) |>
-    filter(Region != "511") |> # empty duplicate of Ulaanbaatar
-    summarise(
-      count = sum(value, na.rm = TRUE),
-      n_blank = sum(is.na(value)),
-      n_cells = n(),
-      .by = c(Region, Region_en)
-    )
-}
+units <- c("0", setdiff(mn_aimags()$nso_code, "511"), "5")
+maternal_source <- analysis_fetch_counts(monthly_tbl, units)
+birth_source <- analysis_fetch_counts("DT_NSO_2100_018V5", units)
+complete_years <- analysis_common_years(maternal_source$annual, birth_source$annual)
+stopifnot(length(complete_years) > 0L)
+mmr_years <- tail(complete_years, 10L)
+mmr_period <- paste(range(mmr_years), collapse = "-")
+maternal_deaths <- analysis_pool_counts(maternal_source$annual, mmr_years)
+live_births <- analysis_pool_counts(birth_source$annual, mmr_years)
+mmr <- analysis_pair(
+  select(maternal_deaths, Region, Region_en, deaths = count, missing_deaths = n_missing),
+  select(live_births, Region, births = count, missing_births = n_missing), "Region"
+)
+mmr <- bind_cols(mmr, analysis_poisson(mmr$deaths, mmr$births, 1e5)) |>
+  rename(mmr = rate) |>
+  mutate(Region_en = trimws(Region_en))
+national_mmr <- filter(mmr, Region == "0")
+stopifnot(nrow(national_mmr) == 1L, is.finite(national_mmr$mmr))
+mmr_units <- filter(mmr, Region != "0")
+stopifnot(nrow(mmr_units) == 22L)
+mmr_units |> select(Region_en, deaths, births, missing_deaths, missing_births, mmr, lower, upper)
 
-# The 10 most recent years with all 12 months published
-month_labels <- nso_dim_values(monthly_tbl, "Month", labels = "en")$label_en
-complete_years <- names(which(table(substr(month_labels, 1, 4)) == 12))
-mmr_years <- tail(sort(complete_years), 10)
-mmr_period <- paste0(min(mmr_years), "–", max(mmr_years))
-
-maternal_deaths <- pooled_counts(monthly_tbl, mmr_years)
-live_births <- pooled_counts("DT_NSO_2100_018V5", mmr_years)
-
-mmr <- maternal_deaths |>
-  select(Region, Region_en, deaths = count) |>
-  inner_join(select(live_births, Region, births = count), by = join_by(Region)) |>
-  mutate(
-    Region_en = trimws(Region_en),
-    mmr = deaths / births * 1e5,
-    # Exact Poisson 95% confidence interval
-    lower = qchisq(0.025, 2 * deaths) / 2 / births * 1e5,
-    upper = qchisq(0.975, 2 * (deaths + 1)) / 2 / births * 1e5
-  )
-
-national_mmr <- mmr |> filter(Region == "0")
-
-# Aimags and the capital (Ulaanbaatar's figures are on region code "5")
-mmr_units <- mmr |>
-  filter(nchar(Region) == 3 | Region == "5")
-
-mmr_units |>
-  arrange(desc(mmr)) |>
-  select(Region_en, deaths, births, mmr, lower, upper) |>
-  head(10)
+# Sensitivity: remove the pandemic years; use the same validation rules.
+sensitivity_years <- setdiff(mmr_years, as.character(2020:2022))
+stopifnot(length(sensitivity_years) > 0L)
+sensitivity <- analysis_pair(
+  select(analysis_pool_counts(maternal_source$annual, sensitivity_years), Region, deaths = count),
+  select(analysis_pool_counts(birth_source$annual, sensitivity_years), Region, births = count), "Region"
+) |> mutate(mmr = if_else(is.finite(deaths) & births > 0, deaths / births * 1e5, NA_real_))
+filter(sensitivity, Region == "0")
 ```
 
-NSO leaves some cells blank rather than entering 0 (`r if (run_vignette) sum(maternal_deaths$n_blank) else "some"` of `r if (run_vignette) sum(maternal_deaths$n_cells) else "all"` region-months here). Counting blanks as zero is safe for this table: the monthly sums reproduce the national annual totals in `DT_NSO_2100_002V1`. Check this for any table before you treat blanks as zero.
+Unresolved source values are not converted to zero. `r if (run_vignette) sum(!is.finite(mmr_units$mmr)) else "Some"` areas have insufficient observations for the pooled estimate and appear grey on the map. Inspect `maternal_source$status` and `birth_source$status` before considering any table-specific recode. Conditional Poisson intervals do not include registration error, geographic mismatch or denominator uncertainty.
 
-Over `r if (run_vignette) mmr_period else "the period"`, the national MMR was `r if (run_vignette) round(national_mmr$mmr) else "-"` per 100,000 live births (`r if (run_vignette) national_mmr$deaths else "-"` maternal deaths). `r if (run_vignette) sum(mmr_units$deaths <= 5) else "Many"` of the `r if (run_vignette) nrow(mmr_units) else "22"` areas (21 aimags and the capital) recorded 5 or fewer maternal deaths in 10 years.
+Over `r if (run_vignette) mmr_period else "the selected period"`, the national recorded MMR was `r if (run_vignette) round(national_mmr$mmr) else "-"` per 100,000 live births. The national estimate excluding 2020-2022 is shown above. Pooling can reduce random variation but cannot repair missing observations or systematic error.
 
 ### Choropleth and confidence intervals
 
 ```{r maternal-map, fig.alt="Choropleth map of the pooled maternal mortality ratio by aimag and Ulaanbaatar over the last 10 complete years"}
 mmr_map <- mn_join(mmr_units, by = "Region", level = "aimag")
+stopifnot(nrow(mmr_map) == 22L, !anyDuplicated(mmr_map$nso_code))
 
 mn_map(mmr_map, fill = mmr, title = paste0("Maternal Mortality Ratio, ", mmr_period)) +
   labs(
-    subtitle = "Maternal deaths per 100,000 live births, 10 years pooled. Data: NSO Mongolia",
+    subtitle = "Maternal deaths per 100,000 live births, Pooled recorded counts; grey = insufficient data. Data: NSO Mongolia",
     fill = "MMR\n(per 100k)"
   )
 ```
@@ -202,6 +178,7 @@ A map shows point estimates only. The interval plot shows how uncertain each one
 
 ```{r maternal-intervals, fig.alt="Dot plot of the pooled maternal mortality ratio by aimag with exact 95% confidence intervals and a dashed line at the national ratio", fig.height=7}
 mmr_units |>
+  filter(is.finite(mmr)) |>
   mutate(Region_en = forcats::fct_reorder(Region_en, mmr)) |>
   ggplot(aes(x = mmr, y = Region_en)) +
   geom_vline(xintercept = national_mmr$mmr, linetype = "dashed", color = "grey50") +
@@ -217,49 +194,32 @@ mmr_units |>
   theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
 ```
 
-Even with 10 years pooled, most intervals overlap the national ratio. An aimag with no maternal deaths has an estimate of 0 but an upper limit well above zero; it is not evidence of zero risk. The pooled period also includes 2021, when maternal deaths rose sharply during the COVID-19 pandemic.
+Intervals can remain wide after pooling. Zero observed maternal deaths has a positive upper Poisson limit and is not evidence of zero risk. Missing data is a different state and is not shown as zero. Compare the pandemic-excluded result before describing a pooled pattern as typical.
 
 ## Case Study: Infant Mortality
 
 ### Funnel plot
 
-Ranking aimags or colouring them by fixed cut-offs (for example, "IMR above 20") treats a rate from 300 births the same as one from 30,000. A **funnel plot** sets each aimag's rate against its number of births and adds control limits around the national rate. The limits are wide for small aimags and narrow for large ones. Points outside the limits differ from the national rate by more than chance alone would explain.
+A **funnel plot** places each area's recorded IMR against its number of births. Conservative discrete Poisson limits are wider for smaller denominators. A point outside the limits is unusual under a common-rate Poisson model, not proof that the difference cannot be due to chance or that care is worse. Unmeasured heterogeneity, referral, data quality and overdispersion can affect the interpretation.
 
 ```{r imr-funnel-data}
-# Latest year with all 12 months published
-imr_year <- max(complete_years)
+infant_source <- analysis_fetch_counts("DT_NSO_2100_014V1", units)
+imr_year <- analysis_latest(analysis_common_years(infant_source$annual, birth_source$annual))
+infant_deaths <- filter(infant_source$annual, year == imr_year)
+imr_births <- filter(birth_source$annual, year == imr_year)
+imr <- analysis_pair(
+  select(infant_deaths, Region, Region_en, deaths = count),
+  select(imr_births, Region, births = count), "Region"
+) |> mutate(Region_en = trimws(Region_en))
+imr <- bind_cols(imr, analysis_poisson(imr$deaths, imr$births)) |> rename(imr = rate)
+national_rate <- with(filter(imr, Region == "0"), deaths / births)
+stopifnot(length(national_rate) == 1L, is.finite(national_rate), national_rate > 0)
 
-infant_deaths <- pooled_counts("DT_NSO_2100_014V1", imr_year)
-imr_births <- pooled_counts("DT_NSO_2100_018V5", imr_year)
-
-imr <- infant_deaths |>
-  select(Region, Region_en, deaths = count) |>
-  inner_join(select(imr_births, Region, births = count), by = join_by(Region)) |>
-  mutate(Region_en = trimws(Region_en), imr = deaths / births * 1000)
-
-national_rate <- with(filter(imr, Region == "0"), deaths / births) # per live birth
-
-# Poisson control limits around the national rate, for any number of births.
-# Spiegelhalter's interpolation smooths the steps of the discrete Poisson
-# quantiles (Spiegelhalter 2005, Statistics in Medicine 24:1185-1202).
-funnel_limit <- function(births, p) {
-  lambda <- births * national_rate
-  r <- qpois(p, lambda)
-  alpha <- (ppois(r, lambda) - p) / dpois(r, lambda)
-  pmax(r - alpha, 0) / births * 1000
-}
-
-imr_units <- imr |>
-  filter(nchar(Region) == 3 | Region == "5") |>
-  mutate(
-    signal = case_when(
-      imr > funnel_limit(births, 0.975) ~ "Above 95% limit",
-      imr < funnel_limit(births, 0.025) ~ "Below 95% limit",
-      .default = "Within limits"
-    ),
-    signal = factor(signal, levels = c("Above 95% limit", "Within limits", "Below 95% limit"))
-  )
-
+# Discrete quantiles give conservative attainable tail probabilities.
+# Step-shaped limits are expected; no interpolation is used for classification.
+funnel_limit <- function(births, p) qpois(p, births * national_rate) / births * 1000
+imr_units <- filter(imr, Region != "0") |>
+  mutate(signal = analysis_funnel_signal(deaths, births, national_rate))
 count(imr_units, signal)
 ```
 
@@ -270,9 +230,9 @@ funnel <- tibble::tibble(births = exp(seq(log(200), log(max(imr_units$births) * 
     lower_95 = funnel_limit(births, 0.025), upper_95 = funnel_limit(births, 0.975)
   )
 
-signal_colors <- c("Above 95% limit" = "#e34948", "Within limits" = "grey55", "Below 95% limit" = "#2a78d6")
+signal_colors <- c("Above 95% limit" = "#e34948", "Within limits" = "grey55", "Below 95% limit" = "#2a78d6", "Insufficient data" = "grey85")
 
-ggplot(imr_units, aes(x = births, y = imr)) +
+ggplot(filter(imr_units, is.finite(imr), births > 0), aes(x = births, y = imr)) +
   geom_line(data = funnel, aes(y = upper_998), linetype = "dotted", color = "grey40") +
   geom_line(data = funnel, aes(y = lower_998), linetype = "dotted", color = "grey40") +
   geom_line(data = funnel, aes(y = upper_95), linetype = "dashed", color = "grey40") +
@@ -280,7 +240,7 @@ ggplot(imr_units, aes(x = births, y = imr)) +
   geom_hline(yintercept = national_rate * 1000, color = "grey20") +
   geom_point(aes(color = signal), size = 2.5) +
   ggrepel::geom_text_repel(
-    data = filter(imr_units, signal != "Within limits" | Region == "5"),
+    data = filter(imr_units, is.finite(imr), signal != "Within limits" | Region == "5"),
     aes(label = Region_en), size = 3, color = "grey20", min.segment.length = 0, seed = 1
   ) +
   scale_x_log10(labels = scales::label_comma()) +
@@ -300,13 +260,14 @@ ggplot(imr_units, aes(x = births, y = imr)) +
 
 ```{r imr-signal-map, fig.alt="Map of aimags classified as above, within, or below the 95% funnel limits for infant mortality"}
 imr_map <- mn_join(imr_units, by = "Region", level = "aimag")
+stopifnot(nrow(imr_map) == 22L, !anyDuplicated(imr_map$nso_code))
 
 mn_map(imr_map, fill = signal, title = paste0("Infant Mortality Compared with the National Rate, ", imr_year)) +
   scale_fill_manual(values = signal_colors, na.value = "grey90", name = NULL) +
   labs(subtitle = "Classified by 95% funnel limits around the national rate. Data: NSO Mongolia")
 ```
 
-With 22 units, about one would fall outside 95% limits by chance alone, so treat a single point just past the 95% limit with caution; the 99.8% limits are a stricter screen. A signal is a reason to look closer, for example at data quality, referral patterns, or access to care, not proof that care is worse. Infant deaths and births are counted where they are recorded, so referrals of high-risk births to Ulaanbaatar can raise the capital's rate and lower the rate of the aimag the mother came from.
+With 22 units, roughly one flag at 95% would be expected under an ideal common-rate model; discrete limits can be conservative, and the estimated national reference includes each area. The 99.8% limits are a stricter screen, not a blanket multiple-comparison correction. A signal warrants investigation of source definitions, quality, referral and other differences. If births and deaths are assigned by occurrence rather than residence, referrals may distort area comparisons; that assignment rule must be confirmed for these tables.
 
 ## Tips for Spatial Epidemiology
 
@@ -314,7 +275,7 @@ With 22 units, about one would fall outside 95% limits by chance alone, so treat
 2. **Build rates from counts**: Sum numerators and denominators over the period, then divide. Do not average monthly or annual rates.
 3. **Pool rare events**: Combine several years for rare outcomes such as maternal deaths.
 4. **Show uncertainty**: Pair every choropleth with confidence intervals or a funnel plot.
-5. **Compare against chance, not fixed cut-offs**: Funnel plots account for different population sizes; fixed colour bands do not.
+5. **State the screening model**: Funnel plots reflect denominator size under a stated model; inspect heterogeneity and missing data before interpreting flags.
 6. **Join by code**: `mongolmaps::mn_join()` matches NSO `Region` codes, so spelling differences cannot drop an aimag from the map.
 
 ## Next Steps

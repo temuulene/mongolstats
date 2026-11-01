@@ -1,11 +1,24 @@
 ---
-title: "Is December Mongolia's Deadliest Month? A Look at Monthly Mortality Data"
+title: "Does December Have the Most Recorded Deaths?"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Is December Mongolia's Deadliest Month? A Look at Monthly Mortality Data}
+  %\VignetteIndexEntry{Does December Have the Most Recorded Deaths?}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+```{r not-cran-check, include=FALSE}
+run_vignette <- !nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_")) &&
+  (identical(Sys.getenv("IN_PKGDOWN"), "true") || identical(Sys.getenv("NOT_CRAN"), "true"))
+knitr::opts_chunk$set(eval = run_vignette, purl = run_vignette)
+inline_value <- function(expr, fallback = "not available") {
+  if (!run_vignette) {
+    return("not evaluated")
+  }
+  value <- expr
+  if (!length(value) || all(is.na(value))) fallback else value
+}
+```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -34,6 +47,8 @@ library(tidyr)
 library(ggplot2)
 library(lubridate)
 library(scales)
+# Checked teaching helpers are shipped with the package and can be inspected.
+source(system.file("examples", "analysis-helpers.R", package = "mongolstats"), local = TRUE)
 old_options <- nso_options(mongolstats.lang = "en")
 
 # Reusable theme for all plots in this analysis
@@ -64,7 +79,7 @@ A social media post claimed that **"the highest deaths are occurring in December
 ### Questions
 
 1. **Does December have the most deaths?** Once months of different lengths are put on an equal footing, is December the peak?
-2. **Is winter in general deadlier?** Mongolia's winters are severe, so a broad cold-season rise would be expected.
+2. **How do recorded winter and nonwinter averages differ?** Calendar patterns can be described, but these data alone cannot estimate a cold effect.
 3. **Can these data explain why?** What can monthly totals, annual causes of death, regional and hospital data tell us, and what can they not?
 
 ---
@@ -83,7 +98,7 @@ tibble::tribble(
   knitr::kable()
 ```
 
-All figures are **counts**, not rates. Mongolia's population grew over the period, so slow upward trends partly reflect population growth and ageing. This does not affect comparisons between months within a year.
+All figures are **counts**, not rates. Mongolia's population grew over the period, so slow upward trends partly reflect population growth and ageing. Dividing by days adjusts month length, not population at risk. Within-year changes and age composition can still affect comparisons.
 
 ---
 
@@ -111,16 +126,21 @@ parse_months <- function(data) {
 # National deaths (Region code "0" = total) for every published month
 deaths_all <- nso_data(
   tbl_id = death_tbl,
-  selections = list(Region = "0", Month = months_meta$code),
+  selections = list(Region = "0", Month = months_meta$label_en),
   labels = "en"
 ) |>
   parse_months() |>
   filter(!is.na(value)) |>
   arrange(date)
 
-# Keep complete calendar years only
-complete_years <- deaths_all |> count(year) |> filter(n == 12) |> pull(year)
-stopifnot(all(diff(complete_years) == 1))
+analysis_keys(deaths_all, "date")
+analysis_count_values(deaths_all$value)
+# Keep twelve distinct observed months in a year, not merely twelve rows.
+complete_years <- deaths_all |>
+  summarise(n = n(), n_months = n_distinct(month), .by = year) |>
+  filter(n == 12, n_months == 12) |>
+  pull(year)
+stopifnot(length(complete_years) >= 3L, all(diff(complete_years) == 1))
 first_year <- min(complete_years)
 last_year <- max(complete_years)
 n_years <- length(complete_years)
@@ -133,24 +153,27 @@ deaths_monthly <- deaths_all |>
     Month_Type = if_else(month == 12, "December", "Other months"),
     Season = if_else(month %in% c(11, 12, 1, 2, 3), "Winter (Nov–Mar)", "Non-winter")
   )
+# Require a regular monthly index before time-series decomposition.
+stopifnot(identical(
+  deaths_monthly$date,
+  seq(as.Date(paste0(first_year, "-01-01")),
+    as.Date(paste0(last_year, "-12-01")),
+    by = "month"
+  )
+))
 ```
 
-The monthly series begins in January `r first_year`. This analysis uses the `r n_years` complete years from `r first_year` to `r last_year`.
+The monthly series begins in January `r inline_value(first_year)`. This analysis uses the `r inline_value(n_years)` complete years from `r inline_value(first_year)` to `r inline_value(last_year)`.
 
 > **Methodological note:** All monthly comparisons use **deaths per day** (deaths in the month ÷ days in the month). This stops February (28 or 29 days) and 30-day months from looking lower than 31-day months simply because they are shorter. December and January both have 31 days, so this adjustment does not change how those two compare.
 
 ### Time Series with COVID-19 Context
 
 ```{r time-series-plot, fig.height=5}
-#| fig-alt: >-
-#|   Monthly deaths per day in Mongolia across all complete years of data, with COVID-19 phases shaded
-#|   and December points in red. The series is fairly flat apart from a large rise in mid to late 2021, a
-#|   dip around the turn of 2020 and 2021, and a gradual upward drift.
+#| fig-alt: Monthly recorded deaths per day with December highlighted and historical pandemic-period context shaded.
 covid_periods <- tibble::tribble(
   ~Start, ~End, ~Phase,
-  "2020-01-27", "2020-11-11", "Prevention (no local cases)",
-  "2020-11-12", "2021-05-08", "Lockdowns and first wave",
-  "2021-05-09", "2022-02-16", "Delta and Omicron waves"
+  "2020-01-01", "2022-12-31", "2020-2022 sensitivity window"
 ) |>
   mutate(across(c(Start, End), as.Date))
 
@@ -173,17 +196,15 @@ deaths_monthly |>
   ) +
   scale_fill_manual(
     values = c(
-      "Prevention (no local cases)" = "#a5d6a7",
-      "Lockdowns and first wave" = "#ef9a9a",
-      "Delta and Omicron waves" = "#ffcc80"
+      "2020-2022 sensitivity window" = "#ffcc80"
     ),
-    name = "COVID-19 phase"
+    name = "Sensitivity analysis"
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(labels = comma, limits = c(y_min, y_max)) +
   labs(
     title = paste0("Deaths per Day in Mongolia, ", period),
-    subtitle = "Monthly deaths divided by days in month; shading marks COVID-19 phases",
+    subtitle = "Recorded deaths divided by days; shading marks years excluded in sensitivity analyses",
     x = NULL,
     y = "Deaths per day",
     caption = "Source: NSO Mongolia, DT_NSO_2100_027V2"
@@ -202,20 +223,17 @@ low_row <- slice_min(deaths_monthly, daily_avg, n = 1)
 
 **What the series shows:**
 
-*   **Level:** Most months fall between about 40 and 55 deaths per day, drifting upward over time as the population grows and ages.
-*   **COVID-19:** The highest month in the series is `r format(peak_row$date, "%B %Y")` (`r fmt_num(peak_row$daily_avg)` deaths/day), during the Delta wave. The lowest is `r format(low_row$date, "%B %Y")` (`r fmt_num(low_row$daily_avg)`), during the first lockdowns. Without an expected baseline, these data cannot say whether lockdowns prevented deaths or whether registration was disrupted.
-*   **December:** The red points are often among the highest of their year, but not every year.
+* **Level:** These are recorded counts per day, not population mortality rates. Population growth and ageing can contribute to changes in the series.
+* **Extremes:** The highest observed month is `r inline_value(format(peak_row$date, "%B %Y"))`, at `r inline_value(fmt_num(peak_row$daily_avg))` deaths per day; the lowest is `r inline_value(format(low_row$date, "%B %Y"))`, at `r inline_value(fmt_num(low_row$daily_avg))`. Timing alone cannot distinguish changes in deaths from reporting disruption.
+* **December:** Red points identify December observations for comparison with other months.
 
 ### Monthly Distribution
 
 ```{r monthly-boxplot, fig.height=5}
-#| fig-alt: >-
-#|   Box plots of deaths per day for each calendar month, with winter months (November to March) in red
-#|   and other months in blue, and individual years as points with 2021 highlighted. December sits higher
-#|   than other months, but the other winter months are not systematically higher than summer months;
-#|   2021 points are high outliers from June to December.
+#| fig-alt: Distributions of monthly recorded deaths per day across years, with individual years and 2021 highlighted.
 monthly_stats <- deaths_monthly |>
   summarise(
+    deaths = sum(value), days = sum(days),
     mean_daily = mean(daily_avg),
     sd_daily = sd(daily_avg),
     n = n(),
@@ -258,24 +276,24 @@ deaths_monthly |>
 
 ```{r season-comparison, include=FALSE}
 winter_months <- c(11, 12, 1, 2, 3)
-season_mean <- function(stats, months) mean(stats$mean_daily[stats$month %in% months])
+season_mean <- function(stats, months) {
+  keep <- stats$month %in% months
+  analysis_weighted_daily(stats$deaths[keep], stats$days[keep])
+}
 
 non_winter_mean <- season_mean(monthly_stats, setdiff(1:12, winter_months))
 winter_excess <- (season_mean(monthly_stats, winter_months) / non_winter_mean - 1) * 100
 winter_excess_no_dec <- (season_mean(monthly_stats, c(11, 1, 2, 3)) / non_winter_mean - 1) * 100
 ```
 
-**Reading the boxes:** December's box sits above the others. The rest of winter does not: January, March and November look much like the summer months. Averaged over all five winter months, deaths per day are `r fmt_pct(winter_excess)` relative to the other seven months. Without December, the remaining winter months are `r fmt_pct(winter_excess_no_dec)`. The purple 2021 points show the Delta wave pushing up mid-year and autumn months.
+**Reading the boxes:** Each distribution contains one recorded deaths/day value per year for that calendar month. The pooled winter versus nonwinter contrast, calculated as total deaths divided by total days in each season, is `r inline_value(fmt_pct(winter_excess))`. Excluding December from winter gives `r inline_value(fmt_pct(winter_excess_no_dec))`. Highlighted 2021 observations allow the reader to see that year's influence; these comparisons do not identify temperature effects.
 
 ### Monthly Averages with Confidence Intervals
 
-> **Note:** These intervals use a *t* distribution for `r n_years` years and treat years as independent. Year-to-year correlation is ignored, and the COVID-19 years are included, so they are a rough guide only.
+> **Note:** These intervals use a *t* distribution for `r inline_value(n_years)` years and treat years as independent. Year-to-year correlation is ignored, and the COVID-19 years are included, so they are a rough guide only.
 
 ```{r monthly-means-plot, fig.height=4}
-#| fig-alt: >-
-#|   Bar chart of mean deaths per day for each calendar month with 95% confidence intervals and a dashed
-#|   line at the overall average. December is the highest bar and January the lowest, but the intervals
-#|   overlap widely across months.
+#| fig-alt: Equal-year monthly means of recorded deaths per day with approximate independent-year confidence intervals.
 peak_month <- slice_max(monthly_stats, mean_daily, n = 1)
 trough_month <- slice_min(monthly_stats, mean_daily, n = 1)
 
@@ -289,8 +307,10 @@ monthly_stats |>
   scale_y_continuous(labels = comma, expand = expansion(mult = c(0, 0.1))) +
   labs(
     title = "Mean Deaths per Day with 95% Confidence Intervals",
-    subtitle = paste0("Peak: ", peak_month$month_name, " (", fmt_num(peak_month$mean_daily),
-                      "/day); lowest: ", trough_month$month_name, " (", fmt_num(trough_month$mean_daily), "/day)"),
+    subtitle = paste0(
+      "Peak: ", peak_month$month_name, " (", fmt_num(peak_month$mean_daily),
+      "/day); lowest: ", trough_month$month_name, " (", fmt_num(trough_month$mean_daily), "/day)"
+    ),
     x = NULL,
     y = "Mean deaths per day",
     caption = paste0("Dashed line = average of all months, ", period)
@@ -300,26 +320,23 @@ monthly_stats |>
 ```{r sensitivity-no-covid, include=FALSE}
 stats_no_covid <- deaths_monthly |>
   filter(!year %in% covid_years) |>
-  summarise(mean_daily = mean(daily_avg), .by = c(month, month_name)) |>
+  summarise(mean_daily = mean(daily_avg), deaths = sum(value), days = sum(days), .by = c(month, month_name)) |>
   arrange(month)
 
 peak_no_covid <- slice_max(stats_no_covid, mean_daily, n = 1)
 dec_vs_rest <- function(stats) {
-  (stats$mean_daily[stats$month == 12] / mean(stats$mean_daily[stats$month != 12]) - 1) * 100
+  (season_mean(stats, 12) / season_mean(stats, 1:11) - 1) * 100
 }
 ```
 
-December averages `r fmt_num(peak_month$mean_daily)` deaths per day, `r fmt_pct(dec_vs_rest(monthly_stats))` relative to the average of the other eleven months. Leaving out the pandemic years `r min(covid_years)`–`r max(covid_years)`, `r if (peak_no_covid$month == 12) "December is still the peak month" else paste("the peak month becomes", full_month(peak_no_covid$month))`, at `r fmt_pct(dec_vs_rest(stats_no_covid))` relative to the other months, so the December result does not depend on the pandemic.
+December averages `r inline_value(fmt_num(season_mean(monthly_stats, 12)))` recorded deaths per day, `r inline_value(fmt_pct(dec_vs_rest(monthly_stats)))` relative to total deaths divided by total days in the other eleven months. Excluding 2020-2022, the highest equal-year monthly mean is in `r inline_value(full_month(peak_no_covid$month))` and December's contrast is `r inline_value(fmt_pct(dec_vs_rest(stats_no_covid)))`. These are descriptive contrasts; they do not establish their cause.
 
 ---
 
 ## 2. Heat Map: Year × Month
 
 ```{r heatmap, fig.height=6}
-#| fig-alt: >-
-#|   Heat map of deaths per day by year and month, standardised within each year so red means above that
-#|   year's average and blue below. December is red in most years but not all, January is often blue, and
-#|   in 2021 the late summer and autumn months stand out in red.
+#| fig-alt: Within-year standardised recorded deaths per day, allowing calendar patterns to be compared across years.
 heatmap_data <- deaths_monthly |>
   mutate(
     z_score = (daily_avg - mean(daily_avg)) / sd(daily_avg),
@@ -353,7 +370,7 @@ above_avg <- heatmap_data |>
 years_above <- function(m) above_avg$above[above_avg$month == m]
 ```
 
-Each column is standardised within its year, so this shows each month's position *within* its year rather than absolute levels. December is above its year's average in `r years_above(12)` of `r n_years` years. January is above average in only `r years_above(1)`, and February in `r years_above(2)`. In 2021 the Delta wave dominates the late summer and autumn months.
+Each column is standardised within its year, so this shows each month's position *within* its year rather than absolute levels. December is above its year's average in `r inline_value(years_above(12))` of `r inline_value(n_years)` years. January is above average in only `r inline_value(years_above(1))`, and February in `r inline_value(years_above(2))`. In 2021 the Delta wave dominates the late summer and autumn months.
 
 ---
 
@@ -364,11 +381,7 @@ Each column is standardised within its year, so this shows each month's position
 STL (Seasonal and Trend decomposition using Loess) splits the series into a smooth **trend**, a repeating **seasonal** pattern, and a **remainder**.
 
 ```{r stl-decomposition, fig.height=7}
-#| fig-alt: >-
-#|   Four stacked panels showing the observed deaths-per-day series, its smooth trend, the repeating
-#|   seasonal pattern, and the remainder. The seasonal pattern is flat for eleven months with a single
-#|   sharp spike each December; the trend rises during 2021, and the remainder shows the 2021 surge and
-#|   the early 2021 dip.
+#| fig-alt: Observed series, smooth trend, fitted repeating seasonal component and remainder from a descriptive STL decomposition.
 ts_deaths <- ts(deaths_monthly$daily_avg, start = c(first_year, 1), frequency = 12)
 
 # s.window = "periodic" estimates one seasonal pattern shared by all years;
@@ -393,8 +406,10 @@ zero_lines <- tibble(
 
 decomp_df |>
   ggplot(aes(x = date, y = value)) +
-  geom_hline(data = zero_lines, aes(yintercept = yintercept),
-             linetype = "dashed", color = "grey60", linewidth = 0.3) +
+  geom_hline(
+    data = zero_lines, aes(yintercept = yintercept),
+    linetype = "dashed", color = "grey60", linewidth = 0.3
+  ) +
   geom_line(color = "#2c3e50", linewidth = 0.6) +
   facet_wrap(~component, ncol = 1, scales = "free_y") +
   scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
@@ -410,9 +425,7 @@ decomp_df |>
 ### The Seasonal Pattern
 
 ```{r seasonal-pattern, fig.height=4}
-#| fig-alt: >-
-#|   Bar chart of the estimated seasonal effect for each calendar month in deaths per day. December has a
-#|   large positive effect while every other month is within about one death per day of zero.
+#| fig-alt: Estimated periodic monthly component of recorded deaths per day from the descriptive STL model.
 seasonal_cycle <- tibble(
   month = 1:12,
   month_name = factor(month.abb, levels = month.abb),
@@ -435,20 +448,22 @@ seasonal_cycle |>
   scale_y_continuous(expand = expansion(mult = 0.15)) +
   labs(
     title = "Estimated Seasonal Effect by Month",
-    subtitle = paste0("Peak: ", peak_seasonal$month_name, " (", fmt_num(peak_seasonal$seasonal_effect),
-                      " deaths/day); lowest: ", trough_seasonal$month_name, " (",
-                      fmt_num(trough_seasonal$seasonal_effect), " deaths/day)"),
+    subtitle = paste0(
+      "Peak: ", peak_seasonal$month_name, " (", fmt_num(peak_seasonal$seasonal_effect),
+      " deaths/day); lowest: ", trough_seasonal$month_name, " (",
+      fmt_num(trough_seasonal$seasonal_effect), " deaths/day)"
+    ),
     x = NULL,
     y = "Deaths per day above or below trend"
   ) +
   theme(legend.position = "bottom")
 ```
 
-> **Key finding:** The seasonal pattern is a **single spike** in `r full_month(peak_seasonal$month)`, about `r fmt_num(peak_seasonal$seasonal_effect)` deaths per day above trend. Every other month is within ±`r fmt_num(other_max)` deaths per day, and the lowest month, `r full_month(trough_seasonal$month)`, is only `r fmt_num(trough_seasonal$seasonal_effect)` deaths per day. There is no broad winter rise.
+> **STL description:** The largest fitted periodic component is in `r inline_value(full_month(peak_seasonal$month))`, about `r inline_value(fmt_num(peak_seasonal$seasonal_effect))` recorded deaths per day above the smooth trend. STL imposes one repeating seasonal pattern here. It does not identify a temperature effect or establish the absence of one.
 
 ### Month Effects After Removing Year-to-Year Changes
 
-A regression with a term for each year and each calendar month estimates how far each month sits from the average month, after removing differences between years such as population growth. We leave out the pandemic years `r min(covid_years)`–`r max(covid_years)`.
+A regression with a term for each year and each calendar month estimates how far each month sits from the average month, after removing differences between years such as population growth. We leave out the pandemic years `r inline_value(min(covid_years))`–`r inline_value(max(covid_years))`.
 
 ```{r month-effects}
 fit_data <- deaths_monthly |>
@@ -491,7 +506,36 @@ dec_effect <- month_effects |> filter(Month == "December")
 jan_effect <- month_effects |> filter(Month == "January")
 ```
 
-December sits `r fmt_num(dec_effect$estimate)` deaths per day above the average month (95% CI `r fmt_num(dec_effect$lower)` to `r fmt_num(dec_effect$upper)`), and January `r fmt_num(jan_effect$estimate)` (`r fmt_num(jan_effect$lower)` to `r fmt_num(jan_effect$upper)`). The intervals ignore correlation between neighbouring months, so they are somewhat too narrow.
+December has an estimated deviation of `r inline_value(fmt_num(dec_effect$estimate))` deaths per day from the average month (95% CI `r inline_value(fmt_num(dec_effect$lower))` to `r inline_value(fmt_num(dec_effect$upper))`), and January `r inline_value(fmt_num(jan_effect$estimate))` (`r inline_value(fmt_num(jan_effect$lower))` to `r inline_value(fmt_num(jan_effect$upper))`). These model-based intervals may be miscalibrated because they ignore serial dependence and unequal residual variation. Year effects remove overall differences between years, not all changes within a year or changes in age composition.
+
+### Count-model sensitivity and residual checks
+
+```{r count-model-diagnostics}
+count_fit <- glm(value ~ year_f + month_f + offset(log(days)),
+  family = quasipoisson(), data = fit_data
+)
+pearson <- residuals(count_fit, type = "pearson")
+dispersion <- sum(pearson^2) / df.residual(count_fit)
+# Excluding pandemic years leaves gaps: do not pretend observations on
+# either side of a gap are consecutive when inspecting residual correlation.
+diagnostic_data <- mutate(fit_data, residual = pearson) |> arrange(date)
+residual_pairs <- diagnostic_data |>
+  mutate(previous_date = lag(date), previous_residual = lag(residual)) |>
+  filter(date == lubridate::add_with_rollback(previous_date, lubridate::period(months = 1)))
+lag1_correlation <- if (nrow(residual_pairs) >= 3L &&
+                          sd(residual_pairs$residual) > 0 && sd(residual_pairs$previous_residual) > 0) {
+  cor(residual_pairs$residual, residual_pairs$previous_residual)
+} else {
+  NA_real_
+}
+tibble(Pearson_dispersion = dispersion, adjacent_month_residual_correlation = lag1_correlation)
+```
+
+The quasi-Poisson model uses the actual counts and a month-length offset.
+Dispersion adjustment alone does not correct serial dependence. These diagnostics
+are a sensitivity check, not a validated inferential model; robust or block-based
+inference would also need caution with so few years. Counts/day are not population
+mortality rates.
 
 ### Harmonic Regression
 
@@ -499,6 +543,7 @@ A harmonic regression fits a smooth annual wave plus a linear trend. It is a use
 
 ```{r harmonic-regression}
 harmonic_data <- deaths_monthly |>
+  filter(!year %in% covid_years) |>
   mutate(
     time_index = as.numeric(date - min(date)) / 365.25,
     sin_annual = sin(2 * pi * month / 12),
@@ -524,28 +569,25 @@ harmonic_results <- list(
 
 | Metric | Value |
 |:-------|:------|
-| **Estimated peak of the smooth wave** | `r harmonic_results$peak_month` |
-| **Seasonal amplitude** | ±`r harmonic_results$amplitude` deaths/day (`r harmonic_results$amplitude_pct`% of the mean) |
-| **Model fit (R², including trend)** | `r harmonic_results$r_squared`% |
+| **Estimated peak of the smooth wave** | `r inline_value(harmonic_results$peak_month)` |
+| **Seasonal amplitude** | ±`r inline_value(harmonic_results$amplitude)` deaths/day (`r inline_value(harmonic_results$amplitude_pct)`% of the mean) |
+| **Model fit (R², including trend)** | `r inline_value(harmonic_results$r_squared)`% |
 
-The smooth wave is small and explains little of the variation. A one-month spike cannot be captured by a gradual wave, so the estimated peak timing is pulled by other features of the data, including the autumn 2021 Delta wave. This is further evidence against a broad seasonal cycle, not a reason to doubt the December spike.
+This sensitivity fit excludes 2020-2022. A single annual harmonic can miss narrow peaks and changes over time; a small fitted wave does not establish the absence of seasonality or a cold effect. It summarises these recorded counts under a restricted model.
 
 ---
 
 ## 4. Is the December Spike Real?
 
-A rise in deaths caused by cold would be expected to last through the coldest months. January, not December, is usually Mongolia's coldest month, yet January deaths per day are no higher than an average month. The table below compares each December with the average of the November before it and the January after it.
+The following compares December with the preceding November and following January. Exact calendar neighbours are required. It is a local descriptive contrast, not a test of cold exposure, holiday effects or mortality displacement.
 
 ```{r december-neighbours}
-december_check <- deaths_all |>
-  mutate(neighbours = (lag(daily_avg) + lead(daily_avg)) / 2) |>
-  filter(month == 12, year %in% complete_years, !is.na(neighbours)) |>
+december_check <- analysis_neighbours(deaths_all) |>
+  filter(year %in% complete_years, is.finite(neighbours), neighbours > 0) |>
   mutate(ratio = (daily_avg / neighbours - 1) * 100)
-
 december_check |>
   transmute(
-    Year = year,
-    `December deaths/day` = fmt_num(daily_avg),
+    Year = year, `December deaths/day` = fmt_num(daily_avg),
     `Average of Nov and next Jan` = fmt_num(neighbours),
     `December vs neighbours` = fmt_pct(ratio)
   ) |>
@@ -559,11 +601,10 @@ dec_excess_deaths <- dec_effect$estimate * 31
 jan_deficit_deaths <- -jan_effect$estimate * 31
 ```
 
-December is at least 5% above its neighbours in `r n_dec_spike` of `r n_dec_checked` years. Three explanations fit a spike confined to one month:
+December is at least 5% above its neighbours in `r inline_value(n_dec_spike)` of `r inline_value(n_dec_checked)` years. Possible explanations remain hypotheses:
 
 *   **Recording timing.** If deaths are counted by registration month, deaths from earlier in the year may be registered in December as offices close their annual records. This would produce a December-only spike without any change in how many people die.
-*   **Short-term harvesting.** A December cold snap could bring forward deaths among the frailest, leaving fewer in January. But the December excess (about `r round(dec_excess_deaths)` deaths over the month) is `r if (dec_excess_deaths > 2 * jan_deficit_deaths) "much larger than" else "not matched by"` the January deficit (about `r round(jan_deficit_deaths)` deaths), so harvesting alone does not balance the books.
-*   **Holiday-period behaviour.** Year-end celebrations, alcohol and travel could raise injuries and other deaths. Monthly cause-of-death data would be needed to test this.
+*   **Mortality displacement.** A short-term exposure can advance some deaths. Deviations from an overall month mean are not counterfactual excess and deficit estimates, and displacement need not be confined to the following January. These monthly comparisons cannot test that mechanism.
 
 The first explanation can be checked directly: NSO's metadata or staff can confirm whether `DT_NSO_2100_027V2` counts deaths by date of death or date of registration. Until then, the December spike should not be read as a change in risk.
 
@@ -571,7 +612,7 @@ The first explanation can be checked directly: NSO's metadata or staff can confi
 
 ## 5. Causes of Death (Annual Data Only)
 
-> **Data availability:** NSO publishes deaths by cause only by **year**, not by month, so these data cannot show which causes drive a monthly peak. NSO's monthly communicable disease table (`DT_NSO_2100_035V1`) is not a usable proxy for respiratory infection: its total includes COVID-19 cases and is otherwise made up mostly of sexually transmitted infections, varicella, and hand, foot and mouth disease.
+> **Data availability:** The NSO tables inspected for this article provide deaths by cause by **year**, not by month, so these data cannot show which causes drive a monthly peak. NSO's monthly communicable disease table (`DT_NSO_2100_035V1`) is not a usable proxy for respiratory infection: its total includes COVID-19 cases and is otherwise made up mostly of sexually transmitted infections, varicella, and hand, foot and mouth disease.
 
 ```{r cause-specific-data}
 cause_tbl <- "DT_NSO_2100_027V1"
@@ -599,10 +640,7 @@ cause_deaths <- nso_data(
 ```
 
 ```{r cause-trends-plot, fig.height=5}
-#| fig-alt: >-
-#|   Line chart of annual deaths by cause in Mongolia. Cardiovascular disease is the leading cause every
-#|   year, followed by cancer; injuries and poisoning rise over the period; the Other category spikes in
-#|   2021; digestive and respiratory deaths are lowest.
+#| fig-alt: Annual recorded deaths by leading cause over the selected common period.
 cause_deaths |>
   ggplot(aes(x = year, y = value, color = Cause)) +
   geom_line(linewidth = 1) +
@@ -612,7 +650,7 @@ cause_deaths |>
   scale_x_continuous(breaks = complete_years) +
   labs(
     title = paste0("Annual Deaths by Leading Cause, ", period),
-    subtitle = "Annual totals; NSO does not publish monthly deaths by cause",
+    subtitle = "Annual totals; Monthly cause detail was not available in the inspected tables",
     x = NULL,
     y = "Deaths per year",
     caption = "Source: NSO Mongolia, DT_NSO_2100_027V1"
@@ -628,10 +666,10 @@ cause_change <- function(cause) {
 cvd_range <- range(cause_deaths$value[cause_deaths$Cause == "Cardiovascular"])
 ```
 
-*   **Cardiovascular disease** is the leading cause every year, with `r comma(cvd_range[1])` to `r comma(cvd_range[2])` deaths a year.
-*   **Cancer** is second and changed by `r fmt_pct(cause_change("Cancer"), 0)` between `r first_year` and `r last_year`.
-*   **Injuries and poisoning** changed by `r fmt_pct(cause_change("Injuries and poisoning"), 0)` over the same period. This rise deserves attention in its own right.
-*   **"Other"** spikes in 2021, most likely because COVID-19 deaths are not included in the other listed groups.
+*   **Cardiovascular disease** is the leading cause every year, with `r inline_value(comma(cvd_range[1]))` to `r inline_value(comma(cvd_range[2]))` deaths a year.
+*   **Cancer** is second and changed by `r inline_value(fmt_pct(cause_change("Cancer"), 0))` between `r inline_value(first_year)` and `r inline_value(last_year)`.
+*   **Injuries and poisoning** changed by `r inline_value(fmt_pct(cause_change("Injuries and poisoning"), 0))` over the same period. This rise deserves attention in its own right.
+*   **"Other"** spikes in 2021, during the pandemic. The cause classification needs confirmation before attributing that change to COVID-19.
 
 None of this tells us whether any cause peaks in December. Annual totals cannot support or rule out a New Year effect.
 
@@ -641,39 +679,41 @@ None of this tells us whether any cause peaks in December. Annual totals cannot 
 
 ```{r regional-deaths}
 regions_meta <- nso_dim_values(death_tbl, "Region", labels = "en")
-
-regional_deaths <- nso_data(
-  tbl_id = death_tbl,
-  selections = list(Region = regions_meta$code, Month = months_meta$code),
+region_units <- regions_meta$code[nchar(regions_meta$code) == 3 & regions_meta$code != "511"]
+stopifnot(length(region_units) == 21L)
+regional_raw <- nso_data(death_tbl,
+  list(Region = c("5", region_units), Month = months_meta$label_en),
   labels = "en"
-) |>
-  # Keep the capital (code "5") and the 21 aimags (three-digit codes); drop the
-  # national total and regional subtotals, which would double count deaths
-  filter(Region == "5" | nchar(Region) == 3, !is.na(value)) |>
+)
+regional_status <- nso_value_status(regional_raw)
+analysis_keys(
+  regional_raw, c("Region", "Month_en"),
+  tidyr::expand_grid(Region = c("5", region_units), Month_en = months_meta$label_en)
+)
+regional_deaths <- regional_raw |>
   mutate(area = if_else(Region == "5", "Ulaanbaatar", "Aimags (combined)")) |>
   parse_months() |>
   filter(year %in% complete_years) |>
-  summarise(value = sum(value), .by = c(area, date, year, month, month_name, days)) |>
+  summarise(value = analysis_sum(value), .by = c(area, date, year, month, month_name, days)) |>
   mutate(daily_avg = value / days)
-
-# The capital and aimags together should reproduce the national total
 regional_check <- regional_deaths |>
-  summarise(value = sum(value), .by = date) |>
-  inner_join(select(deaths_monthly, date, national = value), by = join_by(date))
-stopifnot(isTRUE(all.equal(regional_check$value, regional_check$national)))
+  summarise(value = analysis_sum(value), .by = date) |>
+  analysis_pair(select(deaths_monthly, date, national = value), by = "date")
+stopifnot(all(is.finite(regional_check$value)), all(regional_check$value == regional_check$national))
 ```
 
-```{r urban-rural-comparison, fig.height=5}
-#| fig-alt: >-
-#|   Line chart of deaths per day by calendar month for Ulaanbaatar and for the aimags combined, each
-#|   shown as a percentage above or below its own average. Ulaanbaatar rises steadily from September to a
-#|   December peak about 12% above its average, while the aimags combined show no December peak.
-area_monthly <- regional_deaths |>
-  summarise(mean_daily = mean(daily_avg), .by = c(area, month, month_name)) |>
-  mutate(pct_of_mean = (mean_daily / mean(mean_daily) - 1) * 100, .by = area)
+```{r urban-rural-comparison, fig.height=7}
+#| fig-alt: Calendar-month profiles for the capital and aimags combined, shown with and without 2020-2022.
+area_monthly <- bind_rows(
+  mutate(regional_deaths, analysis = "All valid years"),
+  filter(regional_deaths, !year %in% covid_years) |> mutate(analysis = "Excluding 2020-2022")
+) |>
+  summarise(mean_daily = mean(daily_avg), .by = c(analysis, area, month, month_name)) |>
+  mutate(pct_of_mean = (mean_daily / mean(mean_daily) - 1) * 100, .by = c(analysis, area))
 
 area_monthly |>
   ggplot(aes(x = month_name, y = pct_of_mean, color = area, group = area)) +
+  facet_wrap(~analysis, ncol = 1) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3) +
@@ -690,16 +730,16 @@ area_monthly |>
 ```
 
 ```{r regional-facts, include=FALSE}
-area_dec <- function(a) area_monthly$pct_of_mean[area_monthly$area == a & area_monthly$month == 12]
+area_dec <- function(a) area_monthly$pct_of_mean[area_monthly$analysis == "All valid years" & area_monthly$area == a & area_monthly$month == 12]
 ```
 
-December is `r fmt_pct(area_dec("Ulaanbaatar"), 0)` in Ulaanbaatar and `r fmt_pct(area_dec("Aimags (combined)"), 0)` in the aimags. The national December peak comes almost entirely from the capital, where deaths per day climb from September to December and then fall in January and February. In the aimags combined, December is barely above average. Cold alone would not explain this difference, since winters are at least as harsh across most of the country. Part of the capital's autumn rise reflects the 2021 Delta wave, which is included in these averages.
+The panels repeat the regional comparison with and without 2020-2022. The all-year December deviations are `r inline_value(fmt_pct(area_dec("Ulaanbaatar"), 0))` in the capital and `r inline_value(fmt_pct(area_dec("Aimags (combined)"), 0))` in the aimags combined. Differences in calendar patterns do not identify exposure effects: population composition, referral, recording practices and other factors may differ. The aimags combined are not a uniformly rural population.
 
 ---
 
 ## 7. Hospital and All Deaths
 
-If the December spike reflected registration catch-up, it might differ between hospital deaths, which are likely to be certified promptly, and deaths at home.
+Hospital and all-death profiles can be compared only over identical observed months with compatible definitions. Hospital deaths are a subset of all deaths, so these series are dependent. Certification speed and registration delay are unverified hypotheses.
 
 ```{r hospital-deaths}
 hospital_tbl <- "DT_NSO_2100_027V3"
@@ -707,13 +747,14 @@ hospital_months <- nso_dim_values(hospital_tbl, "Month", labels = "en")
 
 hospital_deaths <- nso_data(
   tbl_id = hospital_tbl,
-  selections = list(Region = "0", Month = hospital_months$code),
+  selections = list(Region = "0", Month = hospital_months$label_en),
   labels = "en"
 ) |>
   filter(!is.na(value)) |>
   parse_months() |>
   filter(year %in% complete_years)
 
+hospital_pair <- analysis_hospital_pair(deaths_monthly, hospital_deaths)
 comparison_data <- bind_rows(
   deaths_monthly |> mutate(type = "All deaths"),
   hospital_deaths |> mutate(type = "Hospital deaths")
@@ -721,17 +762,18 @@ comparison_data <- bind_rows(
   select(date, year, month, month_name, value, daily_avg, type)
 ```
 
-```{r hospital-comparison, fig.height=5}
-#| fig-alt: >-
-#|   Line chart of deaths per day by calendar month for all deaths and for hospital deaths, each shown as
-#|   a percentage above or below its own average. Hospital deaths peak in September and October, while
-#|   all deaths peak in December; December stands out more for all deaths than for hospital deaths.
-type_monthly <- comparison_data |>
-  summarise(mean_daily = mean(daily_avg), .by = c(type, month, month_name)) |>
-  mutate(pct_of_mean = (mean_daily / mean(mean_daily) - 1) * 100, .by = type)
+```{r hospital-comparison, fig.height=7}
+#| fig-alt: Dependent hospital and all-death calendar profiles over matched observations, with pandemic-excluded sensitivity.
+type_monthly <- bind_rows(
+  mutate(comparison_data, analysis = "All valid years"),
+  filter(comparison_data, !year %in% covid_years) |> mutate(analysis = "Excluding 2020-2022")
+) |>
+  summarise(mean_daily = mean(daily_avg), .by = c(analysis, type, month, month_name)) |>
+  mutate(pct_of_mean = (mean_daily / mean(mean_daily) - 1) * 100, .by = c(analysis, type))
 
 type_monthly |>
   ggplot(aes(x = month_name, y = pct_of_mean, color = type, group = type)) +
+  facet_wrap(~analysis, ncol = 1) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3) +
@@ -748,7 +790,7 @@ type_monthly |>
 ```
 
 ```{r hospital-facts, include=FALSE}
-type_dec <- function(t) type_monthly$pct_of_mean[type_monthly$type == t & type_monthly$month == 12]
+type_dec <- function(t) type_monthly$pct_of_mean[type_monthly$analysis == "All valid years" & type_monthly$type == t & type_monthly$month == 12]
 
 hospital_share <- comparison_data |>
   select(date, month, type, value) |>
@@ -761,7 +803,7 @@ share_other <- with(
 )
 ```
 
-December is `r fmt_pct(type_dec("All deaths"), 0)` for all deaths and `r fmt_pct(type_dec("Hospital deaths"), 0)` for hospital deaths. Hospitals account for `r fmt_num(share_dec)`% of December deaths, compared with `r fmt_num(share_other)`% in other months. So the December excess is slightly larger outside hospitals. That fits the registration explanation, but the difference is small, and deaths at home during a cold snap or the holidays would produce the same pattern. Hospital deaths peak instead in September and October, most likely because of the 2021 Delta wave.
+Hospitals account for `r inline_value(fmt_num(share_dec))`% of recorded December deaths versus `r inline_value(fmt_num(share_other))`% in other months over matched observations. The panels show sensitivity to exclusion of 2020-2022. Neither the shares nor differences between these dependent profiles establish a registration mechanism, a location-of-death effect or a cause of the December pattern.
 
 ---
 
@@ -769,25 +811,25 @@ December is `r fmt_pct(type_dec("All deaths"), 0)` for all deaths and `r fmt_pct
 
 | Metric | Value |
 |:-------|:------|
-| **Years analysed** | `r period` (`r n_years` complete years) |
-| **Average deaths per day** | `r fmt_num(mean(monthly_stats$mean_daily))` |
-| **Highest month** | `r full_month(peak_month$month)` (`r fmt_num(peak_month$mean_daily)` deaths/day) |
-| **Lowest month** | `r full_month(trough_month$month)` (`r fmt_num(trough_month$mean_daily)` deaths/day) |
-| **Winter (Nov–Mar) vs other months** | `r fmt_pct(winter_excess)` |
-| **Winter without December vs other months** | `r fmt_pct(winter_excess_no_dec)` |
-| **December vs its neighbours, ≥5% higher** | `r n_dec_spike` of `r n_dec_checked` years |
+| **Years analysed** | `r inline_value(period)` (`r inline_value(n_years)` complete years) |
+| **Average deaths per day** | `r inline_value(fmt_num(analysis_weighted_daily(deaths_monthly$value, deaths_monthly$days)))` |
+| **Highest month** | `r inline_value(full_month(peak_month$month))` (`r inline_value(fmt_num(peak_month$mean_daily))` deaths/day) |
+| **Lowest month** | `r inline_value(full_month(trough_month$month))` (`r inline_value(fmt_num(trough_month$mean_daily))` deaths/day) |
+| **Winter (Nov–Mar) vs other months** | `r inline_value(fmt_pct(winter_excess))` |
+| **Winter without December vs other months** | `r inline_value(fmt_pct(winter_excess_no_dec))` |
+| **December vs its neighbours, ≥5% higher** | `r inline_value(n_dec_spike)` of `r inline_value(n_dec_checked)` years |
 
 ---
 
 ## 9. Conclusions
 
-1.  **Does December have the most deaths?** In NSO's monthly statistics, yes: December has the highest average deaths per day (`r fmt_num(peak_month$mean_daily)`), with or without the pandemic years. But it is not higher every year, and whether it reflects more deaths or later registration is still open.
+1. **Which month has the highest recorded average?** The highest equal-year monthly mean is in `r inline_value(full_month(peak_month$month))`, at `r inline_value(fmt_num(peak_month$mean_daily))` deaths per day. Excluding 2020-2022, it is in `r inline_value(full_month(peak_no_covid$month))`. These findings apply to the selected recorded series, not necessarily to occurrence-dated mortality.
 
-2.  **Is winter deadlier?** Not in these data. Apart from December, winter months are no higher than the rest of the year, and January is no higher than an average month once differences between years are removed. A cold-driven rise would be expected to last through January. The December rise is also concentrated in Ulaanbaatar rather than spread across the country.
+2. **What does the winter comparison mean?** The observed winter/nonwinter contrast is descriptive. It does not estimate the effect of cold or establish that cold-related deaths are absent. Temperature, delayed effects and other time-varying factors are not modelled.
 
-3.  **Is it because of New Year celebrations?** These data cannot tell. NSO publishes causes of death only by year, so neither a holiday effect nor a cold effect can be tested.
+3. **What explains the pattern?** These tables cannot establish a holiday, registration or mortality-displacement explanation. Occurrence-dated deaths, compatible exposure data and finer cause detail are needed.
 
-4.  **COVID-19:** The 2021 Delta wave produced the highest death counts in the series. The dip around the first lockdowns could reflect fewer deaths, disrupted registration, or both.
+4. **How robust is it?** The article reports pandemic-excluded comparisons, a count-model sensitivity and residual diagnostics. Remaining uncertainty includes reporting conventions, temporal dependence, population change and source revisions.
 
 ### Data Limitations
 
@@ -798,7 +840,7 @@ December is `r fmt_pct(type_dec("All deaths"), 0)` for all deaths and `r fmt_pct
 >
 > Answering *why* December stands out needs monthly deaths by cause and date of death, which may require working directly with NSO.
 
-**Verdict:** The claim that December has the most deaths is **true of the published monthly statistics**, but the December spike is not part of a broader winter rise and may partly reflect how deaths are recorded. Its cause cannot be determined from public data.
+**Interpretation:** This article describes patterns in published recorded counts. The date used to assign a death to a month remains unresolved. The analysis does not identify the effects of cold weather, holidays or registration delays.
 
 ---
 

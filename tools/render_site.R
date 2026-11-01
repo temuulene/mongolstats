@@ -10,6 +10,29 @@ build_package_site <- function(
   if (nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_"))) {
     stop("Build the website outside package checks.")
   }
+  dir.create(destination, recursive = TRUE, showWarnings = FALSE)
+  warning_log <- file.path(destination, "build-warnings.log")
+  writeLines("Warnings captured while building the documentation:", warning_log)
+  # Keep warnings available to maintainers even when articles hide them.
+  previous_warning_hook <- knitr::knit_hooks$get("warning")
+  previous_warning_option <- knitr::opts_hooks$get("warning")
+  on.exit(
+    {
+      knitr::knit_hooks$set(warning = previous_warning_hook)
+      knitr::opts_hooks$set(warning = previous_warning_option)
+    },
+    add = TRUE
+  )
+  knitr::opts_hooks$set(warning = function(options) {
+    options$warning <- TRUE
+    options
+  })
+  knitr::knit_hooks$set(warning = function(x, options) {
+    cat(paste0("[", options$label, "] ", x, "\n"),
+      file = warning_log, append = TRUE
+    )
+    ""
+  })
   source("tools/site_helpers.R", local = TRUE)
   source("pkgdown/build-mn.R", local = TRUE)
   rmarkdown::render("README.Rmd", envir = new.env(), quiet = TRUE)

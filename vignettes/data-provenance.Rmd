@@ -162,8 +162,21 @@ and request context, not the statistical observations or their raw symbols.
 хүсэлтийн нөхцөл орно; статистикийн ажиглалт, анхны тэмдэглэгээ орохгүй.
 
 ```{r save-sidecars}
-export_dir <- tempfile("nso-export-")
-dir.create(export_dir)
+# Choose an enduring project directory; use a new run directory for each export.
+export_dir <- file.path("outputs", "nso", format(Sys.Date(), "%Y-%m-%d"))
+dir.create(export_dir, recursive = TRUE, showWarnings = FALSE)
+# Do not overwrite a previous run accidentally.
+targets <- file.path(export_dir, c("gdp.csv", "gdp.rds", "value-status.rds", "provenance.json", "analysis-context.rds"))
+stopifnot(!any(file.exists(targets)))
+saveRDS(gdp, file.path(export_dir, "gdp.rds"))
+analysis_context <- list(
+  saved_at = format(Sys.time(), tz = "UTC", usetz = TRUE),
+  data_sha256 = digest::digest(gdp, algo = "sha256"),
+  session = utils::sessionInfo(),
+  code_revision = Sys.getenv("ANALYSIS_CODE_REVISION", unset = NA_character_),
+  manual_recodes = character()
+)
+saveRDS(analysis_context, file.path(export_dir, "analysis-context.rds"))
 utils::write.csv(gdp, file.path(export_dir, "gdp.csv"), row.names = FALSE)
 saveRDS(nso_value_status(gdp), file.path(export_dir, "value-status.rds"))
 nso_write_manifest(gdp, file.path(export_dir, "provenance.json"))
@@ -175,12 +188,25 @@ readRDS(file.path(export_dir, "value-status.rds"))
 ```
 
 `nso_write_manifest()` refuses to overwrite a file unless `overwrite = TRUE` is
-explicit. Keep the original result if an analysis also needs exact R types and
-attributes: `saveRDS(gdp, ...)` preserves them together.
+explicit. The RDS file preserves the original R types and attributes. Record the analysis code revision and any manual recodes explicitly. A metadata fingerprint alone cannot reproduce observations after source revisions.
 
 `nso_write_manifest()` нь `overwrite = TRUE` гэж заагаагүй бол байгаа файлыг
 дарж бичихгүй. R-ийн төрөл, атрибутыг бүхэлд нь хадгалах шаардлагатай бол анхны
 үр дүнг `saveRDS(gdp, ...)` ашиглан нэмэлтээр хадгална.
+
+## Apply checks before calculating rates
+
+The other tutorials load the inspectable teaching helpers shipped at
+`system.file("examples", "analysis-helpers.R", package = "mongolstats")`.
+They check expected unit/month grids, unique keys, common periods, complete age
+strata and positive denominators before calculating estimates. Missing source
+observations remain unknown. `nso_check_data()` reports concerns; an empty report
+does not prove that an analytical specification has been met.
+
+Keep the original fetched object, its `nso_value_status()` result and provenance
+before transformations. Save the validated analytical data and any recoding rules
+alongside the outputs above. Historical teaching snapshots without retrieval dates
+or raw symbols cannot acquire that missing information retrospectively.
 
 ## Find definitions and collection context / Тодорхойлолт, цуглуулалтын нөхцөлийг олох
 

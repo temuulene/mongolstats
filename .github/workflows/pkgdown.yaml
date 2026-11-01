@@ -1,6 +1,35 @@
 name: pkgdown
 
 on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'vignettes/**'
+      - 'inst/examples/**'
+      - 'R/**'
+      - 'man/**'
+      - 'pkgdown/**'
+      - 'tools/**'
+      - 'tests/**'
+      - '_pkgdown.yml'
+      - 'README*'
+      - 'DESCRIPTION'
+      - 'NEWS.md'
+      - '.github/workflows/pkgdown.yaml'
+  pull_request:
+    paths:
+      - 'vignettes/**'
+      - 'inst/examples/**'
+      - 'R/**'
+      - 'man/**'
+      - 'pkgdown/**'
+      - 'tools/**'
+      - 'tests/**'
+      - '_pkgdown.yml'
+      - 'README*'
+      - 'DESCRIPTION'
+      - 'NEWS.md'
+      - '.github/workflows/pkgdown.yaml'
   release:
     types: [published]
   workflow_dispatch:
@@ -13,6 +42,10 @@ on:
 
 permissions:
   contents: write
+
+concurrency:
+  group: pkgdown-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   pkgdown:
@@ -62,14 +95,14 @@ jobs:
         run: Rscript tools/check_site.R
 
       - name: Save website preview
-        if: github.event_name == 'workflow_dispatch' && !inputs.publish
+        if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && !inputs.publish)
         uses: actions/upload-artifact@v4
         with:
           name: pkgdown-preview
           path: docs
 
       - name: Deploy to gh-pages branch
-        if: github.event_name == 'release' || inputs.publish
+        if: github.event_name == 'release' || github.event_name == 'push' || inputs.publish
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
