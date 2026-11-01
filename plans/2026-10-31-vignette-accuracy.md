@@ -16,6 +16,8 @@
   a January mortality peak and an entirely unobserved dust-year comparison.
 - Website builds retain warnings in a maintainer log. The existing weekly NSO
   canary also runs the analytical articles and retains outputs without deployment.
+- Pull requests build and validate a website preview. Documentation changes
+  merged to main automatically publish through the existing GitHub Pages workflow.
 
 ## Verification
 
@@ -27,12 +29,14 @@
 - The full mortality article executes with constructed data and changes its
   reported peak to January. Empty complete-year dust results render safely.
 - Lint and the package source build pass.
+- GitHub installed-package checking and lint/coverage pass. A regression check
+  also covers warning capture with a fresh pkgdown output directory.
 
 ## Remaining source verification
 
-Direct NSO requests remain blocked by this session's network environment. A fresh
-end-to-end live website render and confirmation of source definitions, boundary
-vintages, monitoring inventories and revised standard details remain pending.
-These uncertainties are explicitly described in the tutorials rather than filled
-with assumed definitions or values. Full installed-package checking also needs
-the check subprocess to discover the available dependency library.
+Direct NSO requests are blocked in the local session; GitHub builds execute the
+live examples and validate the complete website before publication. Confirmation
+of source definitions, boundary vintages, monitoring inventories and revised
+standard details still requires authoritative source documentation. These
+uncertainties are explicitly described in the tutorials rather than filled with
+assumed definitions or values.
