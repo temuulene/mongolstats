@@ -18,7 +18,9 @@ build writes `docs/translation-source.json`. Missing entries appear in the job
 log as `I18N_SOURCE` JSON records and stop publication. Add faithful Mongolian
 targets for those records, then rebuild. New source text cannot silently fall
 back to English. Exact period values are protected, so routine data updates do
-not require translating numbers again.
+not require translating numbers again. The weekly live canary builds the site
+and lists any `I18N_SOURCE` records in its job summary, so new NSO category
+labels show up before a deploy stops.
 
 Website figures use svglite. Translated labels are fitted to their available
 space; plot marks, coordinates, reference lines and numerical values are retained.
