@@ -22,8 +22,8 @@
 <meta name="description" content="Tidy access to Mongolian official statistics, source provenance, and public metadata.">
 <meta property="og:description" content="Tidy access to Mongolian official statistics, source provenance, and public metadata.">
 <meta property="og:image" content="https://temuulene.github.io/mongolstats/logo.svg">
-<link rel="alternate" hreflang="en" href="index.html">
-<link rel="alternate" hreflang="mn" href="mn/index.html">
+<link rel="alternate" hreflang="en" href="https://temuulene.github.io/mongolstats/index.html">
+<link rel="alternate" hreflang="mn" href="https://temuulene.github.io/mongolstats/mn/index.html">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -63,7 +63,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
-<li class="nav-item"><a class="nav-link" href="mn/index.html" aria-label="Монгол хэлээр унших">Монгол</a></li>
+<li class="nav-item"><a class="nav-link" href="mn/index.html" aria-label="Монгол хэлээр унших" hreflang="mn" lang="mn">Монгол</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
@@ -175,7 +175,7 @@
 <span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
 <span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-gdp-example-1.png" alt="Mongolia's annual GDP at current prices from 2010 to 2025, in trillion MNT" width="100%"></p>
+<p><img src="reference/figures/README-gdp-example-1.svg" alt="Mongolia's annual GDP at current prices from 2010 to 2025, in trillion MNT" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="id_2-mapping-regional-population">2. Mapping Regional Population<a class="anchor" aria-label="anchor" href="#id_2-mapping-regional-population"></a>
@@ -193,7 +193,7 @@
 <span>  <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"Region"</span>, level <span class="op">=</span> <span class="st">"aimag"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">value</span>, trans <span class="op">=</span> <span class="st">"log10"</span>, lang <span class="op">=</span> <span class="st">"en"</span>, title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Population by aimag,"</span>, <span class="va">latest</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"Population\n(log scale)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-pop-map-example-1.png" alt="Aimag-level resident population across Mongolia on a logarithmic colour scale" width="100%"></p>
+<p><img src="reference/figures/README-pop-map-example-1.svg" alt="Aimag-level resident population across Mongolia on a logarithmic colour scale" width="100%"></p>
 </div>
 </div>
 <div class="section level2">

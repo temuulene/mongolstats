@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="504.00pt" height="360.00pt" viewBox="0 0 504.00 360.00">
+<g class="svglite">
+<defs>
+  <style type="text/css"><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+    .svglite g.glyphgroup path {
+      fill: inherit;
+      stroke: none;
+    }
+  ]]></style>
+</defs>
+<rect width="100%" height="100%" style="stroke: none; fill: #FFFFFF;"/>
+<defs>
+  <clipPath id="cpMC4wMHw1MDQuMDB8MC4wMHwzNjAuMDA=">
+    <rect x="0.00" y="0.00" width="504.00" height="360.00"/>
+  </clipPath>
+</defs>
+<g clip-path="url(#cpMC4wMHw1MDQuMDB8MC4wMHwzNjAuMDA=)">
+<rect x="0.00" y="0.00" width="504.00" height="360.00" style="stroke-width: 1.16; stroke: none; fill: #FFFFFF;"/>
+</g>
+<defs>
+  <clipPath id="cpMjcuODd8NDk4LjAyfDQzLjAyfDMyNS41MA==">
+    <rect x="27.87" y="43.02" width="470.15" height="282.48"/>
+  </clipPath>
+</defs>
+<g clip-path="url(#cpMjcuODd8NDk4LjAyfDQzLjAyfDMyNS41MA==)">
+<polyline points="27.87,312.66 498.02,312.66 " style="stroke-width: 1.16; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="27.87,241.28 498.02,241.28 " style="stroke-width: 1.16; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="27.87,169.89 498.02,169.89 " style="stroke-width: 1.16; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="27.87,98.51 498.02,98.51 " style="stroke-width: 1.16; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="49.24,325.50 49.24,43.02 " style="stroke-width: 1.16; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="191.69,325.50 191.69,43.02 " style="stroke-width: 1.16; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="334.13,325.50 334.13,43.02 " style="stroke-width: 1.16; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="476.65,325.50 476.65,43.02 " style="stroke-width: 1.16; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polygon points="49.24,284.80 77.72,275.04 106.19,265.01 134.74,257.91 163.21,249.19 191.69,247.29 220.16,244.33 248.71,232.68 277.18,219.63 305.66,204.62 334.13,205.72 362.68,188.29 391.15,158.89 419.63,111.52 448.10,82.34 476.65,55.86 476.65,312.66 448.10,312.66 419.63,312.66 391.15,312.66 362.68,312.66 334.13,312.66 305.66,312.66 277.18,312.66 248.71,312.66 220.16,312.66 191.69,312.66 163.21,312.66 134.74,312.66 106.19,312.66 77.72,312.66 49.24,312.66 " style="stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #42B883; fill-opacity: 0.60;"/>
+<polyline points="49.24,284.80 77.72,275.04 106.19,265.01 134.74,257.91 163.21,249.19 191.69,247.29 220.16,244.33 248.71,232.68 277.18,219.63 305.66,204.62 334.13,205.72 362.68,188.29 391.15,158.89 419.63,111.52 448.10,82.34 476.65,55.86 " style="stroke-width: 1.16; stroke: none; stroke-linecap: butt;"/>
+<polyline points="49.24,284.80 77.72,275.04 106.19,265.01 134.74,257.91 163.21,249.19 191.69,247.29 220.16,244.33 248.71,232.68 277.18,219.63 305.66,204.62 334.13,205.72 362.68,188.29 391.15,158.89 419.63,111.52 448.10,82.34 476.65,55.86 " style="stroke-width: 2.56; stroke: #2C3E50; stroke-linecap: butt;"/>
+<circle cx="476.65" cy="55.86" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="448.10" cy="82.34" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="419.63" cy="111.52" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="391.15" cy="158.89" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="362.68" cy="188.29" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="334.13" cy="205.72" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="305.66" cy="204.62" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="277.18" cy="219.63" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="248.71" cy="232.68" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="220.16" cy="244.33" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="191.69" cy="247.29" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="163.21" cy="249.19" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="134.74" cy="257.91" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="106.19" cy="265.01" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="77.72" cy="275.04" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+<circle cx="49.24" cy="284.80" r="4.26" style="stroke-width: 2.13; stroke: #2C3E50; fill: #FFFFFF;"/>
+</g>
+<g clip-path="url(#cpMC4wMHw1MDQuMDB8MC4wMHwzNjAuMDA=)">
+<text x="22.49" y="315.96" text-anchor="end" style="font-size: 9.60px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="11.19px" lengthAdjust="spacingAndGlyphs">0T</text>
+<text x="22.49" y="244.57" text-anchor="end" style="font-size: 9.60px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="16.52px" lengthAdjust="spacingAndGlyphs">25T</text>
+<text x="22.49" y="173.19" text-anchor="end" style="font-size: 9.60px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="16.52px" lengthAdjust="spacingAndGlyphs">50T</text>
+<text x="22.49" y="101.81" text-anchor="end" style="font-size: 9.60px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="16.52px" lengthAdjust="spacingAndGlyphs">75T</text>
+<text x="49.24" y="337.48" text-anchor="middle" style="font-size: 9.60px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="21.31px" lengthAdjust="spacingAndGlyphs">2010</text>
+<text x="191.69" y="337.48" text-anchor="middle" style="font-size: 9.60px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="21.31px" lengthAdjust="spacingAndGlyphs">2015</text>
+<text x="334.13" y="337.48" text-anchor="middle" style="font-size: 9.60px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="21.31px" lengthAdjust="spacingAndGlyphs">2020</text>
+<text x="476.65" y="337.48" text-anchor="middle" style="font-size: 9.60px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="21.31px" lengthAdjust="spacingAndGlyphs">2025</text>
+<text x="27.87" y="34.55" style="font-size: 12.00px;fill: #666666; font-family: &quot;Liberation Sans&quot;;" textLength="325" lengthAdjust="spacingAndGlyphs">Оны үнээрх дотоодын нийт бүтээгдэхүүн (их наяд төгрөг)</text>
+<text x="27.87" y="16.99" style="font-size: 16.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="199" lengthAdjust="spacingAndGlyphs">Монголын ДНБ, 2010-2025</text>
+<text x="498.02" y="352.04" text-anchor="end" style="font-size: 9.60px; font-family: &quot;Liberation Sans&quot;;" textLength="278" lengthAdjust="spacingAndGlyphs">Эх сурвалж: Монголын ҮСХ, mongolstats-аар дамжуулсан</text>
+</g>
+</g>
+</svg>

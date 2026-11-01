@@ -19,6 +19,8 @@
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Does December Have the Most Recorded Deaths?">
+<link rel="alternate" hreflang="en" href="https://temuulene.github.io/mongolstats/articles/mortality-analysis.html">
+<link rel="alternate" hreflang="mn" href="https://temuulene.github.io/mongolstats/mn/articles/mortality-analysis.html">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -58,7 +60,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="nav-link" href="../mn/index.html" aria-label="Монгол хэлээр унших">Монгол</a></li>
+<li class="nav-item"><a class="nav-link" href="../mn/articles/mortality-analysis.html" aria-label="Монгол хэлээр унших" hreflang="mn" lang="mn">Монгол</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
@@ -308,7 +310,7 @@ change how those two compare.</p>
 <span>    color <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>order <span class="op">=</span> <span class="fl">1</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>    fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>order <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/time-series-plot-1.png" alt="Monthly recorded deaths per day with December highlighted and historical pandemic-period context shaded." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/time-series-plot-1.svg" alt="Monthly recorded deaths per day with December highlighted and historical pandemic-period context shaded." width="100%"></p>
 <p><strong>What the series shows:</strong></p>
 <ul>
 <li>
@@ -370,7 +372,7 @@ for comparison with other months.</li>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, color <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>order <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/monthly-boxplot-1.png" alt="Distributions of monthly recorded deaths per day across years, with individual years and 2021 highlighted." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/monthly-boxplot-1.svg" alt="Distributions of monthly recorded deaths per day across years, with individual years and 2021 highlighted." width="100%"></p>
 <p><strong>Reading the boxes:</strong> Each distribution contains one
 recorded deaths/day value per year for that calendar month. The pooled
 winter versus nonwinter contrast, calculated as total deaths divided by
@@ -410,7 +412,7 @@ only.</p>
 <span>    y <span class="op">=</span> <span class="st">"Mean deaths per day"</span>,</span>
 <span>    caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Dashed line = average of all months, "</span>, <span class="va">period</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/monthly-means-plot-1.png" alt="Equal-year monthly means of recorded deaths per day with approximate independent-year confidence intervals." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/monthly-means-plot-1.svg" alt="Equal-year monthly means of recorded deaths per day with approximate independent-year confidence intervals." width="100%"></p>
 <p>December averages 50.6 recorded deaths per day, +6.8% relative to
 total deaths divided by total days in the other eleven months. Excluding
 2020-2022, the highest equal-year monthly mean is in December and
@@ -448,7 +450,7 @@ not establish their cause.</p>
 <span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
 <span>    legend.key.width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="st">"cm"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/heatmap-1.png" alt="Within-year standardised recorded deaths per day, allowing calendar patterns to be compared across years." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/heatmap-1.svg" alt="Within-year standardised recorded deaths per day, allowing calendar patterns to be compared across years." width="100%"></p>
 <p>Each column is standardised within its year, so this shows each
 month’s position <em>within</em> its year rather than absolute levels.
 December is above its year’s average in 8 of 10 years. January is above
@@ -504,7 +506,7 @@ into a smooth <strong>trend</strong>, a repeating
 <span>    y <span class="op">=</span> <span class="st">"Deaths per day"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span>, panel.spacing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="st">"lines"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/stl-decomposition-1.png" alt="Observed series, smooth trend, fitted repeating seasonal component and remainder from a descriptive STL decomposition." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/stl-decomposition-1.svg" alt="Observed series, smooth trend, fitted repeating seasonal component and remainder from a descriptive STL decomposition." width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="the-seasonal-pattern">The Seasonal Pattern<a class="anchor" aria-label="anchor" href="#the-seasonal-pattern"></a>
@@ -541,7 +543,7 @@ into a smooth <strong>trend</strong>, a repeating
 <span>    y <span class="op">=</span> <span class="st">"Deaths per day above or below trend"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/seasonal-pattern-1.png" alt="Estimated periodic monthly component of recorded deaths per day from the descriptive STL model." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/seasonal-pattern-1.svg" alt="Estimated periodic monthly component of recorded deaths per day from the descriptive STL model." width="100%"></p>
 <blockquote>
 <p><strong>STL description:</strong> The largest fitted periodic
 component is in December, about 4.7 recorded deaths per day above the
@@ -871,7 +873,7 @@ infections, varicella, and hand, foot and mouth disease.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_027V1"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/cause-trends-plot-1.png" alt="Annual recorded deaths by leading cause over the selected common period." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/cause-trends-plot-1.svg" alt="Annual recorded deaths by leading cause over the selected common period." width="100%"></p>
 <ul>
 <li>
 <strong>Cardiovascular disease</strong> is the leading cause every
@@ -941,7 +943,7 @@ totals cannot support or rule out a New Year effect.</p>
 <span>    y <span class="op">=</span> <span class="st">"% from area's average"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/urban-rural-comparison-1.png" alt="Calendar-month profiles for the capital and aimags combined, shown with and without 2020-2022." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/urban-rural-comparison-1.svg" alt="Calendar-month profiles for the capital and aimags combined, shown with and without 2020-2022." width="100%"></p>
 <p>The panels repeat the regional comparison with and without 2020-2022.
 The all-year December deviations are +12% in the capital and +1% in the
 aimags combined. Differences in calendar patterns do not identify
@@ -1000,7 +1002,7 @@ and registration delay are unverified hypotheses.</p>
 <span>    y <span class="op">=</span> <span class="st">"% from series average"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mortality-analysis_files/figure-html/hospital-comparison-1.png" alt="Dependent hospital and all-death calendar profiles over matched observations, with pandemic-excluded sensitivity." width="100%"></p>
+<p><img src="mortality-analysis_files/figure-html/hospital-comparison-1.svg" alt="Dependent hospital and all-death calendar profiles over matched observations, with pandemic-excluded sensitivity." width="100%"></p>
 <p>Hospitals account for 29.3% of recorded December deaths versus 30.2%
 in other months over matched observations. The panels show sensitivity
 to exclusion of 2020-2022. Neither the shares nor differences between
@@ -1135,12 +1137,12 @@ weather, holidays or registration delays.</p>
 <span><span class="co">#&gt;  [9] textshaping_1.0.5  yaml_2.3.12        fastmap_1.2.0      R6_2.6.1          </span></span>
 <span><span class="co">#&gt; [13] labeling_0.4.3     generics_0.1.4     curl_8.1.0         httr2_1.3.0       </span></span>
 <span><span class="co">#&gt; [17] knitr_1.52         htmlwidgets_1.6.4  tibble_3.3.1       desc_1.4.3        </span></span>
-<span><span class="co">#&gt; [21] RColorBrewer_1.1-3 bslib_0.12.0       pillar_1.11.1      rlang_1.3.0       </span></span>
-<span><span class="co">#&gt; [25] stringi_1.8.9      cachem_1.1.0       xfun_0.62          S7_0.2.2          </span></span>
-<span><span class="co">#&gt; [29] fs_2.1.0           sass_0.4.10        otel_0.2.0         timechange_0.4.0  </span></span>
-<span><span class="co">#&gt; [33] cli_3.6.6          withr_3.0.3        pkgdown_2.1.3      magrittr_2.0.5    </span></span>
-<span><span class="co">#&gt; [37] digest_0.6.39      grid_4.6.2         lifecycle_1.0.5    vctrs_0.7.3       </span></span>
-<span><span class="co">#&gt; [41] evaluate_1.0.5     glue_1.8.1         farver_2.1.2       ragg_1.5.2        </span></span>
+<span><span class="co">#&gt; [21] svglite_2.2.2      RColorBrewer_1.1-3 bslib_0.12.0       pillar_1.11.1     </span></span>
+<span><span class="co">#&gt; [25] rlang_1.3.0        stringi_1.8.9      cachem_1.1.0       xfun_0.62         </span></span>
+<span><span class="co">#&gt; [29] S7_0.2.2           fs_2.1.0           sass_0.4.10        otel_0.2.0        </span></span>
+<span><span class="co">#&gt; [33] timechange_0.4.0   cli_3.6.6          withr_3.0.3        pkgdown_2.1.3     </span></span>
+<span><span class="co">#&gt; [37] magrittr_2.0.5     digest_0.6.39      grid_4.6.2         lifecycle_1.0.5   </span></span>
+<span><span class="co">#&gt; [41] vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1         farver_2.1.2      </span></span>
 <span><span class="co">#&gt; [45] rmarkdown_2.32     purrr_1.2.2        tools_4.6.2        pkgconfig_2.0.3   </span></span>
 <span><span class="co">#&gt; [49] htmltools_0.5.9</span></span></code></pre></div>
 </div>

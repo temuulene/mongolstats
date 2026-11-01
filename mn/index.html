@@ -5,7 +5,8 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Монгол Улсын албан ёсны статистик R орчинд • mongolstats</title>
+<title>mongolstats 
+ • mongolstats</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -18,45 +19,54 @@
 <link href="deps/Inter_Tight-0.4.10/font.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Монгол Улсын албан ёсны статистик R орчинд">
-<meta name="description" content="ҮСХ-ны өгөгдлийг татах, эх сурвалжийг шалгах, үзүүлэлтийг дүрслэх R багц.">
-<meta property="og:description" content="ҮСХ-ны өгөгдлийг татах, эх сурвалжийг шалгах, үзүүлэлтийг дүрслэх R багц.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="mongolstats 
+">
+<meta name="description" content="mongolstats нь Монгол Улсын Үндэсний статистикийн хорооны (ҮСХ) өгөгдөлд хандах боломж олгоно. R дотроос албан ёсны өгөгдөл авч, эдийн засгийн өөрчлөлт шинжилж, бүс нутгийн статистикийг зураглана.">
+<meta property="og:description" content="mongolstats нь Монгол Улсын Үндэсний статистикийн хорооны (ҮСХ) өгөгдөлд хандах боломж олгоно. R дотроос албан ёсны өгөгдөл авч, эдийн засгийн өөрчлөлт шинжилж, бүс нутгийн статистикийг зураглана.">
 <meta property="og:image" content="https://temuulene.github.io/mongolstats/mn/logo.svg">
-<link rel="alternate" hreflang="en" href="../index.html">
-<link rel="alternate" hreflang="mn" href="index.html">
+<link rel="alternate" hreflang="en" href="https://temuulene.github.io/mongolstats/index.html">
+<link rel="alternate" hreflang="mn" href="https://temuulene.github.io/mongolstats/mn/index.html">
 </head>
 <body>
-    <a href="#main" class="visually-hidden-focusable">Агуулга руу шилжих</a>
+    <a href="#main" class="visually-hidden-focusable">Агуулга руу очих</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Үндсэн цэс"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Сайтын цэс"><div class="container">
 
     <a class="navbar-brand me-2" href="index.html">mongolstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Нийтлэгдсэн хувилбар">0.4.0.9000</small>
 
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Цэсийг нээх">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Цэс нээх, хаах">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="active nav-item"><a class="nav-link" href="index.html">Эхлэх</a></li>
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Функцүүд (англи)</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/getting-started.html">Эхлэх нь</a></li>
+<li class="nav-item"><a class="nav-link" href="reference/index.html">Функцийн лавлах</a></li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown--" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Гарын авлага</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown--">
-<li><a class="dropdown-item" href="../articles/getting-started.html">Эхлэх заавар (англи)</a></li>
-    <li><a class="dropdown-item" href="../articles/discovery.html">Өгөгдөл хайх (англи)</a></li>
-    <li><a class="dropdown-item" href="../articles/mapping.html">Газрын зураг (англи)</a></li>
-    <li><a class="dropdown-item" href="../articles/data-provenance.html">Эх сурвалж, мета өгөгдөл (хоёр хэлээр)</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Зааврууд</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/discovery.html">Нийгмийн эрүүл мэндийн өгөгдөл хайх нь</a></li>
+    <li><a class="dropdown-item" href="articles/data-provenance.html">Эх сурвалж, мета өгөгдөл ба давтагдах экспорт</a></li>
+    <li><a class="dropdown-item" href="articles/mapping.html">mongolstats ашигласан орон зайн эпидемиологи</a></li>
+    <li><a class="dropdown-item" href="articles/mortality-analysis.html">Нас баралтын улирлын хэлбэлзэл</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Жишээ судалгаа</h6></li>
+    <li><a class="dropdown-item" href="articles/environmental-surveillance.html">Байгаль орчны шинжилгээ</a></li>
+    <li><a class="dropdown-item" href="articles/ub-health-environment.html">Улаанбаатарын дүүргийн шинжилгээ</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Өөрчлөлтийн түүх</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="nav-link" href="../index.html" aria-label="Read in English">English</a></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="Эх кодыг GitHub дээр үзэх"><span class="fa fab fa-github"></span></a></li>
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Сайтаас хайх" placeholder="Хайх" data-search-index="search.json">
+</form></li>
+<li class="nav-item"><a class="nav-link" href="../index.html" aria-label="Read this page in English" hreflang="en" lang="en">English</a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
 
@@ -66,166 +76,222 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
-<img src="logo.svg" class="logo" alt=""><h1 id="mongolstats-">mongolstats <a class="anchor" aria-label="anchor" href="#mongolstats-"></a>
+<img src="logo.svg" class="logo" alt=""><h1 id="mongolstats-">mongolstats <a class="anchor" aria-label="Хэсгийн холбоос" href="#mongolstats-"></a>
 </h1>
 </div>
-<p><strong>Монгол Улсын албан ёсны статистикийг R орчинд татах, эх сурвалжийг нь шалгах, үзүүлэлтийг дүрслэх багц.</strong> Үндэсний статистикийн хорооны (ҮСХ) нийтэд нээлттэй хүснэгт, үзүүлэлт, мета өгөгдөлтэй ажиллана.</p>
+
+<!-- badges: start -->
+
+<p><strong>mongolstats</strong> нь <a href="https://data.1212.mn/" class="external-link">Монгол Улсын Үндэсний статистикийн хорооны (ҮСХ)</a> өгөгдөлд хандах боломж олгоно. R дотроос албан ёсны өгөгдөл авч, эдийн засгийн өөрчлөлт шинжилж, бүс нутгийн статистикийг зураглана.</p>
 <div class="section level2">
-<h2 id="юу-хийж-болох-вэ">Юу хийж болох вэ?<a class="anchor" aria-label="anchor" href="#%D1%8E%D1%83-%D1%85%D0%B8%D0%B9%D0%B6-%D0%B1%D0%BE%D0%BB%D0%BE%D1%85-%D0%B2%D1%8D"></a>
+<h2 id="why-mongolstats">Яагаад mongolstats гэж?<a class="anchor" aria-label="Хэсгийн холбоос" href="#why-mongolstats"></a>
 </h2>
 <ul>
-<li>ҮСХ-ны олон мянган хүснэгтээс хэрэгтэй үзүүлэлтээ хайх.</li>
-<li>Өгөгдлийг англи эсвэл монгол тайлбартай хүснэгтээр татах.</li>
-<li>Он, сарыг өөрчлөгдөх байрлалын дугаараар бус, <code>"2024"</code>, <code>"2024-03"</code> зэрэг тогтвортой тэмдэглэгээгээр сонгох.</li>
-<li>Өгөгдлийн эх сурвалж, нэгж, анхны тэмдэглэгээ, сонголтыг хадгалах.</li>
 <li>
-<a href="https://temuulene.github.io/mongolmaps/mn/" class="external-link">mongolmaps</a> багцтай хамт аймаг, нийслэл, дүүргийн үзүүлэлтийг газрын зураг дээр харуулах.</li>
+<strong>Шууд хандах:</strong>Албан ёсны олон мянган өгөгдлийн багцад шууд асуулга хийх эх сурвалж:<ol start="18" style="list-style-type: upper-alpha"><li>
+</li></ol>
+</li>
+<li>
+<strong>Эмх цэгцтэй өгөгдөл:</strong> Англи эсвэл монгол нэртэй, шинжилгээнд бэлэн tibble хүснэгт.</li>
+<li>
+<strong>Тогтвортой хугацааны сонголт:</strong> Он, сарыг <code>"2024"</code> эсвэл <code>"2024-03"</code> зэрэг нэрээр буцааж, ҮСХ-ны хэрэглэдэг хугацааны аль ч бичлэгээр сонгоно.</li>
+<li>
+<strong>Өөрчлөлтөд тэсвэртэй:</strong> ҮСХ ангилал дотроо шилжүүлсэн хүснэгтийг автоматаар олж, том хүсэлтийг серверийн хязгаарт багтаан хуваана.</li>
+<li>
+<strong>Зураглалд бэлэн:</strong> Үр дүнг ҮСХ-ны кодоор <a href="https://github.com/temuulene/mongolmaps" class="external-link">mongolmaps</a> дагалдах багцын газрын зурагтай холбоно.</li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="суулгах">Суулгах<a class="anchor" aria-label="anchor" href="#%D1%81%D1%83%D1%83%D0%BB%D0%B3%D0%B0%D1%85"></a>
+<h2 id="installation">Суулгах<a class="anchor" aria-label="Хэсгийн холбоос" href="#installation"></a>
 </h2>
+<p>mongolstats багцыг CRAN-аас дараах байдлаар суулгана:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mongolstats"</span>, <span class="st">"mongolmaps"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Хөгжүүлэлтийн хувилбар хэрэгтэй бол:</p>
+<p>Эсвэл хөгжүүлэлтийн хувилбарыг <a href="https://github.com/" class="external-link">GitHub</a>-аас, mongolmaps-ийн нийтлэгдсэн хувилбарыг CRAN-аас суулгана:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"temuulene/mongolstats"</span>, <span class="st">"cran::mongolmaps"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="анхны-шинжилгээ-дотоодын-нийт-бүтээгдэхүүн">Анхны шинжилгээ: дотоодын нийт бүтээгдэхүүн<a class="anchor" aria-label="anchor" href="#%D0%B0%D0%BD%D1%85%D0%BD%D1%8B-%D1%88%D0%B8%D0%BD%D0%B6%D0%B8%D0%BB%D0%B3%D1%8D%D1%8D-%D0%B4%D0%BE%D1%82%D0%BE%D0%BE%D0%B4%D1%8B%D0%BD-%D0%BD%D0%B8%D0%B9%D1%82-%D0%B1%D2%AF%D1%82%D1%8D%D1%8D%D0%B3%D0%B4%D1%8D%D1%85%D2%AF%D2%AF%D0%BD"></a>
+<h2 id="quick-start">Түргэн эхлэх<a class="anchor" aria-label="Хэсгийн холбоос" href="#quick-start"></a>
 </h2>
-<p>ДНБ-ий оны үнийн дүнг татаж, их наяд төгрөгөөр дүрсэлье. ҮСХ-ны энэ хүснэгтийн утга сая төгрөгөөр өгөгддөг тул их наяд төгрөгт шилжүүлэхдээ 1,000,000-д хуваана.</p>
+<div class="section level3">
+<h3 id="id_1-the-economic-pulse-gdp-trends">1. Эдийн засгийн хэмнэл: ДНБ-ий өөрчлөлт<a class="anchor" aria-label="Хэсгийн холбоос" href="#id_1-the-economic-pulse-gdp-trends"></a>
+</h3>
+<p>Хүснэгт олсны дараа сонголтоо код эсвэл нэрээр өгч, өгөгдлөө татна:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html" hreflang="en">nso_data</a></span><span class="op">(</span></span>
-<span>  <span class="st">"DT_NSO_0500_001V1"</span>,</span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://temuulene.github.io/mongolstats/mn/">mongolstats</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/nso_search.html">nso_search</a></span><span class="op">(</span><span class="st">"gross domestic product, by production approach"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tbl_id</span>, <span class="va">tbl_eng_nm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 7 × 2</span></span>
+<span><span class="co">#&gt;   tbl_id              tbl_eng_nm                                                </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;               &lt;chr&gt;                                                     </span></span>
+<span><span class="co">#&gt; 1 DT_NSO_0500_001V4   GROSS DOMESTIC PRODUCT, by production approach, by econom…</span></span>
+<span><span class="co">#&gt; 2 DT_NSO_0500_001V6   GROSS DOMESTIC PRODUCT, by production approach, by econom…</span></span>
+<span><span class="co">#&gt; 3 DT_NSO_0500_004V1   GROSS DOMESTIC PRODUCT, by production approach, by econom…</span></span>
+<span><span class="co">#&gt; 4 DT_NSO_0500_022V1   GROSS DOMESTIC PRODUCT, by production approach, by econom…</span></span>
+<span><span class="co">#&gt; 5 DT_NSO_0500_022V1-1 GROSS DOMESTIC PRODUCT, by production approach, by econom…</span></span>
+<span><span class="co">#&gt; 6 DT_NSO_0500_001V1   GROSS DOMESTIC PRODUCT, by production approach, by econom…</span></span>
+<span><span class="co">#&gt; 7 DT_NSO_0500_001V3   GROSS DOMESTIC PRODUCT, by production approach, by econom…</span></span>
+<span></span>
+<span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_data.html">nso_data</a></span><span class="op">(</span></span>
+<span>  tbl_id <span class="op">=</span> <span class="st">"DT_NSO_0500_001V1"</span>,</span>
 <span>  selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    <span class="st">"Statistical indicator"</span> <span class="op">=</span> <span class="st">"GDP, at current prices"</span>,</span>
 <span>    <span class="st">"Economic activity"</span> <span class="op">=</span> <span class="st">"Total"</span>,</span>
-<span>    Year <span class="op">=</span> <span class="fu"><a href="../reference/nso_period_seq.html" hreflang="en">nso_period_seq</a></span><span class="op">(</span><span class="st">"2010"</span>, <span class="st">"2025"</span><span class="op">)</span></span>
+<span>    Year <span class="op">=</span> <span class="fu"><a href="reference/nso_period_seq.html">nso_period_seq</a></span><span class="op">(</span><span class="st">"2010"</span>, <span class="st">"2025"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Он нь нэрээрээ, шинэ оноосоо эхэлж ирнэ; "2025*" нь урьдчилсан тоог тэмдэглэнэ</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 4</span></span>
+<span><span class="co">#&gt;   `Statistical indicator` `Economic activity` Year      value</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                   &lt;chr&gt;               &lt;chr&gt;     &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 0                       0                   2025* 89937128.</span></span>
+<span><span class="co">#&gt; 2 0                       0                   2024  80663051.</span></span>
+<span><span class="co">#&gt; 3 0                       0                   2023  70441516.</span></span>
+<span></span>
 <span><span class="va">gdp</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="../reference/nso_period_date.html" hreflang="en">nso_period_date</a></span><span class="op">(</span><span class="va">Year</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">value</span> <span class="op">/</span> <span class="fl">1e6</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="reference/nso_period_date.html">nso_period_date</a></span><span class="op">(</span><span class="va">Year</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">value</span> <span class="op">/</span> <span class="fl">1e6</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_area</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#42b883"</span>, alpha <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#2c3e50"</span>, linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#2c3e50"</span>, size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>suffix <span class="op">=</span> <span class="st">" их наяд"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#2c3e50"</span>, size <span class="op">=</span> <span class="fl">3</span>, shape <span class="op">=</span> <span class="fl">21</span>, fill <span class="op">=</span> <span class="st">"white"</span>, stroke <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>suffix <span class="op">=</span> <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Монгол Улсын ДНБ, 2010–2025"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Оны үнээр, их наяд төгрөг"</span>,</span>
-<span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Эх сурвалж: ҮСХ, mongolstats багцаар"</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Mongolia's GDP, 2010-2025"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Gross domestic product at current prices (trillion MNT)"</span>,</span>
+<span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia via mongolstats"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/mn-home-gdp-1.png" alt="Монгол Улсын 2010–2025 оны ДНБ-ийг оны үнээр, их наяд төгрөгөөр харуулсан график" width="100%"></p>
-<p>Одоор (<code>*</code>) тэмдэглэсэн он нь ҮСХ-ны урьдчилсан дүнг заана. Өөр өөр оны мөнгөн дүнг харьцуулахдаа үнийн өөрчлөлтийг тооцох шаардлагатай.</p>
-</div>
-<div class="section level2">
-<h2 id="хүн-амыг-газрын-зураг-дээр-харуулах">Хүн амыг газрын зураг дээр харуулах<a class="anchor" aria-label="anchor" href="#%D1%85%D2%AF%D0%BD-%D0%B0%D0%BC%D1%8B%D0%B3-%D0%B3%D0%B0%D0%B7%D1%80%D1%8B%D0%BD-%D0%B7%D1%83%D1%80%D0%B0%D0%B3-%D0%B4%D1%8D%D1%8D%D1%80-%D1%85%D0%B0%D1%80%D1%83%D1%83%D0%BB%D0%B0%D1%85"></a>
-</h2>
-<p>ҮСХ-ны газар зүйн кодоор хүснэгтийг хил хязгаартай холбоно. <code><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join()</a></code> нь аймаг, нийслэлийг сонгож, улсын болон бүсийн нийт дүнг давхар тоолохоос сэргийлнэ.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">population_table</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_0300_002V1"</span></span>
-<span><span class="va">latest</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_latest_periods.html" hreflang="en">nso_latest_periods</a></span><span class="op">(</span><span class="va">population_table</span><span class="op">)</span></span>
-<span><span class="va">population</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_data.html" hreflang="en">nso_data</a></span><span class="op">(</span><span class="va">population_table</span>, selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="va">latest</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">population</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"Region"</span>, level <span class="op">=</span> <span class="st">"aimag"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span></span>
-<span>    fill <span class="op">=</span> <span class="va">value</span>, trans <span class="op">=</span> <span class="st">"log10"</span>, lang <span class="op">=</span> <span class="st">"mn"</span>, label <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Аймаг, нийслэлийн хүн ам,"</span>, <span class="va">latest</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    fill <span class="op">=</span> <span class="st">"Хүн ам\n(логарифм шатлал)"</span>,</span>
-<span>    caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span>
-<span>      <span class="st">"Өгөгдөл: ҮСХ (DT_NSO_0300_002V1)"</span>,</span>
-<span>      <span class="st">"Хил хязгаар: Монгол Улсын ҮСХ, OCHA (COD-AB), CC BY-IGO"</span>,</span>
-<span>      sep <span class="op">=</span> <span class="st">"\n"</span></span>
-<span>    <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
+<span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/mn-home-population-1.png" alt="Аймаг, нийслэлийн хүн амыг логарифм өнгийн шатлалаар харуулсан Монгол Улсын газрын зураг" width="100%"></p>
-<p>Улаанбаатар болон цөөн хүн амтай аймгийн ялгааг зэрэг харахын тулд логарифм өнгийн шатлал ашиглав.</p>
+<p><img src="reference/figures/README-gdp-example-1.svg" alt="Монголын 2010–2025 оны оны үнээрх жилийн ДНБ, их наяд төгрөгөөр" width="100%"></p>
+</div>
+<div class="section level3">
+<h3 id="id_2-mapping-regional-population">2. Бүс нутгийн хүн амыг зураглах<a class="anchor" aria-label="Хэсгийн холбоос" href="#id_2-mapping-regional-population"></a>
+</h3>
+<p>ҮСХ-ны хүснэгт газар нутгийг кодоор ялгадаг. <a href="https://github.com/temuulene/mongolmaps" class="external-link">mongolmaps</a>-ийн хил заагт мөн эдгээр код бий. Иймээс <code><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join()</a></code> нь хүснэгтийг газрын зурагтай нэг алхмаар холбож, аймгийн мөрүүдийг үлдээн, улс болон бүсийн дүнг хасна:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/temuulene/mongolmaps" class="external-link">mongolmaps</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pop_tbl</span> <span class="op">&lt;-</span> <span class="st">"DT_NSO_0300_002V1"</span></span>
+<span><span class="va">latest</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_latest_periods.html">nso_latest_periods</a></span><span class="op">(</span><span class="va">pop_tbl</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_data.html">nso_data</a></span><span class="op">(</span><span class="va">pop_tbl</span>, selections <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="va">latest</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pop</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_join.html" class="external-link">mn_join</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"Region"</span>, level <span class="op">=</span> <span class="st">"aimag"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">value</span>, trans <span class="op">=</span> <span class="st">"log10"</span>, lang <span class="op">=</span> <span class="st">"en"</span>, title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Population by aimag,"</span>, <span class="va">latest</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"Population\n(log scale)"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-pop-map-example-1.svg" alt="Монголын аймгийн суурин хүн амыг логарифмын өнгийн хуваариар харуулсан зураг" width="100%"></p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="эх-сурвалж-мета-өгөгдөл">Эх сурвалж, мета өгөгдөл<a class="anchor" aria-label="anchor" href="#%D1%8D%D1%85-%D1%81%D1%83%D1%80%D0%B2%D0%B0%D0%BB%D0%B6-%D0%BC%D0%B5%D1%82%D0%B0-%D3%A9%D0%B3%D3%A9%D0%B3%D0%B4%D3%A9%D0%BB"></a>
+<h2 id="sources-and-metadata">Эх сурвалж ба мета өгөгдөл<a class="anchor" aria-label="Хэсгийн холбоос" href="#sources-and-metadata"></a>
 </h2>
-<p>Үзүүлэлтийн тодорхойлолт, нэгж, хамрах хүрээг шалгасны дараа өгөгдлөө татна. Экспортлохдоо хүснэгтийн дугаар, сонгосон хугацаа, эх сурвалжийн тэмдэглэгээг хамт хадгалаарай.</p>
+<p>0.4 ажлын урсгалд хянасан үзүүлэлтийн асуулга, эх сурвалжийн эшлэл, удаан хадгалах гарал үүслийн бүртгэл болон эх утгын төлөв нэмэгдсэн. Үзэл баримтлалаа сонгож, тодорхойлолт, нэгжийг нь шалгаад, анхны төлөвийн бүртгэлийг экспорттой хамт хадгална.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/nso_indicators.html" hreflang="en">nso_indicators</a></span><span class="op">(</span><span class="st">"GDP"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/nso_indicator.html" hreflang="en">nso_indicator</a></span><span class="op">(</span><span class="st">"gdp_current"</span><span class="op">)</span></span>
-<span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_indicator_query.html" hreflang="en">nso_indicator_query</a></span><span class="op">(</span><span class="st">"gdp_current"</span>, periods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2023"</span>, <span class="st">"2024"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/nso_fetch.html" hreflang="en">nso_fetch</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="st">"mn"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/nso_table_info.html" hreflang="en">nso_table_info</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/nso_citation.html" hreflang="en">nso_citation</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/nso_check_data.html" hreflang="en">nso_check_data</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/nso_write_manifest.html" hreflang="en">nso_write_manifest</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="st">"gdp-provenance.json"</span><span class="op">)</span></span></code></pre></div>
-<p>Албан ёсны тодорхойлолт, асуулга, ангиллыг мета өгөгдлийн сангаас хайж болно:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/nso_metadata_search.html" hreflang="en">nso_metadata_search</a></span><span class="op">(</span><span class="st">"хүн ам"</span>, type <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/nso_metadata.html" hreflang="en">nso_metadata</a></span><span class="op">(</span><span class="st">"indicator"</span>, <span class="fl">12925</span>, include_raw <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>PXWeb болон бусад порталын хүснэгтийн дугаар, газар зүйн кодыг шууд адил гэж үзэж болохгүй. Эдгээр туршилтын үйлчилгээний бүтэц өөрчлөгдөж болно. Зарим системд мета өгөгдлийн серверийн сертификатын гинжийг шалгах үед холболтын алдаа гарч болзошгүй.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/nso_indicators.html">nso_indicators</a></span><span class="op">(</span><span class="st">"GDP"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/nso_indicator.html">nso_indicator</a></span><span class="op">(</span><span class="st">"gdp_current"</span><span class="op">)</span></span>
+<span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nso_indicator_query.html">nso_indicator_query</a></span><span class="op">(</span><span class="st">"gdp_current"</span>, periods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2023"</span>, <span class="st">"2024"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/nso_fetch.html">nso_fetch</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/nso_table_info.html">nso_table_info</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/nso_citation.html">nso_citation</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/nso_value_status.html">nso_value_status</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/nso_write_manifest.html">nso_write_manifest</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="st">"gdp-provenance.json"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Тодорхойлолт болон тусдаа нээлттэй өгөгдлийн порталыг судлах.</span></span>
+<span><span class="fu"><a href="reference/nso_metadata.html">nso_metadata</a></span><span class="op">(</span><span class="st">"indicator"</span>, <span class="fl">12925</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/nso_indicators.html">nso_indicators</a></span><span class="op">(</span>source <span class="op">=</span> <span class="st">"portal"</span><span class="op">)</span></span></code></pre></div>
+<p>Порталын үзүүлэлтийн болон газар нутгийн код нь өөрийн эх сурвалжийн схемтэй; албан ёсны нэр дутуу бол дутуу хэвээр үлдэнэ. Өгөгдлийн сангийн дэмжлэг нь зөвхөн хайж олоход зориулагдана. Экспорт, чанарын шалгалт, ангиллын тайлбар, каталогийн шинэ байдал болон туршилтын үйлчилгээний хязгаарыг үзэхийн тулд <code><a href="articles/data-provenance.html">vignette("data-provenance", package = "mongolstats")</a></code>-ээр эх сурвалж, мета өгөгдлийн хоёр хэл дээрх зааврыг нээнэ үү.</p>
 </div>
 <div class="section level2">
-<h2 id="дэлгэрэнгүй-заавар">Дэлгэрэнгүй заавар<a class="anchor" aria-label="anchor" href="#%D0%B4%D1%8D%D0%BB%D0%B3%D1%8D%D1%80%D1%8D%D0%BD%D0%B3%D2%AF%D0%B9-%D0%B7%D0%B0%D0%B0%D0%B2%D0%B0%D1%80"></a>
+<h2 id="documentation">Баримтжуулалт<a class="anchor" aria-label="Хэсгийн холбоос" href="#documentation"></a>
 </h2>
+<p>Бүрэн баримтжуулалтыг <a href="https://temuulene.github.io/mongolstats/mn/">temuulene.github.io/mongolstats</a> сайтаас үзнэ үү.</p>
 <ul>
-<li><a href="../articles/getting-started.html">Эхлэх заавар (англи)</a></li>
-<li><a href="../articles/discovery.html">Өгөгдөл хайх (англи)</a></li>
-<li><a href="../articles/mapping.html">Газрын зурагтай ажиллах (англи)</a></li>
-<li><a href="../articles/data-provenance.html">Эх сурвалж, мета өгөгдөл, давтан ашиглах экспорт (хоёр хэлээр)</a></li>
-<li><a href="../reference/index.html">Бүх функцийн тайлбар (англи)</a></li>
+<li>
+<a href="https://temuulene.github.io/mongolstats/mn/articles/getting-started.html">Эхлэх нь</a> - Анхны эпидемиологийн шинжилгээ</li>
+<li>
+<a href="https://temuulene.github.io/mongolstats/mn/articles/discovery.html">Өгөгдөл хайх заавар</a> - Хүснэгт олж, судлах</li>
+<li>
+<a href="https://temuulene.github.io/mongolstats/mn/articles/mapping.html">Газрын зураглалын заавар</a> - ҮСХ-ны өгөгдлийг mongolmaps ашиглан зураглах</li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="лиценз-ба-ишлэл">Лиценз ба ишлэл<a class="anchor" aria-label="anchor" href="#%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7-%D0%B1%D0%B0-%D0%B8%D1%88%D0%BB%D1%8D%D0%BB"></a>
+<h2 id="contributing">Хувь нэмэр оруулах<a class="anchor" aria-label="Хэсгийн холбоос" href="#contributing"></a>
 </h2>
-<p>Багцын код MIT лицензтэй. ҮСХ-ны өгөгдлийн эх сурвалж, зохиогчийн эрх, лицензийг <a href="https://github.com/temuulene/mongolstats/blob/main/inst/COPYRIGHTS" class="external-link">COPYRIGHTS</a> файлаас үзнэ. Өгөгдөл ашигласан бүтээлдээ ҮСХ болон хэрэглэсэн эх сурвалжаа дурдана уу.</p>
+<p>Хувь нэмэр оруулахыг урьж байна! Дэлгэрэнгүйг <a href="https://github.com/temuulene/mongolstats/blob/main/CONTRIBUTING.md" class="external-link">хувь нэмэр оруулах заавраас</a> үзнэ үү.</p>
+</div>
+<div class="section level2">
+<h2 id="license">Лиценз<a class="anchor" aria-label="Хэсгийн холбоос" href="#license"></a>
+</h2>
+<p>MIT</p>
 </div>
 </div>
-  </main><aside class="col-md-3"><div class="-">
-<h2 data-toc-skip>Холбоос</h2>
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Холбоосууд</h2>
 <ul class="list-unstyled">
-<li>
-<p><a href="../index.html">English</a></p>
-<p><a href="https://cran.r-project.org/package=mongolstats" class="external-link">CRAN дахь багц</a></p>
-<p><a href="https://github.com/temuulene/mongolstats/issues" class="external-link">Алдаа мэдээлэх</a></p>
-</li>
+<li><a href="https://cloud.r-project.org/package=mongolstats" class="external-link">CRAN дээр үзэх</a></li>
+<li><a href="https://github.com/temuulene/mongolstats/" class="external-link">Эх кодыг үзэх</a></li>
+<li><a href="https://github.com/temuulene/mongolstats/issues" class="external-link">Алдаа мэдээлэх</a></li>
+<li><a href="https://data.1212.mn/pxweb/" class="external-link">NSO PXWeb</a></li>
 </ul>
 </div>
 
-<div class="-">
+<div class="license">
 <h2 data-toc-skip>Лиценз</h2>
 <ul class="list-unstyled">
-<li><p>Код: <a href="../LICENSE-text.html">MIT</a>. ҮСХ-ны өгөгдлийн эх сурвалж, лицензийг багцын <a href="https://github.com/temuulene/mongolstats/blob/main/inst/COPYRIGHTS" class="external-link">COPYRIGHTS</a> файлаас үзнэ.</p></li>
+<li>
+<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + <a href="LICENSE-text.html">LICENSE</a> файл</li>
 </ul>
 </div>
 
-<div class="-">
-<h2 data-toc-skip>Иш татах</h2>
+<div class="community">
+<h2 data-toc-skip>Хамт олон</h2>
 <ul class="list-unstyled">
-<li><p><a href="../authors.html#citation">Багцыг иш татах</a></p></li>
+<li><a href="CONTRIBUTING.html">Хувь нэмэр оруулах заавар</a></li>
+<li><a href="CODE_OF_CONDUCT.html">Ёс зүйн дүрэм</a></li>
 </ul>
 </div>
 
-<div class="-">
-<h2 data-toc-skip>Хөгжүүлэгч</h2>
+<div class="citation">
+<h2 data-toc-skip>Эшлэл</h2>
 <ul class="list-unstyled">
-<li><p>Энэбишийн Тэмүүлэн</p></li>
+<li><a href="authors.html#citation">mongolstats багцыг эшлэх</a></li>
 </ul>
 </div>
+
+<div class="developers">
+<h2 data-toc-skip>Хөгжүүлэгчид</h2>
+<ul class="list-unstyled">
+<li>Тэмүүлэн Энэбиш <br><small class="roles"> Зохиогч, хөгжүүлэлтийг хариуцагч, зохиогчийн эрх эзэмшигч </small>
+</li>
+<li><a href="authors.html">Зохиогчдын дэлгэрэнгүй мэдээлэл...</a></li>
+</ul>
+</div>
+
+
 
   </aside>
 </div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Хөгжүүлсэн: Энэбишийн Тэмүүлэн.</p>
+  <p>Хөгжүүлэгч: Тэмүүлэн Энэбиш.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p><a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> ашиглан бүтээв.</p>
+  <p>Сайтыг <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3 ашиглан бүтээв.</p>
 </div>
 
     </footer>

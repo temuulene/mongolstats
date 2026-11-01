@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="504.00pt" height="360.00pt" viewBox="0 0 504.00 360.00">
+<g class="svglite">
+<defs>
+  <style type="text/css"><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+    .svglite g.glyphgroup path {
+      fill: inherit;
+      stroke: none;
+    }
+  ]]></style>
+</defs>
+<rect width="100%" height="100%" style="stroke: none; fill: #FFFFFF;"/>
+<defs>
+  <clipPath id="cpMC4wMHw1MDQuMDB8MC4wMHwzNjAuMDA=">
+    <rect x="0.00" y="0.00" width="504.00" height="360.00"/>
+  </clipPath>
+</defs>
+<g clip-path="url(#cpMC4wMHw1MDQuMDB8MC4wMHwzNjAuMDA=)">
+<rect x="0.00" y="0.00" width="504.00" height="360.00" style="stroke-width: 1.07; stroke: none; fill: #FFFFFF;"/>
+</g>
+<defs>
+  <clipPath id="cpNDIuMTZ8NDk0LjA0fDQxLjUzfDMyMy44Ng==">
+    <rect x="42.16" y="41.53" width="451.88" height="282.33"/>
+  </clipPath>
+</defs>
+<g clip-path="url(#cpNDIuMTZ8NDk0LjA0fDQxLjUzfDMyMy44Ng==)">
+<polyline points="42.16,323.86 494.04,323.86 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="42.16,228.84 494.04,228.84 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="42.16,133.81 494.04,133.81 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="62.70,323.86 62.70,41.53 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="108.34,323.86 108.34,41.53 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="153.98,323.86 153.98,41.53 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="199.63,323.86 199.63,41.53 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="245.27,323.86 245.27,41.53 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="290.92,323.86 290.92,41.53 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="336.56,323.86 336.56,41.53 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="382.21,323.86 382.21,41.53 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="427.85,323.86 427.85,41.53 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polyline points="473.50,323.86 473.50,41.53 " style="stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;"/>
+<polygon points="62.70,67.19 108.34,88.40 153.98,109.66 199.63,106.11 245.27,126.85 290.92,187.90 336.56,188.53 382.21,190.25 427.85,198.76 473.50,207.06 473.50,216.67 427.85,208.77 382.21,200.67 336.56,199.08 290.92,198.56 245.27,139.82 199.63,119.90 153.98,123.46 108.34,103.00 62.70,82.60 " style="stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #E74C3C; fill-opacity: 0.15;"/>
+<polyline points="62.70,67.19 108.34,88.40 153.98,109.66 199.63,106.11 245.27,126.85 290.92,187.90 336.56,188.53 382.21,190.25 427.85,198.76 473.50,207.06 " style="stroke-width: 1.07; stroke: none; stroke-linecap: butt;"/>
+<polyline points="473.50,216.67 427.85,208.77 382.21,200.67 336.56,199.08 290.92,198.56 245.27,139.82 199.63,119.90 153.98,123.46 108.34,103.00 62.70,82.60 " style="stroke-width: 1.07; stroke: none; stroke-linecap: butt;"/>
+<polyline points="62.70,74.98 108.34,95.79 153.98,116.64 199.63,113.09 245.27,133.42 290.92,193.31 336.56,193.88 382.21,195.54 427.85,203.85 473.50,211.94 " style="stroke-width: 2.13; stroke: #E74C3C; stroke-linecap: butt;"/>
+<circle cx="62.70" cy="74.98" r="2.49" style="stroke-width: 0.71; stroke: #E74C3C; fill: #E74C3C;"/>
+<circle cx="108.34" cy="95.79" r="2.49" style="stroke-width: 0.71; stroke: #E74C3C; fill: #E74C3C;"/>
+<circle cx="153.98" cy="116.64" r="2.49" style="stroke-width: 0.71; stroke: #E74C3C; fill: #E74C3C;"/>
+<circle cx="199.63" cy="113.09" r="2.49" style="stroke-width: 0.71; stroke: #E74C3C; fill: #E74C3C;"/>
+<circle cx="245.27" cy="133.42" r="2.49" style="stroke-width: 0.71; stroke: #E74C3C; fill: #E74C3C;"/>
+<circle cx="290.92" cy="193.31" r="2.49" style="stroke-width: 0.71; stroke: #E74C3C; fill: #E74C3C;"/>
+<circle cx="336.56" cy="193.88" r="2.49" style="stroke-width: 0.71; stroke: #E74C3C; fill: #E74C3C;"/>
+<circle cx="382.21" cy="195.54" r="2.49" style="stroke-width: 0.71; stroke: #E74C3C; fill: #E74C3C;"/>
+<circle cx="427.85" cy="203.85" r="2.49" style="stroke-width: 0.71; stroke: #E74C3C; fill: #E74C3C;"/>
+<circle cx="473.50" cy="211.94" r="2.49" style="stroke-width: 0.71; stroke: #E74C3C; fill: #E74C3C;"/>
+</g>
+<g clip-path="url(#cpMC4wMHw1MDQuMDB8MC4wMHwzNjAuMDA=)">
+<text x="37.22" y="326.89" text-anchor="end" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="4.89px" lengthAdjust="spacingAndGlyphs">0</text>
+<text x="37.22" y="231.86" text-anchor="end" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="9.78px" lengthAdjust="spacingAndGlyphs">50</text>
+<text x="37.22" y="136.84" text-anchor="end" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="14.67px" lengthAdjust="spacingAndGlyphs">100</text>
+<text x="62.70" y="334.85" text-anchor="middle" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="19.56px" lengthAdjust="spacingAndGlyphs">2016</text>
+<text x="108.34" y="334.85" text-anchor="middle" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="19.56px" lengthAdjust="spacingAndGlyphs">2017</text>
+<text x="153.98" y="334.85" text-anchor="middle" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="19.56px" lengthAdjust="spacingAndGlyphs">2018</text>
+<text x="199.63" y="334.85" text-anchor="middle" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="19.56px" lengthAdjust="spacingAndGlyphs">2019</text>
+<text x="245.27" y="334.85" text-anchor="middle" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="19.56px" lengthAdjust="spacingAndGlyphs">2020</text>
+<text x="290.92" y="334.85" text-anchor="middle" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="19.56px" lengthAdjust="spacingAndGlyphs">2021</text>
+<text x="336.56" y="334.85" text-anchor="middle" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="19.56px" lengthAdjust="spacingAndGlyphs">2022</text>
+<text x="382.21" y="334.85" text-anchor="middle" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="19.56px" lengthAdjust="spacingAndGlyphs">2023</text>
+<text x="427.85" y="334.85" text-anchor="middle" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="19.56px" lengthAdjust="spacingAndGlyphs">2024</text>
+<text x="473.50" y="334.85" text-anchor="middle" style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Liberation Sans&quot;;" textLength="19.56px" lengthAdjust="spacingAndGlyphs">2025</text>
+<text transform="translate(17.53,182.69) rotate(-90)" text-anchor="middle" style="font-size: 11.00px; font-family: &quot;Liberation Sans&quot;;" textLength="121.78" lengthAdjust="spacingAndGlyphs">100,000 тутамд бүртгэгдсэн тохиолдол</text>
+<text x="42.16" y="33.97" style="font-size: 10.00px;fill: #666666; font-family: &quot;Liberation Sans&quot;;" textLength="362" lengthAdjust="spacingAndGlyphs">Хүн амын 100,000 тутамд бүртгэгдсэн тохиолдол, 95% итгэх интервалтай</text>
+<text x="42.16" y="18.91" style="font-size: 13.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="271" lengthAdjust="spacingAndGlyphs">Монголд бүртгэгдсэн сүрьеэгийн тохиолдол</text>
+<text x="494.04" y="348.21" text-anchor="end" style="font-size: 8.80px; font-family: &quot;Liberation Sans&quot;;" textLength="329" lengthAdjust="spacingAndGlyphs">Эх сурвалж: Монголын ҮСХ, DT_NSO_2100_035V1 ба DT_NSO_0300_002V1</text>
+</g>
+</g>
+</svg>

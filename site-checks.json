@@ -1,5 +1,6 @@
 {
-  "html_pages": 78,
+  "html_pages": 296,
+  "translated_pages": 148,
   "figures": [
     {
       "page": "index.html",
@@ -38,6 +39,36 @@
     },
     {
       "page": "articles/mortality-analysis.html",
+      "plots": 9,
+      "minimum": 9
+    },
+    {
+      "page": "mn/articles/getting-started.html",
+      "plots": 3,
+      "minimum": 3
+    },
+    {
+      "page": "mn/articles/discovery.html",
+      "plots": 3,
+      "minimum": 3
+    },
+    {
+      "page": "mn/articles/mapping.html",
+      "plots": 5,
+      "minimum": 5
+    },
+    {
+      "page": "mn/articles/environmental-surveillance.html",
+      "plots": 7,
+      "minimum": 7
+    },
+    {
+      "page": "mn/articles/ub-health-environment.html",
+      "plots": 7,
+      "minimum": 7
+    },
+    {
+      "page": "mn/articles/mortality-analysis.html",
       "plots": 9,
       "minimum": 9
     }

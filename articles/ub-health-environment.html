@@ -19,6 +19,8 @@
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Ulaanbaatar District-Level Analysis">
+<link rel="alternate" hreflang="en" href="https://temuulene.github.io/mongolstats/articles/ub-health-environment.html">
+<link rel="alternate" hreflang="mn" href="https://temuulene.github.io/mongolstats/mn/articles/ub-health-environment.html">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -58,7 +60,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="nav-link" href="../mn/index.html" aria-label="Монгол хэлээр унших">Монгол</a></li>
+<li class="nav-item"><a class="nav-link" href="../mn/articles/ub-health-environment.html" aria-label="Монгол хэлээр унших" hreflang="mn" lang="mn">Монгол</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
@@ -191,7 +193,7 @@ which is the khoroo-level table and also includes the districts.)</p>
 <span>    subtitle <span class="op">=</span> <span class="st">"Residents per km² (log scale). Data: NSO Mongolia, DT_NSO_0300_002V4"</span>,</span>
 <span>    fill <span class="op">=</span> <span class="st">"Residents\nper km²"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="ub-health-environment_files/figure-html/demog-density-1.png" alt="Map of population density by Ulaanbaatar district on a log scale, with each district labelled" width="100%"></p>
+<p><img src="ub-health-environment_files/figure-html/demog-density-1.svg" alt="Map of population density by Ulaanbaatar district on a log scale, with each district labelled" width="100%"></p>
 <p><strong>Bayangol</strong> is the densest district, with about 10,400
 residents per km². <strong>Bagakhangai</strong> is the least dense, at
 about 28 per km². Districts such as Bayanzurkh and Songinokhairkhan
@@ -297,7 +299,7 @@ map</caption>
 <span>  title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Population Density by Khoroo, Central Ulaanbaatar, "</span>, <span class="va">pop_year</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Residents per km² (log scale), six central districts"</span>, fill <span class="op">=</span> <span class="st">"Residents\nper km²"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ub-health-environment_files/figure-html/khoroo-density-1.png" alt="Map of population density by khoroo in Ulaanbaatar's six central districts on a log scale" width="100%"></p>
+<p><img src="ub-health-environment_files/figure-html/khoroo-density-1.svg" alt="Map of population density by khoroo in Ulaanbaatar's six central districts on a log scale" width="100%"></p>
 <p>The khoroo boundaries are unofficial. 0 source codes lack a matched
 boundary. The reconciliation table does not establish a matching
 boundary vintage: splits, mergers and changed codes still need review.
@@ -327,7 +329,7 @@ scale.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_0300_002V4"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ub-health-environment_files/figure-html/demog-trend-1.png" alt="Line chart of resident population by Ulaanbaatar district over the last 10 years" width="100%"></p>
+<p><img src="ub-health-environment_files/figure-html/demog-trend-1.svg" alt="Line chart of resident population by Ulaanbaatar district over the last 10 years" width="100%"></p>
 <p>Across the ten annual observations from 2016 to 2025, there are nine
 elapsed years. The table below shows signed total and annualised
 changes; negative values are declines. Baganuur had the smallest
@@ -435,7 +437,7 @@ on public services.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2001_002V2 and DT_NSO_2002_057V2"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ub-health-environment_files/figure-html/socio-edu-1.png" alt="Bar chart of students per general education school by Ulaanbaatar district" width="100%"></p>
+<p><img src="ub-health-environment_files/figure-html/socio-edu-1.svg" alt="Bar chart of students per general education school by Ulaanbaatar district" width="100%"></p>
 <p>This ratio is mean enrolment per institution, not classroom size,
 spare capacity, crowding or deprivation. Schools differ in size, sector
 and shift system. Confirm that the school-year definition and
@@ -492,7 +494,7 @@ confirmation.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_018V6, DT_NSO_2100_027V1 and DT_NSO_0300_002V4"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ub-health-environment_files/figure-html/health-check-1.png" alt="Two-panel bar chart of live births and deaths per 1,000 residents by Ulaanbaatar district, showing implausible differences between districts" width="100%"></p>
+<p><img src="ub-health-environment_files/figure-html/health-check-1.svg" alt="Two-panel bar chart of live births and deaths per 1,000 residents by Ulaanbaatar district, showing implausible differences between districts" width="100%"></p>
 <p>The observed differences are consistent with occurrence-based
 reporting or another mismatch in coverage. They do not establish the
 precise assignment rule. Do not interpret the diagnostic ratios as
@@ -663,7 +665,7 @@ a district border may fall on the other side.</p>
 <span>    xlim <span class="op">=</span> <span class="va">station_box</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"xmin"</span>, <span class="st">"xmax"</span><span class="op">)</span><span class="op">]</span>, ylim <span class="op">=</span> <span class="va">station_box</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ymin"</span>, <span class="st">"ymax"</span><span class="op">)</span><span class="op">]</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Red points = monitoring stations (approximate locations)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ub-health-environment_files/figure-html/aq-network-map-1.png" alt="Map of Ulaanbaatar's central districts with air quality monitoring stations shown as red points" width="100%"></p>
+<p><img src="ub-health-environment_files/figure-html/aq-network-map-1.svg" alt="Map of Ulaanbaatar's central districts with air quality monitoring stations shown as red points" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="coverage">Coverage<a class="anchor" aria-label="anchor" href="#coverage"></a>
@@ -755,7 +757,7 @@ location</caption>
 <span>    caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Population year"</span>, <span class="va">pop_year</span>, <span class="st">"| Districts with no listed location remain in the table"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ub-health-environment_files/figure-html/station-coverage-1.png" alt="Bar chart of residents per monitoring station for each Ulaanbaatar district that has at least one station" width="100%"></p>
+<p><img src="ub-health-environment_files/figure-html/station-coverage-1.svg" alt="Bar chart of residents per monitoring station for each Ulaanbaatar district that has at least one station" width="100%"></p>
 <p>3 districts have no uniquely assigned location <strong>in this
 inventory</strong>. This does not establish absence of monitoring.
 Residents per listed location does not measure representativeness;

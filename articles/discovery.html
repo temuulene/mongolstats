@@ -19,6 +19,8 @@
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Discovering Public Health Data">
+<link rel="alternate" hreflang="en" href="https://temuulene.github.io/mongolstats/articles/discovery.html">
+<link rel="alternate" hreflang="mn" href="https://temuulene.github.io/mongolstats/mn/articles/discovery.html">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -58,7 +60,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="nav-link" href="../mn/index.html" aria-label="Монгол хэлээр унших">Монгол</a></li>
+<li class="nav-item"><a class="nav-link" href="../mn/articles/discovery.html" aria-label="Монгол хэлээр унших" hreflang="mn" lang="mn">Монгол</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
@@ -279,7 +281,7 @@ and at which level (“aimags and the Capital”, “by soum”).</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_012V1"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.spacing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1</span>, <span class="st">"lines"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="discovery_files/figure-html/cancer-analysis-1.png" alt="Small multiples of crude cancer incidence per 10,000 population in Mongolia over the last 10 years, one panel each for cervical, liver, lung, oesophageal and stomach cancer" width="100%"></p>
+<p><img src="discovery_files/figure-html/cancer-analysis-1.svg" alt="Small multiples of crude cancer incidence per 10,000 population in Mongolia over the last 10 years, one panel each for cervical, liver, lung, oesophageal and stomach cancer" width="100%"></p>
 <p>Over these years, liver cancer has the highest mean of the published
 annual rates. This equal-year mean is a descriptive summary, not a
 pooled incidence rate. Two cautions apply to this table:</p>
@@ -439,7 +441,7 @@ age group (<code>DT_NSO_0300_003V1</code>).</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_044V1 and DT_NSO_0300_003V1"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"top"</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="discovery_files/figure-html/cancer-asr-plot-1.png" alt="Line chart comparing crude and age-standardised cancer incidence per 10,000 in Mongolia. The series compare descriptive rates on a common standard; endpoint changes do not establish an unchanged trajectory." width="100%"></p>
+<p><img src="discovery_files/figure-html/cancer-asr-plot-1.svg" alt="Line chart comparing crude and age-standardised cancer incidence per 10,000 in Mongolia. The series compare descriptive rates on a common standard; endpoint changes do not establish an unchanged trajectory." width="100%"></p>
 <p>Between 2010 and 2025, the crude rate changed by +38.0% and the
 standardised rate by -0.5%. A smaller change after standardisation is
 consistent with ageing contributing to the crude change. It does not
@@ -613,7 +615,7 @@ population at risk. Here we use the national mid-year population.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2100_035V1 and DT_NSO_0300_002V1"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="discovery_files/figure-html/tb-plot-1.png" alt="Line chart of the annual tuberculosis notification rate per 100,000 population in Mongolia, falling over the period with a sharp drop in 2021" width="100%"></p>
+<p><img src="discovery_files/figure-html/tb-plot-1.svg" alt="Line chart of the annual tuberculosis notification rate per 100,000 population in Mongolia, falling over the period with a sharp drop in 2021" width="100%"></p>
 <p>The notification rate fell from 131 per 100,000 in 2016 to 59 in
 2025.</p>
 <blockquote>

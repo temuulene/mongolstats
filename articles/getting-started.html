@@ -19,6 +19,8 @@
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Getting Started">
+<link rel="alternate" hreflang="en" href="https://temuulene.github.io/mongolstats/articles/getting-started.html">
+<link rel="alternate" hreflang="mn" href="https://temuulene.github.io/mongolstats/mn/articles/getting-started.html">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -58,7 +60,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="nav-link" href="../mn/index.html" aria-label="Монгол хэлээр унших">Монгол</a></li>
+<li class="nav-item"><a class="nav-link" href="../mn/articles/getting-started.html" aria-label="Монгол хэлээр унших" hreflang="mn" lang="mn">Монгол</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
@@ -237,7 +239,7 @@ a measure that sits around 10 to 20 per 1,000.</p>
 <span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># vertical gridlines clutter time series</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="getting-started_files/figure-html/plot-trend-1.png" alt="Line plot of Mongolia's monthly infant mortality rate since 2016, with a LOESS smoother showing the overall direction" width="100%"></p>
+<p><img src="getting-started_files/figure-html/plot-trend-1.svg" alt="Line plot of Mongolia's monthly infant mortality rate since 2016, with a LOESS smoother showing the overall direction" width="100%"></p>
 <p>The smooth is an exploratory summary of rounded monthly rates. It
 does not account for different numbers of births or dependence between
 neighbouring months.</p>
@@ -328,7 +330,7 @@ inspection.</p>
 <span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    legend.position <span class="op">=</span> <span class="st">"top"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="getting-started_files/figure-html/regional-plot-1.png" alt="Dot plot of infant mortality rates by aimag and Ulaanbaatar for the latest complete year, with 95% confidence intervals and a dashed line at the national rate" width="100%"></p>
+<p><img src="getting-started_files/figure-html/regional-plot-1.svg" alt="Dot plot of infant mortality rates by aimag and Ulaanbaatar over the selected common calendar period, with 95% confidence intervals and a dashed line at the national rate" width="100%"></p>
 <p>The intervals describe Poisson count variation conditional on the
 recorded counts and birth denominator. They do not include
 under-registration, revisions or geographic mismatch. Crossing the
@@ -358,7 +360,7 @@ column joins without matching names.</p>
 <span>  title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Infant Mortality Rate, "</span>, <span class="va">latest_year</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Infant deaths per 1,000 live births. Data: NSO Mongolia"</span>, fill <span class="op">=</span> <span class="st">"IMR\n(per 1,000)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting-started_files/figure-html/map-example-1.png" alt="Choropleth map of infant mortality rates across Mongolia's aimags and Ulaanbaatar for the latest complete year" width="100%"></p>
+<p><img src="getting-started_files/figure-html/map-example-1.svg" alt="Choropleth map of infant mortality rates across Mongolia's aimags and Ulaanbaatar over the selected common calendar period" width="100%"></p>
 <p>Grey areas have insufficient data. The map shows point estimates
 only. Read it with the confidence intervals above: in small aimags, a
 few more or fewer infant deaths can move the colour a long way.</p>

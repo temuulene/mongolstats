@@ -38,7 +38,7 @@
 
   if(ClipboardJS.isSupported()) {
     $(document).ready(function() {
-      var copyButton = "<button type='button' class='btn btn-primary btn-copy-ex' title='Copy to clipboard' aria-label='Copy to clipboard' data-toggle='tooltip' data-placement='left' data-trigger='hover' data-clipboard-copy><i class='fa fa-copy'></i></button>";
+      var copyButton = "<button type='button' class='btn btn-primary btn-copy-ex' title='Түр санах ойд хуулах' aria-label='Түр санах ойд хуулах' data-toggle='tooltip' data-placement='left' data-trigger='hover' data-clipboard-copy><i class='fa fa-copy'></i></button>";
 
       $("div.sourceCode").addClass("hasCopyButton");
 
@@ -56,12 +56,12 @@
       });
 
       clipboard.on('success', function(e) {
-        changeTooltipMessage(e.trigger, 'Copied!');
+        changeTooltipMessage(e.trigger, 'Хууллаа!');
         e.clearSelection();
       });
 
       clipboard.on('error', function(e) {
-        changeTooltipMessage(e.trigger,'Press Ctrl+C or Command+C to copy');
+        changeTooltipMessage(e.trigger,'Хуулахын тулд Ctrl+C эсвэл Command+C дарна уу');
       });
 
     });
@@ -126,7 +126,7 @@ async function searchFuse(query, callback) {
       .filter((x) => x.score <= 0.75)
       .map((x) => x.item);
     if (items.length === 0) {
-      items = [{dir:"Sorry 😿",previous_headings:"",title:"No results found.",what:"No results found.",path:window.location.href}];
+      items = [{dir:"Уучлаарай 😿",previous_headings:"",title:"Үр дүн олдсонгүй.",what:"Үр дүн олдсонгүй.",path:window.location.href}];
     }
   }
   callback(items);

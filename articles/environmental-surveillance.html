@@ -19,6 +19,8 @@
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Environmental Data Analysis">
+<link rel="alternate" hreflang="en" href="https://temuulene.github.io/mongolstats/articles/environmental-surveillance.html">
+<link rel="alternate" hreflang="mn" href="https://temuulene.github.io/mongolstats/mn/articles/environmental-surveillance.html">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -58,7 +60,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="nav-link" href="../mn/index.html" aria-label="Монгол хэлээр унших">Монгол</a></li>
+<li class="nav-item"><a class="nav-link" href="../mn/articles/environmental-surveillance.html" aria-label="Монгол хэлээр унших" hreflang="mn" lang="mn">Монгол</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/temuulene/mongolstats" aria-label="GitHub"><span class="fa fab fa-github"></span></a></li>
       </ul>
 </div>
@@ -299,7 +301,7 @@ percentage.</p>
 <span>    caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">pm25_source</span><span class="op">$</span><span class="va">mode</span>, <span class="st">"| Illustrative 75% completeness rule | NSO DT_NSO_2400_015V5"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="environmental-surveillance_files/figure-html/pm25-trends-1.png" alt="Small multiples of monthly mean PM2.5 at the selected Ulaanbaatar stations over the displayed observation period, with reference lines at the historical 2016 annual reference of 25 micrograms per cubic metre and the WHO guideline of 5. Missing and excluded observations remain gaps." width="100%"></p>
+<p><img src="environmental-surveillance_files/figure-html/pm25-trends-1.svg" alt="Small multiples of monthly mean PM2.5 at the selected Ulaanbaatar stations over the displayed observation period, with reference lines at the historical 2016 annual reference of 25 micrograms per cubic metre and the WHO guideline of 5. Missing and excluded observations remain gaps." width="100%"></p>
 <p>The lines are <strong>annual</strong> reference values for scale, not
 tests of monthly compliance. The 25 micrograms/m3 line is the historical
 MNS 4585:2016 annual PM2.5 benchmark; WHO’s 2021 annual guideline is 5
@@ -332,7 +334,7 @@ daily exceedance counts or a city-wide percentage.</p>
 <span>    caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">pm25_source</span><span class="op">$</span><span class="va">mode</span>, <span class="st">"| Source threshold version needs confirmation | NSO DT_NSO_2400_015V5"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="environmental-surveillance_files/figure-html/pm25-exceedance-1.png" alt="Heat map of the percentage of days above the PM2.5 standard by station and month. Winter months are dark red at every station, and summer months are near zero." width="100%"></p>
+<p><img src="environmental-surveillance_files/figure-html/pm25-exceedance-1.svg" alt="Heat map of source-reported PM2.5 exceedance percentages by station and month. Grey cells identify missing percentages; absent station-months remain blank." width="100%"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">pm25_season</span>, digits <span class="op">=</span> <span class="fl">1</span>, caption <span class="op">=</span> <span class="st">"Available station-months and reported percentage counts"</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
@@ -442,7 +444,7 @@ definition.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia (snapshot of DT_NSO_2400_015V1)"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="environmental-surveillance_files/figure-html/so2-trends-1.png" alt="Small multiples of monthly mean SO2 at selected Ulaanbaatar stations from the bundled snapshot, with a reference line at the historical 2016 annual reference of 20 micrograms per cubic metre. Concentrations rise sharply each winter." width="100%"></p>
+<p><img src="environmental-surveillance_files/figure-html/so2-trends-1.svg" alt="Small multiples of monthly mean SO2 at selected Ulaanbaatar stations from the bundled snapshot, with a reference line at the historical 2016 annual reference of 20 micrograms per cubic metre. Concentrations rise sharply each winter." width="100%"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">so2_ratio</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 6</span></span></span>
@@ -508,7 +510,7 @@ establish legal compliance or adequate annual monitoring coverage.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Annual means are rounded to 10 µg/m³. Source: NSO Mongolia, DT_NSO_2024_135V01"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span>, panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="environmental-surveillance_files/figure-html/compliance-check-1.png" alt="Bar chart of exceedance factors (annual mean divided by Mongolia's annual standard) for PM2.5, SO2 and NO2 at selected Ulaanbaatar stations in 2024" width="100%"></p>
+<p><img src="environmental-surveillance_files/figure-html/compliance-check-1.svg" alt="Bar chart of exceedance factors (annual mean divided by Mongolia's annual standard) for PM2.5, SO2 and NO2 at selected Ulaanbaatar stations in 2024" width="100%"></p>
 <blockquote>
 <p><strong>Interpretation:</strong> The table counts rounded published
 values above the historical benchmark. Values near a reference cannot
@@ -554,7 +556,7 @@ salts.</p>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2300_005V12"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="environmental-surveillance_files/figure-html/water-quality-1.png" alt="Bar chart of the 15 water quality stations with the highest electrical conductivity" width="100%"></p>
+<p><img src="environmental-surveillance_files/figure-html/water-quality-1.svg" alt="Bar chart of the 15 water quality stations with the highest electrical conductivity" width="100%"></p>
 <p>High conductivity can reflect natural dissolved minerals and salts,
 including in closed-basin lakes where evaporation concentrates salts.
 Conductivity alone does not establish pollution or drinking-water
@@ -2438,7 +2440,7 @@ missing</caption>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_2400_028V1"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="environmental-surveillance_files/figure-html/dust-days-1.png" alt="Bar chart of the 10 weather stations with the most dust days per year on average over usable observed years within the selected window, with lines showing the lowest and highest year" width="100%"></p>
+<p><img src="environmental-surveillance_files/figure-html/dust-days-1.svg" alt="Bar chart of the 10 weather stations with the most dust days per year on average over usable observed years within the selected window, with lines showing the lowest and highest year" width="100%"></p>
 <p>Only complete observed station-years contribute to these means and
 ranges. The coverage table shows how many years are usable at each
 station; some stations may have none. A ranking based on unequal sets of
@@ -2473,7 +2475,7 @@ aimag centres first, then to soum centres where the name is unique.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_color_gradient</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#f3d9a4"</span>, high <span class="op">=</span> <span class="st">"#8a5a00"</span>, name <span class="op">=</span> <span class="st">"Dust days\nper year"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_size.html" class="external-link">scale_size_area</a></span><span class="op">(</span>max_size <span class="op">=</span> <span class="fl">8</span>, guide <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">dust_years</span><span class="op">)</span>, <span class="st">"–"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dust_years</span><span class="op">)</span>, <span class="st">". Data: NSO Mongolia, DT_NSO_2400_028V1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="environmental-surveillance_files/figure-html/dust-map-1.png" alt="Map of Mongolia with weather stations shown as points sized and coloured by average dust days per year; only stations with usable complete-year observations are included" width="100%"></p>
+<p><img src="environmental-surveillance_files/figure-html/dust-map-1.svg" alt="Map of Mongolia with weather stations shown as points sized and coloured by average dust days per year; only stations with usable complete-year observations are included" width="100%"></p>
 <p>1 of 1 stations with usable years were placed. 0 station(s) could not
 be placed from settlement names (n/a). Mapped settlement centres are
 illustrative positions, not measured station coordinates. Compare the
