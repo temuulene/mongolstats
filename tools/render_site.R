@@ -11,8 +11,18 @@ build_package_site <- function(
     stop("Build the website outside package checks.")
   }
   dir.create(destination, recursive = TRUE, showWarnings = FALSE)
-  warning_log <- file.path(destination, "build-warnings.log")
+  # Keep the destination empty until pkgdown has initialised it.
+  warning_log <- tempfile("mongolstats-build-warnings-", fileext = ".log")
   writeLines("Warnings captured while building the documentation:", warning_log)
+  on.exit(
+    {
+      file.copy(warning_log, file.path(destination, "build-warnings.log"),
+        overwrite = TRUE
+      )
+      unlink(warning_log)
+    },
+    add = TRUE
+  )
   # Keep warnings available to maintainers even when articles hide them.
   previous_warning_hook <- knitr::knit_hooks$get("warning")
   previous_warning_option <- knitr::opts_hooks$get("warning")
