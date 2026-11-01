@@ -16,8 +16,9 @@ url: https://temuulene.github.io/mongolstats/
 development:
   mode: release
 figures:
-  dev: svglite::svglite
+  dev: svglite
   fig.ext: svg
+  bg: white
 navbar:
   structure:
     left: [intro, reference, articles, news]

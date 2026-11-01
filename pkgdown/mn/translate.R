@@ -3,6 +3,7 @@ mn_normalise <- function(x) trimws(gsub("[[:space:]]+", " ", x))
 
 mn_technical <- function(x) {
   x <- gsub("\\{[0-9]+\\}", "", x)
+  x <- gsub("[A-Za-z][A-Za-z0-9_.]*_[A-Za-z0-9_.]+", "", x)
   x <- gsub(
     paste0("(?i)\\b(", paste(c(
       "mongolstats", "mongolmaps", "pkgdown", "R", "CRAN", "GitHub",
@@ -111,7 +112,7 @@ mn_replace_html <- function(node, value) {
 
 mn_translate_document <- function(doc, page, catalogue) {
   inline <- c("a", "em", "strong", "code", "span", "small", "sup", "sub", "br", "wbr", "img", "svg", "math", "b", "i", "s", "kbd", "abbr", "time")
-  skip <- c("script", "style", "pre", "code", "svg", "math", "noscript")
+  skip <- c("script", "style", "pre", "code", "svg", "math", "noscript", "dt")
   visit <- function(node) {
     if (inherits(node, "xml_missing")) {
       return(invisible(NULL))
@@ -135,23 +136,29 @@ mn_translate_document <- function(doc, page, catalogue) {
     invisible(NULL)
   }
   visit(xml2::xml_find_first(doc, "//body"))
-  for (node in xml2::xml_find_all(doc, "//title")) {
-    value <- catalogue$translate(mn_template(xml2::xml_text(node), plain = TRUE), page, "title")
-    if (!is.null(value)) xml2::xml_text(node) <- value
-  }
   for (attribute in c("alt", "title", "aria-label", "placeholder")) {
     for (node in xml2::xml_find_all(doc, paste0("//*[@", attribute, "]"))) {
       value <- catalogue$translate(mn_template(xml2::xml_attr(node, attribute), plain = TRUE), page, attribute)
       if (!is.null(value)) xml2::xml_set_attr(node, attribute, value)
     }
   }
-  for (node in xml2::xml_find_all(doc, "//meta[@name='description' or @property='og:title' or @property='og:description']")) {
-    value <- catalogue$translate(mn_template(xml2::xml_attr(node, "content"), plain = TRUE), page, "meta")
-    if (!is.null(value)) xml2::xml_set_attr(node, "content", value)
+  heading <- xml2::xml_text(xml2::xml_find_first(doc, "//h1"))
+  if (!is.na(heading)) {
+    titles <- xml2::xml_find_all(doc, "//title")
+    xml2::xml_text(titles) <- paste0(heading, " • mongolstats")
+    xml2::xml_set_attr(xml2::xml_find_all(doc, "//meta[@property='og:title']"), "content", heading)
+    description <- mn_normalise(xml2::xml_text(xml2::xml_find_first(doc, "//main//p")))
+    if (!is.na(description)) xml2::xml_set_attr(xml2::xml_find_all(doc, "//meta[@name='description' or @property='og:description']"), "content", description)
+  } else {
+    for (node in xml2::xml_find_all(doc, "//title")) {
+      value <- catalogue$translate(mn_template(xml2::xml_text(node), plain = TRUE), page, "title")
+      if (!is.null(value)) xml2::xml_text(node) <- value
+    }
   }
   # R identifiers, official selection labels and executable strings stay intact.
   for (node in xml2::xml_find_all(doc, "//pre//span[contains(concat(' ', @class, ' '), ' co ')]")) {
     if (grepl("^ *#>", xml2::xml_text(node))) next
+    if (grepl("^# *[[:alnum:]_.]+\\(", xml2::xml_text(node))) next
     value <- catalogue$translate(mn_template(xml2::xml_text(node), plain = TRUE), page, "comment")
     if (!is.null(value)) xml2::xml_text(node) <- value
   }

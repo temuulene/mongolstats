@@ -52,6 +52,13 @@ build_mongolian_site <- function(
   for (page in list.files(temporary, "[.]svg$", recursive = TRUE)) {
     env$mn_translate_svg(file.path(temporary, page), page, catalogue)
   }
+  script <- file.path(temporary, "pkgdown.js")
+  javascript <- paste(readLines(script, encoding = "UTF-8", warn = FALSE), collapse = "\n")
+  for (source in c("Copy to clipboard", "Copied!", "Press Ctrl+C or Command+C to copy", "No results found.", "Sorry")) {
+    value <- catalogue$translate(env$mn_template(source, plain = TRUE), "pkgdown.js", "interface")
+    if (!is.null(value)) javascript <- gsub(source, value, javascript, fixed = TRUE)
+  }
+  writeLines(javascript, script, useBytes = TRUE)
   env$mn_write_catalogue(catalogue, file.path(english, "translation-source.json"))
   search <- lapply(pages, function(page) {
     doc <- xml2::read_html(file.path(temporary, page))
