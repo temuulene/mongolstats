@@ -15,6 +15,57 @@ testthat::test_that("translation templates retain prose and protect numeric valu
   testthat::expect_error(env$mn_unbind("A different value", template), "protected")
 })
 
+testthat::test_that("old development URLs resolve within the selected language", {
+  root <- normalizePath(testthat::test_path("..", ".."), winslash = "/")
+  env <- new.env(parent = globalenv())
+  sys.source(file.path(root, "pkgdown", "build-mn.R"), envir = env)
+  site <- withr::local_tempdir()
+  dir.create(file.path(site, "reference"))
+  writeLines("<html><body>Reference</body></html>", file.path(site, "reference", "example.html"))
+  env$build_development_aliases(site)
+  doc <- xml2::read_html(file.path(site, "dev", "reference", "example.html"))
+  target <- xml2::xml_attr(xml2::xml_find_first(doc, "//main//a"), "href")
+  testthat::expect_identical(target, "../../reference/example.html")
+  testthat::expect_identical(
+    as.character(fs::path_norm(file.path("mn", "dev", "reference", target))),
+    "mn/reference/example.html"
+  )
+})
+
+testthat::test_that("figure translation preserves numerical labels and plot geometry", {
+  env <- translation_helpers()
+  directory <- withr::local_tempdir()
+  path <- file.path(directory, "plot.svg")
+  writeLines(c(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120">',
+    '<circle cx="42" cy="70" r="3"/>',
+    '<text x="10" y="15" textLength="70" style="font-size: 11px; font-family: sans;">Deaths per day</text>',
+    '<text x="50" y="100" text-anchor="middle" textLength="16">Jan</text>',
+    '<text x="100" y="100" text-anchor="middle" textLength="16">Feb</text>',
+    '<text x="5" y="70">42.5</text>', "</svg>"
+  ), path)
+  before <- xml2::read_xml(path)
+  lookup <- c("Deaths per day" = "Өдрийн нас баралт", "Jan" = "I сар", "Feb" = "II сар")
+  catalogue <- list(translate = function(template, ...) {
+    if (template$source %in% names(lookup)) lookup[[template$source]] else NULL
+  })
+  env$mn_translate_svg(path, "plot.svg", catalogue)
+  after <- xml2::read_xml(path)
+  text <- xml2::xml_find_all(after, "//*[local-name()='text']")
+  testthat::expect_identical(xml2::xml_text(text), c(unname(lookup), "42.5"))
+  coordinates <- function(doc) {
+    lapply(xml2::xml_find_all(doc, "//*[local-name()='text']"), function(node) {
+      xml2::xml_attrs(node)[c("x", "y")]
+    })
+  }
+  testthat::expect_identical(coordinates(before), coordinates(after))
+  testthat::expect_identical(
+    as.character(xml2::xml_find_first(before, "//*[local-name()='circle']")),
+    as.character(xml2::xml_find_first(after, "//*[local-name()='circle']"))
+  )
+  testthat::expect_lt(as.numeric(xml2::xml_attr(text[[2]], "textLength")), 46)
+})
+
 testthat::test_that("language parity requires every page and matching alternate links", {
   root <- normalizePath(testthat::test_path("..", ".."), winslash = "/")
   env <- new.env(parent = globalenv())
@@ -23,9 +74,11 @@ testthat::test_that("language parity requires every page and matching alternate 
   dir.create(file.path(site, "mn"))
   base <- "https://temuulene.github.io/mongolstats/"
   write_page <- function(path, lang, alternate_lang, alternate_url) {
-    writeLines(paste0('<html lang="', lang, '"><head><link rel="alternate" hreflang="',
+    writeLines(paste0(
+      '<html lang="', lang, '"><head><link rel="alternate" hreflang="',
       alternate_lang, '" href="', alternate_url,
-      '"></head><body><main><h1>Example</h1></main></body></html>'), path)
+      '"></head><body><main><h1>Example</h1></main></body></html>'
+    ), path)
   }
   write_page(file.path(site, "index.html"), "en", "mn", paste0(base, "mn/index.html"))
   testthat::expect_error(env$check_language_parity(site), "coverage differs")

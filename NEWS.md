@@ -1,5 +1,6 @@
 # mongolstats (development version)
 
+* The Mongolian site now mirrors all English articles, references, figures and navigation, with translation coverage checks and matching-page language links.
 * Strengthened all analytical tutorials with checked observation keys, common
   calendar periods, strict missing-count aggregation and denominator validation.
 * Qualified cancer, mortality, geographic and pollution interpretations; added

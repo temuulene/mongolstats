@@ -181,28 +181,56 @@ mn_translate_document <- function(doc, page, catalogue) {
 
 mn_translate_svg <- function(path, page, catalogue) {
   doc <- xml2::read_xml(path, options = "NONET")
-  for (node in xml2::xml_find_all(doc, "//*[local-name()='text']")) {
+  nodes <- xml2::xml_find_all(doc, "//*[local-name()='text']")
+  x <- suppressWarnings(as.numeric(xml2::xml_attr(nodes, "x")))
+  y <- suppressWarnings(as.numeric(xml2::xml_attr(nodes, "y")))
+  box <- as.numeric(strsplit(xml2::xml_attr(doc, "viewBox") %||% "", "[ ,]+")[[1]])
+  canvas <- if (length(box) == 4L) box[[3]] else 504
+  for (i in seq_along(nodes)) {
+    node <- nodes[[i]]
     original <- xml2::xml_text(node)
     value <- catalogue$translate(mn_template(original, plain = TRUE), page, "figure")
     if (is.null(value)) next
     xml2::xml_text(node) <- value
-    # Keep longer translated labels inside the original layout. The coordinate
-    # system, marks, scales and numerical values are never modified.
-    length <- xml2::xml_attr(node, "textLength")
-    if (!is.na(length)) xml2::xml_set_attr(node, "lengthAdjust", "spacingAndGlyphs")
-    if (is.na(length)) {
-      width <- suppressWarnings(as.numeric(xml2::xml_attr(node, "data-width")))
-      if (!is.finite(width)) {
-        font <- sub(".*font-size: *([0-9.]+)px.*", "\\1", xml2::xml_attr(node, "style"))
-        font <- suppressWarnings(as.numeric(font))
-        if (!is.finite(font)) font <- 11
-        width <- nchar(original, type = "width") * font * 0.52
-      }
-      if (nchar(value, type = "width") > nchar(original, type = "width") * 1.15) {
-        xml2::xml_set_attr(node, "textLength", as.character(width))
-        xml2::xml_set_attr(node, "lengthAdjust", "spacingAndGlyphs")
-      }
+    style <- xml2::xml_attr(node, "style") %||% ""
+    font <- if (grepl("font-size:", style)) {
+      suppressWarnings(as.numeric(sub(".*font-size: *([0-9.]+)px.*", "\\1", style)))
+    } else {
+      11
     }
+    if (!is.finite(font)) font <- 11
+    family <- if (grepl("font-family:", style)) {
+      sub(".*font-family: *['\"]?([^;'\"<>]+).*", "\\1", style)
+    } else {
+      "sans"
+    }
+    measure <- function(text) {
+      as.numeric(systemfonts::string_width(
+        text,
+        family = family, size = font, res = 72
+      ))
+    }
+    width <- suppressWarnings(as.numeric(sub("px$", "", xml2::xml_attr(node, "textLength"))))
+    if (!is.finite(width)) width <- measure(original)
+    if (!is.finite(width) || width <= 0) width <- max(1, nchar(original)) * font * 0.52
+    available <- width * 1.4
+    if (is.finite(x[[i]]) && is.finite(y[[i]]) && is.na(xml2::xml_attr(node, "transform"))) {
+      peers <- x[is.finite(x) & is.finite(y) & abs(y - y[[i]]) < 0.25 & seq_along(x) != i]
+      previous <- max(c(4, peers[peers < x[[i]]]))
+      following <- min(c(canvas - 4, peers[peers > x[[i]]]))
+      anchor <- xml2::xml_attr(node, "text-anchor") %||% "start"
+      available <- switch(anchor,
+        middle = min(following - x[[i]], x[[i]] - previous) * 0.92,
+        end = x[[i]] - previous - 6,
+        following - x[[i]] - 6
+      )
+    }
+    # Only translated text is fitted. All marks, coordinates, numerical values,
+    # scales, reference lines and source identifiers retain their original data.
+    natural <- measure(value)
+    if (!is.finite(natural) || natural <= 0) natural <- nchar(value) * font * 0.52
+    xml2::xml_set_attr(node, "textLength", as.character(round(min(natural, max(width, available)), 2)))
+    xml2::xml_set_attr(node, "lengthAdjust", "spacingAndGlyphs")
   }
   xml2::write_xml(doc, path)
 }

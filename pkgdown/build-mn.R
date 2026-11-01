@@ -1,3 +1,25 @@
+build_development_aliases <- function(english) {
+  pages <- list.files(english, "[.]html$", recursive = TRUE)
+  pages <- pages[!grepl("^(mn|dev)/", pages)]
+  for (page in pages) {
+    alias <- file.path("dev", page)
+    relative <- as.character(fs::path_rel(page, dirname(alias)))
+    path <- file.path(english, alias)
+    fs::dir_create(dirname(path))
+    writeLines(paste0(
+      '<!doctype html><html lang="en"><head><meta charset="utf-8">',
+      '<meta http-equiv="refresh" content="0;url=', relative, '">',
+      '<link rel="canonical" href="https://temuulene.github.io/mongolstats/', page, '">',
+      "<title>Current documentation</title></head><body><main>",
+      "<h1>Current documentation</h1>",
+      "<p>This development URL now points to the current documentation.</p>",
+      '<p><a href="', relative, '">Continue to the documentation</a></p>',
+      "</main></body></html>"
+    ), path)
+  }
+  invisible(pages)
+}
+
 build_mongolian_site <- function(
   root = ".",
   destination = file.path(root, "docs", "mn"),
@@ -66,14 +88,20 @@ build_mongolian_site <- function(
   }
   writeLines(javascript, script, useBytes = TRUE)
   env$mn_write_catalogue(catalogue, file.path(english, "translation-source.json"))
-  search <- lapply(pages, function(page) {
+  canonical_pages <- pages[vapply(pages, function(page) {
     doc <- xml2::read_html(file.path(temporary, page))
+    !length(xml2::xml_find_all(doc, "//meta[@http-equiv='refresh']"))
+  }, logical(1))]
+  search <- lapply(canonical_pages, function(page) {
+    doc <- xml2::read_html(file.path(temporary, page))
+    code <- paste(xml2::xml_text(xml2::xml_find_all(doc, "//main//code")), collapse = " ")
     xml2::xml_remove(xml2::xml_find_all(doc, "//pre|//script|//style|//code"))
     title <- xml2::xml_text(xml2::xml_find_first(doc, "//h1"))
     list(
       path = paste0(base, "mn/", page), id = "", dir = "",
       previous_headings = "", what = title, title = title,
-      text = env$mn_normalise(xml2::xml_text(xml2::xml_find_first(doc, "//main"))), code = ""
+      text = env$mn_normalise(xml2::xml_text(xml2::xml_find_first(doc, "//main"))),
+      code = paste(tools::file_path_sans_ext(basename(page)), code)
     )
   })
   jsonlite::write_json(search, file.path(temporary, "search.json"), auto_unbox = TRUE)
@@ -86,7 +114,7 @@ build_mongolian_site <- function(
   fs::dir_copy(temporary, destination, overwrite = TRUE)
   english_sitemap <- xml2::read_xml(file.path(english, "sitemap.xml"))
   existing <- xml2::xml_text(xml2::xml_find_all(english_sitemap, "//*[local-name()='loc']"))
-  for (page in pages) {
+  for (page in canonical_pages) {
     url <- paste0(base, "mn/", page)
     if (!url %in% existing) {
       entry <- xml2::xml_add_child(xml2::xml_root(english_sitemap), "url")
