@@ -52,3 +52,67 @@ jobs:
         with:
           name: analytical-vignette-checks
           path: check_vignettes
+
+  mongolian-translations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: r-lib/actions/setup-pandoc@v2
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - name: Install system dependencies (Linux)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y \
+            libcurl4-openssl-dev libssl-dev libxml2-dev \
+            libfontconfig1-dev libharfbuzz-dev libfribidi-dev \
+            libfreetype6-dev libpng-dev libjpeg-dev libtiff5-dev \
+            gfortran libudunits2-dev libgdal-dev libgeos-dev libproj-dev
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: pkgdown@2.1.3, roxygen2@8.0.0, any::svglite, local::.
+          needs: website
+      - name: Regenerate Rd with roxygen2
+        run: roxygen2::roxygenise()
+        shell: Rscript {0}
+      # Live NSO labels reach the rendered pages, so a new category name can
+      # need a Mongolian translation before the next deploy. Report them early.
+      - name: Report documentation text that needs Mongolian translations
+        shell: bash
+        env:
+          NOT_CRAN: ""
+        run: |
+          status=0
+          Rscript tools/render_site.R "$RUNNER_TEMP/site" > build.log 2>&1 || status=$?
+          grep '^I18N_SOURCE ' build.log > i18n-source.log || true
+          count=$(wc -l < i18n-source.log)
+          {
+            echo "### Mongolian translation coverage"
+            if [ "$count" -gt 0 ]; then
+              echo "$count rendered text segments need entries in pkgdown/mn/translations.jsonl:"
+              echo '```'
+              cat i18n-source.log
+              echo '```'
+            elif [ "$status" -ne 0 ]; then
+              echo "The site build failed before translation coverage was checked; see the build log."
+            else
+              echo "All rendered English text has a Mongolian translation."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$status" -ne 0 ]; then tail -n 100 build.log; fi
+          exit "$status"
+      - name: Save translation report and build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mongolian-translation-report
+          path: |
+            i18n-source.log
+            build.log
+          if-no-files-found: ignore

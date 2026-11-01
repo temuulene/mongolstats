@@ -111,9 +111,29 @@ test_that("large selections are fetched in parts with the same result", {
   withr::local_options(mongolstats.max_cells = 50)
   parts <- nso_data("DT_NSO_0300_001V2", sel)
   key <- c("Sex", "Age", "Year")
+  # Retrieval times, raw metadata and request bodies legitimately differ
+  # between one request and several, so compare data and stable fields only.
+  sorted <- function(x) {
+    x <- dplyr::arrange(tibble::as_tibble(x), dplyr::across(dplyr::all_of(key)))
+    attributes(x) <- attributes(x)[c("names", "row.names", "class")]
+    x
+  }
+  stable <- function(x) {
+    record <- nso_provenance(x)$records[[1]]
+    record[c(
+      "backend", "source_id", "language", "selections",
+      "resolved_selections", "periods", "result_rows"
+    )]
+  }
+  expect_equal(sorted(parts), sorted(whole))
   expect_equal(
-    dplyr::arrange(parts, dplyr::across(dplyr::all_of(key))),
-    dplyr::arrange(whole, dplyr::across(dplyr::all_of(key)))
+    sorted(nso_value_status(parts)),
+    sorted(nso_value_status(whole))
+  )
+  expect_equal(stable(parts), stable(whole))
+  expect_gt(
+    length(nso_provenance(parts)$records[[1]]$requests),
+    length(nso_provenance(whole)$records[[1]]$requests)
   )
 })
 

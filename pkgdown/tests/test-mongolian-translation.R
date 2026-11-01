@@ -104,6 +104,46 @@ testthat::test_that("language parity requires every page and matching alternate 
   testthat::expect_error(env$check_language_parity(site), "matching-page")
 })
 
+testthat::test_that("language parity names pages missing in either language", {
+  root <- normalizePath(testthat::test_path("..", ".."), winslash = "/")
+  env <- new.env(parent = globalenv())
+  sys.source(file.path(root, "tools", "site_helpers.R"), envir = env)
+  site <- withr::local_tempdir()
+  dir.create(file.path(site, "mn", "articles"), recursive = TRUE)
+  writeLines("<html></html>", file.path(site, "index.html"))
+  writeLines("<html></html>", file.path(site, "news.html"))
+  writeLines("<html></html>", file.path(site, "mn", "index.html"))
+  writeLines("<html></html>", file.path(site, "mn", "articles", "extra.html"))
+  parity_error <- function() {
+    tryCatch(
+      {
+        env$check_language_parity(site)
+        ""
+      },
+      error = conditionMessage
+    )
+  }
+  message <- parity_error()
+  testthat::expect_match(message, "coverage differs", fixed = TRUE)
+  testthat::expect_match(message, "No Mongolian copy: news.html", fixed = TRUE)
+  testthat::expect_match(
+    message, "No English counterpart: mn/articles/extra.html",
+    fixed = TRUE
+  )
+  unlink(file.path(site, "news.html"))
+  message <- parity_error()
+  testthat::expect_false(grepl("No Mongolian copy", message, fixed = TRUE))
+  testthat::expect_match(
+    message, "No English counterpart: mn/articles/extra.html",
+    fixed = TRUE
+  )
+  unlink(file.path(site, "mn", "articles", "extra.html"))
+  writeLines("<html></html>", file.path(site, "news.html"))
+  message <- parity_error()
+  testthat::expect_match(message, "No Mongolian copy: news.html", fixed = TRUE)
+  testthat::expect_false(grepl("No English counterpart", message, fixed = TRUE))
+})
+
 testthat::test_that("ordinary linked labels need translation", {
   env <- translation_helpers()
   doc <- xml2::read_html('<li><a href="reference/index.html">Reference</a></li>')
