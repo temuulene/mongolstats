@@ -15,6 +15,28 @@ testthat::test_that("translation templates retain prose and protect numeric valu
   testthat::expect_error(env$mn_unbind("A different value", template), "protected")
 })
 
+testthat::test_that("language parity requires every page and matching alternate links", {
+  root <- normalizePath(testthat::test_path("..", ".."), winslash = "/")
+  env <- new.env(parent = globalenv())
+  sys.source(file.path(root, "tools", "site_helpers.R"), envir = env)
+  site <- withr::local_tempdir()
+  dir.create(file.path(site, "mn"))
+  base <- "https://temuulene.github.io/mongolstats/"
+  write_page <- function(path, lang, alternate_lang, alternate_url) {
+    writeLines(paste0('<html lang="', lang, '"><head><link rel="alternate" hreflang="',
+      alternate_lang, '" href="', alternate_url,
+      '"></head><body><main><h1>Example</h1></main></body></html>'), path)
+  }
+  write_page(file.path(site, "index.html"), "en", "mn", paste0(base, "mn/index.html"))
+  testthat::expect_error(env$check_language_parity(site), "coverage differs")
+  write_page(file.path(site, "mn", "index.html"), "mn", "en", paste0(base, "index.html"))
+  testthat::expect_identical(env$check_language_parity(site), 1L)
+  write_page(file.path(site, "mn", "index.html"), "en", "en", paste0(base, "index.html"))
+  testthat::expect_error(env$check_language_parity(site), "lang=mn")
+  write_page(file.path(site, "mn", "index.html"), "mn", "en", paste0(base, "wrong.html"))
+  testthat::expect_error(env$check_language_parity(site), "matching-page")
+})
+
 testthat::test_that("ordinary linked labels need translation", {
   env <- translation_helpers()
   doc <- xml2::read_html('<li><a href="reference/index.html">Reference</a></li>')

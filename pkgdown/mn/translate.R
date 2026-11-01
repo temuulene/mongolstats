@@ -3,6 +3,11 @@ mn_normalise <- function(x) trimws(gsub("[[:space:]]+", " ", x))
 
 mn_technical <- function(x) {
   x <- gsub("\\{[0-9]+\\}", "", x)
+  x <- sub("^# *", "", x)
+  if (grepl("^(https?://|[[:alnum:]._%+-]+@[[:alnum:].-]+)", x)) {
+    return(TRUE)
+  }
+  x <- gsub("(PM|SO|NO)[0-9.₂₅]*", "", x)
   x <- gsub("[A-Za-z][A-Za-z0-9_.]*_[A-Za-z0-9_.]+", "", x)
   x <- gsub(
     paste0("(?i)\\b(", paste(c(
@@ -98,6 +103,9 @@ mn_catalogue <- function(root) {
       missing[[id]] <- entries[[id]]
       return(NULL)
     }
+    if (!grepl("\\p{Cyrillic}", entry$target, perl = TRUE) && !mn_technical(entry$target)) {
+      stop("Mongolian translation is still English: ", source)
+    }
     mn_unbind(entry$target, template, html)
   }
   list(translate = translate, entries = entries, missing = missing)
@@ -123,6 +131,11 @@ mn_translate_document <- function(doc, page, catalogue) {
       return(invisible(NULL))
     }
     name <- xml2::xml_name(node)
+    if (name == "pre" && identical(page, "LICENSE-text.html")) {
+      value <- catalogue$translate(mn_template(xml2::xml_text(node), plain = TRUE), page, "license")
+      if (!is.null(value)) xml2::xml_text(node) <- value
+      return(invisible(NULL))
+    }
     if (name %in% skip || xml2::xml_type(node) != "element") {
       return(invisible(NULL))
     }
@@ -159,6 +172,7 @@ mn_translate_document <- function(doc, page, catalogue) {
   for (node in xml2::xml_find_all(doc, "//pre//span[contains(concat(' ', @class, ' '), ' co ')]")) {
     if (grepl("^ *#>", xml2::xml_text(node))) next
     if (grepl("^# *[[:alnum:]_.]+\\(", xml2::xml_text(node))) next
+    if (grepl("^# *\\\\", xml2::xml_text(node))) next
     value <- catalogue$translate(mn_template(xml2::xml_text(node), plain = TRUE), page, "comment")
     if (!is.null(value)) xml2::xml_text(node) <- value
   }

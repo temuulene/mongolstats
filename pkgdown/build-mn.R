@@ -24,6 +24,11 @@ build_mongolian_site <- function(
   for (page in pages) {
     path <- file.path(temporary, page)
     doc <- xml2::read_html(path)
+    if (identical(page, "articles/data-provenance.html")) {
+      original_mongolian <- xml2::xml_find_all(doc, "//main//p")
+      original_mongolian <- original_mongolian[grepl("\\p{Cyrillic}", xml2::xml_text(original_mongolian), perl = TRUE)]
+      xml2::xml_remove(original_mongolian)
+    }
     xml2::xml_remove(xml2::xml_find_all(doc, "//*[contains(concat(' ', @class, ' '), ' language-switch ')]"))
     doc <- env$mn_translate_document(doc, page, catalogue)
     xml2::xml_set_attr(xml2::xml_find_first(doc, "//html"), "lang", "mn")
@@ -41,6 +46,7 @@ build_mongolian_site <- function(
       xml2::xml_text(node) <- "English"
       xml2::xml_set_attr(node, "href", fs::path_rel(file.path("..", page), dirname(page)))
       xml2::xml_set_attr(node, "hreflang", "en")
+      xml2::xml_set_attr(node, "lang", "en")
       xml2::xml_set_attr(node, "aria-label", "Read this page in English")
     }
     xml2::xml_remove(xml2::xml_find_all(doc, "//link[@rel='alternate' and @hreflang]"))
@@ -78,11 +84,23 @@ build_mongolian_site <- function(
   xml2::write_xml(sitemap, file.path(temporary, "sitemap.xml"))
   fs::dir_create(destination)
   fs::dir_copy(temporary, destination, overwrite = TRUE)
+  english_sitemap <- xml2::read_xml(file.path(english, "sitemap.xml"))
+  existing <- xml2::xml_text(xml2::xml_find_all(english_sitemap, "//*[local-name()='loc']"))
+  for (page in pages) {
+    url <- paste0(base, "mn/", page)
+    if (!url %in% existing) {
+      entry <- xml2::xml_add_child(xml2::xml_root(english_sitemap), "url")
+      xml2::xml_add_child(entry, "loc", url)
+    }
+  }
+  xml2::write_xml(english_sitemap, file.path(english, "sitemap.xml"))
   for (page in pages) {
     path <- file.path(english, page)
     doc <- xml2::read_html(path)
     switch <- xml2::xml_find_all(doc, "//nav//a[contains(@href, 'mn/index.html')]")
     xml2::xml_set_attr(switch, "href", fs::path_rel(file.path("mn", page), dirname(page)))
+    xml2::xml_set_attr(switch, "hreflang", "mn")
+    xml2::xml_set_attr(switch, "lang", "mn")
     xml2::xml_remove(xml2::xml_find_all(doc, "//link[@rel='alternate' and @hreflang]"))
     head <- xml2::xml_find_first(doc, "//head")
     xml2::xml_add_child(head, "link", rel = "alternate", hreflang = "en", href = paste0(base, page))
