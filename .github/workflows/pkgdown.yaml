@@ -66,22 +66,13 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           PUBLISH_INPUT: ${{ inputs.publish }}
         run: |
-          # The site documents the latest release, so release builds always
-          # publish. A push to main publishes only while DESCRIPTION holds a
-          # release version; development versions (x.y.z.9000) never replace
-          # the release documentation. Manual runs publish only when asked.
-          version=$(sed -n 's/^Version:[[:space:]]*//p' DESCRIPTION)
+          # Releases and pushes to main always publish, including development
+          # versions. Deploys run one at a time, so the newest finished build
+          # is the live site. Manual runs publish only when asked; pull
+          # requests never publish.
           case "$EVENT_NAME" in
-            release) publish=true ;;
+            release | push) publish=true ;;
             workflow_dispatch) publish="${PUBLISH_INPUT:-false}" ;;
-            push)
-              if [[ "$version" =~ \.9[0-9]{3,}$ ]]; then
-                publish=false
-                echo "::notice::Development version $version is not published; the site keeps the release documentation."
-              else
-                publish=true
-              fi
-              ;;
             *) publish=false ;;
           esac
           echo "publish=$publish" >> "$GITHUB_OUTPUT"
