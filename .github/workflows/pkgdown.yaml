@@ -41,21 +41,50 @@ on:
         default: false
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: pkgdown-${{ github.ref }}
+  group: pkgdown-build-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  pkgdown:
+  build:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      publish: ${{ steps.publish.outputs.publish }}
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+
+      - name: Decide whether this build publishes the website
+        id: publish
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUBLISH_INPUT: ${{ inputs.publish }}
+        run: |
+          # The site documents the latest release, so release builds always
+          # publish. A push to main publishes only while DESCRIPTION holds a
+          # release version; development versions (x.y.z.9000) never replace
+          # the release documentation. Manual runs publish only when asked.
+          version=$(sed -n 's/^Version:[[:space:]]*//p' DESCRIPTION)
+          case "$EVENT_NAME" in
+            release) publish=true ;;
+            workflow_dispatch) publish="${PUBLISH_INPUT:-false}" ;;
+            push)
+              if [[ "$version" =~ \.9[0-9]{3,}$ ]]; then
+                publish=false
+                echo "::notice::Development version $version is not published; the site keeps the release documentation."
+              else
+                publish=true
+              fi
+              ;;
+            *) publish=false ;;
+          esac
+          echo "publish=$publish" >> "$GITHUB_OUTPUT"
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -94,15 +123,35 @@ jobs:
       - name: Verify rendered figures, language pages, and local links
         run: Rscript tools/check_site.R
 
-      - name: Save website preview
-        if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && !inputs.publish)
+      - name: Save built website
         uses: actions/upload-artifact@v4
         with:
-          name: pkgdown-preview
+          name: pkgdown-site
+          path: docs
+          retention-days: 14
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    # Only this job can write to the repository.
+    permissions:
+      contents: write
+    # Release and main builds share one queue, so deployments never overlap.
+    concurrency:
+      group: pkgdown-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: pkgdown-site
           path: docs
 
       - name: Deploy to gh-pages branch
-        if: github.event_name == 'release' || github.event_name == 'push' || inputs.publish
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
