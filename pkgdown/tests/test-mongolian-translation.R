@@ -26,7 +26,63 @@ testthat::test_that("SVG badge titles and accessible labels are translated", {
   testthat::expect_identical(xml2::xml_text(xml2::xml_find_first(doc, "//*[local-name()='title']")), "төлөв: туршилтын")
   testthat::expect_identical(xml2::xml_attr(xml2::xml_root(doc), "aria-label"), "төлөв: туршилтын")
   node <- xml2::xml_find_all(doc, "//*[local-name()='text']")[[2]]
-  testthat::expect_gt(as.numeric(xml2::xml_attr(node, "textLength")), 150)
+  testthat::expect_true(is.na(xml2::xml_attr(node, "textLength")))
+  testthat::expect_true(is.na(xml2::xml_attr(node, "lengthAdjust")))
+})
+
+testthat::test_that("lifecycle badge cells fit natural translated text and its shadows", {
+  env <- translation_helpers()
+  root <- normalizePath(testthat::test_path("..", ".."), winslash = "/")
+  sources <- list.files(file.path(root, "man", "figures"), "^lifecycle-.*[.]svg$", full.names = TRUE)
+  testthat::expect_gte(length(sources), 4L)
+  catalogue <- env$mn_catalogue(root)
+  path <- file.path(withr::local_tempdir(), "not-a-lifecycle-filename.svg")
+  for (source in sources) {
+    before <- xml2::read_xml(source)
+    old_width <- as.numeric(xml2::xml_attr(before, "width"))
+    xml2::xml_set_attr(before, "viewBox", paste(0, 0, old_width, 20))
+    # Exercise title-only and aria-label-only recognition, independently of filename.
+    if (grepl("stable", source, fixed = TRUE)) {
+      xml2::xml_set_attr(before, "aria-label", NULL)
+    } else {
+      xml2::xml_remove(xml2::xml_find_all(before, "//*[local-name()='title']"))
+    }
+    xml2::write_xml(before, path)
+    suppressMessages(env$mn_translate_svg(path, "badge.svg", catalogue))
+    after <- xml2::read_xml(path)
+    backgrounds <- xml2::xml_find_all(after, "//*[local-name()='g'][@clip-path]/*[local-name()='rect']")
+    cells <- as.numeric(xml2::xml_attr(backgrounds[1:2], "width"))
+    total <- as.numeric(xml2::xml_attr(after, "width"))
+    testthat::expect_equal(total, sum(cells), info = basename(source))
+    testthat::expect_gte(total, old_width)
+    testthat::expect_equal(as.numeric(xml2::xml_attr(backgrounds[[2]], "x")), cells[[1]])
+    testthat::expect_equal(as.numeric(xml2::xml_attr(backgrounds[[3]], "width")), total)
+    clip <- xml2::xml_find_first(after, "//*[local-name()='clipPath']/*[local-name()='rect']")
+    testthat::expect_equal(as.numeric(xml2::xml_attr(clip, "width")), total)
+    testthat::expect_equal(xml2::xml_attr(clip, "rx"), "3")
+    testthat::expect_equal(xml2::xml_attr(after, "viewBox"), paste(0, 0, total, 20))
+    text <- xml2::xml_find_all(after, "//*[local-name()='text']")
+    natural <- systemfonts::string_width(xml2::xml_text(text), family = "Verdana", size = 110, res = 72) * 0.1
+    centres <- as.numeric(xml2::xml_attr(text, "x")) * 0.1
+    cell <- match(centres, sort(unique(centres)))
+    left <- c(0, cells[[1]])[cell]
+    right <- c(cells[[1]], total)[cell]
+    testthat::expect_true(all(centres - natural / 2 >= left + 4), info = basename(source))
+    testthat::expect_true(all(centres + natural / 2 <= right - 4), info = basename(source))
+    testthat::expect_true(all(is.na(xml2::xml_attr(text, "textLength"))))
+    testthat::expect_true(all(is.na(xml2::xml_attr(text, "lengthAdjust"))))
+    original_text <- xml2::xml_find_all(before, "//*[local-name()='text']")
+    for (attribute in c("y", "transform", "fill", "fill-opacity", "aria-hidden")) {
+      testthat::expect_identical(xml2::xml_attr(text, attribute), xml2::xml_attr(original_text, attribute))
+    }
+    gradient <- "//*[local-name()='linearGradient']"
+    testthat::expect_identical(
+      as.character(xml2::xml_find_first(after, gradient)),
+      as.character(xml2::xml_find_first(before, gradient))
+    )
+    testthat::expect_equal(xml2::xml_attr(backgrounds[[3]], "fill"), "url(#s)")
+    testthat::expect_equal(xml2::xml_attr(xml2::xml_parent(backgrounds[[1]]), "clip-path"), "url(#r)")
+  }
 })
 
 testthat::test_that("old development URLs resolve within the selected language", {
@@ -56,7 +112,7 @@ testthat::test_that("figure translation preserves numerical labels and plot geom
     '<text x="10" y="15" textLength="70" style="font-size: 11px; font-family: sans;">Deaths per day</text>',
     '<text x="50" y="100" text-anchor="middle" textLength="16">Jan</text>',
     '<text x="100" y="100" text-anchor="middle" textLength="16">Feb</text>',
-    '<text x="5" y="70">42.5</text>', "</svg>"
+    '<text x="5" y="70" textLength="23" lengthAdjust="spacingAndGlyphs">42.5</text>', "</svg>"
   ), path)
   before <- xml2::read_xml(path)
   lookup <- c("Deaths per day" = "Өдрийн нас баралт", "Jan" = "I сар", "Feb" = "II сар")
@@ -77,7 +133,79 @@ testthat::test_that("figure translation preserves numerical labels and plot geom
     as.character(xml2::xml_find_first(before, "//*[local-name()='circle']")),
     as.character(xml2::xml_find_first(after, "//*[local-name()='circle']"))
   )
-  testthat::expect_lt(as.numeric(xml2::xml_attr(text[[2]], "textLength")), 46)
+  testthat::expect_true(all(is.na(xml2::xml_attr(text[1:3], "textLength"))))
+  testthat::expect_identical(
+    as.character(xml2::xml_find_first(before, "//*[local-name()='text'][4]")),
+    as.character(text[[4]])
+  )
+})
+
+testthat::test_that("long and rotated Cyrillic labels retain natural glyph widths", {
+  env <- translation_helpers()
+  path <- file.path(withr::local_tempdir(), "long-labels.svg")
+  writeLines(c(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120">',
+    '<path d="M20 90 L180 20"/><circle cx="42" cy="70" r="3"/>',
+    '<text x="10" y="15" style="font-size: 12px; font-family: sans; font-weight: bold;"',
+    ' textLength="20" lengthAdjust="spacingAndGlyphs">Long title</text>',
+    '<text transform="translate(15,100) rotate(-90)" style="font-size: 12px; font-family: sans; font-style: italic;"',
+    ' textLength="16" lengthAdjust="spacingAndGlyphs">Rotated label</text>',
+    "</svg>"
+  ), path)
+  before <- xml2::read_xml(path)
+  lookup <- c(
+    "Long title" = "Насны бүтцээр стандартчилсан өвчлөлийн түвшин",
+    "Rotated label" = "Нэг мянган оршин суугч тутамд бүртгэгдсэн нас баралт"
+  )
+  catalogue <- list(translate = function(template, ...) lookup[[template$source]])
+  suppressMessages(env$mn_translate_svg(path, "long-labels.svg", catalogue))
+  after <- xml2::read_xml(path)
+  text <- xml2::xml_find_all(after, "//*[local-name()='text']")
+  natural <- systemfonts::string_width(
+    unname(lookup),
+    family = "sans", size = 12, res = 72,
+    weight = c("bold", "normal"), italic = c(FALSE, TRUE)
+  )
+  testthat::expect_true(all(natural > c(20, 16)))
+  testthat::expect_identical(xml2::xml_text(text), unname(lookup))
+  # Without either length attribute, SVG renders the natural font advance.
+  testthat::expect_true(all(is.na(xml2::xml_attr(text, "textLength"))))
+  testthat::expect_true(all(is.na(xml2::xml_attr(text, "lengthAdjust"))))
+  for (node in xml2::xml_find_all(before, "//*[local-name()='text']")) {
+    xml2::xml_set_attr(node, "textLength", NULL)
+    xml2::xml_set_attr(node, "lengthAdjust", NULL)
+  }
+  attributes <- function(doc) {
+    lapply(xml2::xml_find_all(doc, ".//*"), xml2::xml_attrs)
+  }
+  testthat::expect_identical(attributes(after), attributes(before))
+  testthat::expect_identical(xml2::xml_attrs(after), xml2::xml_attrs(before))
+})
+
+testthat::test_that("layout measurements respect inherited and inline font faces", {
+  env <- translation_helpers()
+  path <- file.path(withr::local_tempdir(), "font-faces.svg")
+  writeLines(c(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120">',
+    '<g font-family="sans" font-size="12" font-weight="700" font-style="italic">',
+    '<text x="10" y="15" textLength="20">Inherited face</text>',
+    '<text x="10" y="35" textLength="20" style="font-weight: normal; font-style: normal;">Inline face</text>',
+    "</g></svg>"
+  ), path)
+  measured <- list()
+  testthat::local_mocked_bindings(
+    string_width = function(strings, family, size, res, weight = "normal", italic = FALSE, ...) {
+      measured[[length(measured) + 1L]] <<- list(family = family, size = size, weight = weight, italic = italic)
+      300
+    },
+    .package = "systemfonts"
+  )
+  catalogue <- list(translate = function(template, ...) "Өвчлөлийн түвшин")
+  suppressMessages(env$mn_translate_svg(path, "font-faces.svg", catalogue))
+  testthat::expect_identical(measured, list(
+    list(family = "sans", size = 12, weight = 700, italic = TRUE),
+    list(family = "sans", size = 12, weight = "normal", italic = FALSE)
+  ))
 })
 
 testthat::test_that("language parity requires every page and matching alternate links", {

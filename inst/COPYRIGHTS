@@ -44,6 +44,13 @@ forms and classifications; they do not contain underlying respondent records.
 Their access and license categories are source metadata, not a grant of access
 to confidential records. Consult each source record and its applicable terms.
 
+Bundled plot fonts
+------------------
+fonts/ contains unmodified Source Sans 3 font files, copyright Adobe,
+distributed under the SIL Open Font License 1.1 in fonts/LICENSE.md.
+The font license is separate from the package software and statistical data.
+See fonts/SOURCE.md for the upstream version and file checksums.
+
 Changes and attribution
 -----------------------
 The package reshapes, subsets, and caches source material for discovery,

@@ -34,7 +34,8 @@ knitr::opts_chunk$set(
   fig.dpi = 150, # higher resolution for crisp rendering
   out.width = "100%", # constrain to page width, prevents overflow
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  error = FALSE
 )
 ```
 
@@ -48,19 +49,15 @@ library(stringr)
 
 # Checked teaching helpers are shipped with the package and can be inspected.
 source(system.file("examples", "analysis-helpers.R", package = "mongolstats"), local = TRUE)
-old_options <- nso_options(mongolstats.lang = "en")
+source(system.file("examples", "plot-style.R", package = "mongolstats"), local = TRUE)
+```
 
-# Global theme with proper margins to prevent text cutoff
-old_theme <- theme_set(
-  theme_minimal(base_size = 11) +
-    theme(
-      plot.margin = margin(10, 10, 10, 10),
-      plot.title = element_text(size = 13, face = "bold"),
-      plot.subtitle = element_text(size = 10, color = "grey40"),
-      legend.text = element_text(size = 9),
-      legend.title = element_text(size = 10)
-    )
-)
+```{r presentation, include=FALSE}
+old_options <- c(nso_options(mongolstats.lang = "en"), list(knitr.kable.NA = getOption("knitr.kable.NA")))
+options(knitr.kable.NA = "Not reported")
+
+knitr::opts_chunk$set(dev = "svglite", fig.ext = "svg", dev.args = list(svglite = list(system_fonts = list(sans = "Source Sans 3"))))
+old_theme <- theme_set(analysis_plot_theme())
 ```
 
 ## Overview
@@ -194,8 +191,11 @@ pm25_complete <- filter(pm25, complete, !is.na(average))
 # For line charts: every station-month, with excluded months as gaps (NA)
 # so lines break instead of joining across missing data
 pm25_lines <- pm25 |>
-  complete(Station, date = seq(min(date), max(date), by = "month")) |>
+  complete(Station = top_stations, date = seq(min(date), max(date), by = "month")) |>
   mutate(average = if_else(complete %in% TRUE, average, NA_real_))
+pm25_unavailable <- pm25_lines |>
+  summarise(observed = sum(is.finite(average)), .by = Station) |>
+  filter(observed == 0L)
 ```
 
 **Monthly source:** `r inline_value(pm25_source$mode)`, `r inline_value(format(min(pm25$date), "%Y-%m"))` to `r inline_value(format(max(pm25$date), "%Y-%m"))`. Of `r inline_value(nrow(pm25))` station-months, `r inline_value(nrow(pm25_complete))` meet the mean/completeness rule. `r inline_value(sum(is.na(pm25_complete$pct_days_above)))` of those retained station-months have no reported exceedance percentage.
@@ -207,6 +207,11 @@ pm25_lines |>
   geom_hline(yintercept = 5, linetype = "dotted", color = "grey30") + # WHO 2021 annual guideline
   geom_line(color = "firebrick", linewidth = 0.6) +
   geom_point(color = "firebrick", size = 0.8) +
+  geom_text(
+    data = pm25_unavailable, aes(x = mean(range(pm25_lines$date)), y = Inf),
+    label = "No eligible observations", inherit.aes = FALSE, vjust = 2,
+    size = 3, color = "#536873"
+  ) +
   facet_wrap(~Station, ncol = 2) +
   scale_x_date(breaks = seq(min(pm25$date), max(pm25$date), by = "year"), date_labels = "%Y") +
   scale_y_continuous(limits = c(0, NA)) +
@@ -234,6 +239,7 @@ pm25_complete |>
     low = "#fbe3e3", high = "#8b1a1a", na.value = "grey90",
     limits = c(0, 100), name = "% of days\nabove standard"
   ) +
+  guides(fill = guide_colourbar(barwidth = grid::unit(85, "mm"), barheight = grid::unit(3, "mm"))) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y", expand = c(0, 0)) +
   labs(
     title = "Source-Reported PM2.5 Exceedance Percentages",
@@ -280,8 +286,16 @@ season_value <- function(s, col) pm25_season[[col]][pm25_season$season == s]
 ```
 
 ```{r pm25-coverage}
-knitr::kable(pm25_season, digits = 1, caption = "Available station-months and reported percentage counts")
-knitr::kable(balanced_summary, digits = 1, caption = "Sensitivity panel with all six winter/summer months per station-year")
+knitr::kable(pm25_season,
+  digits = c(0, 0, 0, 1, 1),
+  col.names = c("Season", "Station-months", "Reported percentages", "Median above standard (%)", "Mean PM2.5 (µg/m³)"),
+  caption = "Available station-months and reported percentage counts"
+)
+knitr::kable(balanced_summary,
+  digits = c(0, 0, 1, 1),
+  col.names = c("Season", "Station-months", "Mean PM2.5 (µg/m³)", "Median above standard (%)"),
+  caption = "Sensitivity panel with all six winter/summer months per station-year"
+)
 ```
 
 > **Descriptive summary:** In December-February, the median reported station-month percentage is `r inline_value(round(season_value("Dec-Feb", "median_pct_above")))`%; in June-August it is `r inline_value(round(season_value("Jun-Aug", "median_pct_above")))`%. The corresponding unweighted means of available station-month concentrations are `r inline_value(round(season_value("Dec-Feb", "mean_ug")))` and `r inline_value(round(season_value("Jun-Aug", "mean_ug")))` micrograms/m3. The coverage table and balanced-panel sensitivity above show which records contribute. These summaries do not measure personal exposure or the proportion of all city days exceeding a threshold. Missing percentages remain unknown.
@@ -330,7 +344,11 @@ so2_ratio <- if (run_vignette) {
 ```
 
 ```{r so2-coverage}
-so2_ratio
+knitr::kable(so2_ratio,
+  digits = c(0, 0, 0, 1, 1, 1),
+  col.names = c("Station", "Winter months", "Summer months", "Winter SO₂ (µg/m³)", "Summer SO₂ (µg/m³)", "Winter/summer ratio"),
+  caption = "Observed months and winter/summer sulphur dioxide concentrations"
+)
 ```
 
 > **Seasonal pattern:** The table reports winter/summer contrasts only when both seasons have at least three observed means and a positive summer mean. Coverage differs across stations, so these are exploratory comparisons. A winter increase is consistent with a heating contribution but does not identify the main source without separate evidence.
@@ -366,7 +384,8 @@ compliance |>
   geom_vline(xintercept = 1, linetype = "dashed", color = "black") +
   geom_text(aes(label = round(Exceedance_Factor, 1)), hjust = -0.15, size = 2.8) +
   facet_wrap(~Pollutant_Type, scales = "free_x") +
-  scale_fill_manual(values = c("Reported mean at/below reference" = "#2a78d6", "Reported mean above reference" = "#c0392b"), name = NULL) +
+  scale_fill_manual(values = c("Reported mean at/below reference" = "#167D8D", "Reported mean above reference" = "#A94438"), name = NULL) +
+  guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
   scale_x_continuous(expand = expansion(mult = c(0, 0.2))) +
   labs(
     title = "Rounded Annual Mean Relative to the 2016 Reference, 2024",
@@ -409,7 +428,7 @@ conductivity <- water |>
 
 conductivity |>
   ggplot(aes(x = value, y = reorder(Station, value))) +
-  geom_col(fill = "#2a78d6") +
+  geom_col(fill = "#167D8D") +
   geom_text(aes(label = scales::label_comma()(value)), hjust = -0.1, size = 3) +
   scale_x_continuous(labels = scales::label_comma(), expand = expansion(mult = c(0, 0.15))) +
   labs(
@@ -452,7 +471,7 @@ At **Zaisan**, BOD5 is `r inline_value(tuul_value("Tuul, Zaisan", "BOD5 (mg/L)")
 
 Dust storms carry particles associated with adverse health effects. This example summarises **observed complete station-years** only. Blank cells and absent months are unknown unless NSO documents otherwise; they are never automatically counted as no dust days. Rankings depend on the number of usable years at each station and should not be treated as a uniform ten-year climatology.
 
-```{r dust-days, fig.alt="Bar chart of the 10 weather stations with the most dust days per year on average over usable observed years within the selected window, with lines showing the lowest and highest year"}
+```{r dust-data}
 dust_raw <- nso_data("DT_NSO_2400_028V1", list(), labels = "en")
 dust_status <- nso_value_status(dust_raw)
 dust <- dust_raw |>
@@ -460,7 +479,6 @@ dust <- dust_raw |>
     Station = str_trim(`Station location_en`),
     Region = `Station location`, Region_en = Station
   )
-analysis_month_dates(dust$Month_en)
 available_years <- sort(unique(substr(dust$Month_en, 1, 4)))
 # Exclude an ongoing calendar year, but keep a complete latest year if the
 # source is lagged. Absent months are filled as unknown by the helper.
@@ -471,28 +489,47 @@ dust_annual <- analysis_annual_counts(dust, unique(dust$Region), dust_years) |>
   rename(Station = Region_en, dust_days = count)
 dust_coverage <- dust_annual |>
   summarise(n_years = n(), n_valid_years = sum(usable), missing_months = sum(n_missing), .by = c(Region, Station))
-knitr::kable(dust_coverage, caption = "Dust observation coverage; unresolved months remain missing")
+knitr::kable(dust_coverage,
+  col.names = c("Station code", "Station", "Years examined", "Usable years", "Missing months"),
+  caption = "Dust observation coverage; unresolved months remain missing"
+)
 dust_summary <- dust_annual |>
   filter(usable) |>
   summarise(
-    mean_days = mean(dust_days), min_days = min(dust_days),
-    max_days = max(dust_days), n_valid_years = n(), .by = c(Region, Station)
+    mean_days = mean(dust_days), min_days = if (n()) min(dust_days) else NA_real_,
+    max_days = if (n()) max(dust_days) else NA_real_, n_valid_years = n(), .by = c(Region, Station)
   ) |>
   arrange(desc(mean_days))
-
-dust_summary |>
-  slice_max(mean_days, n = 10, with_ties = FALSE) |>
-  ggplot(aes(x = mean_days, y = reorder(Station, mean_days))) +
-  geom_errorbar(aes(xmin = min_days, xmax = max_days), width = 0.3, color = "grey60", orientation = "y") +
-  geom_point(color = "#b8860b", size = 3) +
-  labs(
-    title = paste0("Stations with the Most Dust Days, ", min(dust_years), "–", max(dust_years)),
-    subtitle = "Usable observed years only; lines show min/max, not confidence intervals",
-    x = "Dust days per year", y = NULL,
-    caption = "Source: NSO Mongolia, DT_NSO_2400_028V1"
-  ) +
-  theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
 ```
+
+```{r dust-days, fig.height=if (run_vignette && nrow(dust_summary)) 5 else 2.4, fig.alt=if (run_vignette && nrow(dust_summary)) "Dot plot of observed complete-year dust days by station; points are means and lines show the minimum and maximum observed year" else "No complete observed station-years are available for a dust-day comparison"}
+if (!nrow(dust_summary)) {
+  ggplot() +
+    annotate("text", x = 0, y = 0, label = "No complete observed station-years", size = 5, color = "#536873") +
+    labs(
+      title = "Dust-Day Comparison Is Not Available",
+      subtitle = "Unreported months remain unknown; a complete-year ranking cannot be calculated",
+      caption = "Source: NSO Mongolia, DT_NSO_2400_028V1"
+    ) +
+    theme_void() +
+    theme(plot.title = element_text(face = "bold", color = "#183442"))
+} else {
+  dust_summary |>
+    slice_max(mean_days, n = 10, with_ties = FALSE) |>
+    ggplot(aes(x = mean_days, y = reorder(Station, mean_days))) +
+    geom_errorbar(aes(xmin = min_days, xmax = max_days), width = 0.3, color = "grey60", orientation = "y") +
+    geom_point(color = "#b8860b", size = 3) +
+    labs(
+      title = paste0("Complete-Year Dust Observations, ", min(dust_years), "–", max(dust_years)),
+      subtitle = "Usable years differ by station; points = means, lines = min/max",
+      x = "Dust days per year", y = NULL,
+      caption = "Source: NSO Mongolia, DT_NSO_2400_028V1"
+    ) +
+    theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
+}
+```
+
+**Coverage:** `r inline_value(nrow(dust_summary))` of `r inline_value(nrow(dust_coverage))` stations have at least one usable year in this window.
 
 Only complete observed station-years contribute to these means and ranges. The coverage table shows how many years are usable at each station; some stations may have none. A ranking based on unequal sets of years is descriptive and may change with the observation window. An empty result means this source cannot support a complete-year comparison under these conservative rules.
 
@@ -500,7 +537,7 @@ Only complete observed station-years contribute to these means and ranges. The c
 
 The weather stations are in towns, so mongolmaps' settlement points can place them on a map. Station names are matched to the capital and aimag centres first, then to soum centres where the name is unique.
 
-```{r dust-map, fig.alt="Map of Mongolia with weather stations shown as points sized and coloured by average dust days per year; only stations with usable complete-year observations are included"}
+```{r dust-map-data}
 settlements <- mn_settlements() |>
   mutate(rank = match(type, c("capital", "aimag_centre", "soum_centre")))
 
@@ -511,20 +548,36 @@ dust_points <- dust_summary |>
   filter(station_name_n == 1L) |> # duplicate station names cannot locate a site
   inner_join(settlements, by = join_by(name), relationship = "one-to-many") |>
   # Keep the highest-ranked match; drop names shared by several soum centres
-  filter(rank == min(rank), .by = Station) |>
+  filter(rank == if (n()) min(rank) else NA_real_, .by = Station) |>
   filter(n() == 1, .by = Station) |>
   sf::st_as_sf()
 
 unplaced <- dust_summary$Station[!dust_summary$Region %in% dust_points$Region]
-
-mn_map(mn_aimags(), title = "Dust Days in Complete Observed Station-Years") +
-  geom_sf(data = dust_points, aes(size = mean_days, color = mean_days), alpha = 0.85) +
-  scale_color_gradient(low = "#f3d9a4", high = "#8a5a00", name = "Dust days\nper year") +
-  scale_size_area(max_size = 8, guide = "none") +
-  labs(subtitle = paste0(min(dust_years), "–", max(dust_years), ". Data: NSO Mongolia, DT_NSO_2400_028V1"))
 ```
 
-`r inline_value(nrow(dust_points))` of `r inline_value(nrow(dust_summary))` stations with usable years were placed. `r inline_value(length(unplaced))` station(s) could not be placed from settlement names (`r inline_value(knitr::combine_words(unplaced))`). Mapped settlement centres are illustrative positions, not measured station coordinates. Compare the coverage and summaries of placed and omitted stations before generalising. For exposure studies, use the weather stations' own coordinates from the National Agency for Meteorology and Environmental Monitoring.
+```{r dust-map, fig.height=if (run_vignette && nrow(dust_points)) 5 else 2.4, fig.alt=if (run_vignette && nrow(dust_points)) "Map of stations with complete observed years, sized and coloured by mean annual dust days; settlement centres are approximate station locations" else "No stations with complete observed years could be placed on the dust-day map"}
+if (!nrow(dust_points)) {
+  ggplot() +
+    annotate("text", x = 0, y = 0, label = "No stations with complete observed years to map", size = 5, color = "#536873") +
+    labs(
+      title = "Dust-Day Map Is Not Available",
+      subtitle = "Coverage is insufficient for a complete-year comparison",
+      caption = "Source: NSO Mongolia, DT_NSO_2400_028V1"
+    ) +
+    theme_void() +
+    theme(plot.title = element_text(face = "bold", color = "#183442"))
+} else {
+  mn_map(mn_aimags(), title = "Dust Days in Complete Observed Station-Years") +
+    geom_sf(data = dust_points, aes(size = mean_days, color = mean_days), alpha = 0.85) +
+    scale_color_gradient(low = "#f3d9a4", high = "#8a5a00", name = "Dust days\nper year") +
+    guides(color = guide_colourbar(barwidth = grid::unit(85, "mm"), barheight = grid::unit(3, "mm"))) +
+    scale_size_area(max_size = 8, guide = "none") +
+    labs(subtitle = paste0(min(dust_years), "–", max(dust_years), ". Data: NSO Mongolia, DT_NSO_2400_028V1")) +
+    analysis_map_theme()
+}
+```
+
+`r inline_value(nrow(dust_points))` of `r inline_value(nrow(dust_summary))` stations with usable years were placed. Stations that could not be placed: `r inline_value(if (length(unplaced)) knitr::combine_words(unplaced) else "None")`. Mapped settlement centres are illustrative positions, not measured station coordinates. Compare the coverage and summaries of placed and omitted stations before generalising. For exposure studies, use the weather stations' own coordinates from the National Agency for Meteorology and Environmental Monitoring.
 
 ## Next Steps
 
@@ -545,7 +598,7 @@ tibble::tribble(
   "Dust days", "DT_NSO_2400_028V1", "Station",
   "Forest fires", "DT_NSO_2400_005V1", "Aimag"
 ) |>
-  knitr::kable()
+  knitr::kable(col.names = c("Indicator", "Table ID", "Geographic level"))
 ```
 
 ```{r restore-session, include=FALSE}

@@ -16,6 +16,8 @@ build_package_site <- function(
   # cannot see article warnings. tools/check_vignettes.R records them instead
   # in the live canary's build-warnings.log.
   source("tools/site_helpers.R", local = TRUE)
+  source("tools/plot_fonts.R", local = TRUE)
+  embed_plot_fonts(file.path(root, "man", "figures"), root)
   source("pkgdown/build-mn.R", local = TRUE)
   pkgdown::build_site(
     override = list(destination = destination),
@@ -26,6 +28,7 @@ build_package_site <- function(
   )
   build_development_aliases(destination)
   build_mongolian_site(root, file.path(destination, "mn"))
+  embed_plot_fonts(destination, root)
   result <- check_site(destination)
   print(result$figures, row.names = FALSE)
   jsonlite::write_json(

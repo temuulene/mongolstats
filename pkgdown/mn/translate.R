@@ -194,6 +194,10 @@ mn_translate_document <- function(doc, page, catalogue) {
 
 mn_translate_svg <- function(path, page, catalogue) {
   doc <- xml2::read_xml(path, options = "NONET")
+  lifecycle_badge <- any(startsWith(mn_normalise(c(
+    xml2::xml_attr(doc, "aria-label"),
+    xml2::xml_text(xml2::xml_find_all(doc, "/*/*[local-name()='title']"))
+  )), "lifecycle: "), na.rm = TRUE)
   metadata <- function(source) {
     if (startsWith(source, "lifecycle: ")) {
       prefix <- catalogue$translate(mn_template("lifecycle", plain = TRUE), page, "figure")
@@ -218,31 +222,43 @@ mn_translate_svg <- function(path, page, catalogue) {
   y <- suppressWarnings(as.numeric(xml2::xml_attr(nodes, "y")))
   box <- as.numeric(strsplit(xml2::xml_attr(doc, "viewBox") %||% "", "[ ,]+")[[1]])
   canvas <- if (length(box) == 4L) box[[3]] else 504
+  natural_widths <- rep(NA_real_, length(nodes))
+  backgrounds <- xml2::xml_find_all(doc, "//*[local-name()='g'][@clip-path]/*[local-name()='rect']")
+  badge_scales <- suppressWarnings(as.numeric(sub(
+    "^scale\\(\\s*([0-9.]+)\\s*\\)$", "\\1", xml2::xml_attr(nodes, "transform")
+  )))
+  badge_layout <- lifecycle_badge && length(backgrounds) == 3L &&
+    length(unique(x)) == 2L && all(is.finite(x)) &&
+    all(is.finite(badge_scales) & badge_scales > 0)
   for (i in seq_along(nodes)) {
     node <- nodes[[i]]
     original <- xml2::xml_text(node)
     value <- catalogue$translate(mn_template(original, plain = TRUE), page, "figure")
     if (is.null(value)) next
     xml2::xml_text(node) <- value
-    style <- xml2::xml_attr(node, "style") %||% ""
-    font <- if (grepl("font-size:", style)) {
-      suppressWarnings(as.numeric(sub(".*font-size: *([0-9.]+)px.*", "\\1", style)))
-    } else {
-      suppressWarnings(as.numeric(xml2::xml_attr(
-        xml2::xml_find_first(node, "ancestor-or-self::*[@font-size][1]"), "font-size"
-      )))
+    property <- function(name, default) {
+      for (current in rev(xml2::xml_find_all(node, "ancestor-or-self::*"))) {
+        style <- xml2::xml_attr(current, "style") %||% ""
+        match <- regmatches(style, regexec(paste0("(?:^|;)\\s*", name, "\\s*:\\s*([^;]+)"), style, perl = TRUE))[[1]]
+        value <- if (length(match)) trimws(match[[2]]) else xml2::xml_attr(current, name)
+        if (!is.na(value) && value != "inherit") {
+          return(value)
+        }
+      }
+      default
     }
+    size <- property("font-size", "11")
+    font <- suppressWarnings(as.numeric(sub("(px|pt)$", "", size)))
+    if (grepl("pt$", size)) font <- font * 96 / 72
     if (!is.finite(font)) font <- 11
-    family <- if (grepl("font-family:", style)) {
-      sub(".*font-family: *['\"]?([^;'\"<>]+).*", "\\1", style)
-    } else {
-      xml2::xml_attr(xml2::xml_find_first(node, "ancestor-or-self::*[@font-family][1]"), "font-family") %||% "sans"
-    }
-    family <- strsplit(family, ",", fixed = TRUE)[[1]][[1]]
+    family <- trimws(gsub("['\"]", "", strsplit(property("font-family", "sans"), ",", fixed = TRUE)[[1]][[1]]))
+    weight <- property("font-weight", "normal")
+    if (grepl("^[0-9]+$", weight)) weight <- as.numeric(weight)
+    italic <- property("font-style", "normal") %in% c("italic", "oblique")
     measure <- function(text) {
       as.numeric(systemfonts::string_width(
         text,
-        family = family, size = font, res = 72
+        family = family, size = font, res = 72, weight = weight, italic = italic
       ))
     }
     width <- suppressWarnings(as.numeric(sub("px$", "", xml2::xml_attr(node, "textLength"))))
@@ -260,12 +276,44 @@ mn_translate_svg <- function(path, page, catalogue) {
         following - x[[i]] - 6
       )
     }
-    # Only translated text is fitted. All marks, coordinates, numerical values,
-    # scales, reference lines and source identifiers retain their original data.
+    # Preserve natural glyph widths, including on rotated labels and badges.
+    # Untranslated numbers, marks and all coordinates retain their original data.
     natural <- measure(value)
     if (!is.finite(natural) || natural <= 0) natural <- nchar(value) * font * 0.52
-    xml2::xml_set_attr(node, "textLength", as.character(round(min(natural, max(width, available)), 2)))
-    xml2::xml_set_attr(node, "lengthAdjust", "spacingAndGlyphs")
+    natural_widths[[i]] <- natural
+    xml2::xml_set_attr(node, "textLength", NULL)
+    xml2::xml_set_attr(node, "lengthAdjust", NULL)
+    # The old slot is a layout-review hint, not a constraint on translated text.
+    if (!badge_layout && natural > max(width, available) + 0.5) {
+      message("I18N_LAYOUT ", jsonlite::toJSON(list(
+        page = page, text = value, natural_width = round(natural, 2),
+        estimated_slot = round(max(width, available), 2),
+        transformed = !is.na(xml2::xml_attr(node, "transform"))
+      ), auto_unbox = TRUE))
+    }
+  }
+  if (badge_layout && all(is.finite(natural_widths))) {
+    # These two-cell lifecycle badges are UI, not quantitative plot geometry.
+    # Text and shadow coordinates use scale(.1); backgrounds use root units.
+    cell <- match(x, sort(unique(x)))
+    cells <- vapply(1:2, function(i) {
+      ceiling(max(natural_widths[cell == i] * badge_scales[cell == i])) + 12
+    }, 0)
+    cells <- pmax(cells, as.numeric(xml2::xml_attr(backgrounds[1:2], "width")))
+    total <- sum(cells)
+    xml2::xml_set_attr(doc, "width", as.character(total))
+    if (length(box) == 4L) {
+      box[[3]] <- total
+      xml2::xml_set_attr(doc, "viewBox", paste(box, collapse = " "))
+    }
+    xml2::xml_set_attr(backgrounds[[1]], "width", as.character(cells[[1]]))
+    xml2::xml_set_attr(backgrounds[[2]], "x", as.character(cells[[1]]))
+    xml2::xml_set_attr(backgrounds[[2]], "width", as.character(cells[[2]]))
+    xml2::xml_set_attr(backgrounds[[3]], "width", as.character(total))
+    clips <- xml2::xml_find_all(doc, "//*[local-name()='clipPath']/*[local-name()='rect']")
+    xml2::xml_set_attr(clips, "width", as.character(total))
+    centres <- c(cells[[1]] / 2, cells[[1]] + cells[[2]] / 2)
+    xml2::xml_set_attr(nodes, "x", as.character(centres[cell] / badge_scales))
   }
   xml2::write_xml(doc, path)
 }
