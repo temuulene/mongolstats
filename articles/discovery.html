@@ -89,19 +89,7 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="co"># Checked teaching helpers are shipped with the package and can be inspected.</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"analysis-helpers.R"</span>, package <span class="op">=</span> <span class="st">"mongolstats"</span><span class="op">)</span>, local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">old_options</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Global theme with proper margins to prevent text cutoff</span></span>
-<span><span class="va">old_theme</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/get_theme.html" class="external-link">theme_set</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>      plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>,</span>
-<span>      plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">13</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
-<span>      plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span>, color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
-<span>      legend.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">9</span><span class="op">)</span>,</span>
-<span>      legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"plot-style.R"</span>, package <span class="op">=</span> <span class="st">"mongolstats"</span><span class="op">)</span>, local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -268,9 +256,9 @@ and at which level (“aimags and the Capital”, “by soum”).</p>
 <span><span class="co"># One panel per site, on a shared scale, so overlapping lines do not hide each other</span></span>
 <span><span class="va">cancer_data</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#8e44ad"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#8e44ad"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">site</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#5B6E9A"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#5B6E9A"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">site</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/breaks_width.html" class="external-link">breaks_width</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
@@ -377,8 +365,10 @@ age group (<code>DT_NSO_0300_003V1</code>).</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">weight</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">age</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Require mutually exclusive source groups before collapsing the population.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">population</span><span class="op">$</span><span class="va">age</span> <span class="op">==</span> <span class="st">"70+"</span><span class="op">)</span> <span class="op">||</span></span>
-<span>            <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">population</span><span class="op">$</span><span class="va">age</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"70-74"</span>, <span class="st">"75-79"</span>, <span class="st">"80-84"</span>, <span class="st">"85+"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span></span>
+<span>  <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">population</span><span class="op">$</span><span class="va">age</span> <span class="op">==</span> <span class="st">"70+"</span><span class="op">)</span> <span class="op">||</span></span>
+<span>    <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">population</span><span class="op">$</span><span class="va">age</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"70-74"</span>, <span class="st">"75-79"</span>, <span class="st">"80-84"</span>, <span class="st">"85+"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu">analysis_keys</span><span class="op">(</span><span class="va">cancer_cases</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year"</span>, <span class="st">"age"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">analysis_keys</span><span class="op">(</span><span class="va">population</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year"</span>, <span class="st">"age"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">population</span> <span class="op">&lt;-</span> <span class="va">population</span> <span class="op">|&gt;</span></span>
@@ -404,26 +394,103 @@ age group (<code>DT_NSO_0300_003V1</code>).</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">check</span><span class="op">$</span><span class="va">total</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">check</span><span class="op">$</span><span class="va">calculated</span> <span class="op">==</span> <span class="va">check</span><span class="op">$</span><span class="va">total</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">cancer_asr</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 16 × 4</span></span></span>
-<span><span class="co">#&gt;     year crude standardised standard_weight</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">2</span>010  16.2         26.2         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">2</span>011  16.2         26.4         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">2</span>012  15.8         25.5         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">2</span>013  17.9         28.6         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">2</span>014  17.7         27.0         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">2</span>015  18.2         29.4         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">2</span>016  18.4         29.2         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">2</span>017  18.3         27.9         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">2</span>018  17.9         27.1         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>019  18.3         26.4         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span>  <span style="text-decoration: underline;">2</span>020  19.1         26.7         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span>  <span style="text-decoration: underline;">2</span>021  17.5         23.8         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span>  <span style="text-decoration: underline;">2</span>022  19.9         26.0         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span>  <span style="text-decoration: underline;">2</span>023  20.6         26.0         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span>  <span style="text-decoration: underline;">2</span>024  23.0         28.0         1<span style="text-decoration: underline;">000</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span>  <span style="text-decoration: underline;">2</span>025  22.3         26.1         1<span style="text-decoration: underline;">000</span>000</span></span></code></pre></div>
+<span><span class="va">cancer_asr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">crude</span>, <span class="va">standardised</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>    col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Year"</span>, <span class="st">"Crude incidence"</span>, <span class="st">"Age-standardised incidence"</span><span class="op">)</span>, digits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Cancer incidence per 10,000 people; WHO World standard"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Cancer incidence per 10,000 people; WHO World
+standard</caption>
+<thead><tr class="header">
+<th align="right">Year</th>
+<th align="right">Crude incidence</th>
+<th align="right">Age-standardised incidence</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">2010</td>
+<td align="right">16.2</td>
+<td align="right">26.2</td>
+</tr>
+<tr class="even">
+<td align="right">2011</td>
+<td align="right">16.2</td>
+<td align="right">26.4</td>
+</tr>
+<tr class="odd">
+<td align="right">2012</td>
+<td align="right">15.8</td>
+<td align="right">25.5</td>
+</tr>
+<tr class="even">
+<td align="right">2013</td>
+<td align="right">17.9</td>
+<td align="right">28.6</td>
+</tr>
+<tr class="odd">
+<td align="right">2014</td>
+<td align="right">17.7</td>
+<td align="right">27.0</td>
+</tr>
+<tr class="even">
+<td align="right">2015</td>
+<td align="right">18.2</td>
+<td align="right">29.4</td>
+</tr>
+<tr class="odd">
+<td align="right">2016</td>
+<td align="right">18.4</td>
+<td align="right">29.2</td>
+</tr>
+<tr class="even">
+<td align="right">2017</td>
+<td align="right">18.3</td>
+<td align="right">27.9</td>
+</tr>
+<tr class="odd">
+<td align="right">2018</td>
+<td align="right">17.9</td>
+<td align="right">27.1</td>
+</tr>
+<tr class="even">
+<td align="right">2019</td>
+<td align="right">18.3</td>
+<td align="right">26.4</td>
+</tr>
+<tr class="odd">
+<td align="right">2020</td>
+<td align="right">19.1</td>
+<td align="right">26.7</td>
+</tr>
+<tr class="even">
+<td align="right">2021</td>
+<td align="right">17.5</td>
+<td align="right">23.8</td>
+</tr>
+<tr class="odd">
+<td align="right">2022</td>
+<td align="right">19.9</td>
+<td align="right">26.0</td>
+</tr>
+<tr class="even">
+<td align="right">2023</td>
+<td align="right">20.6</td>
+<td align="right">26.0</td>
+</tr>
+<tr class="odd">
+<td align="right">2024</td>
+<td align="right">23.0</td>
+<td align="right">28.0</td>
+</tr>
+<tr class="even">
+<td align="right">2025</td>
+<td align="right">22.3</td>
+<td align="right">26.1</td>
+</tr>
+</tbody>
+</table>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cancer_asr</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">crude</span>, <span class="va">standardised</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"measure"</span>, values_to <span class="op">=</span> <span class="st">"rate"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -431,7 +498,7 @@ age group (<code>DT_NSO_0300_003V1</code>).</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">rate</span>, color <span class="op">=</span> <span class="va">measure</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Crude"</span> <span class="op">=</span> <span class="st">"#2a78d6"</span>, <span class="st">"Age-standardised (WHO World)"</span> <span class="op">=</span> <span class="st">"#eb6834"</span><span class="op">)</span>, name <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Crude"</span> <span class="op">=</span> <span class="st">"#167D8D"</span>, <span class="st">"Age-standardised (WHO World)"</span> <span class="op">=</span> <span class="st">"#C2623D"</span><span class="op">)</span>, name <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"All-Site Cancer Incidence: Crude and Age-Standardised"</span>,</span>
@@ -516,20 +583,105 @@ reproduce the published ones:</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">imr_check</span><span class="op">$</span><span class="va">births</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">imr_check</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 7</span></span></span>
-<span><span class="co">#&gt;    year  deaths births published calculated difference agrees_with_rounding</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2016    <span style="text-decoration: underline;">1</span>315  <span style="text-decoration: underline;">78</span>194        17       16.8     -<span style="color: #BB0000;">0.183</span> TRUE                </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2017    <span style="text-decoration: underline;">1</span>008  <span style="text-decoration: underline;">74</span>328        14       13.6     -<span style="color: #BB0000;">0.438</span> TRUE                </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2018    <span style="text-decoration: underline;">1</span>037  <span style="text-decoration: underline;">77</span>528        13       13.4      0.376 TRUE                </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2019    <span style="text-decoration: underline;">1</span>041  <span style="text-decoration: underline;">78</span>223        13       13.3      0.308 TRUE                </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2020     878  <span style="text-decoration: underline;">76</span>261        12       11.5     -<span style="color: #BB0000;">0.487</span> TRUE                </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2021     829  <span style="text-decoration: underline;">71</span>659        12       11.6     -<span style="color: #BB0000;">0.431</span> TRUE                </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2022     814  <span style="text-decoration: underline;">65</span>586        12       12.4      0.411 TRUE                </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2023     793  <span style="text-decoration: underline;">64</span>306        12       12.3      0.332 TRUE                </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2024     702  <span style="text-decoration: underline;">57</span>756        12       12.2      0.155 TRUE                </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2025     738  <span style="text-decoration: underline;">54</span>137        14       13.6     -<span style="color: #BB0000;">0.368</span> TRUE</span></span></code></pre></div>
+<span><span class="va">imr_check</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span></span>
+<span>    <span class="va">year</span>, <span class="va">calculated</span>, <span class="va">published</span>, <span class="va">difference</span>,</span>
+<span>    agreement <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">agrees_with_rounding</span>, <span class="st">"Yes"</span>, <span class="st">"Needs review"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>    col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Year"</span>, <span class="st">"Calculated IMR"</span>, <span class="st">"Published IMR"</span>, <span class="st">"Difference"</span>, <span class="st">"Agrees within rounding"</span><span class="op">)</span>,</span>
+<span>    digits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>, caption <span class="op">=</span> <span class="st">"Infant deaths per 1,000 live births: reconciliation with the published rate"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Infant deaths per 1,000 live births: reconciliation with the
+published rate</caption>
+<colgroup>
+<col width="7%">
+<col width="22%">
+<col width="20%">
+<col width="16%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Year</th>
+<th align="right">Calculated IMR</th>
+<th align="right">Published IMR</th>
+<th align="right">Difference</th>
+<th align="left">Agrees within rounding</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">2016</td>
+<td align="right">16.8</td>
+<td align="right">17</td>
+<td align="right">-0.2</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="even">
+<td align="left">2017</td>
+<td align="right">13.6</td>
+<td align="right">14</td>
+<td align="right">-0.4</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="odd">
+<td align="left">2018</td>
+<td align="right">13.4</td>
+<td align="right">13</td>
+<td align="right">0.4</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="even">
+<td align="left">2019</td>
+<td align="right">13.3</td>
+<td align="right">13</td>
+<td align="right">0.3</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="odd">
+<td align="left">2020</td>
+<td align="right">11.5</td>
+<td align="right">12</td>
+<td align="right">-0.5</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="even">
+<td align="left">2021</td>
+<td align="right">11.6</td>
+<td align="right">12</td>
+<td align="right">-0.4</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="odd">
+<td align="left">2022</td>
+<td align="right">12.4</td>
+<td align="right">12</td>
+<td align="right">0.4</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="even">
+<td align="left">2023</td>
+<td align="right">12.3</td>
+<td align="right">12</td>
+<td align="right">0.3</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="odd">
+<td align="left">2024</td>
+<td align="right">12.2</td>
+<td align="right">12</td>
+<td align="right">0.2</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="even">
+<td align="left">2025</td>
+<td align="right">13.6</td>
+<td align="right">14</td>
+<td align="right">-0.4</td>
+<td align="left">Yes</td>
+</tr>
+</tbody>
+</table>
 <p>The table explicitly shows whether each comparable year agrees within
 half a unit, the tolerance for a whole-number rounded rate. 0 year(s)
 need review under this check. Differences outside that tolerance cannot
@@ -585,26 +737,106 @@ population at risk. Here we use the national mid-year population.</p>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">tb_rate</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 7</span></span></span>
-<span><span class="co">#&gt;     year cases n_months population  rate lower upper</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">2</span>016  <span style="text-decoration: underline;">4</span>045       12    3<span style="text-decoration: underline;">088</span>856 131.  127.  135. </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">2</span>017  <span style="text-decoration: underline;">3</span>779       12    3<span style="text-decoration: underline;">148</span>917 120.  116.  124. </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">2</span>018  <span style="text-decoration: underline;">3</span>498       12    3<span style="text-decoration: underline;">208</span>189 109.  105.  113. </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">2</span>019  <span style="text-decoration: underline;">3</span>624       12    3<span style="text-decoration: underline;">267</span>673 111.  107.  115. </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">2</span>020  <span style="text-decoration: underline;">3</span>339       12    3<span style="text-decoration: underline;">332</span>062 100.   96.8 104. </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">2</span>021  <span style="text-decoration: underline;">2</span>331       12    3<span style="text-decoration: underline;">393</span>455  68.7  65.9  71.5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">2</span>022  <span style="text-decoration: underline;">2</span>355       12    3<span style="text-decoration: underline;">443</span>458  68.4  65.7  71.2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">2</span>023  <span style="text-decoration: underline;">2</span>357       12    3<span style="text-decoration: underline;">490</span>859  67.5  64.8  70.3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">2</span>024  <span style="text-decoration: underline;">2</span>232       12    3<span style="text-decoration: underline;">534</span>503  63.1  60.6  65.8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>025  <span style="text-decoration: underline;">2</span>104       12    3<span style="text-decoration: underline;">572</span>835  58.9  56.4  61.5</span></span></code></pre></div>
+<span><span class="va">tb_rate</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">cases</span>, <span class="va">population</span>, <span class="va">rate</span>, interval <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%.1f–%.1f"</span>, <span class="va">lower</span>, <span class="va">upper</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>    col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Year"</span>, <span class="st">"Reported cases"</span>, <span class="st">"Population"</span>, <span class="st">"Notifications per 100,000"</span>, <span class="st">"95% CI"</span><span class="op">)</span>,</span>
+<span>    digits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>, format.args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="8%">
+<col width="21%">
+<col width="15%">
+<col width="37%">
+<col width="17%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">Year</th>
+<th align="right">Reported cases</th>
+<th align="right">Population</th>
+<th align="right">Notifications per 100,000</th>
+<th align="left">95% CI</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">2,016</td>
+<td align="right">4,045</td>
+<td align="right">3,088,856</td>
+<td align="right">131.0</td>
+<td align="left">126.9–135.1</td>
+</tr>
+<tr class="even">
+<td align="right">2,017</td>
+<td align="right">3,779</td>
+<td align="right">3,148,917</td>
+<td align="right">120.0</td>
+<td align="left">116.2–123.9</td>
+</tr>
+<tr class="odd">
+<td align="right">2,018</td>
+<td align="right">3,498</td>
+<td align="right">3,208,189</td>
+<td align="right">109.0</td>
+<td align="left">105.4–112.7</td>
+</tr>
+<tr class="even">
+<td align="right">2,019</td>
+<td align="right">3,624</td>
+<td align="right">3,267,673</td>
+<td align="right">110.9</td>
+<td align="left">107.3–114.6</td>
+</tr>
+<tr class="odd">
+<td align="right">2,020</td>
+<td align="right">3,339</td>
+<td align="right">3,332,062</td>
+<td align="right">100.2</td>
+<td align="left">96.8–103.7</td>
+</tr>
+<tr class="even">
+<td align="right">2,021</td>
+<td align="right">2,331</td>
+<td align="right">3,393,455</td>
+<td align="right">68.7</td>
+<td align="left">65.9–71.5</td>
+</tr>
+<tr class="odd">
+<td align="right">2,022</td>
+<td align="right">2,355</td>
+<td align="right">3,443,458</td>
+<td align="right">68.4</td>
+<td align="left">65.7–71.2</td>
+</tr>
+<tr class="even">
+<td align="right">2,023</td>
+<td align="right">2,357</td>
+<td align="right">3,490,859</td>
+<td align="right">67.5</td>
+<td align="left">64.8–70.3</td>
+</tr>
+<tr class="odd">
+<td align="right">2,024</td>
+<td align="right">2,232</td>
+<td align="right">3,534,503</td>
+<td align="right">63.1</td>
+<td align="left">60.6–65.8</td>
+</tr>
+<tr class="even">
+<td align="right">2,025</td>
+<td align="right">2,104</td>
+<td align="right">3,572,835</td>
+<td align="right">58.9</td>
+<td align="left">56.4–61.5</td>
+</tr>
+</tbody>
+</table>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tb_rate</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">rate</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">lower</span>, ymax <span class="op">=</span> <span class="va">upper</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"#e74c3c"</span>, alpha <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#e74c3c"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#e74c3c"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">lower</span>, ymax <span class="op">=</span> <span class="va">upper</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"#C2623D"</span>, alpha <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#C2623D"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#C2623D"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="va">tb_rate</span><span class="op">$</span><span class="va">year</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span>, expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co"># start at 0</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>

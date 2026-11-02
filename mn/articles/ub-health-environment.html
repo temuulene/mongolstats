@@ -93,19 +93,7 @@
 <span></span>
 <span><span class="co"># Шалгасан сургалтын туслах функцүүд багцад дагалдах бөгөөд кодыг нь үзэж болно.</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"analysis-helpers.R"</span>, package <span class="op">=</span> <span class="st">"mongolstats"</span><span class="op">)</span>, local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">old_options</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Текст тасрахгүй байхаар ерөнхий загварт зөв захын зай өгөх</span></span>
-<span><span class="va">old_theme</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/get_theme.html" class="external-link">theme_set</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>      plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>,</span>
-<span>      plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">13</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
-<span>      plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span>, color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span>,</span>
-<span>      legend.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">9</span><span class="op">)</span>,</span>
-<span>      legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"plot-style.R"</span>, package <span class="op">=</span> <span class="st">"mongolstats"</span><span class="op">)</span>, local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="introduction">Удиртгал<a class="anchor" aria-label="Хэсгийн холбоос" href="#introduction"></a>
 </h2>
@@ -181,9 +169,12 @@
 <span>  title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Population Density by District, "</span>, <span class="va">pop_year</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Residents per km² (log scale). Data: NSO Mongolia, DT_NSO_0300_002V4"</span>,</span>
-<span>    fill <span class="op">=</span> <span class="st">"Residents\nper km²"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
+<span>    subtitle <span class="op">=</span> <span class="st">"Residents per km² (log scale)"</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"Residents\nper km²"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_0300_002V4"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_colourbar.html" class="external-link">guide_colourbar</a></span><span class="op">(</span>barwidth <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">85</span>, <span class="st">"mm"</span><span class="op">)</span>, barheight <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">3</span>, <span class="st">"mm"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">analysis_map_theme</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ub-health-environment_files/figure-html/demog-density-1.svg" alt="Улаанбаатарын дүүргийн хүн амын нягтралыг логарифмын хуваарь, дүүргийн нэртэй нь харуулсан газрын зураг" width="100%"></p>
 <p><strong>Баянгол</strong> хамгийн нягт, км² тутамд ойролцоогоор 10,400 оршин суугчтай. <strong>Багахангай</strong> хамгийн сийрэг, км² тутамд ойролцоогоор 28. Баянзүрх, Сонгинохайрхан зэрэг дүүрэг уул, бэлчээрийн том талбай агуулдаг тул дүүргийн дундаж маш нягт хорооллыг далдална. Хорооны түвшний өгөгдөл илүү нарийвчилна:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -203,69 +194,75 @@
 <span>    by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">Region</span><span class="op">)</span>, relationship <span class="op">=</span> <span class="st">"one-to-one"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>agrees <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">khoroo_sum</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">district_total</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">khoroo_sum</span> <span class="op">==</span> <span class="va">district_total</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">khoroo_check</span>, caption <span class="op">=</span> <span class="st">"Population reconciliation before using the illustrative khoroo map"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">khoroo_check</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>agrees <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">agrees</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>    col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"District code"</span>, <span class="st">"Khoroo total"</span>, <span class="st">"District total"</span>, <span class="st">"Totals agree"</span><span class="op">)</span>,</span>
+<span>    digits <span class="op">=</span> <span class="fl">0</span>, format.args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Population reconciliation before using the illustrative khoroo map"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>Хорооны жишээ газрын зургийг ашиглахаас өмнөх хүн амын тулгалт</caption>
 <thead><tr class="header">
-<th align="left">Нутаг дэвсгэр</th>
-<th align="right">khoroo_sum</th>
-<th align="right">district_total</th>
-<th align="left">Таарсан</th>
+<th align="left">Дүүргийн код</th>
+<th align="right">Хороодын нийлбэр</th>
+<th align="right">Дүүргийн дүн</th>
+<th align="left">Нийлбэр дүн таарсан</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">51101</td>
-<td align="right">29076</td>
-<td align="right">29076</td>
-<td align="left">TRUE</td>
+<td align="right">29,076</td>
+<td align="right">29,076</td>
+<td align="left">Тийм</td>
 </tr>
 <tr class="even">
 <td align="left">51104</td>
-<td align="right">4401</td>
-<td align="right">4401</td>
-<td align="left">TRUE</td>
+<td align="right">4,401</td>
+<td align="right">4,401</td>
+<td align="left">Тийм</td>
 </tr>
 <tr class="odd">
 <td align="left">51107</td>
-<td align="right">257391</td>
-<td align="right">257391</td>
-<td align="left">TRUE</td>
+<td align="right">257,391</td>
+<td align="right">257,391</td>
+<td align="left">Тийм</td>
 </tr>
 <tr class="even">
 <td align="left">51110</td>
-<td align="right">452084</td>
-<td align="right">452084</td>
-<td align="left">TRUE</td>
+<td align="right">452,084</td>
+<td align="right">452,084</td>
+<td align="left">Тийм</td>
 </tr>
 <tr class="odd">
 <td align="left">51113</td>
-<td align="right">40781</td>
-<td align="right">40781</td>
-<td align="left">TRUE</td>
+<td align="right">40,781</td>
+<td align="right">40,781</td>
+<td align="left">Тийм</td>
 </tr>
 <tr class="even">
 <td align="left">51116</td>
-<td align="right">341746</td>
-<td align="right">341746</td>
-<td align="left">TRUE</td>
+<td align="right">341,746</td>
+<td align="right">341,746</td>
+<td align="left">Тийм</td>
 </tr>
 <tr class="odd">
 <td align="left">51119</td>
-<td align="right">142356</td>
-<td align="right">142356</td>
-<td align="left">TRUE</td>
+<td align="right">142,356</td>
+<td align="right">142,356</td>
+<td align="left">Тийм</td>
 </tr>
 <tr class="even">
 <td align="left">51122</td>
-<td align="right">278532</td>
-<td align="right">278532</td>
-<td align="left">TRUE</td>
+<td align="right">278,532</td>
+<td align="right">278,532</td>
+<td align="left">Тийм</td>
 </tr>
 <tr class="odd">
 <td align="left">51125</td>
-<td align="right">131278</td>
-<td align="right">131278</td>
-<td align="left">TRUE</td>
+<td align="right">131,278</td>
+<td align="right">131,278</td>
+<td align="left">Тийм</td>
 </tr>
 </tbody>
 </table>
@@ -284,7 +281,9 @@
 <span>  fill <span class="op">=</span> <span class="va">density</span>, trans <span class="op">=</span> <span class="st">"log10"</span>,</span>
 <span>  title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Population Density by Khoroo, Central Ulaanbaatar, "</span>, <span class="va">pop_year</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Residents per km² (log scale), six central districts"</span>, fill <span class="op">=</span> <span class="st">"Residents\nper km²"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Residents per km² (log scale), six central districts"</span>, fill <span class="op">=</span> <span class="st">"Residents\nper km²"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_colourbar.html" class="external-link">guide_colourbar</a></span><span class="op">(</span>barwidth <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">85</span>, <span class="st">"mm"</span><span class="op">)</span>, barheight <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">3</span>, <span class="st">"mm"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">analysis_map_theme</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ub-health-environment_files/figure-html/khoroo-density-1.svg" alt="Улаанбаатарын төвийн зургаан дүүргийн хорооны хүн амын нягтралыг логарифмын хуваариар харуулсан газрын зураг" width="100%"></p>
 <p>Хорооны хил зааг албан бус. Эх сурвалжийн 0 кодод таарсан хил зааг байхгүй. Тулгалтын хүснэгт хил заагийн үе тохирч байгааг батлахгүй: хуваагдал, нэгдэл, кодын өөрчлөлтийг шалгах шаардлагатай. Энэ нь жишээ нягтралын зураг болохоос нарийн түвшний баталгаажсан эрсдэл, өртөлтийн өгөгдөл биш. Дутуу эсвэл эерэг бус утгыг логарифмын хуваарьт дүрслэхгүй.</p>
 </div>
@@ -298,29 +297,39 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">Year_en</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pop_trend</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Year</span>, y <span class="op">=</span> <span class="va">value</span>, color <span class="op">=</span> <span class="va">District</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Year</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1</span>, color <span class="op">=</span> <span class="st">"#167D8D"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1.5</span>, color <span class="op">=</span> <span class="st">"#167D8D"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">District</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">trend_years</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">trend_years</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Resident Population by District, "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">trend_years</span><span class="op">)</span>, <span class="st">"–"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">trend_years</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Mid-year resident population"</span>,</span>
-<span>    y <span class="op">=</span> <span class="st">"Population"</span>, x <span class="op">=</span> <span class="cn">NULL</span>, color <span class="op">=</span> <span class="st">"District"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Population"</span>, x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    caption <span class="op">=</span> <span class="st">"Source: NSO Mongolia, DT_NSO_0300_002V4"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span>, panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ub-health-environment_files/figure-html/demog-trend-1.svg" alt="Улаанбаатарын дүүргүүдийн сүүлийн 10 жилийн суурин хүн амын шугаман график" width="100%"></p>
+<p><img src="ub-health-environment_files/figure-html/demog-trend-1.svg" alt="Сүүлийн 10 жилийн суурин хүн амыг ижил хуваариар харуулсан Улаанбаатарын есөн дүүргийн тусдаа шугаман график" width="100%"></p>
 <p>2016–2025 оны жилийн арван ажиглалтын хооронд есөн жил өнгөрсөн. Доорх хүснэгт тэмдэгтэй нийт болон жилд шилжүүлсэн өөрчлөлтийг харуулна; сөрөг утга бууралтыг илэрхийлнэ. Багануурын хувийн өөрчлөлтийн абсолют хэмжээ хамгийн бага. Эдгээр нийт дүнгийн өөрчлөлт шилжилт хөдөлгөөн, үйлчилгээний хүчин чадлыг дангаараа тогтоохгүй.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">growth</span>, digits <span class="op">=</span> <span class="fl">1</span>, caption <span class="op">=</span> <span class="st">"Population change over the observed interval"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">growth</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"District"</span>, <span class="st">"Elapsed years"</span>, <span class="st">"Total change (%)"</span>, <span class="st">"Annualised change (%)"</span><span class="op">)</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, caption <span class="op">=</span> <span class="st">"Population change over the observed interval"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>Ажигласан хугацааны хүн амын өөрчлөлт</caption>
+<colgroup>
+<col width="24%">
+<col width="20%">
+<col width="24%">
+<col width="31%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">Дүүрэг</th>
-<th align="right">elapsed_years</th>
-<th align="right">Өөрчлөлт</th>
-<th align="right">annual_change</th>
+<th align="right">Өнгөрсөн жил</th>
+<th align="right">Нийт өөрчлөлт (%)</th>
+<th align="right">Жилд шилжүүлсэн өөрчлөлт (%)</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -402,7 +411,7 @@
 <span><span class="va">edu_load</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">edu_load</span>, Students_Per_School <span class="op">=</span> <span class="va">Students</span> <span class="op">/</span> <span class="va">Schools</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">edu_load</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Students_Per_School</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">District</span>, <span class="va">Students_Per_School</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#2a78d6"</span>, width <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#167D8D"</span>, width <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Students_Per_School</span><span class="op">)</span><span class="op">)</span>, hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.1</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span><span class="op">)</span>, expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.15</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
@@ -450,7 +459,7 @@
 <span></span>
 <span><span class="va">vital_rates</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">rate</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">District</span>, <span class="va">residents</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#8e44ad"</span>, width <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#5B6E9A"</span>, width <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">rate</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>, hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.1</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">measure</span>, scales <span class="op">=</span> <span class="st">"free_x"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -509,45 +518,24 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">assignment</span> <span class="op">==</span> <span class="st">"Unique"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_join</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ub_districts</span>, District <span class="op">=</span> <span class="va">name</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">analysis_keys</span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="va">ub_stations_sf</span><span class="op">)</span>, <span class="st">"Station"</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">station_points</span>, <span class="va">assignment</span> <span class="op">!=</span> <span class="st">"Unique"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  caption <span class="op">=</span> <span class="st">"Stations with unresolved district assignments"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<caption>Дүүрэгт хуваарилах нь шийдэгдээгүй станцууд</caption>
-<colgroup>
-<col width="9%">
-<col width="21%">
-<col width="14%">
-<col width="20%">
-<col width="22%">
-<col width="12%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">Станц</th>
-<th align="left">coordinate_source</th>
-<th align="left">verified_at</th>
-<th align="left">operating_period</th>
-<th align="left">pollutant_coverage</th>
-<th align="left">Хуваарилалт</th>
-</tr></thead>
-<tbody></tbody>
-</table>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span><span class="va">unresolved_stations</span> <span class="op">&lt;-</span> <span class="va">station_points</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">assignment</span> <span class="op">!=</span> <span class="st">"Unique"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Station</span>, <span class="va">assignment</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># Станцгүй дүүргийг оролцуулан дүүрэг бүрийн станцын тоо</span></span>
 <span><span class="va">station_count</span> <span class="op">&lt;-</span> <span class="va">ub_districts</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>District <span class="op">=</span> <span class="va">name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="va">ub_stations_sf</span><span class="op">)</span>, <span class="va">District</span>, name <span class="op">=</span> <span class="st">"Stations"</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">District</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Stations <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/coalesce.html" class="external-link">coalesce</a></span><span class="op">(</span><span class="va">Stations</span>, <span class="fl">0L</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">Stations</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">station_count</span>, caption <span class="op">=</span> <span class="st">"Uniquely assigned locations in the illustrative inventory by district"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">Stations</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Жагсаалтын станц бүрийн байршил нэг дүүрэгт харьяалагдаж байна.</p>
 <table class="table">
 <caption>Жишээ жагсаалтын цорын ганц утгаар хуваарилсан байршлууд, дүүргээр</caption>
 <thead><tr class="header">
 <th align="left">Дүүрэг</th>
-<th align="right">Станцууд</th>
+<th align="right">Жагсаасан байршил</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -592,7 +580,7 @@
 <div class="section level3">
 <h3 id="spatial-distribution">Орон зайн тархалт<a class="anchor" aria-label="Хэсгийн холбоос" href="#spatial-distribution"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Станцуудын хүрээнд UTM 48N бүсэд (метрээр) 3 км захын зайтай томруулах</span></span>
 <span><span class="va">utm48n</span> <span class="op">&lt;-</span> <span class="fl">32648</span></span>
 <span><span class="va">station_box</span> <span class="op">&lt;-</span> <span class="va">ub_stations_sf</span> <span class="op">|&gt;</span></span>
@@ -601,10 +589,10 @@
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://temuulene.github.io/mongolmaps/reference/mn_map.html" class="external-link">mn_map</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ub_districts</span>, <span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">central</span><span class="op">)</span>,</span>
-<span>  label <span class="op">=</span> <span class="cn">TRUE</span>, crs <span class="op">=</span> <span class="va">utm48n</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">FALSE</span>, crs <span class="op">=</span> <span class="va">utm48n</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Air Quality Monitoring Stations in Central Ulaanbaatar"</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">ub_stations_sf</span>, color <span class="op">=</span> <span class="st">"#e34948"</span>, size <span class="op">=</span> <span class="fl">2.5</span>, alpha <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">ub_stations_sf</span>, color <span class="op">=</span> <span class="st">"#C2623D"</span>, size <span class="op">=</span> <span class="fl">2.5</span>, alpha <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggrepel</span><span class="fu">::</span><span class="fu"><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html" class="external-link">geom_text_repel</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">ub_stations_sf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">Station</span>, geometry <span class="op">=</span> <span class="va">geometry</span><span class="op">)</span>, stat <span class="op">=</span> <span class="st">"sf_coordinates"</span>,</span>
 <span>    size <span class="op">=</span> <span class="fl">2.4</span>, color <span class="op">=</span> <span class="st">"grey20"</span>, min.segment.length <span class="op">=</span> <span class="fl">0</span>, seed <span class="op">=</span> <span class="fl">1</span></span>
@@ -613,89 +601,104 @@
 <span>    crs <span class="op">=</span> <span class="va">utm48n</span>, datum <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>    xlim <span class="op">=</span> <span class="va">station_box</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"xmin"</span>, <span class="st">"xmax"</span><span class="op">)</span><span class="op">]</span>, ylim <span class="op">=</span> <span class="va">station_box</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ymin"</span>, <span class="st">"ymax"</span><span class="op">)</span><span class="op">]</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Red points = monitoring stations (approximate locations)"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"Red points = monitoring stations (approximate locations)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">analysis_map_theme</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ub-health-environment_files/figure-html/aq-network-map-1.svg" alt="Улаанбаатарын төвийн дүүргүүдийн газрын зураг. Агаарын чанарын хяналтын станцуудыг улаан цэгээр тэмдэглэв" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="coverage">Хамралт<a class="anchor" aria-label="Хэсгийн холбоос" href="#coverage"></a>
 </h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">station_coverage</span> <span class="op">&lt;-</span> <span class="va">station_count</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">pop_data</span>, <span class="va">District</span>, Population <span class="op">=</span> <span class="va">value</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html" class="external-link">join_by</a></span><span class="op">(</span><span class="va">District</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Pop_per_Station <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">Stations</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="va">Population</span> <span class="op">/</span> <span class="va">Stations</span>, <span class="cn">NA_real_</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">station_coverage</span>, caption <span class="op">=</span> <span class="st">"All districts, including those without a listed location"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">station_coverage</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Pop_per_Station <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">Stations</span> <span class="op">&gt;</span> <span class="fl">0</span>,</span>
+<span>    <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/comma.html" class="external-link">comma</a></span><span class="op">(</span><span class="va">Pop_per_Station</span>, accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, <span class="st">"Not applicable"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>    col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"District"</span>, <span class="st">"Listed locations"</span>, <span class="st">"Population"</span>, <span class="st">"Residents per listed location"</span><span class="op">)</span>,</span>
+<span>    digits <span class="op">=</span> <span class="fl">0</span>, format.args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"All districts, including those without a listed location"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>Жагсаасан байршилгүй дүүргийг оролцуулсан бүх дүүрэг</caption>
+<colgroup>
+<col width="22%">
+<col width="22%">
+<col width="14%">
+<col width="40%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">Дүүрэг</th>
-<th align="right">Станцууд</th>
+<th align="right">Жагсаасан байршил</th>
 <th align="right">Хүн ам</th>
-<th align="right">Pop_per_Station</th>
+<th align="left">Жагсаасан байршилд ногдох хүн ам</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Баянзүрх</td>
 <td align="right">5</td>
-<td align="right">452084</td>
-<td align="right">90416.8</td>
+<td align="right">452,084</td>
+<td align="left">90,417</td>
 </tr>
 <tr class="even">
 <td align="left">Баянгол</td>
 <td align="right">3</td>
-<td align="right">257391</td>
-<td align="right">85797.0</td>
+<td align="right">257,391</td>
+<td align="left">85,797</td>
 </tr>
 <tr class="odd">
 <td align="left">Сонгинохайрхан</td>
 <td align="right">3</td>
-<td align="right">341746</td>
-<td align="right">113915.3</td>
+<td align="right">341,746</td>
+<td align="left">113,915</td>
 </tr>
 <tr class="even">
 <td align="left">Сүхбаатар</td>
 <td align="right">3</td>
-<td align="right">142356</td>
-<td align="right">47452.0</td>
+<td align="right">142,356</td>
+<td align="left">47,452</td>
 </tr>
 <tr class="odd">
 <td align="left">Хан-Уул</td>
 <td align="right">2</td>
-<td align="right">278532</td>
-<td align="right">139266.0</td>
+<td align="right">278,532</td>
+<td align="left">139,266</td>
 </tr>
 <tr class="even">
 <td align="left">Чингэлтэй</td>
 <td align="right">2</td>
-<td align="right">131278</td>
-<td align="right">65639.0</td>
+<td align="right">131,278</td>
+<td align="left">65,639</td>
 </tr>
 <tr class="odd">
 <td align="left">Багануур</td>
 <td align="right">0</td>
-<td align="right">29076</td>
-<td align="right">NA</td>
+<td align="right">29,076</td>
+<td align="left">Хамаарахгүй</td>
 </tr>
 <tr class="even">
 <td align="left">Багахангай</td>
 <td align="right">0</td>
-<td align="right">4401</td>
-<td align="right">NA</td>
+<td align="right">4,401</td>
+<td align="left">Хамаарахгүй</td>
 </tr>
 <tr class="odd">
 <td align="left">Налайх</td>
 <td align="right">0</td>
-<td align="right">40781</td>
-<td align="right">NA</td>
+<td align="right">40,781</td>
+<td align="left">Хамаарахгүй</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">station_coverage</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Stations</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Pop_per_Station</span> <span class="op">/</span> <span class="fl">1000</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">District</span>, <span class="va">Pop_per_Station</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#2a78d6"</span>, width <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#167D8D"</span>, width <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Pop_per_Station</span> <span class="op">/</span> <span class="fl">1000</span><span class="op">)</span>, <span class="st">"k ("</span>, <span class="va">Stations</span>, <span class="st">")"</span><span class="op">)</span><span class="op">)</span>, hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.1</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.25</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>

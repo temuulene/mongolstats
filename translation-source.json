@@ -38,7 +38,7 @@
   {
     "id": "0190f28e838c362d9792",
     "source": "Boundaries: NSO Mongolia & OCHA (COD-AB), CC BY-IGO; Khoroos: khoroo-map ({1}BSD), unofficial",
-    "page": "articles/ub-health-environment_files/figure-html/demog-density-1.svg",
+    "page": "articles/ub-health-environment_files/figure-html/aq-network-map-1.svg",
     "kind": "figure"
   },
   {
@@ -72,6 +72,18 @@
     "kind": "html"
   },
   {
+    "id": "023b22a5662d652e58fe",
+    "source": "A typed numeric ID",
+    "page": "articles/data-provenance.html",
+    "kind": "html"
+  },
+  {
+    "id": "024dc204d7ba77a8ff9b",
+    "source": "Area",
+    "page": "articles/mapping.html",
+    "kind": "html"
+  },
+  {
     "id": "02547697d6aabbd6e936",
     "source": "Superseded discovery functions",
     "page": "reference/nso_itms.html",
@@ -84,10 +96,28 @@
     "kind": "html"
   },
   {
+    "id": "033cf05764551fa412c8",
+    "source": "Usable years",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
+    "id": "03574f1b2ac3f126230a",
+    "source": "Median above standard (%)",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
     "id": "035c20b45f92da307bcb",
     "source": "Stomach",
     "page": "articles/discovery_files/figure-html/cancer-analysis-1.svg",
     "kind": "figure"
+  },
+  {
+    "id": "037da73348c208138171",
+    "source": "Experimental aggregate series and datamart discovery",
+    "page": "articles/data-provenance.html",
+    "kind": "html"
   },
   {
     "id": "04142835736542f7c175",
@@ -234,6 +264,12 @@
     "kind": "html"
   },
   {
+    "id": "08d1183ff769c035bc6b",
+    "source": "Summer months",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
     "id": "08f9e4dab69aa10e30d9",
     "source": "December ({1} deaths/day)",
     "page": "articles/mortality-analysis.html",
@@ -243,6 +279,12 @@
     "id": "0914ec57a0e7cf113dc7",
     "source": "Granularity",
     "page": "articles/mortality-analysis.html",
+    "kind": "html"
+  },
+  {
+    "id": "091c958246e014a74dce",
+    "source": "Mean PM2.{1} (µg/m³)",
+    "page": "articles/environmental-surveillance.html",
     "kind": "html"
   },
   {
@@ -300,6 +342,12 @@
     "kind": "html"
   },
   {
+    "id": "0a902f142a1eb0ddff8f",
+    "source": "Maternal Mortality Intervals Are Not Available",
+    "page": "articles/mapping_files/figure-html/maternal-intervals-1.svg",
+    "kind": "figure"
+  },
+  {
     "id": "0a9ffcb34b148b5e0e9f",
     "source": "{1} now returns a tibble with {2}, {3}, {4} and {5}, oldest period first, instead of a character vector of labels in catalogue order (newest first). It also finds time dimensions named “Month”, “Quarter” or in Mongolian, which it previously missed.",
     "page": "news/index.html",
@@ -334,12 +382,6 @@
     "source": "# Require mutually exclusive source groups before collapsing the population.",
     "page": "articles/discovery.html",
     "kind": "comment"
-  },
-  {
-    "id": "0b6ffe4703c132da5059",
-    "source": "{1} of {2} stations with usable years were placed. {3} station(s) could not be placed from settlement names (n/a). Mapped settlement centres are illustrative positions, not measured station coordinates. Compare the coverage and summaries of placed and omitted stations before generalising. For exposure studies, use the weather stations’ own coordinates from the National Agency for Meteorology and Environmental Monitoring.",
-    "page": "articles/environmental-surveillance.html",
-    "kind": "html"
   },
   {
     "id": "0b71f3ef85f548517487",
@@ -396,6 +438,12 @@
     "kind": "html"
   },
   {
+    "id": "0c554bf8b6c8bee21de0",
+    "source": "Residents per listed location",
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
+  },
+  {
     "id": "0c7d2ef119131704f52e",
     "source": "Optional pre-fetched boundaries.",
     "page": "reference/mn_join_by_name.html",
@@ -441,6 +489,12 @@
     "id": "0cde731f4c9e3bb39990",
     "source": "The {1} example is now conditional on memoise/cachem/rappdirs being installed.",
     "page": "news/index.html",
+    "kind": "html"
+  },
+  {
+    "id": "0d03bf9ce5d67896d595",
+    "source": "Sources, metadata, and reproducible exports",
+    "page": "articles/data-provenance.html",
     "kind": "html"
   },
   {
@@ -495,6 +549,12 @@
     "id": "0e3aec40c6a3f6d4ca9b",
     "source": "{1}Infrastructure{2}: Fully migrated {3} management to {4} and fixed GitHub Actions workflows.",
     "page": "news/index.html",
+    "kind": "html"
+  },
+  {
+    "id": "0e52e9d71e065f19e7fb",
+    "source": "Keep source symbols{1}{2}",
+    "page": "articles/data-provenance.html",
     "kind": "html"
   },
   {
@@ -572,7 +632,7 @@
   {
     "id": "115ccf9610656d3b5afd",
     "source": "Station",
-    "page": "articles/ub-health-environment.html",
+    "page": "articles/environmental-surveillance.html",
     "kind": "html"
   },
   {
@@ -621,12 +681,6 @@
     "id": "12ca9abd962d4305cc42",
     "source": "{1}Show uncertainty{2}: Pair every choropleth with confidence intervals or a funnel plot.",
     "page": "articles/mapping.html",
-    "kind": "html"
-  },
-  {
-    "id": "12ea12eace7d655f471c",
-    "source": "change",
-    "page": "articles/ub-health-environment.html",
     "kind": "html"
   },
   {
@@ -718,6 +772,12 @@
     "source": "Deaths per Day by Calendar Month",
     "page": "articles/mortality-analysis_files/figure-html/monthly-boxplot-1.svg",
     "kind": "figure"
+  },
+  {
+    "id": "156b9321313ae7da6a04",
+    "source": "{1} of {2} stations with usable years were placed. Stations that could not be placed: None. Mapped settlement centres are illustrative positions, not measured station coordinates. Compare the coverage and summaries of placed and omitted stations before generalising. For exposure studies, use the weather stations’ own coordinates from the National Agency for Meteorology and Environmental Monitoring.",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
   },
   {
     "id": "15945f13cbe1d6888cf5",
@@ -837,6 +897,12 @@
     "id": "190e0b5a989d6d4e648a",
     "source": "If TRUE, fetch tables in parallel with {1} (requires the mirai and carrier packages). Start background workers first with {2}; without them the tables are fetched one at a time. Workers load the installed copy of mongolstats. Defaults to the {3} option ({4}).",
     "page": "reference/nso_package.html",
+    "kind": "html"
+  },
+  {
+    "id": "1917eaa5ca6f24645d1f",
+    "source": "National MMR per {1}",
+    "page": "articles/mapping.html",
     "kind": "html"
   },
   {
@@ -978,12 +1044,6 @@
     "kind": "html"
   },
   {
-    "id": "1c9e6555fbda1c4460ca",
-    "source": "# Reusable theme for all plots in this analysis",
-    "page": "articles/mortality-analysis.html",
-    "kind": "comment"
-  },
-  {
     "id": "1cd37ace0512506a1e0c",
     "source": "{1}Standardized Aesthetics{2}: Consistent plot styling across all vignettes.",
     "page": "news/index.html",
@@ -1020,12 +1080,6 @@
     "kind": "comment"
   },
   {
-    "id": "1e07134382e25893beaf",
-    "source": "Dot plot of the pooled maternal mortality ratio by aimag with exact {1} confidence intervals and a dashed line at the national ratio",
-    "page": "articles/mapping.html",
-    "kind": "alt"
-  },
-  {
     "id": "1e6535d2d94ad272dfe9",
     "source": "Initial development snapshot.",
     "page": "news/index.html",
@@ -1048,12 +1102,6 @@
     "source": "Requests larger than the server’s limit of {1} cells are split into several requests and the results combined. The limit is set by the new option {2}.",
     "page": "news/index.html",
     "kind": "html"
-  },
-  {
-    "id": "1eeac96997922f4d6787",
-    "source": "Maternal Mortality Ratio by Aimag, {1}",
-    "page": "articles/mapping_files/figure-html/maternal-intervals-1.svg",
-    "kind": "figure"
   },
   {
     "id": "1f0c5b2bd57290631786",
@@ -1240,6 +1288,12 @@
     "source": "Authors:",
     "page": "reference/mongolstats-package.html",
     "kind": "html"
+  },
+  {
+    "id": "249733000f2aed94b59c",
+    "source": "Maternal Mortality Map Is Not Available",
+    "page": "articles/mapping_files/figure-html/maternal-map-1.svg",
+    "kind": "figure"
   },
   {
     "id": "25147f75f743158e398e",
@@ -1470,6 +1524,12 @@
     "kind": "html"
   },
   {
+    "id": "2bf9b2adce2bb81c22b1",
+    "source": "Usable years differ by station; points = means, lines = min/max",
+    "page": "articles/environmental-surveillance_files/figure-html/dust-days-1.svg",
+    "kind": "figure"
+  },
+  {
     "id": "2c00c9aaa72c717ad6d9",
     "source": "Authors",
     "page": "authors.html",
@@ -1509,12 +1569,6 @@
     "id": "2ce71c8bfcc97575f536",
     "source": "Disable offline mode",
     "page": "reference/nso_offline_disable.html",
-    "kind": "html"
-  },
-  {
-    "id": "2d00cc5de79c9a8c33f5",
-    "source": "Stations with unresolved district assignments",
-    "page": "articles/ub-health-environment.html",
     "kind": "html"
   },
   {
@@ -1584,12 +1638,6 @@
     "kind": "html"
   },
   {
-    "id": "2ef508db324756f66a13",
-    "source": "Definitions, forms, classifications and relationships / Тодорхойлолт, маягт, ангилал, холбоос",
-    "page": "articles/data-provenance.html",
-    "kind": "html"
-  },
-  {
     "id": "2f07e54bbfef59e5a396",
     "source": "Infant Mortality by Aimag, {1}",
     "page": "articles/getting-started_files/figure-html/regional-plot-1.svg",
@@ -1644,10 +1692,22 @@
     "kind": "html"
   },
   {
+    "id": "3060d0956e6994f13fb7",
+    "source": "Station-months",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
     "id": "307c4391a26da4b8c1bf",
     "source": "{1}. Statistical Checks{2}{3}",
     "page": "articles/mortality-analysis.html",
     "kind": "html"
+  },
+  {
+    "id": "3084aaf9ee3ca8a6ab37",
+    "source": "Missing observations prevent an area comparison",
+    "page": "articles/mapping_files/figure-html/maternal-map-1.svg",
+    "kind": "figure"
   },
   {
     "id": "30a29748109388d61c5b",
@@ -1672,6 +1732,12 @@
     "source": "Month",
     "page": "articles/mortality-analysis_files/figure-html/time-series-plot-1.svg",
     "kind": "figure"
+  },
+  {
+    "id": "31128e164756619cc1c2",
+    "source": "All listed station locations have a unique district assignment.",
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
   },
   {
     "id": "313cd57fd25174175ab0",
@@ -1854,6 +1920,12 @@
     "kind": "html"
   },
   {
+    "id": "38d08c58220b27d1febc",
+    "source": "Reported percentages",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
     "id": "38f215fc6797dbb21ddb",
     "source": "Boundary level, passed to {1} if {2} not provided.",
     "page": "reference/mn_join_by_name.html",
@@ -1866,16 +1938,22 @@
     "kind": "html"
   },
   {
-    "id": "39498ef8b13089b8a844",
-    "source": "Map of Mongolia with weather stations shown as points sized and coloured by average dust days per year; only stations with usable complete-year observations are included",
-    "page": "articles/environmental-surveillance.html",
-    "kind": "alt"
-  },
-  {
     "id": "39713da4bc0fe5b7a470",
     "source": "% of days",
     "page": "articles/environmental-surveillance_files/figure-html/pm25-exceedance-1.svg",
     "kind": "figure"
+  },
+  {
+    "id": "3a0d0f13314bf2f6dcdc",
+    "source": "Definitions, forms, classifications and relationships",
+    "page": "articles/data-provenance.html",
+    "kind": "html"
+  },
+  {
+    "id": "3a13a966c7ea94fb4538",
+    "source": "Geographic level",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
   },
   {
     "id": "3a1a8eaed22581eeecf1",
@@ -1888,6 +1966,12 @@
     "source": "# can carry leading spaces, so trim them before comparing.",
     "page": "articles/discovery.html",
     "kind": "comment"
+  },
+  {
+    "id": "3a8153d499735ad39d86",
+    "source": "Start with a reviewed concept{1}{2}",
+    "page": "articles/data-provenance.html",
+    "kind": "html"
   },
   {
     "id": "3a9eb5b4ac2f888af554",
@@ -1968,12 +2052,6 @@
     "kind": "html"
   },
   {
-    "id": "3d4354e17bbaa53fc99a",
-    "source": "Use the public portal explicitly / Нээлттэй порталыг тусад нь ашиглах{1}{2}",
-    "page": "articles/data-provenance.html",
-    "kind": "html"
-  },
-  {
     "id": "3dc60b9a1a5ce683c49c",
     "source": "Other years",
     "page": "articles/mortality-analysis_files/figure-html/monthly-boxplot-1.svg",
@@ -2050,6 +2128,12 @@
     "source": "{1} no longer changes the meaning of regex escapes: the pattern was lowercased for case-insensitive matching, turning {2} into {3}. {4} and {5} now match with {6} instead.",
     "page": "news/index.html",
     "kind": "html"
+  },
+  {
+    "id": "3e973793398494c0cfd7",
+    "source": "Missing observations prevent area estimates and confidence intervals",
+    "page": "articles/mapping_files/figure-html/maternal-intervals-1.svg",
+    "kind": "figure"
   },
   {
     "id": "3ec6848d94a53b1d41d2",
@@ -2184,6 +2268,12 @@
     "kind": "html"
   },
   {
+    "id": "42dcce9fb956f3859c33",
+    "source": "Totals agree",
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
+  },
+  {
     "id": "4319ad1ed0c4f9bc2660",
     "source": "{1}th micro district",
     "page": "articles/ub-health-environment_files/figure-html/aq-network-map-1.svg",
@@ -2256,12 +2346,6 @@
     "kind": "html"
   },
   {
-    "id": "4563e8a56aa69ff217a9",
-    "source": "Use / Хэрэглээ",
-    "page": "articles/data-provenance.html",
-    "kind": "html"
-  },
-  {
     "id": "458603cbe66a0ec6f83b",
     "source": "Content not found. Please use links in the navbar.",
     "page": "404.html",
@@ -2286,12 +2370,6 @@
     "kind": "html"
   },
   {
-    "id": "46768a3bd9e90606b0eb",
-    "source": "# Set global ggplot2 theme with proper margins to prevent text cutoff",
-    "page": "articles/getting-started.html",
-    "kind": "comment"
-  },
-  {
     "id": "468c9d052e6778adef39",
     "source": "The geoBoundaries helpers {1}, {2}, {3}, {4} and {5} are deprecated in favour of the mongolmaps package, whose boundaries carry NSO codes and whose {6} joins NSO tables by code, drops totals, and takes Ulaanbaatar’s figures from region code {7} when a table leaves {8} empty.",
     "page": "news/index.html",
@@ -2307,12 +2385,6 @@
     "id": "470ba03de7815903870e",
     "source": "Calendar-month profiles for the capital and aimags combined, shown with and without {1}.",
     "page": "articles/mortality-analysis.html",
-    "kind": "alt"
-  },
-  {
-    "id": "47211ee1990d77b90743",
-    "source": "Choropleth map of the pooled maternal mortality ratio by aimag and Ulaanbaatar over the last {1} complete years",
-    "page": "articles/mapping.html",
     "kind": "alt"
   },
   {
@@ -2370,6 +2442,12 @@
     "kind": "html"
   },
   {
+    "id": "4852ac8f545d04ed0222",
+    "source": "Use the public portal explicitly{1}{2}",
+    "page": "articles/data-provenance.html",
+    "kind": "html"
+  },
+  {
     "id": "485ccd7bbe3b06fcc93e",
     "source": "from year's mean",
     "page": "articles/mortality-analysis_files/figure-html/heatmap-1.svg",
@@ -2410,6 +2488,12 @@
     "source": "{1}Cleanup{2}: Removed legacy {3} and unused artifacts.",
     "page": "news/index.html",
     "kind": "html"
+  },
+  {
+    "id": "4a2401a04675a73ae35c",
+    "source": "Dot plot of observed complete-year dust days by station; points are means and lines show the minimum and maximum observed year",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "alt"
   },
   {
     "id": "4a32373b1b685255e50f",
@@ -2460,6 +2544,12 @@
     "kind": "html"
   },
   {
+    "id": "4b02bff0f1437d765724",
+    "source": "Winter months",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
     "id": "4b0b86c1d6f45cb7db22",
     "source": "Inspect the freshness and coverage of the table catalogue",
     "page": "reference/nso_catalogue_status.html",
@@ -2472,10 +2562,28 @@
     "kind": "figure"
   },
   {
+    "id": "4b73336ad6a1c475697b",
+    "source": "Nine small-multiple line charts of resident population by Ulaanbaatar district over the last {1} years, on a shared population scale",
+    "page": "articles/ub-health-environment.html",
+    "kind": "alt"
+  },
+  {
+    "id": "4b8f93fce46ce789c8c8",
+    "source": "Calculated IMR",
+    "page": "articles/discovery.html",
+    "kind": "html"
+  },
+  {
     "id": "4bd1199c8a1878326c2b",
     "source": "Equal-year monthly means of recorded deaths per day with approximate independent-year confidence intervals.",
     "page": "articles/mortality-analysis.html",
     "kind": "alt"
+  },
+  {
+    "id": "4c0b96799f877fb01ffc",
+    "source": "Summer SO₂ (µg/m³)",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
   },
   {
     "id": "4c817046df9a903e83f9",
@@ -2496,6 +2604,12 @@
     "kind": "html"
   },
   {
+    "id": "4d280a451d04b7a51a7e",
+    "source": "Difference",
+    "page": "articles/discovery.html",
+    "kind": "html"
+  },
+  {
     "id": "4d2daeb53d9a51e33591",
     "source": "above standard",
     "page": "articles/environmental-surveillance_files/figure-html/pm25-exceedance-1.svg",
@@ -2511,12 +2625,6 @@
     "id": "4d5d5d7b3f17b5e76e84",
     "source": "Whether to replace an existing file. Defaults to {1}.",
     "page": "reference/nso_write_manifest.html",
-    "kind": "html"
-  },
-  {
-    "id": "4dbae3aee4b97e64446d",
-    "source": "Find definitions and collection context / Тодорхойлолт, цуглуулалтын нөхцөлийг олох{1}{2}",
-    "page": "articles/data-provenance.html",
     "kind": "html"
   },
   {
@@ -2592,12 +2700,6 @@
     "kind": "figure"
   },
   {
-    "id": "504313cf9ca51a0d23f0",
-    "source": "Line chart of resident population by Ulaanbaatar district over the last {1} years",
-    "page": "articles/ub-health-environment.html",
-    "kind": "alt"
-  },
-  {
     "id": "5057eb51c74517e76ff3",
     "source": "The monthly communicable disease table counts reported (notified) cases. Annual summation assumes these are monthly increments, not cumulative year-to-date values; confirm that reporting convention with the source before using the estimates. To compare years, divide by the population at risk. Here we use the national mid-year population.",
     "page": "articles/discovery.html",
@@ -2628,16 +2730,10 @@
     "kind": "html"
   },
   {
-    "id": "50ea658bb4f9ce818194",
-    "source": "Stations with the Most Dust Days, {1}",
-    "page": "articles/environmental-surveillance_files/figure-html/dust-days-1.svg",
-    "kind": "figure"
-  },
-  {
     "id": "50f1878d24fe66e518f9",
     "source": "District",
-    "page": "articles/ub-health-environment_files/figure-html/demog-trend-1.svg",
-    "kind": "figure"
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
   },
   {
     "id": "5129f351557959d32a36",
@@ -2664,6 +2760,12 @@
     "kind": "html"
   },
   {
+    "id": "5237c96ac1a23b98eb13",
+    "source": "Not applicable",
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
+  },
+  {
     "id": "526e0087cc3f254d9f86",
     "source": "Description",
     "page": "articles/mortality-analysis.html",
@@ -2685,6 +2787,12 @@
     "id": "5314483b9e459fa1b37e",
     "source": "Classification codes remain character strings. An empty codebook does not prove that the classification has no categories, and a nonempty one does not prove completeness. A licence or security category describes the catalog record; it does not grant access to underlying records. Missing official translations remain missing.",
     "page": "articles/data-provenance.html",
+    "kind": "html"
+  },
+  {
+    "id": "533173b34686906e6d3c",
+    "source": "National estimate excluding pandemic years",
+    "page": "articles/mapping.html",
     "kind": "html"
   },
   {
@@ -2748,22 +2856,10 @@
     "kind": "html"
   },
   {
-    "id": "54e215d387611f89509b",
-    "source": "Export a durable record / Тогтвортой бүртгэлтэй экспорт хийх{1}{2}",
-    "page": "articles/data-provenance.html",
-    "kind": "html"
-  },
-  {
     "id": "54e75393324eef491946",
     "source": "Peak: Dec ({1}/day); lowest: Jan ({2}/day)",
     "page": "articles/mortality-analysis_files/figure-html/monthly-means-plot-1.svg",
     "kind": "figure"
-  },
-  {
-    "id": "55150f2286d8d414cce4",
-    "source": "# Formatting helpers for inline results",
-    "page": "articles/mortality-analysis.html",
-    "kind": "comment"
   },
   {
     "id": "558563c7116487590925",
@@ -2868,6 +2964,12 @@
     "kind": "html"
   },
   {
+    "id": "58ad73d7c9b92457286e",
+    "source": "Portal identifiers and geography codes use their own source scheme; missing official labels remain missing. Datamart support provides discovery only. Open the source and metadata guide with {1} for exports, quality checks, classification codebooks, catalog freshness, and the limits of the experimental services.",
+    "page": "index.html",
+    "kind": "html"
+  },
+  {
     "id": "58b18060250b16fbae85",
     "source": "Air Quality Monitoring{1}{2}",
     "page": "articles/environmental-surveillance.html",
@@ -2884,6 +2986,12 @@
     "source": "JSON sidecars preserve source identity and query context separately from CSV exports or transformed tibbles. Save {1} separately for successful results when source symbols matter. Failed fetch manifests retain status from completed chunks when available. Both reading and writing validate the manifest schema. Reading accepts local files; replacement writes preserve the previous file if installing the new file fails.",
     "page": "reference/nso_write_manifest.html",
     "kind": "html"
+  },
+  {
+    "id": "59880a8203ab3367d7d3",
+    "source": "No area has a complete observed estimate or confidence interval for maternal mortality",
+    "page": "articles/mapping.html",
+    "kind": "alt"
   },
   {
     "id": "599998759a40a46086e3",
@@ -2928,12 +3036,6 @@
     "kind": "comment"
   },
   {
-    "id": "5a18907f9cb14fbef5c6",
-    "source": "Check discovery freshness / Хайлтын шинэ байдлыг шалгах{1}{2}",
-    "page": "articles/data-provenance.html",
-    "kind": "html"
-  },
-  {
     "id": "5a3397e5110e1d1392cf",
     "source": "Datamart support provides catalog discovery and presentation configuration only. The reported year range is source text, not verified coverage. {1} is {2}: a stable developer contract for aggregate queries has not been verified, and this interface does not retrieve underlying individual records.",
     "page": "articles/data-provenance.html",
@@ -2943,6 +3045,12 @@
     "id": "5a6ef3507757defcdaeb",
     "source": "{1}Monthly source:{2} Live NSO response, {3} to {4}. Of {5} station-months, {6} meet the mean/completeness rule. {7} of those retained station-months have no reported exceedance percentage.",
     "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
+    "id": "5a97ad5270459d9efb6c",
+    "source": "Adjacent-month residual correlation",
+    "page": "articles/mortality-analysis.html",
     "kind": "html"
   },
   {
@@ -2986,12 +3094,6 @@
     "source": "Population",
     "page": "reference/figures/README-pop-map-example-1.svg",
     "kind": "figure"
-  },
-  {
-    "id": "5b82a84aa201ec8b0162",
-    "source": "Keep source symbols / Анхны тэмдэглэгээг хадгалах{1}{2}",
-    "page": "articles/data-provenance.html",
-    "kind": "html"
   },
   {
     "id": "5b9fc27c30e39c439bb7",
@@ -3120,6 +3222,12 @@
     "kind": "html"
   },
   {
+    "id": "6002dc003d559dca8fff",
+    "source": "Published IMR",
+    "page": "articles/discovery.html",
+    "kind": "html"
+  },
+  {
     "id": "606afbea543bf15364a6",
     "source": "Mongolia’s National Statistics Office (NSO) publishes vital statistics and disease surveillance data that are useful for research and policy analysis. This guide shows how to find the right tables, check what they measure, and turn counts into rates.",
     "page": "articles/discovery.html",
@@ -3194,7 +3302,7 @@
   {
     "id": "629b36a5e71de9a87962",
     "source": "Live births",
-    "page": "articles/getting-started.html",
+    "page": "articles/mapping.html",
     "kind": "html"
   },
   {
@@ -3438,6 +3546,12 @@
     "kind": "html"
   },
   {
+    "id": "697747d36cae41579599",
+    "source": "Total change (%)",
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
+  },
+  {
     "id": "69a0d2667a50bb0c646a",
     "source": "Tuul, Lun",
     "page": "articles/environmental-surveillance.html",
@@ -3480,6 +3594,12 @@
     "kind": "html"
   },
   {
+    "id": "6ada1bcb2c1a1f983189",
+    "source": "Observed months and winter/summer sulphur dioxide concentrations",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
     "id": "6af7e5e2aba20f31ed69",
     "source": "Ulaanbaatar",
     "page": "articles/mortality-analysis_files/figure-html/urban-rural-comparison-1.svg",
@@ -3507,6 +3627,12 @@
     "id": "6b7045d5258c973601e1",
     "source": "Discover public aggregate datamarts",
     "page": "reference/nso_portal_datamarts.html",
+    "kind": "html"
+  },
+  {
+    "id": "6b8bdb486125d0a974f3",
+    "source": "IMR per {1}",
+    "page": "articles/getting-started.html",
     "kind": "html"
   },
   {
@@ -3567,6 +3693,18 @@
     "id": "6e111a37e68d69e767da",
     "source": "{1}{2} no longer fails silently{3}: tables that fail to fetch are reported in a warning naming each table, and a new {4} argument raises an error instead. Previously failed tables were dropped without any signal.",
     "page": "news/index.html",
+    "kind": "html"
+  },
+  {
+    "id": "6e73d19cc3679e5a4ff6",
+    "source": "Listed locations",
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
+  },
+  {
+    "id": "6e795d4d3cc21c5ca834",
+    "source": "Period",
+    "page": "articles/mapping.html",
     "kind": "html"
   },
   {
@@ -3750,6 +3888,12 @@
     "kind": "html"
   },
   {
+    "id": "734f150b7c528513d9c8",
+    "source": "Table ID",
+    "page": "articles/getting-started.html",
+    "kind": "html"
+  },
+  {
     "id": "736003a59952e8fcfc74",
     "source": "Labels in {1} match ignoring the leading spaces NSO uses to indent nested categories, e.g. {2} for {3}.",
     "page": "news/index.html",
@@ -3774,6 +3918,12 @@
     "kind": "alt"
   },
   {
+    "id": "74477dd81744347728de",
+    "source": "Missing months: deaths / births",
+    "page": "articles/mapping.html",
+    "kind": "html"
+  },
+  {
     "id": "74614ac84f71499419a5",
     "source": "# dim raw data so trend stands out",
     "page": "articles/getting-started.html",
@@ -3796,12 +3946,6 @@
     "source": "Source: NSO Mongolia, DT_NSO_2{1}_0{2}V2 and DT_NSO_2{3}_0{4}V2",
     "page": "articles/ub-health-environment_files/figure-html/socio-edu-1.svg",
     "kind": "figure"
-  },
-  {
-    "id": "74f830180596f9493bbc",
-    "source": "Experimental aggregate series and datamart discovery / Туршилтын нэгтгэсэн цуваа, өгөгдлийн сангийн жагсаалт",
-    "page": "articles/data-provenance.html",
-    "kind": "html"
   },
   {
     "id": "7505e47da9953d4ed5fe",
@@ -3928,12 +4072,6 @@
     "source": "NSO reports concentrations in mg/m³. We convert them to µg/m³, the unit used by the WHO guidelines ({1} mg/m³ = {2} µg/m³). Annual means are rounded to {3} mg/m³ ({4} µg/m³), which is coarse next to standards of {5} µg/m³.",
     "page": "articles/environmental-surveillance.html",
     "kind": "html"
-  },
-  {
-    "id": "796760c254eb292668d2",
-    "source": "Boundaries: NSO Mongolia & OCHA (COD-AB), CC BY-IGO; Grey: No data",
-    "page": "articles/mapping_files/figure-html/maternal-map-1.svg",
-    "kind": "figure"
   },
   {
     "id": "7971f11b59c0d21ea8d7",
@@ -4146,6 +4284,12 @@
     "kind": "html"
   },
   {
+    "id": "7faa6281e8f32457f07a",
+    "source": "No eligible observations",
+    "page": "articles/environmental-surveillance_files/figure-html/pm25-trends-1.svg",
+    "kind": "figure"
+  },
+  {
     "id": "7fab88f25760ab0615ad",
     "source": "Population year {1} | Districts with no listed location remain in the table",
     "page": "articles/ub-health-environment_files/figure-html/station-coverage-1.svg",
@@ -4170,6 +4314,12 @@
     "kind": "comment"
   },
   {
+    "id": "800d9a9bbe798eaa466e",
+    "source": "Infant deaths per {1} live births: reconciliation with the published rate",
+    "page": "articles/discovery.html",
+    "kind": "html"
+  },
+  {
     "id": "8043c7d659334988082c",
     "source": "Murun",
     "page": "articles/environmental-surveillance.html",
@@ -4179,6 +4329,12 @@
     "id": "806d6250e5a6b78f3047",
     "source": "Region codes in NSO tables{1}{2}",
     "page": "articles/mapping.html",
+    "kind": "html"
+  },
+  {
+    "id": "8073cd580d9386ba39ba",
+    "source": "{1}{2} and {3} now actually attach Mongolian labels{4}: label metadata was matched to data columns by display text, but the two languages only share the dimension {5}code{6} (the English column is {7} while both languages use the code {8}), so cross-language labels were silently never added. Labels are now routed through a code-to-column map, which also fixes English labels when {9}.",
+    "page": "news/index.html",
     "kind": "html"
   },
   {
@@ -4248,6 +4404,12 @@
     "kind": "figure"
   },
   {
+    "id": "825a2e0a7910c921ff4e",
+    "source": "Winter/summer ratio",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
     "id": "82817c64b500e0183de2",
     "source": "# December first so that, with sum-to-zero contrasts, coefficient {1} is",
     "page": "articles/mortality-analysis.html",
@@ -4314,6 +4476,12 @@
     "kind": "html"
   },
   {
+    "id": "84358833eaa439dc9874",
+    "source": "Cancer incidence per {1} people; WHO World standard",
+    "page": "articles/discovery.html",
+    "kind": "html"
+  },
+  {
     "id": "844811fd35bf19e15169",
     "source": "Baruun-Urt",
     "page": "articles/environmental-surveillance.html",
@@ -4344,6 +4512,12 @@
     "kind": "html"
   },
   {
+    "id": "85a39ab345d672ff8ca9",
+    "source": "Yes",
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
+  },
+  {
     "id": "85dcc56ba7fd98a5c28c",
     "source": "# Population by age group, same years, both sexes",
     "page": "articles/discovery.html",
@@ -4359,6 +4533,18 @@
     "id": "869a4057d57a50ac63bb",
     "source": "Report bugs at {1}https://github.com/temuulene/mongolstats/issues{2}",
     "page": "reference/mongolstats-package.html",
+    "kind": "html"
+  },
+  {
+    "id": "86ab48c4d85d1dab66eb",
+    "source": "Annualised change (%)",
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
+  },
+  {
+    "id": "86aec05f4530a84d3dd8",
+    "source": "Published statistical tables",
+    "page": "articles/data-provenance.html",
     "kind": "html"
   },
   {
@@ -4572,6 +4758,12 @@
     "kind": "alt"
   },
   {
+    "id": "8d15890a83f73c649bff",
+    "source": "Age-standardised incidence",
+    "page": "articles/discovery.html",
+    "kind": "html"
+  },
+  {
     "id": "8d3075e75fc2dd0c1d95",
     "source": "Grey areas have insufficient data. The map shows point estimates only. Read it with the confidence intervals above: in small aimags, a few more or fewer infant deaths can move the colour a long way.",
     "page": "articles/getting-started.html",
@@ -4620,16 +4812,16 @@
     "kind": "html"
   },
   {
+    "id": "8e4b6cff810b11a51f31",
+    "source": "Complete-Year Dust Observations, {1}",
+    "page": "articles/environmental-surveillance_files/figure-html/dust-days-1.svg",
+    "kind": "figure"
+  },
+  {
     "id": "8ef3eaf4c612545ca7e8",
     "source": "# Keep the highest-ranked match; drop names shared by several soum centres",
     "page": "articles/environmental-surveillance.html",
     "kind": "comment"
-  },
-  {
-    "id": "8f11707572b3005eb6c9",
-    "source": "A typed numeric ID / Төрөлтэй тоон дугаар",
-    "page": "articles/data-provenance.html",
-    "kind": "html"
   },
   {
     "id": "8f43c4cd9e1a19279eef",
@@ -4674,12 +4866,6 @@
     "kind": "html"
   },
   {
-    "id": "8f8e24f65c57e9d506fe",
-    "source": "season",
-    "page": "articles/environmental-surveillance.html",
-    "kind": "html"
-  },
-  {
     "id": "8fb204ca460968479407",
     "source": "December",
     "page": "articles/mortality-analysis_files/figure-html/time-series-plot-1.svg",
@@ -4695,12 +4881,6 @@
     "id": "8fd67ec1f0601b46924f",
     "source": "A one-row tibble from {1}. Unknown or ambiguous IDs raise an error. A portal match does not supply a reviewed PXWeb template.",
     "page": "reference/nso_indicator.html",
-    "kind": "html"
-  },
-  {
-    "id": "900e816f6c26b9fd9416",
-    "source": "agrees",
-    "page": "articles/ub-health-environment.html",
     "kind": "html"
   },
   {
@@ -4836,6 +5016,12 @@
     "kind": "html"
   },
   {
+    "id": "93817e77e7119f8c7ac4",
+    "source": "Station code",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
     "id": "93946e03c38524ebd7ce",
     "source": "Mongolia administrative boundaries (sf)",
     "page": "reference/mn_boundaries.html",
@@ -4876,12 +5062,6 @@
     "source": "{1}Report a bug{2}",
     "page": "index.html",
     "kind": "html"
-  },
-  {
-    "id": "94e67445d92524fef2e9",
-    "source": "Usable observed years only; lines show min/max, not confidence intervals",
-    "page": "articles/environmental-surveillance_files/figure-html/dust-days-1.svg",
-    "kind": "figure"
   },
   {
     "id": "94f3e617f6f7c7c08481",
@@ -4962,6 +5142,12 @@
     "kind": "figure"
   },
   {
+    "id": "963e2f02a08e5ce477df",
+    "source": "R session details",
+    "page": "articles/mortality-analysis.html",
+    "kind": "html"
+  },
+  {
     "id": "96504e119e85d28e323f",
     "source": "Kharkhorin",
     "page": "articles/environmental-surveillance.html",
@@ -4983,12 +5169,6 @@
     "id": "96a1ed51ce44de01c030",
     "source": "Optional column containing period labels.",
     "page": "reference/nso_check_data.html",
-    "kind": "html"
-  },
-  {
-    "id": "97142466a3de0d24bed2",
-    "source": "Published statistical tables / Нийтлэгдсэн статистикийн хүснэгт",
-    "page": "articles/data-provenance.html",
     "kind": "html"
   },
   {
@@ -5100,15 +5280,15 @@
     "kind": "html"
   },
   {
-    "id": "9b11f6b707d2a03e0265",
-    "source": "Monthly",
-    "page": "articles/mortality-analysis.html",
+    "id": "9b10587f84a2c3749305",
+    "source": "Identifier",
+    "page": "articles/data-provenance.html",
     "kind": "html"
   },
   {
-    "id": "9b212490c0ac2e8c1276",
-    "source": "{1}Sources, metadata, and reproducible exports / Эх сурвалж, мета өгөгдөл, давтагдах экспорт{2}",
-    "page": "articles/index.html",
+    "id": "9b11f6b707d2a03e0265",
+    "source": "Monthly",
+    "page": "articles/mortality-analysis.html",
     "kind": "html"
   },
   {
@@ -5116,6 +5296,12 @@
     "source": "Count-model sensitivity and residual checks{1}{2}",
     "page": "articles/mortality-analysis.html",
     "kind": "html"
+  },
+  {
+    "id": "9b5d8e6a812ab55a00f4",
+    "source": "No area has a complete observed estimate for a maternal mortality map",
+    "page": "articles/mapping.html",
+    "kind": "alt"
   },
   {
     "id": "9b8c52e41e202e80f27e",
@@ -5128,12 +5314,6 @@
     "source": "{1}. Causes of Death (Annual Data Only){2}{3}",
     "page": "articles/mortality-analysis.html",
     "kind": "html"
-  },
-  {
-    "id": "9bee01832c19cf553221",
-    "source": "Bar chart of the {1} weather stations with the most dust days per year on average over usable observed years within the selected window, with lines showing the lowest and highest year",
-    "page": "articles/environmental-surveillance.html",
-    "kind": "alt"
   },
   {
     "id": "9c0379ea19da2c3f4cda",
@@ -5169,12 +5349,6 @@
     "id": "9ceeeba9033f8943a0e1",
     "source": "{1}Getting Started{2} - Your first epidemiological analysis",
     "page": "index.html",
-    "kind": "html"
-  },
-  {
-    "id": "9d3d204f2a3c132e2de2",
-    "source": "Stations",
-    "page": "articles/ub-health-environment.html",
     "kind": "html"
   },
   {
@@ -5424,16 +5598,16 @@
     "kind": "figure"
   },
   {
+    "id": "a5d25eda28dfb0dcf56f",
+    "source": "District code",
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
+  },
+  {
     "id": "a6067e9b319dc62ba24c",
     "source": "# A year must have every calendar month in both tables for all expected units.",
     "page": "articles/getting-started.html",
     "kind": "comment"
-  },
-  {
-    "id": "a61d8d6179cdbd47f5ad",
-    "source": "Maternal deaths per {1} live births, Pooled recorded counts; grey = insufficient data. Data: NSO Mongolia",
-    "page": "articles/mapping_files/figure-html/maternal-map-1.svg",
-    "kind": "figure"
   },
   {
     "id": "a65cb8ed9978b56d161f",
@@ -5616,6 +5790,12 @@
     "kind": "html"
   },
   {
+    "id": "ac2db231b2d3a1b18fed",
+    "source": "Missing months",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
     "id": "ac5086cde8685b6bb975",
     "source": "# S3 method for class 'nso_query'",
     "page": "reference/print.nso_query.html",
@@ -5652,6 +5832,12 @@
     "kind": "html"
   },
   {
+    "id": "acfb4f01e55b10bd5892",
+    "source": "Export a durable record{1}{2}",
+    "page": "articles/data-provenance.html",
+    "kind": "html"
+  },
+  {
     "id": "ad09aefb57bf5c064201",
     "source": "January ({1} deaths/day)",
     "page": "articles/mortality-analysis.html",
@@ -5667,6 +5853,12 @@
     "id": "ad5c641a7913721be71b",
     "source": "Tuul, Uubulan",
     "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
+    "id": "adadface0166af24b309",
+    "source": "Not reported",
+    "page": "articles/mapping.html",
     "kind": "html"
   },
   {
@@ -5718,12 +5910,6 @@
     "kind": "html"
   },
   {
-    "id": "afc3982948201a6f2ae2",
-    "source": "Per {1} live births, with exact {2} CIs; dashed line = national ratio",
-    "page": "articles/mapping_files/figure-html/maternal-intervals-1.svg",
-    "kind": "figure"
-  },
-  {
     "id": "afc3f220ae99a8fcbbed",
     "source": "Join data to boundaries by (normalized) names",
     "page": "reference/mn_join_by_name.html",
@@ -5740,6 +5926,12 @@
     "source": "# Khentii's aimag centre, Undurkhaan, was renamed Chinggis city in {1}",
     "page": "articles/environmental-surveillance.html",
     "kind": "comment"
+  },
+  {
+    "id": "b036b08fd733baa1618e",
+    "source": "{1}Coverage:{2} {3} of {4} stations have at least one usable year in this window.",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
   },
   {
     "id": "b0381078d0e156c9b8e6",
@@ -5802,6 +5994,12 @@
     "kind": "html"
   },
   {
+    "id": "b1fa878a98a15b74d970",
+    "source": "Diagnostic",
+    "page": "articles/mortality-analysis.html",
+    "kind": "html"
+  },
+  {
     "id": "b238c2e4baff456e3d1b",
     "source": "{1}Bayangol{2} is the densest district, with about {3} residents per km². {4}Bagakhangai{5} is the least dense, at about {6} per km². Districts such as Bayanzurkh and Songinokhairkhan include large areas of mountain and pasture, so a district average hides very dense neighbourhoods. Khoroo-level data show more detail:",
     "page": "articles/ub-health-environment.html",
@@ -5812,12 +6010,6 @@
     "source": "Jun",
     "page": "articles/mortality-analysis_files/figure-html/urban-rural-comparison-1.svg",
     "kind": "figure"
-  },
-  {
-    "id": "b2ba2ca6116f34983ce1",
-    "source": "Portal identifiers and geography codes use their own source scheme; missing official labels remain missing. Datamart support provides discovery only. Open the bilingual source and metadata guide with {1} for exports, quality checks, classification codebooks, catalog freshness, and the limits of the experimental services.",
-    "page": "index.html",
-    "kind": "html"
   },
   {
     "id": "b2bd583b14a5f351906e",
@@ -5842,6 +6034,12 @@
     "source": "Population Density by District, {1}",
     "page": "articles/ub-health-environment_files/figure-html/demog-density-1.svg",
     "kind": "figure"
+  },
+  {
+    "id": "b3316367fa3ebb50b2bf",
+    "source": "Years examined",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
   },
   {
     "id": "b36f0bcbc0f14d5a8706",
@@ -5902,12 +6100,6 @@
     "source": "Dust observation coverage; unresolved months remain missing",
     "page": "articles/environmental-surveillance.html",
     "kind": "html"
-  },
-  {
-    "id": "b4c71110181375885242",
-    "source": "Maternal deaths per {1} live births",
-    "page": "articles/mapping_files/figure-html/maternal-intervals-1.svg",
-    "kind": "figure"
   },
   {
     "id": "b4efd3499e7c8a507769",
@@ -6045,12 +6237,6 @@
     "id": "b81e8f5e54666b62c2be",
     "source": "Source-Reported PM2.{1} Exceedance Percentages",
     "page": "articles/environmental-surveillance_files/figure-html/pm25-exceedance-1.svg",
-    "kind": "figure"
-  },
-  {
-    "id": "b822b21928a6b7b52c54",
-    "source": "Residents per km² (log scale). Data: NSO Mongolia, DT_NSO_0{1}_0{2}V4",
-    "page": "articles/ub-health-environment_files/figure-html/demog-density-1.svg",
     "kind": "figure"
   },
   {
@@ -6198,12 +6384,6 @@
     "kind": "html"
   },
   {
-    "id": "bbfd87db6843557dd50d",
-    "source": "# Global theme with proper margins to prevent text cutoff",
-    "page": "articles/ub-health-environment.html",
-    "kind": "comment"
-  },
-  {
     "id": "bc5308f27a536782bdc8",
     "source": "Use period labels such as {1}, rather than PXWeb positional time codes: code {2} can refer to a different year after the next update. A source label ending in {3} is preserved. Read the source’s explanation of that mark before assigning a revision status or converting the published number’s scale.",
     "page": "articles/data-provenance.html",
@@ -6244,6 +6424,12 @@
     "source": "Source: NSO Mongolia, DT_NSO_2{1}_0{2}V1",
     "page": "articles/mortality-analysis_files/figure-html/cause-trends-plot-1.svg",
     "kind": "figure"
+  },
+  {
+    "id": "bd11b94a7c4280ac82bd",
+    "source": "Inspect source information{1}{2}",
+    "page": "articles/data-provenance.html",
+    "kind": "html"
   },
   {
     "id": "bd1c8780d7a31c8f17a3",
@@ -6306,15 +6492,15 @@
     "kind": "html"
   },
   {
-    "id": "be94347ce928ae6be9d8",
-    "source": "Maternal Mortality Ratio, {1}",
-    "page": "articles/mapping_files/figure-html/maternal-map-1.svg",
-    "kind": "figure"
-  },
-  {
     "id": "bef32146c2b7289a67bd",
     "source": "Many NSO rate tables have matching count tables. With counts you can pool years, combine areas, and attach confidence intervals, which a published rate does not allow. For infant mortality:",
     "page": "articles/discovery.html",
+    "kind": "html"
+  },
+  {
+    "id": "bf1152830978e1e36b00",
+    "source": "Insufficient data",
+    "page": "articles/mapping.html",
     "kind": "html"
   },
   {
@@ -6366,6 +6552,12 @@
     "kind": "html"
   },
   {
+    "id": "c09875955b2afb9048d8",
+    "source": "Choose the source{1}{2}",
+    "page": "articles/data-provenance.html",
+    "kind": "html"
+  },
+  {
     "id": "c0a8566c3974307d9fa3",
     "source": "Navigates one level deeper in the PXWeb catalogue hierarchy. Pass in a path id obtained from {1} or a previous {2} call to list its children (sub-sectors or tables).",
     "page": "reference/nso_subsectors.html",
@@ -6390,12 +6582,6 @@
     "kind": "html"
   },
   {
-    "id": "c1d4da2753850368c268",
-    "source": "Inspect source information / Эх сурвалжийн мэдээллийг шалгах{1}{2}",
-    "page": "articles/data-provenance.html",
-    "kind": "html"
-  },
-  {
     "id": "c2257b9de9bb106bdbb0",
     "source": "# Enable caching in a temporary directory (for demo purposes)",
     "page": "reference/nso_cache_enable.html",
@@ -6417,6 +6603,18 @@
     "id": "c25986e74930e860b1ae",
     "source": "{1}Reference{2}",
     "page": "reference/print.nso_query.html",
+    "kind": "html"
+  },
+  {
+    "id": "c278ba83d5c033a80d1c",
+    "source": "District total",
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
+  },
+  {
+    "id": "c295316ab8fc40a8ce46",
+    "source": "Reported cases",
+    "page": "articles/discovery.html",
     "kind": "html"
   },
   {
@@ -6447,6 +6645,12 @@
     "id": "c3690ab41560be1c58a5",
     "source": "Step {1}: Find the Right Table{2}{3}",
     "page": "articles/getting-started.html",
+    "kind": "html"
+  },
+  {
+    "id": "c36d819e7bc6d2b7da51",
+    "source": "Use",
+    "page": "articles/data-provenance.html",
     "kind": "html"
   },
   {
@@ -6726,6 +6930,12 @@
     "kind": "html"
   },
   {
+    "id": "cc8bab0e290f9a5947c1",
+    "source": "Residents per km² (log scale)",
+    "page": "articles/ub-health-environment_files/figure-html/demog-density-1.svg",
+    "kind": "figure"
+  },
+  {
     "id": "cc91a5c0b05385da65ad",
     "source": "Search site",
     "page": "reference/print.nso_query.html",
@@ -6789,12 +6999,6 @@
     "id": "ce1e96e227b7159f7181",
     "source": "A one-row tibble with service identity, {1}, distinct {2}, {3}, {4}, and the source of the index.",
     "page": "reference/nso_catalogue_status.html",
-    "kind": "html"
-  },
-  {
-    "id": "ce7a7c10b0dfd96808cc",
-    "source": "assignment",
-    "page": "articles/ub-health-environment.html",
     "kind": "html"
   },
   {
@@ -6930,12 +7134,6 @@
     "kind": "html"
   },
   {
-    "id": "d0ffb86af159272277cb",
-    "source": "Identifier / Таних дугаар",
-    "page": "articles/data-provenance.html",
-    "kind": "html"
-  },
-  {
     "id": "d14066e2e19235749ef8",
     "source": "This example uses English PXWeb dimension names; inspect {1} when using another fetch language. Optional {2} and {3} arguments name columns already present in your data. The checker reports concerns without changing values. No reported concerns does not establish that populations, units, or geographic levels are comparable.",
     "page": "articles/data-provenance.html",
@@ -6951,12 +7149,6 @@
     "id": "d201a6f068508ad4966a",
     "source": "{1}Pool rare events{2}: Combine several years for rare outcomes such as maternal deaths.",
     "page": "articles/mapping.html",
-    "kind": "html"
-  },
-  {
-    "id": "d29ae1e067408823055b",
-    "source": "{1}{2} and {3} now actually attach Mongolian labels{4}: label metadata was matched to data columns by display text, but the two languages only share the dimension {5}code{6} (the English column is “Sex” while both languages use the code “Хүйс”), so cross-language labels were silently never added. Labels are now routed through a code-to-column map, which also fixes English labels when {7}.",
-    "page": "news/index.html",
     "kind": "html"
   },
   {
@@ -6978,21 +7170,9 @@
     "kind": "html"
   },
   {
-    "id": "d3a008ef1335692d9d04",
-    "source": "Region",
-    "page": "articles/ub-health-environment.html",
-    "kind": "html"
-  },
-  {
-    "id": "d3f64a91882c51f97553",
-    "source": "Sources, metadata, and reproducible exports / Эх сурвалж, мета өгөгдөл, давтагдах экспорт",
-    "page": "articles/data-provenance.html",
-    "kind": "html"
-  },
-  {
     "id": "d3fe9f99fce528d829f5",
     "source": "Maternal deaths",
-    "page": "articles/getting-started.html",
+    "page": "articles/mapping.html",
     "kind": "html"
   },
   {
@@ -7011,12 +7191,6 @@
     "id": "d4e8830a71c73edffe01",
     "source": "Purpose",
     "page": "articles/getting-started.html",
-    "kind": "html"
-  },
-  {
-    "id": "d4ef4d1436114ff0a52f",
-    "source": "Service / Үйлчилгээ",
-    "page": "articles/data-provenance.html",
     "kind": "html"
   },
   {
@@ -7044,6 +7218,12 @@
     "kind": "html"
   },
   {
+    "id": "d593a8278263dcac6f8a",
+    "source": "No area has a complete observed estimate",
+    "page": "articles/mapping_files/figure-html/maternal-map-1.svg",
+    "kind": "figure"
+  },
+  {
     "id": "d5ae8925c1b46456c0bd",
     "source": "Developed by Temuulen Enebish.",
     "page": "reference/print.nso_query.html",
@@ -7059,6 +7239,12 @@
     "id": "d616673a522331987e03",
     "source": "The vignettes and README use {1} without recoding Ulaanbaatar by hand, select periods by label, and follow NSO’s renamed tables and dimensions. The monthly mortality article moved to {2}.",
     "page": "news/index.html",
+    "kind": "html"
+  },
+  {
+    "id": "d677190e0a9990e7d5fa",
+    "source": "Service",
+    "page": "articles/data-provenance.html",
     "kind": "html"
   },
   {
@@ -7090,12 +7276,6 @@
     "source": "# Periods oldest first, with their dates. Month labels are \"YYYY-MM\"; the",
     "page": "articles/getting-started.html",
     "kind": "comment"
-  },
-  {
-    "id": "d738a298deeda7779ca3",
-    "source": "Start with a reviewed concept / Хянасан үзүүлэлтээс эхлэх{1}{2}",
-    "page": "articles/data-provenance.html",
-    "kind": "html"
   },
   {
     "id": "d755141823982a0684c5",
@@ -7188,6 +7368,12 @@
     "kind": "html"
   },
   {
+    "id": "da5eebb3c4f0aa96526a",
+    "source": "Check discovery freshness{1}{2}",
+    "page": "articles/data-provenance.html",
+    "kind": "html"
+  },
+  {
     "id": "da63666117ab24214c88",
     "source": "Bar chart of residents per monitoring station for each Ulaanbaatar district that has at least one station",
     "page": "articles/ub-health-environment.html",
@@ -7224,6 +7410,12 @@
     "kind": "html"
   },
   {
+    "id": "dbb97315e21746b14619",
+    "source": "Khoroo total",
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
+  },
+  {
     "id": "dbbbb24c220a60015f30",
     "source": "IMR (per {1})",
     "page": "articles/getting-started_files/figure-html/plot-trend-1.svg",
@@ -7251,6 +7443,12 @@
     "id": "dc7b21b210389df360dd",
     "source": "{1}Use the right denominator{2}: Live births for infant and maternal mortality; mid-year population for incidence and crude death rates.",
     "page": "articles/discovery.html",
+    "kind": "html"
+  },
+  {
+    "id": "dcd1eca20f8c8e34f75b",
+    "source": "MMR per {1} ({2} CI)",
+    "page": "articles/mapping.html",
     "kind": "html"
   },
   {
@@ -7368,6 +7566,12 @@
     "kind": "interface"
   },
   {
+    "id": "e02fdf3849a548969c4d",
+    "source": "{1}Sources, metadata, and reproducible exports{2}",
+    "page": "articles/index.html",
+    "kind": "html"
+  },
+  {
     "id": "e05fe8464525f1d95268",
     "source": "Current documentation",
     "page": "dev/reference/print.nso_query.html",
@@ -7406,7 +7610,7 @@
   {
     "id": "e125d3ec1f176866f9b3",
     "source": "Source: NSO Mongolia, DT_NSO_2{1}_0{2}V2 and DT_NSO_2{3}_0{4}V5",
-    "page": "articles/mapping_files/figure-html/maternal-intervals-1.svg",
+    "page": "articles/mapping_files/figure-html/maternal-map-1.svg",
     "kind": "figure"
   },
   {
@@ -7437,12 +7641,6 @@
     "id": "e1f7d80d33478ab2a49d",
     "source": "Discover official metadata and collection context",
     "page": "reference/mongolstats-package.html",
-    "kind": "html"
-  },
-  {
-    "id": "e2202c9ad59719947036",
-    "source": "Choose the source / Эх сурвалжаа сонгох{1}{2}",
-    "page": "articles/data-provenance.html",
     "kind": "html"
   },
   {
@@ -7632,6 +7830,12 @@
     "kind": "html"
   },
   {
+    "id": "eb263e9730c3bbd8bf68",
+    "source": "Find definitions and collection context{1}{2}",
+    "page": "articles/data-provenance.html",
+    "kind": "html"
+  },
+  {
     "id": "eb45a0ef1e9aa3f8ccdf",
     "source": "Aimags (combined)",
     "page": "articles/mortality-analysis_files/figure-html/urban-rural-comparison-1.svg",
@@ -7678,6 +7882,12 @@
     "source": "Residents per km² (log scale), six central districts",
     "page": "articles/ub-health-environment_files/figure-html/khoroo-density-1.svg",
     "kind": "figure"
+  },
+  {
+    "id": "ecce98cf2d760ec783b7",
+    "source": "Elapsed years",
+    "page": "articles/ub-health-environment.html",
+    "kind": "html"
   },
   {
     "id": "ecf4ae6b86f3a9930efa",
@@ -7806,6 +8016,12 @@
     "kind": "comment"
   },
   {
+    "id": "f13da58fb649dd898dc7",
+    "source": "Crude incidence",
+    "page": "articles/discovery.html",
+    "kind": "html"
+  },
+  {
     "id": "f165d65057dcba243d53",
     "source": "Numeric sector identifier. Filtering applies only to rows present in the returned response, and rows without the required metadata are excluded. The {1} attribute counts those rows.",
     "page": "reference/nso_metadata_search.html",
@@ -7821,6 +8037,12 @@
     "id": "f1886ec877fe98db9772",
     "source": "{1}Cardiovascular disease{2} is the leading cause every year, with {3} to {4} deaths a year.",
     "page": "articles/mortality-analysis.html",
+    "kind": "html"
+  },
+  {
+    "id": "f1a5741f73d7e8ac0153",
+    "source": "Agrees within rounding",
+    "page": "articles/discovery.html",
     "kind": "html"
   },
   {
@@ -8118,6 +8340,12 @@
     "kind": "figure"
   },
   {
+    "id": "fafadb582b0421a56ad6",
+    "source": "Winter SO₂ (µg/m³)",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
     "id": "fb2060cd23411251e1fd",
     "source": "The Mongolian site now mirrors all English articles, references, figures and navigation, with translation coverage checks and matching-page language links.",
     "page": "news/index.html",
@@ -8232,6 +8460,12 @@
     "kind": "html"
   },
   {
+    "id": "fda1d2643dbd0e131cc2",
+    "source": "Pearson dispersion",
+    "page": "articles/mortality-analysis.html",
+    "kind": "html"
+  },
+  {
     "id": "fdb4f07a6d3422d17ce3",
     "source": "Aimag, month",
     "page": "articles/getting-started.html",
@@ -8290,6 +8524,12 @@
     "source": "Column with English names (default 'shapeName').",
     "page": "reference/mn_boundaries_normalize.html",
     "kind": "html"
+  },
+  {
+    "id": "ff177227c4f1442f94d6",
+    "source": "Map of stations with complete observed years, sized and coloured by mean annual dust days; settlement centres are approximate station locations",
+    "page": "articles/environmental-surveillance.html",
+    "kind": "alt"
   },
   {
     "id": "ff4cb71afc31995d2834",

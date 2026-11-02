@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Sources, metadata, and reproducible exports / Эх сурвалж, мета өгөгдөл, давтагдах экспорт • mongolstats</title>
+<title>Sources, metadata, and reproducible exports • mongolstats</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -18,7 +18,7 @@
 <link href="../deps/Inter_Tight-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Sources, metadata, and reproducible exports / Эх сурвалж, мета өгөгдөл, давтагдах экспорт">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Sources, metadata, and reproducible exports">
 <link rel="alternate" hreflang="en" href="https://temuulene.github.io/mongolstats/articles/data-provenance.html">
 <link rel="alternate" hreflang="mn" href="https://temuulene.github.io/mongolstats/mn/articles/data-provenance.html">
 </head>
@@ -74,7 +74,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Sources, metadata, and reproducible exports / Эх сурвалж, мета өгөгдөл, давтагдах экспорт</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Sources, metadata, and reproducible exports</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/temuulene/mongolstats/blob/main/vignettes/data-provenance.Rmd" class="external-link"><code>vignettes/data-provenance.Rmd</code></a></small>
@@ -87,13 +87,8 @@
 connected to their source, selected dimensions, observation symbols, and
 collection context. All service requests below are examples that you run
 deliberately; building this vignette does not access the network.</p>
-<p>Энэ заавар нь 0.4 хувилбарт албан ёсны статистикийг эх сурвалж,
-сонгосон хэмжээс, анхны тэмдэглэгээ, мэдээлэл цуглуулалтын нөхцөлтэй нь
-хамт хадгалах дарааллыг үзүүлнэ. Доорх үйлчилгээний хүсэлтүүдийг та
-өөрөө ажиллуулна. Энэхүү зааврыг бүтээх үед сүлжээний хүсэлт
-илгээхгүй.</p>
 <div class="section level2">
-<h2 id="choose-the-source-эх-сурвалжаа-сонгох">Choose the source / Эх сурвалжаа сонгох<a class="anchor" aria-label="anchor" href="#choose-the-source-%D1%8D%D1%85-%D1%81%D1%83%D1%80%D0%B2%D0%B0%D0%BB%D0%B6%D0%B0%D0%B0-%D1%81%D0%BE%D0%BD%D0%B3%D0%BE%D1%85"></a>
+<h2 id="choose-the-source">Choose the source<a class="anchor" aria-label="anchor" href="#choose-the-source"></a>
 </h2>
 <table class="table">
 <colgroup>
@@ -102,31 +97,29 @@ deliberately; building this vignette does not access the network.</p>
 <col width="33%">
 </colgroup>
 <thead><tr class="header">
-<th>Service / Үйлчилгээ</th>
-<th>Use / Хэрэглээ</th>
-<th>Identifier / Таних дугаар</th>
+<th>Service</th>
+<th>Use</th>
+<th>Identifier</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td>PXWeb, <code>data.1212.mn</code>
 </td>
-<td>Published statistical tables / Нийтлэгдсэн статистикийн хүснэгт</td>
+<td>Published statistical tables</td>
 <td><code>DT_NSO_...</code></td>
 </tr>
 <tr class="even">
 <td>Public data portal, <code>data.nso.mn</code>
 </td>
-<td>Experimental aggregate series and datamart discovery / Туршилтын
-нэгтгэсэн цуваа, өгөгдлийн сангийн жагсаалт</td>
+<td>Experimental aggregate series and datamart discovery</td>
 <td>
 <code>portal:DT_NSO_...</code> in discovery results</td>
 </tr>
 <tr class="odd">
 <td>Metadata catalog, <code>metadata.nso.mn</code>
 </td>
-<td>Definitions, forms, classifications and relationships /
-Тодорхойлолт, маягт, ангилал, холбоос</td>
-<td>A typed numeric ID / Төрөлтэй тоон дугаар</td>
+<td>Definitions, forms, classifications and relationships</td>
+<td>A typed numeric ID</td>
 </tr>
 </tbody>
 </table>
@@ -135,25 +128,15 @@ services publish the same measure. Geographic codes also belong to their
 source. For example, the sampled portal GDP series uses national code
 <code>CO9999</code>; the reviewed PXWeb resident-population template
 uses national code <code>0</code>.</p>
-<p>Ижил нэр эсвэл хүснэгтийн дугаартай төстэй тэмдэгт мөр нь хоёр
-үйлчилгээний үзүүлэлт адил гэсэн баталгаа биш. Газар зүйн кодыг мөн эх
-сурвалжтай нь хамт ойлгоно. Жишээлбэл, шалгасан порталын ДНБ-ий цуваанд
-улсын дүн <code>CO9999</code>, харин PXWeb-ийн суурин хүн амын хянасан
-загварт улсын дүн <code>0</code> кодтой.</p>
 </div>
 <div class="section level2">
-<h2 id="start-with-a-reviewed-concept-хянасан-үзүүлэлтээс-эхлэх">Start with a reviewed concept / Хянасан үзүүлэлтээс эхлэх<a class="anchor" aria-label="anchor" href="#start-with-a-reviewed-concept-%D1%85%D1%8F%D0%BD%D0%B0%D1%81%D0%B0%D0%BD-%D2%AF%D0%B7%D2%AF%D2%AF%D0%BB%D1%8D%D0%BB%D1%82%D1%8D%D1%8D%D1%81-%D1%8D%D1%85%D0%BB%D1%8D%D1%85"></a>
+<h2 id="start-with-a-reviewed-concept">Start with a reviewed concept<a class="anchor" aria-label="anchor" href="#start-with-a-reviewed-concept"></a>
 </h2>
 <p><code><a href="../reference/nso_indicators.html">nso_indicators()</a></code> searches a small bundled registry of
 reviewed PXWeb concepts. Inspect the definition, unit status, validation
 date, and caveats before fetching. The query template fixes the
 substantive selections; period labels are supplied separately. It does
 not guess that a similarly named portal series is equivalent.</p>
-<p><code><a href="../reference/nso_indicators.html">nso_indicators()</a></code> нь PXWeb-ийн хянасан үзүүлэлтийн багцад
-дагалдах жижиг жагсаалтаас хайна. Татахаасаа өмнө тодорхойлолт, нэгжийн
-төлөв, шалгасан огноо, тайлбарыг үзээрэй. Асуулгын загвар нь үндсэн
-сонголтыг тогтоож, хугацааны нэрийг тусад нь авна. Ижил нэртэй порталын
-цуваатай автоматаар адилтгахгүй.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">old_options</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_options.html">nso_options</a></span><span class="op">(</span>mongolstats.lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/nso_indicators.html">nso_indicators</a></span><span class="op">(</span><span class="st">"GDP"</span><span class="op">)</span></span>
@@ -164,7 +147,6 @@ not guess that a similarly named portal series is equivalent.</p>
 <span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_fetch.html">nso_fetch</a></span><span class="op">(</span><span class="va">query</span>, labels <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Both sexes and national total are the reviewed defaults.</span></span>
-<span><span class="co"># Хянасан үндсэн сонголт: нийт хүйс, улсын дүн.</span></span>
 <span><span class="va">population_query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_indicator_query.html">nso_indicator_query</a></span><span class="op">(</span><span class="st">"resident_population"</span>, periods <span class="op">=</span> <span class="st">"2024"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="va">old_options</span><span class="op">)</span></span></code></pre></div>
 <p>Use period labels such as <code>"2024"</code>, rather than PXWeb
@@ -172,14 +154,9 @@ positional time codes: code <code>"0"</code> can refer to a different
 year after the next update. A source label ending in <code>*</code> is
 preserved. Read the source’s explanation of that mark before assigning a
 revision status or converting the published number’s scale.</p>
-<p>Хугацааг PXWeb-ийн байрлалын кодоор бус <code>"2024"</code> зэрэг
-нэрээр сонгоно. Дараагийн шинэчлэлээр <code>"0"</code> код өөр оныг зааж
-болно. Эх сурвалжийн <code>*</code> төгсгөлтэй нэр хадгалагдана.
-Шинэчлэлийн төлөв оноох, тоон утгын масштабыг өөрчлөхөөс өмнө уг тэмдэг
-болон нэгжийн албан ёсны тайлбарыг шалгана.</p>
 </div>
 <div class="section level2">
-<h2 id="inspect-source-information-эх-сурвалжийн-мэдээллийг-шалгах">Inspect source information / Эх сурвалжийн мэдээллийг шалгах<a class="anchor" aria-label="anchor" href="#inspect-source-information-%D1%8D%D1%85-%D1%81%D1%83%D1%80%D0%B2%D0%B0%D0%BB%D0%B6%D0%B8%D0%B9%D0%BD-%D0%BC%D1%8D%D0%B4%D1%8D%D1%8D%D0%BB%D0%BB%D0%B8%D0%B9%D0%B3-%D1%88%D0%B0%D0%BB%D0%B3%D0%B0%D1%85"></a>
+<h2 id="inspect-source-information">Inspect source information<a class="anchor" aria-label="anchor" href="#inspect-source-information"></a>
 </h2>
 <p>Fetch results remain ordinary tibbles. Their provenance attribute
 records source identity, request URL, selections, retrieval time,
@@ -187,12 +164,6 @@ available source metadata, and a metadata fingerprint.
 <code><a href="../reference/nso_table_info.html">nso_table_info()</a></code> provides a compact view;
 <code><a href="../reference/nso_provenance.html">nso_provenance()</a></code> exposes the full manifest, including
 failures in a batch.</p>
-<p>Татсан үр дүн энгийн tibble хэвээр байна. Эх сурвалжийн атрибут нь
-үйлчилгээ, таних дугаар, хүсэлтийн хаяг, сонголт, татсан хугацаа, байгаа
-мета өгөгдөл болон мета өгөгдлийн хурууны хээг хадгална.
-<code><a href="../reference/nso_table_info.html">nso_table_info()</a></code> нь товч харагдац,
-<code><a href="../reference/nso_provenance.html">nso_provenance()</a></code> нь багц хүсэлтийн алдааг багтаасан бүрэн
-бүртгэлийг өгнө.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/nso_table_info.html">nso_table_info</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
 <span><span class="va">manifest</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_provenance.html">nso_provenance</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
@@ -201,21 +172,15 @@ failures in a batch.</p>
 <span><span class="fu"><a href="../reference/nso_citation.html">nso_citation</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Metadata-only lookup: no observations are requested.</span></span>
-<span><span class="co"># Зөвхөн хүснэгтийн мета өгөгдөл; ажиглалт татахгүй.</span></span>
 <span><span class="fu"><a href="../reference/nso_table_info.html">nso_table_info</a></span><span class="op">(</span><span class="st">"DT_NSO_0500_001V1"</span><span class="op">)</span></span></code></pre></div>
 <p>An absent source statement, update date, or unit remains missing. A
 metadata-only lookup can contain less information than a data response.
 Citations acknowledge the source; the package’s software license does
 not determine the data’s reuse conditions. Consult <a href="https://www.nso.mn/en/terms_of_use" class="external-link">NSO’s terms</a> and the
 relevant source record.</p>
-<p>Эх сурвалж, шинэчилсэн огноо, нэгж байхгүй бол дутуу хэвээр үлдэнэ.
-Зөвхөн мета өгөгдөл авах хүсэлт нь тоон мэдээллийн хариунаас бага
-тайлбартай байж болно. Ишлэл нь эх сурвалжийг дурдана. Багцын программын
-лиценз нь өгөгдлийг дахин ашиглах нөхцөлийг тогтоохгүй. <a href="https://www.nso.mn/en/terms_of_use" class="external-link">ҮСХ-ны нөхцөл</a> болон
-холбогдох эх сурвалжийн бүртгэлийг шалгана.</p>
 </div>
 <div class="section level2">
-<h2 id="keep-source-symbols-анхны-тэмдэглэгээг-хадгалах">Keep source symbols / Анхны тэмдэглэгээг хадгалах<a class="anchor" aria-label="anchor" href="#keep-source-symbols-%D0%B0%D0%BD%D1%85%D0%BD%D1%8B-%D1%82%D1%8D%D0%BC%D0%B4%D1%8D%D0%B3%D0%BB%D1%8D%D0%B3%D1%8D%D1%8D%D0%B3-%D1%85%D0%B0%D0%B4%D0%B3%D0%B0%D0%BB%D0%B0%D1%85"></a>
+<h2 id="keep-source-symbols">Keep source symbols<a class="anchor" aria-label="anchor" href="#keep-source-symbols"></a>
 </h2>
 <p>Numeric <code>NA</code> alone cannot distinguish a missing
 observation from source symbols such as <code>..</code>.
@@ -225,14 +190,6 @@ observation from source symbols such as <code>..</code>.
 empty or missing fields, and <code>"symbol"</code> for other text. A
 symbol’s meaning is not inferred. Retain these records before filtering
 or transforming data.</p>
-<p>Тоон <code>NA</code> нь анхнаасаа дутуу утга болон <code>..</code>
-зэрэг эх сурвалжийн тэмдэглэгээг ялгахгүй.
-<code><a href="../reference/nso_value_status.html">nso_value_status()</a></code> нь ажиглалтын түлхүүр, анхны
-<code>value_raw</code>, мөн <code>value_status</code> баганыг өгнө:
-төгсгөлөг тоонд <code>"observed"</code>, хоосон эсвэл дутуу талбарт
-<code>"missing"</code>, бусад текстэд <code>"symbol"</code> байна.
-Тэмдгийн утгыг таамаглахгүй. Шүүх, хувиргахаасаа өмнө эдгээрийг
-хадгална.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">status</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_value_status.html">nso_value_status</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
 <span><span class="va">status</span><span class="op">[</span><span class="va">status</span><span class="op">$</span><span class="va">value_status</span> <span class="op">!=</span> <span class="st">"observed"</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
@@ -249,24 +206,14 @@ or transforming data.</p>
 columns already present in your data. The checker reports concerns
 without changing values. No reported concerns does not establish that
 populations, units, or geographic levels are comparable.</p>
-<p>Жишээнд PXWeb-ийн англи хэмжээсийн нэр ашиглав. Өөр хэлээр татсан бол
-<code>names(gdp)</code>-г шалгана. Нэмэлт <code>unit</code>,
-<code>geography_level</code> аргумент нь таны өгөгдөлд байгаа баганын
-нэрийг авна. Шалгагч утгыг өөрчлөхгүй, анхаарах асуудлыг тайлагнана.
-Асуудал илрээгүй нь хүн амын хамрах хүрээ, нэгж, газар зүйн түвшин
-харьцуулах боломжтой гэсэн баталгаа биш.</p>
 </div>
 <div class="section level2">
-<h2 id="export-a-durable-record-тогтвортой-бүртгэлтэй-экспорт-хийх">Export a durable record / Тогтвортой бүртгэлтэй экспорт хийх<a class="anchor" aria-label="anchor" href="#export-a-durable-record-%D1%82%D0%BE%D0%B3%D1%82%D0%B2%D0%BE%D1%80%D1%82%D0%BE%D0%B9-%D0%B1%D2%AF%D1%80%D1%82%D0%B3%D1%8D%D0%BB%D1%82%D1%8D%D0%B9-%D1%8D%D0%BA%D1%81%D0%BF%D0%BE%D1%80%D1%82-%D1%85%D0%B8%D0%B9%D1%85"></a>
+<h2 id="export-a-durable-record">Export a durable record<a class="anchor" aria-label="anchor" href="#export-a-durable-record"></a>
 </h2>
 <p>Transformations and CSV exports can discard attributes. Save the
 provenance sidecar and original status table separately. The JSON
 manifest contains source and request context, not the statistical
 observations or their raw symbols.</p>
-<p>Хувиргалт болон CSV экспорт нь атрибутыг хаяж болно. Эх сурвалжийн
-дагалдах бүртгэл, анхны төлөвийн хүснэгтийг тусад нь хадгална. JSON
-бүртгэлд эх сурвалж, хүсэлтийн нөхцөл орно; статистикийн ажиглалт, анхны
-тэмдэглэгээ орохгүй.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Choose an enduring project directory; use a new run directory for each export.</span></span>
 <span><span class="va">export_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"outputs"</span>, <span class="st">"nso"</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"%Y-%m-%d"</span><span class="op">)</span><span class="op">)</span></span>
@@ -296,10 +243,6 @@ observations or their raw symbols.</p>
 original R types and attributes. Record the analysis code revision and
 any manual recodes explicitly. A metadata fingerprint alone cannot
 reproduce observations after source revisions.</p>
-<p><code><a href="../reference/nso_write_manifest.html">nso_write_manifest()</a></code> нь <code>overwrite = TRUE</code>
-гэж заагаагүй бол байгаа файлыг дарж бичихгүй. R-ийн төрөл, атрибутыг
-бүхэлд нь хадгалах шаардлагатай бол анхны үр дүнг
-<code>saveRDS(gdp, ...)</code> ашиглан нэмэлтээр хадгална.</p>
 </div>
 <div class="section level2">
 <h2 id="apply-checks-before-calculating-rates">Apply checks before calculating rates<a class="anchor" aria-label="anchor" href="#apply-checks-before-calculating-rates"></a>
@@ -318,8 +261,7 @@ Historical teaching snapshots without retrieval dates or raw symbols
 cannot acquire that missing information retrospectively.</p>
 </div>
 <div class="section level2">
-<h2 id="find-definitions-and-collection-context-тодорхойлолт-цуглуулалтын-нөхцөлийг-олох">Find definitions and collection context / Тодорхойлолт, цуглуулалтын
-нөхцөлийг олох<a class="anchor" aria-label="anchor" href="#find-definitions-and-collection-context-%D1%82%D0%BE%D0%B4%D0%BE%D1%80%D1%85%D0%BE%D0%B9%D0%BB%D0%BE%D0%BB%D1%82-%D1%86%D1%83%D0%B3%D0%BB%D1%83%D1%83%D0%BB%D0%B0%D0%BB%D1%82%D1%8B%D0%BD-%D0%BD%D3%A9%D1%85%D1%86%D3%A9%D0%BB%D0%B8%D0%B9%D0%B3-%D0%BE%D0%BB%D0%BE%D1%85"></a>
+<h2 id="find-definitions-and-collection-context">Find definitions and collection context<a class="anchor" aria-label="anchor" href="#find-definitions-and-collection-context"></a>
 </h2>
 <p>The metadata catalog connects databases, tables, questionnaire
 fields, forms, and classifications. Its <code>indicator</code> type can
@@ -327,12 +269,6 @@ be a question in a collection form rather than a published series.
 Numeric catalog IDs do not identify PXWeb tables. Search coverage and
 pagination attributes describe what was returned, not a verified
 complete inventory.</p>
-<p>Мета өгөгдлийн сан нь мэдээллийн сан, хүснэгт, асуулгын талбар,
-маягт, ангиллыг холбоно. Эндэх <code>indicator</code> төрөл нь
-нийтлэгдсэн тоон цуваа бус, маягтын асуулт байж болно. Тоон таних дугаар
-нь PXWeb-ийн хүснэгтийн дугаар биш. Хайлтын хамрах хүрээ, хуудасны
-атрибут нь буцаж ирсэн хэсгийг тайлбарлах бөгөөд бүрэн жагсаалт болохыг
-батлахгүй.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hits</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_metadata_search.html">nso_metadata_search</a></span><span class="op">(</span><span class="st">"хүн ам"</span>, type <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">hits</span>, <span class="st">"coverage"</span><span class="op">)</span></span>
@@ -360,12 +296,6 @@ requests. Fetch a full supported record with
 <code>nso_metadata(type, id)</code>; embedded details may be partial.
 Quality flags preserve suspect source fields for review rather than
 silently correcting them.</p>
-<p>Эндэх тоон дугаарууд нь шалгасан бүртгэлийн жишээ юм. Шинжилгээндээ
-тохирох бүртгэлийг сонгоно. <code><a href="../reference/nso_related.html">nso_related()</a></code> нь дахин хүсэлт
-илгээхгүйгээр хавсаргасан холбоосыг үзүүлнэ. Бүрэн мэдээллийг
-<code>nso_metadata(type, id)</code>-аар авна; хавсаргасан мэдээлэл дутуу
-байж болно. Чанарын тэмдэглэгээ нь сэжигтэй талбарыг чимээгүй засахын
-оронд шалгахад зориулж анхныхаар нь хадгална.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">forms</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_forms.html">nso_forms</a></span><span class="op">(</span>database_id <span class="op">=</span> <span class="fl">526</span>, include_raw <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">forms</span><span class="op">$</span><span class="va">records</span></span>
@@ -389,23 +319,14 @@ not prove that the classification has no categories, and a nonempty one
 does not prove completeness. A licence or security category describes
 the catalog record; it does not grant access to underlying records.
 Missing official translations remain missing.</p>
-<p>Ангиллын код тэмдэгт мөр хэвээр байна. Хоосон кодын жагсаалт нь
-ангилал утгагүй гэсэн баталгаа биш; хоосон бус жагсаалт ч бүрэн болохыг
-батлахгүй. Лиценз, нууцлалын ангилал нь бүртгэлийг тайлбарлах бөгөөд
-үндсэн мэдээлэлд хандах эрх олгохгүй. Албан ёсны орчуулга байхгүй бол
-дутуу хэвээр үлдэнэ.</p>
 </div>
 <div class="section level2">
-<h2 id="check-discovery-freshness-хайлтын-шинэ-байдлыг-шалгах">Check discovery freshness / Хайлтын шинэ байдлыг шалгах<a class="anchor" aria-label="anchor" href="#check-discovery-freshness-%D1%85%D0%B0%D0%B9%D0%BB%D1%82%D1%8B%D0%BD-%D1%88%D0%B8%D0%BD%D1%8D-%D0%B1%D0%B0%D0%B9%D0%B4%D0%BB%D1%8B%D0%B3-%D1%88%D0%B0%D0%BB%D0%B3%D0%B0%D1%85"></a>
+<h2 id="check-discovery-freshness">Check discovery freshness<a class="anchor" aria-label="anchor" href="#check-discovery-freshness"></a>
 </h2>
 <p>Local PXWeb discovery uses the bundled or session index. Its entry
 count can include the same table under several paths. Live keyword
 search returns a source-defined search window; it does not rebuild the
 complete index.</p>
-<p>PXWeb-ийн дотоод хайлт нь багцын эсвэл тухайн ажиллуулалтын индексийг
-ашиглана. Нэг хүснэгт хэд хэдэн замд орсон байж болно. Шууд түлхүүр
-үгийн хайлт нь эх сурвалжийн буцаасан хэсгийг авна; бүрэн индексийг
-дахин бүтээхгүй.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/nso_catalogue_status.html">nso_catalogue_status</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/nso_search.html">nso_search</a></span><span class="op">(</span><span class="st">"population"</span>, fixed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -421,17 +342,9 @@ selection limit. Configuration can fall back to defaults or a stale
 cache, so inspect <code>status</code>. Processes on one computer share
 request pacing; other computers using the same public address need
 coordination.</p>
-<p>Багц тоон хүсэлтийг нүдний хязгаараар хувааж, хүсэлтүүдийн хоорондын
-зайг баримтална. <code>maxValues</code> нь PXWeb-ийн зарласан мета
-өгөгдлийн утгын хязгаар бөгөөд тоон хүсэлтийн сонголтын хязгаар биш.
-Тохиргоо үндсэн утга эсвэл хуучин кэшээс ирж болох тул
-<code>status</code>-ыг шалгана. Нэг компьютерийн процессууд хүсэлтийн
-зайг хамтран баримтална. Ижил нийтийн хаягтай бусад компьютерийг тусад
-нь зохицуулна.</p>
 </div>
 <div class="section level2">
-<h2 id="use-the-public-portal-explicitly-нээлттэй-порталыг-тусад-нь-ашиглах">Use the public portal explicitly / Нээлттэй порталыг тусад нь
-ашиглах<a class="anchor" aria-label="anchor" href="#use-the-public-portal-explicitly-%D0%BD%D1%8D%D1%8D%D0%BB%D1%82%D1%82%D1%8D%D0%B9-%D0%BF%D0%BE%D1%80%D1%82%D0%B0%D0%BB%D1%8B%D0%B3-%D1%82%D1%83%D1%81%D0%B0%D0%B4-%D0%BD%D1%8C-%D0%B0%D1%88%D0%B8%D0%B3%D0%BB%D0%B0%D1%85"></a>
+<h2 id="use-the-public-portal-explicitly">Use the public portal explicitly<a class="anchor" aria-label="anchor" href="#use-the-public-portal-explicitly"></a>
 </h2>
 <p>The portal registry is experimental. Inspect its
 <code>queryable</code>, <code>quality_flags</code>, and grouping
@@ -439,11 +352,6 @@ dimensions; rows with invalid or missing IDs remain discoverable but
 cannot be queried. Portal request parameters are separate from the
 curated PXWeb templates, and the source’s summary narratives are not
 observations.</p>
-<p>Порталын жагсаалт туршилтын төлөвтэй. <code>queryable</code>,
-<code>quality_flags</code>, бүлэглэх хэмжээсийг шалгана. Буруу эсвэл
-дутуу дугаартай мөр харагдах боловч хүсэлтэд ашиглах боломжгүй. Порталын
-сонголт нь хянасан PXWeb загвараас тусдаа бөгөөд эх сурвалжийн
-тайлбарласан тойм нь статистикийн ажиглалт биш.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">portal_catalog</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_indicators.html">nso_indicators</a></span><span class="op">(</span>source <span class="op">=</span> <span class="st">"portal"</span>, refresh <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">portal_catalog</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"name"</span>, <span class="st">"unit"</span>, <span class="st">"queryable"</span>, <span class="st">"quality_flags"</span><span class="op">)</span><span class="op">]</span></span>
@@ -468,14 +376,6 @@ exactly. Codes are retained for every label choice. Missing English
 labels stay <code>NA</code>; unknown geography codes are preserved.
 Unpadded periods such as <code>2025-1</code> retain their label but
 remain undated when month-versus-quarter meaning is ambiguous.</p>
-<p><code>area</code>, <code>dimension</code>, <code>graph_type</code> нь
-эх сурвалжийн хүсэлтийн тодорхой параметр юм. ДНБ-ий жишээ нь бүх
-үзүүлэлтийн хувьд тэдгээрийн утгыг тогтоохгүй. Хугацааны шүүлт нь
-татсаны дараа эх сурвалжийн нэртэй яг тохируулна. Ямар хэл сонгосноос үл
-хамааран код хадгалагдана. Англи нэр байхгүй бол <code>NA</code>,
-танигдаагүй газар зүйн код анхныхаараа үлдэнэ. <code>2025-1</code> зэрэг
-сар, улирлын утга нь тодорхойгүй нэрийг хадгалж, огноо таамаглан
-оноохгүй.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">datamarts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nso_portal_datamarts.html">nso_portal_datamarts</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">datamarts</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"name"</span>, <span class="st">"years"</span>, <span class="st">"source"</span>, <span class="st">"query_supported"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
@@ -484,11 +384,6 @@ configuration only. The reported year range is source text, not verified
 coverage. <code>query_supported</code> is <code>FALSE</code>: a stable
 developer contract for aggregate queries has not been verified, and this
 interface does not retrieve underlying individual records.</p>
-<p>Өгөгдлийн сангийн дэмжлэг нь зөвхөн жагсаалт болон дэлгэцийн
-тохиргоог өгнө. Он жилийн хүрээ нь эх сурвалжийн текст бөгөөд шалгасан
-хамралт биш. <code>query_supported</code> нь <code>FALSE</code>:
-нэгтгэсэн хүсэлтийн тогтвортой хөгжүүлэгчийн гэрээ баталгаажаагүй бөгөөд
-энэ интерфейс нь хувь хүний анхан шатны бүртгэл татахгүй.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

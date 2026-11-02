@@ -1,6 +1,12 @@
 {
   "html_pages": 296,
   "translated_pages": 148,
+  "plot_files_checked": 72,
+  "plot_typography": {
+    "plots": 72,
+    "labels_measured": 1612,
+    "transformed_labels": 52
+  },
   "figures": [
     {
       "page": "index.html",
