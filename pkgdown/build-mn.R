@@ -46,11 +46,6 @@ build_mongolian_site <- function(
   for (page in pages) {
     path <- file.path(temporary, page)
     doc <- xml2::read_html(path)
-    if (identical(page, "articles/data-provenance.html")) {
-      original_mongolian <- xml2::xml_find_all(doc, "//main//p")
-      original_mongolian <- original_mongolian[grepl("\\p{Cyrillic}", xml2::xml_text(original_mongolian), perl = TRUE)]
-      xml2::xml_remove(original_mongolian)
-    }
     xml2::xml_remove(xml2::xml_find_all(doc, "//*[contains(concat(' ', @class, ' '), ' language-switch ')]"))
     doc <- env$mn_translate_document(doc, page, catalogue)
     xml2::xml_set_attr(xml2::xml_find_first(doc, "//html"), "lang", "mn")
@@ -64,7 +59,7 @@ build_mongolian_site <- function(
       values[root_relative] <- sub("^/mongolstats/", "/mongolstats/mn/", values[root_relative])
       xml2::xml_set_attr(nodes, attribute, values)
     }
-    switch <- xml2::xml_find_all(doc, "//nav//a[contains(@href, 'mn/index.html')]")
+    switch <- xml2::xml_find_all(doc, "//nav//a[@hreflang='mn' or contains(@href, 'mn/index.html')]")
     for (node in switch) {
       xml2::xml_text(node) <- "English"
       xml2::xml_set_attr(node, "href", fs::path_rel(file.path("..", page), dirname(page)))
@@ -107,6 +102,9 @@ build_mongolian_site <- function(
   })
   jsonlite::write_json(search, file.path(temporary, "search.json"), auto_unbox = TRUE)
   sitemap <- xml2::read_xml(file.path(temporary, "sitemap.xml"))
+  locations <- xml2::xml_find_all(sitemap, "//*[local-name()='loc']")
+  translated <- startsWith(xml2::xml_text(locations), paste0(base, "mn/"))
+  xml2::xml_remove(xml2::xml_parent(locations[translated]))
   for (node in xml2::xml_find_all(sitemap, "//*[local-name()='loc']")) {
     xml2::xml_text(node) <- sub(base, paste0(base, "mn/"), xml2::xml_text(node), fixed = TRUE)
   }
@@ -126,7 +124,7 @@ build_mongolian_site <- function(
   for (page in pages) {
     path <- file.path(english, page)
     doc <- xml2::read_html(path)
-    switch <- xml2::xml_find_all(doc, "//nav//a[contains(@href, 'mn/index.html')]")
+    switch <- xml2::xml_find_all(doc, "//nav//a[@hreflang='mn' or contains(@href, 'mn/index.html')]")
     xml2::xml_set_attr(switch, "href", fs::path_rel(file.path("mn", page), dirname(page)))
     xml2::xml_set_attr(switch, "hreflang", "mn")
     xml2::xml_set_attr(switch, "lang", "mn")

@@ -151,6 +151,211 @@ check_site_links <- function(directory) {
   length(pages)
 }
 
+check_plot_label_bounds <- function(directory) {
+  number_pattern <- "[-+]?(?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[eE][-+]?[0-9]+)?"
+  number <- function(value, default = NULL) {
+    if (is.na(value) || !nzchar(value)) {
+      if (!is.null(default)) return(default)
+      stop("Missing SVG font size.", call. = FALSE)
+    }
+    if (!grepl(paste0("^", number_pattern, "(?:px)?$"), value, perl = TRUE)) {
+      stop("Unsupported SVG coordinate or size: ", value, call. = FALSE)
+    }
+    as.numeric(sub("px$", "", value))
+  }
+  property <- function(node, name, default = "") {
+    ancestors <- xml2::xml_find_all(node, "ancestor-or-self::*")
+    for (ancestor in rev(as.list(ancestors))) {
+      style <- xml2::xml_attr(ancestor, "style")
+      if (!is.na(style)) {
+        declarations <- strsplit(style, ";", fixed = TRUE)[[1]]
+        keys <- trimws(sub(":.*", "", declarations))
+        matches <- which(keys == name)
+        if (length(matches)) {
+          value <- trimws(sub("^[^:]*:", "", declarations[[tail(matches, 1L)]]))
+          if (value != "inherit") return(value)
+        }
+      }
+      value <- xml2::xml_attr(ancestor, name)
+      if (!is.na(value) && value != "inherit") return(value)
+    }
+    default
+  }
+  affine <- function(value) {
+    result <- diag(3)
+    if (is.na(value) || !nzchar(trimws(value))) return(result)
+    pattern <- "[A-Za-z]+[[:space:]]*\\([^()]*\\)"
+    pieces <- regmatches(value, gregexpr(pattern, value, perl = TRUE))[[1]]
+    remaining <- gsub("[[:space:],]", "", gsub(pattern, "", value, perl = TRUE))
+    if (!length(pieces) || nzchar(remaining)) {
+      stop("Unsupported SVG transform: ", value, call. = FALSE)
+    }
+    for (piece in pieces) {
+      name <- trimws(sub("\\(.*", "", piece))
+      arguments <- sub("^[^(]*\\(([^()]*)\\)$", "\\1", piece)
+      values <- regmatches(arguments, gregexpr(number_pattern, arguments, perl = TRUE))[[1]]
+      remainder <- gsub("[[:space:],]", "", gsub(number_pattern, "", arguments, perl = TRUE))
+      values <- as.numeric(values)
+      if (nzchar(remainder) || !length(values) || any(!is.finite(values))) {
+        stop("Unsupported SVG transform: ", piece, call. = FALSE)
+      }
+      transform <- diag(3)
+      if (name == "translate" && length(values) %in% 1:2) {
+        transform[1:2, 3] <- c(values[[1]], if (length(values) == 2L) values[[2]] else 0)
+      } else if (name == "scale" && length(values) %in% 1:2) {
+        diag(transform) <- c(values[[1]], tail(values, 1L), 1)
+      } else if (name == "rotate" && length(values) %in% c(1L, 3L)) {
+        angle <- values[[1]] * pi / 180
+        transform[1:2, 1:2] <- matrix(c(cos(angle), sin(angle), -sin(angle), cos(angle)), 2)
+        if (length(values) == 3L) {
+          pivot <- values[2:3]
+          transform[1:2, 3] <- pivot - transform[1:2, 1:2] %*% pivot
+        }
+      } else if (name == "matrix" && length(values) == 6L) {
+        transform <- matrix(c(values[1:2], 0, values[3:4], 0, values[5:6], 1), 3)
+      } else {
+        stop("Unsupported SVG transform: ", piece, call. = FALSE)
+      }
+      # SVG transform lists act on column vectors from right to left.
+      result <- result %*% transform
+    }
+    result
+  }
+  measure <- function(node) {
+    family <- gsub("^['\"]|['\"]$", "", property(node, "font-family"))
+    if (family != "Source Sans 3") {
+      stop("Unexpected SVG font family: ", if (nzchar(family)) family else "<missing>", call. = FALSE)
+    }
+    weight <- property(node, "font-weight", "normal")
+    if (!weight %in% c("normal", "400", "bold", "700") || property(node, "font-style", "normal") != "normal") {
+      stop("Unsupported SVG font weight or style: ", weight, call. = FALSE)
+    }
+    if (length(xml2::xml_children(node)) || !is.na(xml2::xml_attr(node, "rotate")) ||
+          property(node, "writing-mode", "horizontal-tb") != "horizontal-tb" ||
+          !property(node, "dominant-baseline", "auto") %in% c("auto", "alphabetic")) {
+      stop("Unsupported SVG text layout.", call. = FALSE)
+    }
+    size <- number(property(node, "font-size"))
+    if (size <= 0) stop("SVG font size must be positive.", call. = FALSE)
+    face <- if (weight %in% c("bold", "700")) "Bold" else "Regular"
+    font <- system.file("fonts", paste0("SourceSans3-", face, ".otf"), package = "mongolstats", mustWork = TRUE)
+    text <- xml2::xml_text(node)
+    glyphs <- systemfonts::glyph_info(strsplit(text, "", fixed = TRUE)[[1]], path = font, size = size, res = 72)
+    if (any(glyphs$index == 0L)) stop("SVG label contains a glyph missing from its font.", call. = FALSE)
+    width <- as.numeric(systemfonts::string_width(text, path = font, size = size, res = 72))
+    x <- number(xml2::xml_attr(node, "x"), 0) + number(xml2::xml_attr(node, "dx"), 0)
+    y <- number(xml2::xml_attr(node, "y"), 0) + number(xml2::xml_attr(node, "dy"), 0)
+    anchor <- property(node, "text-anchor", "start")
+    if (!anchor %in% c("start", "middle", "end")) stop("Unsupported SVG text anchor: ", anchor, call. = FALSE)
+    left <- x - switch(anchor, middle = width / 2, end = width, 0)
+    # Include glyph overhangs as well as natural advance width. Vertical bounds
+    # follow the actual label's ascenders/descenders, not an arbitrary line box.
+    advances <- c(0, head(cumsum(glyphs$x_advance), -1L))
+    right <- left + max(width, advances + glyphs$x_bearing + glyphs$width)
+    left <- left + min(0, advances + glyphs$x_bearing)
+    top <- y - max(0, glyphs$y_bearing)
+    bottom <- y + max(0, glyphs$height - glyphs$y_bearing)
+    corners <- rbind(c(left, top, 1), c(right, top, 1), c(left, bottom, 1), c(right, bottom, 1))
+    transform <- diag(3)
+    transformed <- FALSE
+    for (ancestor in xml2::xml_find_all(node, "ancestor-or-self::*")) {
+      style <- xml2::xml_attr(ancestor, "style")
+      if (!is.na(style) && grepl("(^|;)[[:space:]]*transform[[:space:]]*:", style)) {
+        stop("Unsupported CSS SVG transform.", call. = FALSE)
+      }
+      value <- xml2::xml_attr(ancestor, "transform")
+      if (!is.na(value) && nzchar(trimws(value))) {
+        transform <- transform %*% affine(value)
+        transformed <- TRUE
+      }
+    }
+    list(corners = t(transform %*% t(corners)), transformed = transformed)
+  }
+  files <- list.files(directory, "[.]svg$", recursive = TRUE)
+  problems <- character()
+  plots <- 0L
+  labels_measured <- 0L
+  transformed_labels <- 0L
+  for (file in files) {
+    doc <- xml2::read_xml(file.path(directory, file))
+    plot_groups <- xml2::xml_find_all(
+      xml2::xml_root(doc),
+      "descendant-or-self::*[contains(concat(' ', normalize-space(@class), ' '), ' svglite ')]"
+    )
+    if (!length(plot_groups)) next
+    plots <- plots + 1L
+    box <- as.numeric(strsplit(trimws(xml2::xml_attr(xml2::xml_root(doc), "viewBox")), "[[:space:],]+")[[1]])
+    if (length(box) != 4L || any(!is.finite(box)) || any(box[3:4] <= 0)) {
+      stop("Invalid SVG viewBox in ", file, call. = FALSE)
+    }
+    for (node in xml2::xml_find_all(doc, "//*[local-name()='text']")) {
+      if (!nzchar(xml2::xml_text(node))) next
+      bounds <- tryCatch(measure(node), error = identity)
+      if (inherits(bounds, "error")) {
+        problems <- c(problems, paste0(file, ": ", conditionMessage(bounds), ": ", xml2::xml_text(node)))
+        next
+      }
+      labels_measured <- labels_measured + 1L
+      transformed_labels <- transformed_labels + as.integer(bounds$transformed)
+      corners <- bounds$corners
+      if (any(!is.finite(corners)) ||
+            min(corners[, 1]) < box[[1]] - 0.5 || max(corners[, 1]) > box[[1]] + box[[3]] + 0.5 ||
+            min(corners[, 2]) < box[[2]] - 0.5 || max(corners[, 2]) > box[[2]] + box[[4]] + 0.5) {
+        limits <- c(range(corners[, 1]), range(corners[, 2]), box[1:2], box[1:2] + box[3:4])
+        problems <- c(problems, paste0(
+          file, ": label extends beyond the plot canvas: ", xml2::xml_text(node),
+          sprintf(
+            " [x %.2f..%.2f, y %.2f..%.2f; canvas %.2f,%.2f to %.2f,%.2f]",
+            limits[[1]], limits[[2]], limits[[3]], limits[[4]], limits[[5]], limits[[6]], limits[[7]], limits[[8]]
+          )
+        ))
+      }
+    }
+  }
+  if (length(problems)) stop(paste(problems, collapse = "\n"), call. = FALSE)
+  list(plots = plots, labels_measured = labels_measured, transformed_labels = transformed_labels)
+}
+
+check_site_presentation <- function(directory, max_output_lines = 50L) {
+  pages <- list.files(directory, "[.]html$", recursive = TRUE)
+  problems <- character()
+  for (page in pages) {
+    doc <- xml2::read_html(file.path(directory, page))
+    headers <- trimws(xml2::xml_text(xml2::xml_find_all(doc, "//main//th")))
+    identifiers <- headers[grepl("^[A-Za-z][A-Za-z0-9.]*_[A-Za-z0-9_.]+$", headers)]
+    if (length(identifiers)) {
+      problems <- c(problems, paste0(
+        page, ": table headers need display labels: ",
+        paste(unique(identifiers), collapse = ", ")
+      ))
+    }
+    for (block in xml2::xml_text(xml2::xml_find_all(doc, "//main//pre"))) {
+      lines <- strsplit(block, "\n", fixed = TRUE)[[1]]
+      output <- sum(grepl("^#>", lines))
+      if (output > max_output_lines) {
+        problems <- c(problems, paste0(
+          page, ": console output has ", output,
+          " lines; show a concise preview or a summary (limit ", max_output_lines, ")."
+        ))
+      }
+    }
+    if (!startsWith(page, "mn/")) {
+      prose <- xml2::xml_find_first(doc, "//main")
+      xml2::xml_remove(xml2::xml_find_all(prose, paste0(
+        ".//pre|.//code|.//script|.//style|",
+        ".//*[contains(concat(' ', @class, ' '), ' language-switch ')]"
+      )))
+      if (grepl("\\p{Cyrillic}", xml2::xml_text(prose), perl = TRUE)) {
+        problems <- c(problems, paste0(page, ": English page contains Mongolian prose."))
+      }
+    }
+  }
+  if (length(problems)) {
+    stop(paste(c("Documentation presentation problems:", problems), collapse = "\n"), call. = FALSE)
+  }
+  length(pages)
+}
+
 check_language_parity <- function(directory) {
   pages <- list.files(directory, "[.]html$", recursive = TRUE)
   english <- pages[!startsWith(pages, "mn/")]
@@ -250,8 +455,11 @@ check_site <- function(directory = "docs") {
   }
   pages <- check_site_links(directory)
   translated_pages <- check_language_parity(directory)
+  check_site_presentation(directory)
+  plot_typography <- check_plot_label_bounds(directory)
   list(
     html_pages = pages, translated_pages = translated_pages,
+    plot_files_checked = plot_typography$plots, plot_typography = plot_typography,
     figures = figures, broken_local_references = 0L
   )
 }

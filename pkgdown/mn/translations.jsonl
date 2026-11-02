@@ -619,7 +619,7 @@
 {"id":"90d2c88d169a3e2127e5","source":"New cases per {1} population (crude rate, rounded by NSO to whole numbers)","target":"Хүн амын {1} тутамд шинэ тохиолдол (ерөнхий түвшин; ҮСХ бүхэл тоонд тоймлосон)"}
 {"id":"98b69a9c644f4c9fbb0a","source":"Oesophagus","target":"Улаан хоолой"}
 {"id":"035c20b45f92da307bcb","source":"Stomach","target":"Ходоод"}
-{"id":"3426ae39b58273c1f832","source":"Age-standardised (WHO World)","target":"Насны бүтцээр стандартчилсан (ДЭМБ-ын дэлхийн стандарт)"}
+{"id":"3426ae39b58273c1f832","source":"Age-standardised (WHO World)","target":"Насаар стандартчилсан (ДЭМБ)"}
 {"id":"e54cc778b33db0638f8a","source":"All-Site Cancer Incidence: Crude and Age-Standardised","target":"Нийт хорт хавдрын өвчлөл: ерөнхий ба насны бүтцээр стандартчилсан түвшин"}
 {"id":"2df76452afb54063d46e","source":"Crude","target":"Ерөнхий"}
 {"id":"00cb62c178a52cf1e229","source":"Incidence (per {1})","target":"Өвчлөл ({1} тутамд)"}
@@ -838,7 +838,7 @@
 {"id":"65963fef3e6d0706e5ae","source":"The lines are {1}annual{2} reference values for scale, not tests of monthly compliance. The {3} micrograms/m3 line is the historical MNS {4} annual PM2.{5} benchmark; WHO’s {6} annual guideline is {7} micrograms/m3. Mongolia announced a {8}revised MNS {9} in June {10}{11}. Verify its effective rules and averaging periods before comparing later observations. The meaning of the source’s monthly maximum has not been verified, so it is not analysed here.","target":"Эдгээр шугам {1}жилийн{2} лавлах утгыг масштабыг ойлгуулахад харуулж байгаа бөгөөд сарын нийцлийг шалгахгүй. {3} микрограмм/м³ шугам нь MNS {4}-ийн түүхэн жилийн PM2.{5} босго; ДЭМБ-ын {6} оны жилийн зөвлөмж {7} микрограмм/м³. Монгол Улс {10} оны зургаадугаар сард {8}шинэчилсэн MNS {9}-ийг зарласан{11}. Дараах ажиглалтыг харьцуулахаасаа өмнө хүчинтэй дүрэм, дундажлах хугацааг баталгаажуулна. Эх сурвалжийн сарын хамгийн их утгын утга агуулга баталгаажаагүй тул энд шинжлэхгүй."}
 {"id":"f7082d8da9dd0f6ca9a6","source":"The NSO catalogue reuses the ids {1} (SO₂), {2} (CO) and {3} (PM1{4}) for unrelated tables in another folder, so those monthly series cannot be fetched by id alone (mongolstats warns about the ambiguity). This vignette uses a snapshot bundled with mongolstats for monthly SO₂.","target":"ҮСХ-ны каталог {1} (SO₂), {2} (CO), {3} (PM1{4}) кодыг өөр хавтас дахь хамааралгүй хүснэгтэд давхар ашигладаг. Иймээс сарын эдгээр цувааг зөвхөн кодоор татах боломжгүй; mongolstats хоёрдмол байдлыг анхааруулна. Энэ зааварт сарын SO₂-д багцад дагалдах түүхэн хуулбарыг ашиглав."}
 {"id":"f4db1a36c2411d130f95","source":"The reference factor is the rounded annual mean divided by a {1}historical {2} benchmark{3} from MNS {4}. It describes the published value relative to a reference; it does not establish legal compliance or adequate annual monitoring coverage.","target":"Лавлах харьцаа нь тоймлосон жилийн дунджийг MNS {4}-ийн {1}түүхэн {2} босгод{3} хуваасан утга. Энэ нь нийтлэгдсэн утгыг лавлахтай харьцуулахаас хууль, стандартын нийцэл эсвэл жилийн хяналтын хангалттай хамралтыг тогтоохгүй."}
-{"id":"3c83ceb9742e099563ba","source":"The source reports a percentage labelled “Exceeding percent of AQS”. Its threshold version, measurement denominator and averaging convention need confirmation, particularly across the {1} standard revision. We preserve it as a source-reported indicator rather than reconstructing daily exceedance counts or a city-wide percentage.","target":"Эх сурвалж «Exceeding percent of AQS» нэртэй хувь мэдээлдэг. Босгын хувилбар, хэмжилтийн хуваарь, дундажлах дүрмийг, ялангуяа {1} оны стандартын шинэчлэлийн өмнө, дараа баталгаажуулах шаардлагатай. Өдрийн давсан тоо, хотын нийт хувийг сэргээн тооцохын оронд эх сурвалжийн мэдээлсэн үзүүлэлтээр нь хадгална."}
+{"id":"3c83ceb9742e099563ba","source":"The source reports a percentage labelled “Exceeding percent of AQS”. Its threshold version, measurement denominator and averaging convention need confirmation, particularly across the {1} standard revision. We preserve it as a source-reported indicator rather than reconstructing daily exceedance counts or a city-wide percentage.","target":"Эх сурвалж «Exceeding percent of AQS» нэртэй хувь мэдээлдэг. Босгын хувилбар, хувь тооцсон суурь тоо, дундажлах дүрмийг, ялангуяа {1} оны стандартын шинэчлэлийн өмнө, дараа баталгаажуулах шаардлагатай. Өдрийн давсан тоо, хотын нийт хувийг сэргээн тооцохын оронд эх сурвалжийн мэдээлсэн үзүүлэлтээр нь хадгална."}
 {"id":"dc27b9f2e1564f12d8f1","source":"The Tuul River Through Ulaanbaatar{1}{2}","target":"Улаанбаатар хот дундуурх Туул гол{1}{2}"}
 {"id":"a0f868626a9b85159844","source":"The weather stations are in towns, so mongolmaps’ settlement points can place them on a map. Station names are matched to the capital and aimag centres first, then to soum centres where the name is unique.","target":"Цаг уурын станцууд сууринд байдаг тул mongolmaps-ийн суурингийн цэгээр зураглаж болно. Эхлээд нийслэл, аймгийн төвтэй, дараа нь нэр давхардаагүй сумын төвтэй станцын нэрийг тааруулна."}
 {"id":"d692d0fffec78196e1ec","source":"This guide shows how to:","target":"Энэ заавраар дараахыг хийнэ:"}
@@ -1404,3 +1404,103 @@
 {"id":"3e4933ac9936a98ff415","source":"{1}Environmental Data Analysis{2}","target":"{1}Байгаль орчны өгөгдлийн шинжилгээ{2}"}
 {"id":"8f6f6d958ef0a08ac519","source":"{1}Ulaanbaatar District-Level Analysis{2}","target":"{1}Улаанбаатарын дүүргийн түвшний шинжилгээ{2}"}
 {"id":"f4193947ae421ffe77a1","source":"{1}Does December Have the Most Recorded Deaths?{2}","target":"{1}Арван хоёрдугаар сард бүртгэгдсэн нас баралт хамгийн олон уу?{2}"}
+{"id":"091c958246e014a74dce","source":"Mean PM2.{1} (µg/m³)","target":"PM2.{1}-ын дундаж (µg/m³)"}
+{"id":"249733000f2aed94b59c","source":"Maternal Mortality Map Is Not Available","target":"Эхийн эндэгдлийн зураглал хийх өгөгдөл хүрэлцэхгүй"}
+{"id":"31128e164756619cc1c2","source":"All listed station locations have a unique district assignment.","target":"Жагсаалтын станц бүрийн байршил нэг дүүрэгт харьяалагдаж байна."}
+{"id":"d593a8278263dcac6f8a","source":"No area has a complete observed estimate","target":"Бүрэн ажиглалтад тулгуурласан тооцоо аль ч нутагт алга"}
+{"id":"c09875955b2afb9048d8","source":"Choose the source{1}{2}","target":"Эх сурвалжаа сонгох{1}{2}"}
+{"id":"800d9a9bbe798eaa466e","source":"Infant deaths per {1} live births: reconciliation with the published rate","target":"Нялхсын эндэгдэл, {1} амьд төрөлтөд: нийтлэгдсэн түвшинтэй тулгах нь"}
+{"id":"c36d819e7bc6d2b7da51","source":"Use","target":"Хэрэглээ"}
+{"id":"3a13a966c7ea94fb4538","source":"Geographic level","target":"Нутаг дэвсгэрийн түвшин"}
+{"id":"6b8bdb486125d0a974f3","source":"IMR per {1}","target":"Нялхсын эндэгдэл ({1} амьд төрөлтөд)"}
+{"id":"3a8153d499735ad39d86","source":"Start with a reviewed concept{1}{2}","target":"Хянасан үзүүлэлтээс эхлэх{1}{2}"}
+{"id":"86ab48c4d85d1dab66eb","source":"Annualised change (%)","target":"Жилд шилжүүлсэн өөрчлөлт (%)"}
+{"id":"0a902f142a1eb0ddff8f","source":"Maternal Mortality Intervals Are Not Available","target":"Эхийн эндэгдлийн итгэх интервалыг тооцох боломжгүй"}
+{"id":"1917eaa5ca6f24645d1f","source":"National MMR per {1}","target":"Улсын эхийн эндэгдэл ({1} амьд төрөлтөд)"}
+{"id":"da5eebb3c4f0aa96526a","source":"Check discovery freshness{1}{2}","target":"Каталогийн шинэчлэгдсэн байдлыг шалгах{1}{2}"}
+{"id":"4b8f93fce46ce789c8c8","source":"Calculated IMR","target":"Тооцсон түвшин"}
+{"id":"eb263e9730c3bbd8bf68","source":"Find definitions and collection context{1}{2}","target":"Тодорхойлолт, цуглуулалтын нөхцөлийг олох{1}{2}"}
+{"id":"9b10587f84a2c3749305","source":"Identifier","target":"Таних дугаар"}
+{"id":"38d08c58220b27d1febc","source":"Reported percentages","target":"Хувь мэдээлсэн ажиглалт"}
+{"id":"963e2f02a08e5ce477df","source":"R session details","target":"R орчны дэлгэрэнгүй мэдээлэл"}
+{"id":"b3316367fa3ebb50b2bf","source":"Years examined","target":"Хамруулсан жил"}
+{"id":"033cf05764551fa412c8","source":"Usable years","target":"Ашиглаж болох жил"}
+{"id":"037da73348c208138171","source":"Experimental aggregate series and datamart discovery","target":"Туршилтын нэгтгэсэн цуваа, өгөгдлийн сангийн жагсаалт"}
+{"id":"3060d0956e6994f13fb7","source":"Station-months","target":"Станц-сарын ажиглалт"}
+{"id":"f13da58fb649dd898dc7","source":"Crude incidence","target":"Нас стандартчилаагүй өвчлөл"}
+{"id":"5237c96ac1a23b98eb13","source":"Not applicable","target":"Хамаарахгүй"}
+{"id":"6e795d4d3cc21c5ca834","source":"Period","target":"Хугацаа"}
+{"id":"ac2db231b2d3a1b18fed","source":"Missing months","target":"Өгөгдөл дутуу сар"}
+{"id":"93817e77e7119f8c7ac4","source":"Station code","target":"Станцын код"}
+{"id":"84358833eaa439dc9874","source":"Cancer incidence per {1} people; WHO World standard","target":"Хавдрын өвчлөл, {1} хүн амд; ДЭМБ-ын дэлхийн жишиг хүн ам"}
+{"id":"c295316ab8fc40a8ce46","source":"Reported cases","target":"Мэдээлсэн тохиолдол"}
+{"id":"4d280a451d04b7a51a7e","source":"Difference","target":"Зөрүү"}
+{"id":"4852ac8f545d04ed0222","source":"Use the public portal explicitly{1}{2}","target":"Нийтийн порталыг зориуд сонгож ашиглах{1}{2}"}
+{"id":"bf1152830978e1e36b00","source":"Insufficient data","target":"Өгөгдөл хүрэлцэхгүй"}
+{"id":"023b22a5662d652e58fe","source":"A typed numeric ID","target":"Төрөл заасан тоон дугаар"}
+{"id":"8d15890a83f73c649bff","source":"Age-standardised incidence","target":"Насаар стандартчилсан өвчлөл"}
+{"id":"d677190e0a9990e7d5fa","source":"Service","target":"Үйлчилгээ"}
+{"id":"4b02bff0f1437d765724","source":"Winter months","target":"Өвлийн сар"}
+{"id":"734f150b7c528513d9c8","source":"Table ID","target":"Хүснэгтийн код"}
+{"id":"85a39ab345d672ff8ca9","source":"Yes","target":"Тийм"}
+{"id":"1ea442a134b2a184bd5d","source":"No","target":"Үгүй"}
+{"id":"0c554bf8b6c8bee21de0","source":"Residents per listed location","target":"Жагсаасан байршилд ногдох хүн ам"}
+{"id":"6ada1bcb2c1a1f983189","source":"Observed months and winter/summer sulphur dioxide concentrations","target":"Ажигласан сар ба өвөл, зуны хүхэрлэг хийн агууламж"}
+{"id":"fafadb582b0421a56ad6","source":"Winter SO₂ (µg/m³)","target":"Өвлийн SO₂ (µg/m³)"}
+{"id":"adadface0166af24b309","source":"Not reported","target":"Мэдээлээгүй"}
+{"id":"b1fa878a98a15b74d970","source":"Diagnostic","target":"Шалгах үзүүлэлт"}
+{"id":"bd11b94a7c4280ac82bd","source":"Inspect source information{1}{2}","target":"Эх сурвалжийн мэдээллийг шалгах{1}{2}"}
+{"id":"86aec05f4530a84d3dd8","source":"Published statistical tables","target":"Нийтлэгдсэн статистикийн хүснэгт"}
+{"id":"3e973793398494c0cfd7","source":"Missing observations prevent area estimates and confidence intervals","target":"Дутуу ажиглалтаас шалтгаалан нутаг тус бүрийн үнэлгээ, итгэх интервалыг тооцох боломжгүй"}
+{"id":"f1a5741f73d7e8ac0153","source":"Agrees within rounding","target":"Тоймлолтын хязгаарт нийцсэн"}
+{"id":"e02fdf3849a548969c4d","source":"{1}Sources, metadata, and reproducible exports{2}","target":"{1}Эх сурвалж, мета өгөгдөл, давтагдах экспорт{2}"}
+{"id":"533173b34686906e6d3c","source":"National estimate excluding pandemic years","target":"Цар тахлын жилүүдийг хассан улсын түвшний тооцоо"}
+{"id":"fda1d2643dbd0e131cc2","source":"Pearson dispersion","target":"Пирсоны дисперсийн үзүүлэлт"}
+{"id":"42dcce9fb956f3859c33","source":"Totals agree","target":"Нийлбэр дүн таарсан"}
+{"id":"acfb4f01e55b10bd5892","source":"Export a durable record{1}{2}","target":"Хадгалж, дахин ашиглах баримт экспортлох{1}{2}"}
+{"id":"03574f1b2ac3f126230a","source":"Median above standard (%)","target":"Стандарт давсан өдрийн хувь: медиан (%)"}
+{"id":"4c0b96799f877fb01ffc","source":"Summer SO₂ (µg/m³)","target":"Зуны SO₂ (µg/m³)"}
+{"id":"a5d25eda28dfb0dcf56f","source":"District code","target":"Дүүргийн код"}
+{"id":"dcd1eca20f8c8e34f75b","source":"MMR per {1} ({2} CI)","target":"Эхийн эндэгдэл, {1} амьд төрөлтөд ({2} итгэх интервал)"}
+{"id":"5a97ad5270459d9efb6c","source":"Adjacent-month residual correlation","target":"Дараалсан сарын үлдэгдлийн корреляц"}
+{"id":"6002dc003d559dca8fff","source":"Published IMR","target":"Нийтлэгдсэн түвшин"}
+{"id":"0e52e9d71e065f19e7fb","source":"Keep source symbols{1}{2}","target":"Эх сурвалжийн тэмдэглэгээг хадгалах{1}{2}"}
+{"id":"0d03bf9ce5d67896d595","source":"Sources, metadata, and reproducible exports","target":"Эх сурвалж, мета өгөгдөл, давтагдах экспорт"}
+{"id":"c278ba83d5c033a80d1c","source":"District total","target":"Дүүргийн дүн"}
+{"id":"dbb97315e21746b14619","source":"Khoroo total","target":"Хороодын нийлбэр"}
+{"id":"74477dd81744347728de","source":"Missing months: deaths / births","target":"Дутуу сар: эндэгдэл / төрөлт"}
+{"id":"825a2e0a7910c921ff4e","source":"Winter/summer ratio","target":"Өвөл/зуны харьцаа"}
+{"id":"6e73d19cc3679e5a4ff6","source":"Listed locations","target":"Жагсаасан байршил"}
+{"id":"697747d36cae41579599","source":"Total change (%)","target":"Нийт өөрчлөлт (%)"}
+{"id":"3084aaf9ee3ca8a6ab37","source":"Missing observations prevent an area comparison","target":"Дутуу ажиглалтаас шалтгаалан нутаг дэвсгэрүүдийг харьцуулах боломжгүй"}
+{"id":"024dc204d7ba77a8ff9b","source":"Area","target":"Нутаг дэвсгэр"}
+{"id":"3a0d0f13314bf2f6dcdc","source":"Definitions, forms, classifications and relationships","target":"Тодорхойлолт, маягт, ангилал, холбоос"}
+{"id":"08d1183ff769c035bc6b","source":"Summer months","target":"Зуны сар"}
+{"id":"ecce98cf2d760ec783b7","source":"Elapsed years","target":"Өнгөрсөн жил"}
+{"id":"8e4b6cff810b11a51f31","source":"Complete-Year Dust Observations, {1}","target":"Бүрэн жилийн шороотой өдрийн ажиглалт, {1}"}
+{"id":"2bf9b2adce2bb81c22b1","source":"Usable years differ by station; points = means, lines = min/max","target":"Ашиглаж болох жил станц бүрд ялгаатай; цэг = дундаж, зураас = бага/их утга"}
+{"id":"dc937b59892604f5a86a","source":"None","target":"Байхгүй"}
+{"id":"c79fb7487ef48247880a","source":"Coverage:","target":"Хамралт:"}
+{"id":"4b73336ad6a1c475697b","source":"Nine small-multiple line charts of resident population by Ulaanbaatar district over the last {1} years, on a shared population scale","target":"Сүүлийн {1} жилийн суурин хүн амыг ижил хуваариар харуулсан Улаанбаатарын есөн дүүргийн тусдаа шугаман график"}
+{"id":"58ad73d7c9b92457286e","source":"Portal identifiers and geography codes use their own source scheme; missing official labels remain missing. Datamart support provides discovery only. Open the source and metadata guide with {1} for exports, quality checks, classification codebooks, catalog freshness, and the limits of the experimental services.","target":"Порталын үзүүлэлтийн болон газар нутгийн код нь өөрийн эх сурвалжийн схемтэй; албан ёсны нэр дутуу бол дутуу хэвээр үлдэнэ. Өгөгдлийн сангийн дэмжлэг нь зөвхөн хайж олоход зориулагдана. Экспорт, чанарын шалгалт, ангиллын тайлбар, каталогийн шинэ байдал болон туршилтын үйлчилгээний хязгаарыг үзэхийн тулд {1}-ээр эх сурвалж, мета өгөгдлийн хоёр хэл дээрх зааврыг нээнэ үү."}
+{"id":"7faa6281e8f32457f07a","source":"No eligible observations","target":"Шаардлага хангасан ажиглалт алга"}
+{"id":"b036b08fd733baa1618e","source":"{1}Coverage:{2} {3} of {4} stations have at least one usable year in this window.","target":"{1}Хамралт:{2} энэ хугацаанд {4} станцын {3} нь ашиглаж болох дор хаяж нэг жилтэй."}
+{"id":"156b9321313ae7da6a04","source":"{1} of {2} stations with usable years were placed. Stations that could not be placed: None. Mapped settlement centres are illustrative positions, not measured station coordinates. Compare the coverage and summaries of placed and omitted stations before generalising. For exposure studies, use the weather stations’ own coordinates from the National Agency for Meteorology and Environmental Monitoring.","target":"Ашиглаж болох жилтэй {2} станцаас {1}-ийг зурагт байршууллаа. Байршуулж чадаагүй станц: байхгүй. Суурингийн төвийн цэг нь зөвхөн жишээ байршил бөгөөд хэмжилтийн станцын бодит координат биш. Дүгнэлтээ ерөнхийлөхөөс өмнө байршуулсан болон орхигдсон станцуудын хамралт, хураангуйг харьцуулна. Өртөлтийн судалгаанд Цаг уур, орчны шинжилгээний газраас станцын өөрийн координатыг авч ашиглана."}
+{"id":"8073cd580d9386ba39ba","source":"{1}{2} and {3} now actually attach Mongolian labels{4}: label metadata was matched to data columns by display text, but the two languages only share the dimension {5}code{6} (the English column is {7} while both languages use the code {8}), so cross-language labels were silently never added. Labels are now routed through a code-to-column map, which also fixes English labels when {9}.","target":"{1}{2}, {3} нь монгол нэрийг үнэхээр хавсаргадаг боллоо{4}: өмнө нь нэрийн мета өгөгдлийг харагдах бичвэрээр холбодог байв. Гэвч хоёр хэл зөвхөн хэмжээсийн {5}кодыг{6} хуваалцдаг (англи багана {7}, харин хоёр хэлний код {8}) тул хэл хоорондын нэр нэмэгдэхгүй байжээ. Одоо нэрийг код–баганын холбоосоор тааруулдаг бөгөөд {9} үед англи нэрийг ч зөв нэмнэ."}
+{"id":"cc8bab0e290f9a5947c1","source":"Residents per km² (log scale)","target":"Км² тутмын хүн ам (логарифмын хуваарь)"}
+{"id":"4a2401a04675a73ae35c","source":"Dot plot of observed complete-year dust days by station; points are means and lines show the minimum and maximum observed year","target":"Станц бүрийн бүрэн ажигласан жилийн шороотой өдрийг харуулсан цэгэн график. Цэг нь дундаж, зураас нь ажигласан жилүүдийн хамгийн бага, их утга."}
+{"id":"079a0bf1d1428b963309","source":"No complete observed station-years are available for a dust-day comparison","target":"Шороотой өдрийг харьцуулах бүрэн ажигласан станц-жил алга."}
+{"id":"ff177227c4f1442f94d6","source":"Map of stations with complete observed years, sized and coloured by mean annual dust days; settlement centres are approximate station locations","target":"Бүрэн ажигласан жилтэй станцуудыг жилийн дундаж шороотой өдрөөр хэмжээ, өнгө ялган тэмдэглэсэн зураг. Суурингийн төв нь станцын ойролцоо байршил."}
+{"id":"f6ce24ceccce3f7e8e8a","source":"No stations with complete observed years could be placed on the dust-day map","target":"Бүрэн ажигласан жилтэй станцыг шороотой өдрийн зурагт байршуулах боломжгүй."}
+{"id":"42a4f3b07d07d94c8007","source":"Choropleth map of the pooled maternal mortality ratio by aimag and Ulaanbaatar over the selected complete years","target":"Сонгосон бүрэн жилүүдийн эхийн эндэгдлийн нэгтгэсэн харьцааг аймаг, Улаанбаатараар өнгөөр ялгасан зураг."}
+{"id":"9b5d8e6a812ab55a00f4","source":"No area has a complete observed estimate for a maternal mortality map","target":"Эхийн эндэгдлийг зураглах бүрэн ажиглалттай нутаг дэвсгэр алга."}
+{"id":"2db8c0fb1d1511f10ceb","source":"Dot plot of maternal mortality ratios with exact {1} confidence intervals and a dashed national reference","target":"Эхийн эндэгдлийн харьцааг {1} яг итгэх интервалтай харуулсан цэгэн график. Улсын лавлах утгыг тасархай шугамаар тэмдэглэв."}
+{"id":"59880a8203ab3367d7d3","source":"No area has a complete observed estimate or confidence interval for maternal mortality","target":"Эхийн эндэгдлийн бүрэн ажиглалтад тулгуурласан үнэлгээ, итгэх интервал аль ч нутагт алга."}
+{"id":"4c74774e91cce74ab910","source":"Dust-Day Comparison Is Not Available","target":"Шороотой өдрийг харьцуулах өгөгдөл хүрэлцэхгүй"}
+{"id":"0087008a42e40f49be5b","source":"No complete observed station-years","target":"Бүрэн ажигласан станц-жил алга"}
+{"id":"2dd899c95f5f0175a183","source":"Unreported months remain unknown; a complete-year ranking cannot be calculated","target":"Мэдээлээгүй саруудыг тодорхойгүй хэвээр үлдээнэ; бүрэн жилийн эрэмбэ тооцох боломжгүй"}
+{"id":"c37ce1768b407ceb726b","source":"Dust-Day Map Is Not Available","target":"Шороотой өдрийг зураглах өгөгдөл хүрэлцэхгүй"}
+{"id":"222aa1677963ec6d0d4b","source":"No stations with complete observed years to map","target":"Зураглах бүрэн ажигласан жилтэй станц алга"}
+{"id":"f8379850843d34289b34","source":"Coverage is insufficient for a complete-year comparison","target":"Бүрэн жилээр харьцуулахад ажиглалтын хамралт хүрэлцэхгүй"}
+{"id":"c56af7b49d105efa9761","source":"Per {1} live births; grey = insufficient data","target":"{1} амьд төрөлтөд; саарал = өгөгдөл хүрэлцэхгүй"}
+{"id":"c3782663a5cd8e368755","source":"Pooled recorded counts | Source: NSO Mongolia","target":"Бүртгэлийн нэгтгэсэн тоо | Эх сурвалж: Монголын ҮСХ"}

@@ -61,7 +61,10 @@ Find a table, then fetch it with selections written as codes or labels:
 library(mongolstats)
 library(dplyr)
 library(ggplot2)
+source(system.file("examples", "plot-style.R", package = "mongolstats"), local = TRUE)
+```
 
+``` r
 nso_search("gross domestic product, by production approach") |>
   select(tbl_id, tbl_eng_nm)
 #> # A tibble: 7 × 2
@@ -95,9 +98,9 @@ head(gdp, 3)
 
 gdp |>
   ggplot(aes(x = nso_period_date(Year), y = value / 1e6)) +
-  geom_area(fill = "#42b883", alpha = 0.6) +
-  geom_line(color = "#2c3e50", linewidth = 1.2) +
-  geom_point(color = "#2c3e50", size = 3, shape = 21, fill = "white", stroke = 1.5) +
+  geom_area(fill = "#D6ECE8", alpha = 0.8) +
+  geom_line(color = "#167D8D", linewidth = 1.1) +
+  geom_point(color = "#167D8D", size = 2.5, shape = 21, fill = "white", stroke = 1) +
   scale_y_continuous(labels = scales::label_number(suffix = "T")) +
   labs(
     title = "Mongolia's GDP, 2010-2025",
@@ -106,12 +109,7 @@ gdp |>
     y = NULL,
     caption = "Source: NSO Mongolia via mongolstats"
   ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(face = "bold", size = 16),
-    plot.subtitle = element_text(color = "grey40"),
-    panel.grid.minor = element_blank()
-  )
+  analysis_plot_theme()
 ```
 
 <img src="man/figures/README-gdp-example-1.svg" alt="Mongolia's annual GDP at current prices from 2010 to 2025, in trillion MNT" width="100%" />
@@ -134,7 +132,9 @@ pop <- nso_data(pop_tbl, selections = list(Year = latest))
 pop |>
   mn_join(by = "Region", level = "aimag") |>
   mn_map(fill = value, trans = "log10", lang = "en", title = paste("Population by aimag,", latest)) +
-  labs(fill = "Population\n(log scale)")
+  labs(fill = "Population\n(log scale)") +
+  guides(fill = guide_colourbar(barwidth = grid::unit(85, "mm"), barheight = grid::unit(3, "mm"))) +
+  analysis_map_theme()
 ```
 
 <img src="man/figures/README-pop-map-example-1.svg" alt="Aimag-level resident population across Mongolia on a logarithmic colour scale" width="100%" />
@@ -163,7 +163,7 @@ nso_indicators(source = "portal")
 
 Portal identifiers and geography codes use their own source scheme;
 missing official labels remain missing. Datamart support provides
-discovery only. Open the bilingual source and metadata guide with
+discovery only. Open the source and metadata guide with
 `vignette("data-provenance", package = "mongolstats")` for exports,
 quality checks, classification codebooks, catalog freshness, and the
 limits of the experimental services.

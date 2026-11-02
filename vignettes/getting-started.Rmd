@@ -24,7 +24,8 @@ knitr::opts_chunk$set(
   fig.dpi = 150, # higher resolution for crisp rendering
   out.width = "100%", # constrain to page width, prevents overflow
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  error = FALSE
 )
 ```
 
@@ -51,19 +52,18 @@ library(ggplot2)
 # Set language to English for readable output
 # Checked teaching helpers are shipped with the package and can be inspected.
 source(system.file("examples", "analysis-helpers.R", package = "mongolstats"), local = TRUE)
-old_options <- nso_options(mongolstats.lang = "en")
+source(system.file("examples", "plot-style.R", package = "mongolstats"), local = TRUE)
+```
 
-# Set global ggplot2 theme with proper margins to prevent text cutoff
-old_theme <- theme_set(
-  theme_minimal(base_size = 11) +
-    theme(
-      plot.margin = margin(10, 10, 10, 10),
-      plot.title = element_text(size = 13, face = "bold"),
-      plot.subtitle = element_text(size = 10, color = "grey40"),
-      legend.text = element_text(size = 9),
-      legend.title = element_text(size = 10)
-    )
+```{r presentation, include=FALSE}
+old_options <- c(nso_options(mongolstats.lang = "en"), list(knitr.kable.NA = getOption("knitr.kable.NA")))
+options(knitr.kable.NA = "Not reported")
+
+knitr::opts_chunk$set(
+  dev = "svglite", fig.ext = "svg",
+  dev.args = list(svglite = list(system_fonts = list(sans = "Source Sans 3")))
 )
+old_theme <- theme_set(analysis_plot_theme())
 ```
 
 ### Step 2: Find the Right Table
@@ -123,12 +123,12 @@ NSO rounds these monthly rates to whole numbers, which is coarse for a measure t
 imr_national |>
   mutate(date = nso_period_date(Month)) |> # "YYYY-MM" to Date
   ggplot(aes(x = date, y = value)) +
-  geom_line(color = "#2c3e50", linewidth = 1, alpha = 0.3) + # dim raw data so trend stands out
-  geom_point(color = "#e74c3c", size = 2, shape = 21, fill = "white", stroke = 1, alpha = 0.6) +
+  geom_line(color = "#183442", linewidth = 1, alpha = 0.3) + # dim raw data so trend stands out
+  geom_point(color = "#C2623D", size = 2, shape = 21, fill = "white", stroke = 1, alpha = 0.6) +
   # Descriptive smooth only: no model-based uncertainty ribbon
   geom_smooth(
     method = "loess", formula = y ~ x, se = FALSE,
-    color = "#3498db", fill = "#3498db", alpha = 0.2, linewidth = 1.5
+    color = "#167D8D", fill = "#167D8D", alpha = 0.2, linewidth = 1.5
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(limits = c(0, NA)) +
@@ -183,7 +183,15 @@ national_imr <- imr_regional$imr[imr_regional$Region == "0"]
 stopifnot(length(national_imr) == 1L, is.finite(national_imr))
 imr_units <- filter(imr_regional, Region != "0")
 stopifnot(nrow(imr_units) == 22L)
-imr_units |> select(Region_en, deaths, births, missing_deaths, missing_births, imr, lower, upper)
+imr_units |>
+  transmute(
+    area = Region_en, deaths, births, imr,
+    interval = if_else(is.finite(imr), sprintf("%.1f to %.1f", lower, upper), "Insufficient data")
+  ) |>
+  knitr::kable(
+    col.names = c("Area", "Infant deaths", "Live births", "IMR per 1,000", "95% CI"),
+    digits = c(0, 0, 0, 1, 0), format.args = list(big.mark = ",")
+  )
 ```
 
 In `r if (run_vignette) latest_year else "the latest common calendar year"`, the national recorded IMR was `r if (run_vignette) round(national_imr, 1) else "-"` per 1,000 live births. `r if (run_vignette) sum(!is.finite(imr_units$imr)) else "Some"` areas have insufficient observations for an annual estimate. The source objects retain raw observations, symbols and provenance for inspection.
@@ -198,7 +206,7 @@ imr_units |>
   geom_vline(xintercept = national_imr, linetype = "dashed", color = "grey50") +
   geom_errorbar(aes(xmin = lower, xmax = upper), width = 0.3, color = "grey60", orientation = "y") +
   geom_point(aes(color = level), size = 2.5) +
-  scale_color_manual(values = c(Aimag = "#2a78d6", Capital = "#eb6834"), name = NULL) +
+  scale_color_manual(values = c(Aimag = "#167D8D", Capital = "#C2623D"), name = NULL) +
   labs(
     title = paste0("Infant Mortality by Aimag, ", latest_year),
     subtitle = "Per 1,000 live births, with exact 95% CIs; dashed line = national rate",
@@ -231,7 +239,9 @@ mn_map(
   fill = imr,
   title = paste0("Infant Mortality Rate, ", latest_year)
 ) +
-  labs(subtitle = "Infant deaths per 1,000 live births. Data: NSO Mongolia", fill = "IMR\n(per 1,000)")
+  labs(subtitle = "Infant deaths per 1,000 live births. Data: NSO Mongolia", fill = "IMR\n(per 1,000)") +
+  guides(fill = guide_colourbar(barwidth = grid::unit(85, "mm"), barheight = grid::unit(3, "mm"))) +
+  analysis_map_theme()
 ```
 
 Grey areas have insufficient data. The map shows point estimates only. Read it with the confidence intervals above: in small aimags, a few more or fewer infant deaths can move the colour a long way.
@@ -292,7 +302,7 @@ tibble::tribble(
   "Communicable disease cases", "DT_NSO_2100_020V2", "Count", "Disease, soum, year",
   "Mid-year population", "DT_NSO_0300_002V1", "Count", "Aimag, year"
 ) |>
-  knitr::kable()
+  knitr::kable(col.names = c("Indicator", "Table ID", "Measure", "Detail"))
 ```
 
 ```{r restore-session, include=FALSE}

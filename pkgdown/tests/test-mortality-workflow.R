@@ -59,5 +59,5 @@ testthat::test_that("the mortality article executes offline and updates a non-De
   testthat::expect_true(all(env$hospital_pair$nonhospital_deaths >= 0))
   text <- paste(readLines(output), collapse = "\n")
   testthat::expect_match(text, "highest equal-year monthly mean is in January")
-  testthat::expect_equal(length(list.files(directory, pattern = "[.]png$")), 9L)
+  testthat::expect_equal(length(list.files(directory, pattern = "[.]svg$")), 9L)
 })
