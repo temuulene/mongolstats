@@ -44,7 +44,8 @@ test_that("curated query uses reviewed selections and period labels", {
   expect_equal(q$selections[["Бүс"]], "011")
   expect_equal(q$selections[["Он"]], "2024")
   expect_equal(nso_indicator_query("resident_population")$selections[["Бүс"]], "0")
-  expect_equal(nso_indicator_query("gdp_current")$selections[["Жил"]], "all")
+  expect_null(nso_indicator_query("gdp_current")$selections[["Жил"]])
+  expect_null(nso_indicator_query("resident_population")$selections[["Он"]])
   expect_error(nso_indicator_query("gdp_current", periods = "0"), "periods")
   expect_error(nso_indicator_query("resident_population", geography = NA), "geography")
 })
@@ -77,4 +78,45 @@ test_that("portal lookups require explicit namespace and reject ambiguous record
   expect_error(nso_indicator("portal:DT_NSO_DUPLICATE"), "ambiguous")
   expect_error(nso_indicator("portal:DT_NSO_UNKNOWN"), "Unknown")
   expect_error(nso_indicator("DT_NSO_0000_4_4"), "Unknown")
+})
+
+test_that("default curated queries resolve every period against table metadata", {
+  dimension <- function(code, values, labels = values) {
+    list(code = code, text = code, values = as.list(values), valueTexts = as.list(labels))
+  }
+  vars <- list(
+    DT_NSO_0500_001V1 = list(
+      dimension("Статистик үзүүлэлт", c("0", "1")),
+      dimension("Эдийн засгийн салбар", c("0", "1")),
+      dimension("Жил", c("0", "1", "2"), c("2024", "2023", "2022"))
+    ),
+    DT_NSO_0300_068V2 = list(
+      dimension("Хүйс", c("0", "1", "2")),
+      dimension("Бүс", c("0", "011")),
+      dimension("Он", c("0", "1"), c("2024", "2023"))
+    )
+  )
+  local_mocked_bindings(
+    .px_table_meta = function(tbl_id, ...) list(meta = list(variables = vars[[tbl_id]]))
+  )
+  values <- function(body) {
+    stats::setNames(
+      lapply(body$query, function(q) as.character(q$selection$values)),
+      vapply(body$query, function(q) q$code, character(1))
+    )
+  }
+  gdp <- values(as_px_query(nso_indicator_query("gdp_current")))
+  expect_equal(gdp[["Статистик үзүүлэлт"]], "0")
+  expect_equal(gdp[["Жил"]], c("0", "1", "2"))
+  gdp <- values(as_px_query(nso_indicator_query("gdp_current", periods = "2023")))
+  expect_equal(gdp[["Жил"]], "1")
+  population <- values(as_px_query(nso_indicator_query("resident_population")))
+  expect_equal(population[["Бүс"]], "0")
+  expect_equal(population[["Он"]], c("0", "1"))
+})
+
+test_that("indicator validation errors name the user-facing function", {
+  expect_snapshot(nso_indicator(NA), error = TRUE)
+  expect_snapshot(nso_indicators(refresh = NA), error = TRUE)
+  expect_snapshot(nso_indicator_query("gdp_current", periods = NA_character_), error = TRUE)
 })

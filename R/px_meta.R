@@ -14,14 +14,15 @@ nso_px_variables <- function(tbl_id) {
   # languages: display names differ ("Sex" vs its Mongolian name) while the
   # dimension code is shared.
   value_rows <- function(vars, label_col) {
-    out <- purrr::imap_dfr(vars, function(v, i) {
+    out <- purrr::imap(vars, function(v, i) {
       tibble::tibble(
         dim_code = as.character(v$code %||% paste0("V", i)),
         field = .px_first_nonempty(v$text, v$code, paste0("V", i)),
         itm_id = .px_chr(v$values %||% character()),
         label = .px_chr(v$valueTexts %||% character())
       )
-    })
+    }) |>
+      dplyr::bind_rows()
     names(out)[names(out) == "label"] <- label_col
     out
   }
@@ -100,8 +101,8 @@ nso_dim_values <- function(
   labels = c("code", "en", "mn", "both")
 ) {
   check_tbl_id(tbl_id)
-  if (!is.character(dim) || length(dim) != 1L) {
-    cli_abort("{.arg dim} must be a single character string.")
+  if (!is.character(dim) || length(dim) != 1L || is.na(dim) || !nzchar(trimws(dim))) {
+    cli_abort("{.arg dim} must be a single non-empty character string.")
   }
   # Accept the nso_data() vocabulary too: "none" is an alias for "code"
   if (identical(labels, "none")) labels <- "code"
@@ -184,8 +185,7 @@ nso_dim_values <- function(
         v_mn <- vars_mn[[vidx_mn]]
         codes_mn <- .px_chr(v_mn$values %||% character())
         labs_mn <- .px_chr(v_mn$valueTexts %||% character())
-        map_mn <- tibble::tibble(code = codes_mn, label_mn = labs_mn)
-        out <- dplyr::left_join(out, map_mn, by = "code")
+        out$label_mn <- .px_lookup_labels(out$code, codes_mn, labs_mn)
       } else {
         out$label_mn <- NA_character_
       }
@@ -194,6 +194,16 @@ nso_dim_values <- function(
     }
   }
   out
+}
+
+# Labels for `codes` from another language's metadata. match() keeps one
+# row per code even if that metadata repeats a code, and labels that do not
+# align with their codes are treated as missing rather than recycled.
+.px_lookup_labels <- function(codes, source_codes, source_labels) {
+  if (length(source_labels) != length(source_codes)) {
+    return(rep(NA_character_, length(codes)))
+  }
+  source_labels[match(codes, source_codes)]
 }
 
 #' Table metadata as per-dimension codebooks
@@ -225,7 +235,7 @@ nso_table_meta <- function(tbl_id) {
   vars_mn <- if (!is.null(meta_mn)) meta_mn$variables else NULL
   # Build per-dimension codebooks
   time_i <- .px_time_var(vars_en)
-  out <- purrr::imap_dfr(vars_en, function(v_en, i) {
+  out <- purrr::imap(vars_en, function(v_en, i) {
     dim_name <- .px_first_nonempty(v_en$text, v_en$code, paste0("V", i))
     codes <- .px_chr(v_en$values %||% character())
     labs_en <- .px_chr(v_en$valueTexts %||% character())
@@ -242,8 +252,7 @@ nso_table_meta <- function(tbl_id) {
         v_mn <- vars_mn[[j]]
         codes_mn <- .px_chr(v_mn$values %||% character())
         labs_mn <- .px_chr(v_mn$valueTexts %||% character())
-        map_mn <- tibble::tibble(code = codes_mn, label_mn = labs_mn)
-        df_codes <- dplyr::left_join(df_codes, map_mn, by = "code")
+        df_codes$label_mn <- .px_lookup_labels(df_codes$code, codes_mn, labs_mn)
       } else {
         df_codes$label_mn <- NA_character_
       }
@@ -255,6 +264,7 @@ nso_table_meta <- function(tbl_id) {
       n_values = length(codes),
       codes = list(df_codes)
     )
-  })
+  }) |>
+    dplyr::bind_rows()
   out
 }

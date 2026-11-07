@@ -80,23 +80,39 @@
 .nso_clock <- function() as.numeric(Sys.time())
 .nso_sleep <- function(seconds) Sys.sleep(seconds)
 
-# Called with requests.lock held, once before each actual network attempt.
-# Keeping the timestamp on disk coordinates independently launched workers.
+# Called once before each actual network attempt. The lock is held only to
+# reserve the next free slot in the on-disk schedule, which coordinates
+# independently launched workers; the wait for that slot happens after the
+# lock is released, so workers can overlap their transfers.
 .nso_rate_schedule <- function(directory, interval) {
+  reserved <- .nso_with_request_lock(
+    .nso_rate_reserve(directory, interval),
+    directory = directory
+  )
+  delay <- reserved - .nso_clock()
+  if (delay > 0) .nso_sleep(delay)
+  invisible(NULL)
+}
+
+# Reserve the earliest start time at least `interval` seconds after the last
+# reservation and record it. Must be called with requests.lock held.
+.nso_rate_reserve <- function(directory, interval) {
   stamp <- file.path(directory, "last-request")
   previous <- tryCatch(
     suppressWarnings(as.numeric(readLines(stamp, n = 1L, warn = FALSE))),
     error = function(e) numeric()
   )
   now <- .nso_clock()
+  reserved <- now
   if (length(previous) == 1L && is.finite(previous)) {
-    # A backwards clock adjustment should not create an unbounded wait.
-    previous <- min(previous, now)
-    delay <- previous + interval - now
-    if (delay > 0) .nso_sleep(delay)
+    # Reservations lie ahead of the clock while workers queue. One far
+    # beyond any plausible queue means the clock moved back; start afresh
+    # rather than wait for it.
+    if (previous > now + max(3600, 100 * interval)) previous <- now
+    reserved <- max(now, previous + interval)
   }
-  writeLines(sprintf("%.6f", .nso_clock()), stamp)
-  invisible(NULL)
+  writeLines(sprintf("%.6f", reserved), stamp)
+  reserved
 }
 
 .nso_with_request_lock <- function(code, directory = .nso_rate_dir()) {
@@ -200,14 +216,11 @@
     if (.nso_is_nso_url(req$url)) {
       directory <- .nso_rate_dir()
       interval <- .nso_request_interval()
-      .nso_with_request_lock(
-        withCallingHandlers(
-          perform(),
-          # httr2 signals this before every curl transfer, including retries
-          # and authentication refreshes. Mock responses perform no transfer.
-          httr2_perform = function(cnd) .nso_rate_schedule(directory, interval)
-        ),
-        directory = directory
+      withCallingHandlers(
+        perform(),
+        # httr2 signals this before every curl transfer, including retries
+        # and authentication refreshes. Mock responses perform no transfer.
+        httr2_perform = function(cnd) .nso_rate_schedule(directory, interval)
       )
     } else {
       httr2::req_perform(req, path = path)
@@ -245,32 +258,28 @@
 #' the network will raise a clear offline error. Cached metadata can still
 #' be used if already available via `nso_cache_enable()`.
 #'
-#' @return Invisibly, `TRUE`.
+#' @return Invisibly, the previous option value as a list, suitable for
+#'   restoring with [options()].
 #' @examples
-#' old <- nso_options(mongolstats.offline = FALSE)
-#' # Enable offline mode
-#' nso_offline_enable()
-#'
-#' # Check the option was set
+#' old <- nso_offline_enable()
 #' getOption("mongolstats.offline")
 #'
 #' # Restore the original setting
 #' options(old)
 #' @export
 nso_offline_enable <- function() {
-  options(mongolstats.offline = TRUE)
-  invisible(TRUE)
+  invisible(options(mongolstats.offline = TRUE))
 }
 
 #' Disable offline mode
 #'
-#' @return Invisibly, `TRUE`.
+#' @return Invisibly, the previous option value as a list, suitable for
+#'   restoring with [options()].
 #' @examples
-#' old <- nso_options(mongolstats.offline = TRUE)
-#' nso_offline_disable()
+#' old <- nso_offline_disable()
+#' getOption("mongolstats.offline")
 #' options(old)
 #' @export
 nso_offline_disable <- function() {
-  options(mongolstats.offline = FALSE)
-  invisible(TRUE)
+  invisible(options(mongolstats.offline = FALSE))
 }

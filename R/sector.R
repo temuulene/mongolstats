@@ -34,7 +34,8 @@ nso_sectors <- function() {
 #' nso_subsectors(sectors$id[1])
 #' @export
 nso_subsectors <- function(subid) {
-  if (!is.character(subid) || length(subid) != 1L) {
+  # An empty string is the catalogue root; NA has no meaning as a path.
+  if (!is.character(subid) || length(subid) != 1L || is.na(subid)) {
     cli_abort("{.arg subid} must be a single character string.")
   }
   paths <- if (nzchar(subid)) {

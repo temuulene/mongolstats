@@ -111,9 +111,17 @@ test_that("large selections are fetched in parts with the same result", {
   withr::local_options(mongolstats.max_cells = 50)
   parts <- nso_data("DT_NSO_0300_001V2", sel)
   key <- c("Sex", "Age", "Year")
+  # Split requests return rows in request order, and provenance differs by
+  # design (one record per request), so compare observations by key only.
+  sorted <- function(df) {
+    df <- dplyr::arrange(tibble::as_tibble(df), dplyr::across(dplyr::all_of(key)))
+    attributes(df) <- attributes(df)[c("names", "row.names", "class")]
+    df
+  }
+  expect_equal(sorted(parts), sorted(whole))
   expect_equal(
-    dplyr::arrange(parts, dplyr::across(dplyr::all_of(key))),
-    dplyr::arrange(whole, dplyr::across(dplyr::all_of(key)))
+    sorted(nso_value_status(parts)),
+    sorted(nso_value_status(whole))
   )
 })
 

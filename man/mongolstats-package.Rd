@@ -13,18 +13,20 @@ expose the public data and metadata portals, including official definitions,
 collection forms, and classifications. For maps, join the results to the
 boundaries in the companion package mongolmaps by NSO code.
 }
-\section{Main Functions}{
+\section{Main functions}{
 
-\describe{
-\item{nso_search}{Find tables by keyword}
-\item{nso_tables}{List all tables}
-\item{nso_dims, nso_dim_values}{Inspect a table's dimensions and values}
-\item{nso_table_periods, nso_latest_periods}{Periods available in a table}
-\item{nso_data}{Fetch statistical data from a table}
-\item{nso_indicators, nso_indicator_query}{Find reviewed statistical concepts and build queries}
-\item{nso_provenance, nso_citation}{Inspect source provenance and generate citations}
-\item{nso_metadata, nso_metadata_search}{Discover official metadata and collection context}
-\item{nso_portal_data}{Retrieve explicit public portal aggregate series}
+\itemize{
+\item \code{\link[=nso_search]{nso_search()}}, \code{\link[=nso_tables]{nso_tables()}}: find tables by keyword or list them all.
+\item \code{\link[=nso_dims]{nso_dims()}}, \code{\link[=nso_dim_values]{nso_dim_values()}}: inspect a table's dimensions and values.
+\item \code{\link[=nso_table_periods]{nso_table_periods()}}, \code{\link[=nso_latest_periods]{nso_latest_periods()}}: periods available in a table.
+\item \code{\link[=nso_data]{nso_data()}}: fetch statistical data from a table.
+\item \code{\link[=nso_indicators]{nso_indicators()}}, \code{\link[=nso_indicator_query]{nso_indicator_query()}}: find reviewed statistical
+concepts and build queries.
+\item \code{\link[=nso_provenance]{nso_provenance()}}, \code{\link[=nso_citation]{nso_citation()}}: inspect source provenance and
+generate citations.
+\item \code{\link[=nso_metadata]{nso_metadata()}}, \code{\link[=nso_metadata_search]{nso_metadata_search()}}: discover official metadata and
+collection context.
+\item \code{\link[=nso_portal_data]{nso_portal_data()}}: retrieve explicit public portal aggregate series.
 }
 }
 

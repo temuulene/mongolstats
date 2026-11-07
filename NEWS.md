@@ -1,5 +1,29 @@
 # mongolstats (development version)
 
+* `nso_indicator_query()` without `periods` now selects every source period;
+  the previous default sent an `"all"` selection that failed on fetch.
+* `nso_package()` raises `mongolstats_offline_error` in offline mode instead
+  of dropping every table with a warning. With `strict = TRUE` the error now
+  has class `mongolstats_package_error` plus the package classes of the first
+  failure (such as `mongolstats_http_error` or `mongolstats_selection_error`),
+  rather than always `mongolstats_http_error`. Results keep a `tbl_id` column
+  even when empty.
+* Workers in `nso_package(parallel = TRUE)` now overlap their downloads. The
+  shared request lock is held only to reserve the next start slot, so request
+  starts stay spaced while long transfers no longer block other workers or
+  time out waiting for the lock.
+* Adding labels in `nso_data()`, `nso_dim_values()` and `nso_table_meta()`
+  can no longer duplicate rows when table metadata repeats a code or label.
+  Mongolian labels that do not align with their codes are returned as `NA`
+  instead of raising an error.
+* `nso_data()`, `nso_search()`, `nso_dim_values()`, `nso_subsectors()` and
+  related functions reject `NA` and blank identifiers before making requests.
+  Validation errors from the indicator, portal, metadata and manifest
+  functions name the function that was called.
+* `nso_offline_enable()` and `nso_offline_disable()` return the previous
+  setting invisibly, so `old <- nso_offline_enable(); options(old)` restores
+  it.
+
 * Strengthened all analytical tutorials with checked observation keys, common
   calendar periods, strict missing-count aggregation and denominator validation.
 * Qualified cancer, mortality, geographic and pollution interpretations; added

@@ -160,3 +160,70 @@ test_that("nso_package(parallel = TRUE) fetches on mirai daemons", {
   expect_setequal(out$Year, c("2023", "2024"))
   expect_true(all(out$Sex_en == "Total"))
 })
+
+test_that("nso_package() raises offline mode instead of dropping every table", {
+  withr::local_options(mongolstats.offline = TRUE)
+  local_mocked_bindings(
+    nso_px_data = function(...) .nso_perform(httr2::request("https://data.1212.mn/api/v1/en"))
+  )
+  reqs <- list(list(tbl_id = "A", selections = list()))
+  expect_error(nso_package(reqs), class = "mongolstats_offline_error")
+  expect_error(nso_package(reqs, strict = TRUE), class = "mongolstats_offline_error")
+})
+
+test_that("nso_package(strict = TRUE) keeps the class of the underlying failure", {
+  local_mocked_bindings(
+    nso_px_data = function(...) {
+      cli::cli_abort("Unknown value.", class = "mongolstats_selection_error")
+    }
+  )
+  reqs <- list(list(tbl_id = "A", selections = list(Year = "1900")))
+  error <- tryCatch(nso_package(reqs, strict = TRUE), error = identity)
+  expect_s3_class(error, "mongolstats_selection_error")
+  expect_s3_class(error, "mongolstats_package_error")
+  expect_false(inherits(error, "mongolstats_http_error"))
+})
+
+test_that("nso_package() results always carry a tbl_id column", {
+  local_mocked_bindings(
+    nso_px_data = function(tbl_id, ...) {
+      if (tbl_id == "FAILED") stop("unavailable")
+      tibble::tibble(Year = character(), value = numeric())
+    }
+  )
+  empty <- nso_package(list(list(tbl_id = "EMPTY", selections = list())))
+  expect_named(empty, c("Year", "value", "tbl_id"))
+  expect_equal(nrow(empty), 0)
+  expect_warning(
+    failed <- nso_package(list(list(tbl_id = "FAILED", selections = list()))),
+    "Failed to fetch"
+  )
+  expect_true("tbl_id" %in% names(failed))
+  expect_equal(nrow(failed), 0)
+})
+
+test_that(".px_add_labels() never duplicates rows on repeated metadata labels", {
+  withr::local_options(mongolstats.lang = "en")
+  local_mocked_bindings(
+    .px_table_meta = function(...) {
+      list(meta = list(variables = list(
+        list(
+          code = "SEX", text = "Sex", values = list("0", "1", "1"),
+          valueTexts = list("Total", "Male", "Male (duplicate)")
+        ),
+        list(
+          code = "YEAR", text = "Year", time = TRUE, values = list("0", "1"),
+          valueTexts = list("2024", "2024")
+        )
+      )))
+    }
+  )
+  df <- tibble::tibble(Sex = c("0", "1"), Year = c("2024", "2024"), value = c(1, 2))
+  attr(df, "nso_value_status") <- tibble::tibble(value_raw = c("1", "2"))
+  out <- .px_add_labels(df, "T", which = "en")
+  expect_equal(nrow(out), 2)
+  expect_equal(out$value, c(1, 2))
+  expect_equal(out$Sex_en, c("Total", "Male"))
+  expect_equal(out$Year_en, c("2024", "2024"))
+  expect_equal(nrow(attr(out, "nso_value_status")), nrow(out))
+})

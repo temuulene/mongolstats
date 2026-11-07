@@ -7,7 +7,8 @@
 nso_offline_enable()
 }
 \value{
-Invisibly, \code{TRUE}.
+Invisibly, the previous option value as a list, suitable for
+restoring with \code{\link[=options]{options()}}.
 }
 \description{
 When enabled, HTTP requests are prevented and functions that require
@@ -15,11 +16,7 @@ the network will raise a clear offline error. Cached metadata can still
 be used if already available via \code{nso_cache_enable()}.
 }
 \examples{
-old <- nso_options(mongolstats.offline = FALSE)
-# Enable offline mode
-nso_offline_enable()
-
-# Check the option was set
+old <- nso_offline_enable()
 getOption("mongolstats.offline")
 
 # Restore the original setting

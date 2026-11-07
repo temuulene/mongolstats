@@ -98,6 +98,48 @@ test_that("request reservations persist across scheduling calls", {
   expect_equal(as.numeric(readLines(file.path(directory, "last-request"))), 103)
 })
 
+test_that("queued reservations are spaced without holding the lock", {
+  directory <- withr::local_tempdir()
+  local_mocked_bindings(.nso_clock = function() 100)
+  # Workers that arrive together each get the next free slot
+  expect_equal(.nso_rate_reserve(directory, 1), 100)
+  expect_equal(.nso_rate_reserve(directory, 1), 101)
+  expect_equal(.nso_rate_reserve(directory, 2), 103)
+  # Long queues keep distinct slots
+  writeLines("200", file.path(directory, "last-request"))
+  expect_equal(.nso_rate_reserve(directory, 1), 201)
+  # A reservation far in the future (clock moved back) is discarded
+  writeLines("1e9", file.path(directory, "last-request"))
+  expect_equal(.nso_rate_reserve(directory, 1), 101)
+})
+
+test_that("the scheduling lock is released before the transfer and its wait", {
+  skip_if_not_installed("filelock")
+  directory <- withr::local_tempdir()
+  withr::local_options(mongolstats.rate_limit_dir = directory)
+  writeLines(sprintf("%.6f", .nso_clock() + 30), file.path(directory, "last-request"))
+  lock_free <- logical()
+  check_lock <- function() {
+    lock <- filelock::lock(file.path(directory, "requests.lock"), timeout = 0)
+    lock_free <<- c(lock_free, !is.null(lock))
+    if (!is.null(lock)) filelock::unlock(lock)
+  }
+  local_mocked_bindings(.nso_sleep = function(seconds) check_lock())
+  local_mocked_bindings(
+    req_perform = function(...) {
+      signalCondition(structure(
+        list(message = "attempt"),
+        class = c("httr2_perform", "condition")
+      ))
+      check_lock()
+      httr2::response(status_code = 200)
+    },
+    .package = "httr2"
+  )
+  .nso_perform(.nso_request("https://data.nso.mn/api/indicator"))
+  expect_equal(lock_free, c(TRUE, TRUE))
+})
+
 test_that("each retry is scheduled and the request lock is released on error", {
   skip_if_not_installed("filelock")
   directory <- withr::local_tempdir()

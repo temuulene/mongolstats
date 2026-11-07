@@ -65,9 +65,10 @@
       } else {
         codes
       }
-      map <- tibble::tibble(code = key, lbl = lbls)
-      names(map) <- c(col, paste0(col, suffix))
-      d <- dplyr::left_join(d, map, by = col)
+      # match() keeps one row per observation even when the metadata
+      # repeats a code or label, so the data stay aligned with the
+      # provenance and value-status attributes computed earlier.
+      d[[paste0(col, suffix)]] <- lbls[match(as.character(d[[col]]), key)]
     }
     d
   }
@@ -173,9 +174,12 @@ nso_data <- function(
 #'   tables are fetched one at a time. Workers load the installed copy of
 #'   mongolstats. Defaults to the `mongolstats.parallel` option (`FALSE`).
 #' @param value_name Name of the numeric value column in the result (default: "value").
-#' @param strict If TRUE, error when any table fails to fetch. If FALSE
-#'   (default), failed tables are dropped from the result with a warning
-#'   naming them.
+#' @param strict If TRUE, error when any table fails to fetch. The error has
+#'   class `mongolstats_package_error` plus the package classes of the first
+#'   failure, such as `mongolstats_http_error` or
+#'   `mongolstats_selection_error`. If FALSE (default), failed tables are
+#'   dropped from the result with a warning naming them. Offline mode always
+#'   raises `mongolstats_offline_error`, as in [nso_data()].
 #' @return A tibble combining data from all requested tables, with a `tbl_id` column
 #'   identifying the source table. Tables that failed to fetch are omitted
 #'   (with a warning) unless `strict = TRUE`. [nso_provenance()] retains a
@@ -261,15 +265,36 @@ nso_package <- function(
   failures <- lapply(parts[is_failed], function(part) part$failure)
   out <- .nso_bind_results(parts[!is_failed], failures)
   if (any(is_failed)) {
-    failed_ids <- vapply(parts[is_failed], function(f) f$tbl_id, character(1)) # nolint object_usage_linter. Used in cli conditions below.
-    first_msg <- parts[is_failed][[1]]$message # nolint object_usage_linter. Used in cli conditions below.
+    failed <- parts[is_failed]
+    failed_ids <- vapply(failed, function(f) f$tbl_id, character(1)) # nolint object_usage_linter. Used in cli conditions below.
+    first_msg <- failed[[1]]$message # nolint object_usage_linter. Used in cli conditions below.
+    # Offline mode is a session setting rather than a per-table failure, and
+    # data requests are never served from cache, so it is raised as such.
+    offline <- vapply(
+      failed,
+      function(f) "mongolstats_offline_error" %in% f$error_class,
+      logical(1)
+    )
+    if (any(offline)) {
+      cli_abort(
+        "mongolstats is in offline mode; network requests are disabled.",
+        class = "mongolstats_offline_error",
+        nso_manifest = nso_provenance(out)
+      )
+    }
     if (isTRUE(strict)) {
+      # Keep the package's own classes from the first failure (e.g.
+      # mongolstats_http_error or mongolstats_selection_error).
+      first_class <- failed[[1]]$error_class
       cli_abort(
         c(
           "Failed to fetch {sum(is_failed)} table{?s}: {.val {failed_ids}}.",
           "x" = "First error: {first_msg}"
         ),
-        class = "mongolstats_http_error",
+        class = c(
+          grep("^mongolstats_", first_class, value = TRUE),
+          "mongolstats_package_error"
+        ),
         nso_manifest = nso_provenance(out)
       )
     }
@@ -359,9 +384,7 @@ utils::globalVariables("fetch")
         include_raw = FALSE,
         value_name = value_name
       )
-      if (nrow(df)) {
-        df$tbl_id <- tbl
-      }
+      df$tbl_id <- rep(tbl, nrow(df))
       .px_add_labels(df, tbl, which = labels)
     },
     error = function(e) {
@@ -369,6 +392,7 @@ utils::globalVariables("fetch")
         list(
           tbl_id = tbl,
           message = conditionMessage(e),
+          error_class = class(e),
           failure = .nso_fetch_failure(
             e,
             tbl,
