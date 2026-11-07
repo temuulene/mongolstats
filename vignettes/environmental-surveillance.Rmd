@@ -195,7 +195,8 @@ pm25_lines <- pm25 |>
   mutate(average = if_else(complete %in% TRUE, average, NA_real_))
 pm25_unavailable <- pm25_lines |>
   summarise(observed = sum(is.finite(average)), .by = Station) |>
-  filter(observed == 0L)
+  filter(observed == 0L) |>
+  mutate(date = mean(range(pm25_lines$date)))
 ```
 
 **Monthly source:** `r inline_value(pm25_source$mode)`, `r inline_value(format(min(pm25$date), "%Y-%m"))` to `r inline_value(format(max(pm25$date), "%Y-%m"))`. Of `r inline_value(nrow(pm25))` station-months, `r inline_value(nrow(pm25_complete))` meet the mean/completeness rule. `r inline_value(sum(is.na(pm25_complete$pct_days_above)))` of those retained station-months have no reported exceedance percentage.
@@ -208,7 +209,7 @@ pm25_lines |>
   geom_line(color = "firebrick", linewidth = 0.6) +
   geom_point(color = "firebrick", size = 0.8) +
   geom_text(
-    data = pm25_unavailable, aes(x = mean(range(pm25_lines$date)), y = Inf),
+    data = pm25_unavailable, aes(x = date, y = Inf),
     label = "No eligible observations", inherit.aes = FALSE, vjust = 2,
     size = 3, color = "#536873"
   ) +
