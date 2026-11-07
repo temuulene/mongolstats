@@ -29,7 +29,8 @@ knitr::opts_chunk$set(
   fig.dpi = 150,
   out.width = "100%",
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  error = FALSE
 )
 ```
 
@@ -49,22 +50,15 @@ library(lubridate)
 library(scales)
 # Checked teaching helpers are shipped with the package and can be inspected.
 source(system.file("examples", "analysis-helpers.R", package = "mongolstats"), local = TRUE)
-old_options <- nso_options(mongolstats.lang = "en")
+source(system.file("examples", "plot-style.R", package = "mongolstats"), local = TRUE)
+```
 
-# Reusable theme for all plots in this analysis
-theme_mortality <- function(base_size = 12) {
-  theme_minimal(base_size = base_size) +
-    theme(
-      plot.margin = margin(10, 10, 10, 10),
-      plot.title = element_text(face = "bold", size = base_size + 2),
-      plot.subtitle = element_text(size = base_size - 2, color = "grey40"),
-      legend.text = element_text(size = base_size - 3),
-      legend.title = element_text(size = base_size - 2),
-      panel.grid.minor = element_blank()
-    )
-}
+```{r presentation, include=FALSE}
+old_options <- c(nso_options(mongolstats.lang = "en"), list(knitr.kable.NA = getOption("knitr.kable.NA")))
+options(knitr.kable.NA = "Not reported")
 
-old_theme <- theme_set(theme_mortality())
+knitr::opts_chunk$set(dev = "svglite", fig.ext = "svg", dev.args = list(svglite = list(system_fonts = list(sans = "Source Sans 3"))))
+old_theme <- theme_set(analysis_plot_theme())
 
 # Formatting helpers for inline results
 fmt_pct <- function(x, digits = 1) sprintf(paste0("%+.", digits, "f%%"), x)
@@ -169,7 +163,7 @@ The monthly series begins in January `r inline_value(first_year)`. This analysis
 
 ### Time Series with COVID-19 Context
 
-```{r time-series-plot, fig.height=5}
+```{r time-series-plot, fig.height=6}
 #| fig-alt: Monthly recorded deaths per day with December highlighted and historical pandemic-period context shaded.
 covid_periods <- tibble::tribble(
   ~Start, ~End, ~Phase,
@@ -188,10 +182,10 @@ deaths_monthly |>
     aes(xmin = Start, xmax = End, ymin = y_min, ymax = y_max, fill = Phase),
     inherit.aes = FALSE, alpha = 0.3
   ) +
-  geom_line(color = "#2c3e50", linewidth = 0.8, alpha = 0.8) +
+  geom_line(color = "#183442", linewidth = 0.8, alpha = 0.8) +
   geom_point(aes(color = Month_Type), size = 2.5, alpha = 0.9) +
   scale_color_manual(
-    values = c("December" = "#e74c3c", "Other months" = "#3498db"),
+    values = c("December" = "#C2623D", "Other months" = "#167D8D"),
     name = "Month"
   ) +
   scale_fill_manual(
@@ -211,7 +205,7 @@ deaths_monthly |>
   ) +
   theme(legend.position = "bottom", legend.box = "vertical", legend.box.just = "left") +
   guides(
-    color = guide_legend(order = 1, nrow = 1),
+    color = guide_legend(order = 1, ncol = 1),
     fill = guide_legend(order = 2, nrow = 2)
   )
 ```
@@ -256,11 +250,11 @@ deaths_monthly |>
   ) +
   geom_boxplot(aes(fill = Season), alpha = 0.7, outlier.shape = NA) +
   scale_fill_manual(
-    values = c("Winter (Nov–Mar)" = "#e74c3c", "Non-winter" = "#3498db"),
+    values = c("Winter (Nov–Mar)" = "#C2623D", "Non-winter" = "#167D8D"),
     name = "Season"
   ) +
   scale_color_manual(
-    values = c("2021 (Delta wave)" = "#8e44ad", "Other years" = "#7f8c8d"),
+    values = c("2021 (Delta wave)" = "#5B6E9A", "Other years" = "#7f8c8d"),
     name = "Year"
   ) +
   scale_y_continuous(labels = comma) +
@@ -301,9 +295,9 @@ monthly_stats |>
   mutate(bar_type = if_else(month == peak_month$month, "Peak month", "Other months")) |>
   ggplot(aes(x = month_name, y = mean_daily)) +
   geom_col(aes(fill = bar_type), alpha = 0.8) +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.3, color = "#2c3e50") +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.3, color = "#183442") +
   geom_hline(yintercept = mean(monthly_stats$mean_daily), linetype = "dashed", color = "grey50") +
-  scale_fill_manual(values = c("Other months" = "#3498db", "Peak month" = "#e74c3c"), guide = "none") +
+  scale_fill_manual(values = c("Other months" = "#167D8D", "Peak month" = "#C2623D"), guide = "none") +
   scale_y_continuous(labels = comma, expand = expansion(mult = c(0, 0.1))) +
   labs(
     title = "Mean Deaths per Day with 95% Confidence Intervals",
@@ -348,9 +342,10 @@ heatmap_data |>
   ggplot(aes(x = factor(year), y = month_name, fill = z_score)) +
   geom_tile(color = "white", linewidth = 0.5) +
   scale_fill_gradient2(
-    low = "#3498db", mid = "white", high = "#e74c3c",
+    low = "#167D8D", mid = "white", high = "#C2623D",
     midpoint = 0, name = "Standard deviations\nfrom year's mean"
   ) +
+  guides(fill = guide_colourbar(barwidth = grid::unit(85, "mm"), barheight = grid::unit(3, "mm"))) +
   labs(
     title = "Deaths per Day Relative to Each Year's Average",
     subtitle = "Red = above that year's average; blue = below",
@@ -410,7 +405,7 @@ decomp_df |>
     data = zero_lines, aes(yintercept = yintercept),
     linetype = "dashed", color = "grey60", linewidth = 0.3
   ) +
-  geom_line(color = "#2c3e50", linewidth = 0.6) +
+  geom_line(color = "#183442", linewidth = 0.6) +
   facet_wrap(~component, ncol = 1, scales = "free_y") +
   scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
   labs(
@@ -444,7 +439,7 @@ seasonal_cycle |>
     aes(label = fmt_num(seasonal_effect), vjust = if_else(seasonal_effect > 0, -0.5, 1.5)),
     size = 3
   ) +
-  scale_fill_manual(values = c("Above trend" = "#e74c3c", "Below trend" = "#3498db"), name = NULL) +
+  scale_fill_manual(values = c("Above trend" = "#C2623D", "Below trend" = "#167D8D"), name = NULL) +
   scale_y_continuous(expand = expansion(mult = 0.15)) +
   labs(
     title = "Estimated Seasonal Effect by Month",
@@ -522,13 +517,18 @@ diagnostic_data <- mutate(fit_data, residual = pearson) |> arrange(date)
 residual_pairs <- diagnostic_data |>
   mutate(previous_date = lag(date), previous_residual = lag(residual)) |>
   filter(date == lubridate::add_with_rollback(previous_date, lubridate::period(months = 1)))
-lag1_correlation <- if (nrow(residual_pairs) >= 3L &&
-                          sd(residual_pairs$residual) > 0 && sd(residual_pairs$previous_residual) > 0) {
+has_variable_pairs <- nrow(residual_pairs) >= 3L &&
+  sd(residual_pairs$residual) > 0 && sd(residual_pairs$previous_residual) > 0
+lag1_correlation <- if (has_variable_pairs) {
   cor(residual_pairs$residual, residual_pairs$previous_residual)
 } else {
   NA_real_
 }
-tibble(Pearson_dispersion = dispersion, adjacent_month_residual_correlation = lag1_correlation)
+tibble(
+  Diagnostic = c("Pearson dispersion", "Adjacent-month residual correlation"),
+  Value = c(dispersion, lag1_correlation)
+) |>
+  knitr::kable(digits = 2)
 ```
 
 The quasi-Poisson model uses the actual counts and a month-length offset.
@@ -655,7 +655,8 @@ cause_deaths |>
     y = "Deaths per year",
     caption = "Source: NSO Mongolia, DT_NSO_2100_027V1"
   ) +
-  theme(legend.position = "right")
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(nrow = 2, byrow = TRUE))
 ```
 
 ```{r cause-facts, include=FALSE}
@@ -717,8 +718,7 @@ area_monthly |>
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3) +
-  geom_text(aes(label = round(pct_of_mean)), vjust = -1, size = 2.5, show.legend = FALSE) +
-  scale_color_manual(values = c("Ulaanbaatar" = "#e74c3c", "Aimags (combined)" = "#3498db"), name = NULL) +
+  scale_color_manual(values = c("Ulaanbaatar" = "#C2623D", "Aimags (combined)" = "#167D8D"), name = NULL) +
   scale_y_continuous(expand = expansion(mult = c(0.1, 0.2))) +
   labs(
     title = "Ulaanbaatar and the Aimags by Calendar Month",
@@ -777,8 +777,7 @@ type_monthly |>
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3) +
-  geom_text(aes(label = round(pct_of_mean)), vjust = -1, size = 2.5, show.legend = FALSE) +
-  scale_color_manual(values = c("All deaths" = "#2c3e50", "Hospital deaths" = "#e74c3c"), name = NULL) +
+  scale_color_manual(values = c("All deaths" = "#183442", "Hospital deaths" = "#C2623D"), name = NULL) +
   scale_y_continuous(expand = expansion(mult = c(0.1, 0.2))) +
   labs(
     title = "Hospital and All Deaths by Calendar Month",
@@ -846,9 +845,14 @@ Hospitals account for `r inline_value(fmt_num(share_dec))`% of recorded December
 
 ## Appendix: Reproducibility
 
+<details>
+<summary>R session details</summary>
+
 ```{r session-info}
 sessionInfo()
 ```
+
+</details>
 
 ```{r restore-session, include=FALSE}
 options(old_options)

@@ -24,7 +24,8 @@ knitr::opts_chunk$set(
   fig.dpi = 150, # higher resolution for crisp rendering
   out.width = "100%", # constrain to page width, prevents overflow
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  error = FALSE
 )
 ```
 
@@ -34,19 +35,15 @@ library(dplyr)
 library(ggplot2)
 # Checked teaching helpers are shipped with the package and can be inspected.
 source(system.file("examples", "analysis-helpers.R", package = "mongolstats"), local = TRUE)
-old_options <- nso_options(mongolstats.lang = "en")
+source(system.file("examples", "plot-style.R", package = "mongolstats"), local = TRUE)
+```
 
-# Global theme with proper margins to prevent text cutoff
-old_theme <- theme_set(
-  theme_minimal(base_size = 11) +
-    theme(
-      plot.margin = margin(10, 10, 10, 10),
-      plot.title = element_text(size = 13, face = "bold"),
-      plot.subtitle = element_text(size = 10, color = "grey40"),
-      legend.text = element_text(size = 9),
-      legend.title = element_text(size = 10)
-    )
-)
+```{r presentation, include=FALSE}
+old_options <- c(nso_options(mongolstats.lang = "en"), list(knitr.kable.NA = getOption("knitr.kable.NA")))
+options(knitr.kable.NA = "Not reported")
+
+knitr::opts_chunk$set(dev = "svglite", fig.ext = "svg", dev.args = list(svglite = list(system_fonts = list(sans = "Source Sans 3"))))
+old_theme <- theme_set(analysis_plot_theme())
 ```
 
 ## Overview
@@ -116,7 +113,7 @@ range(annual_meta$label_en)
 
 ### Incidence by Site
 
-```{r cancer-analysis, fig.alt="Small multiples of crude cancer incidence per 10,000 population in Mongolia over the last 10 years, one panel each for cervical, liver, lung, oesophageal and stomach cancer", fig.height=4.5}
+```{r cancer-analysis, fig.alt="Small multiples of crude cancer incidence per 10,000 population in Mongolia over the last 10 years, one panel each for cervical, liver, lung, oesophageal and stomach cancer", fig.height=5.8}
 # The 10 most recent years
 recent_years <- annual_meta |>
   arrange(label_en) |>
@@ -142,9 +139,9 @@ cancer_data <- nso_data(
 # One panel per site, on a shared scale, so overlapping lines do not hide each other
 cancer_data |>
   ggplot(aes(x = year, y = value)) +
-  geom_line(color = "#8e44ad", linewidth = 1) +
-  geom_point(color = "#8e44ad", size = 2) +
-  facet_wrap(~site, nrow = 1) +
+  geom_line(color = "#5B6E9A", linewidth = 1) +
+  geom_point(color = "#5B6E9A", size = 2) +
+  facet_wrap(~site, ncol = 3) +
   scale_x_continuous(breaks = function(x) range(round(x))) +
   scale_y_continuous(limits = c(0, NA), breaks = scales::breaks_width(2)) +
   labs(
@@ -242,8 +239,10 @@ who_standard <- tibble::tibble(
   summarise(weight = sum(weight), .by = age)
 
 # Require mutually exclusive source groups before collapsing the population.
-stopifnot(!any(population$age == "70+") ||
-            !any(population$age %in% c("70-74", "75-79", "80-84", "85+")))
+stopifnot(
+  !any(population$age == "70+") ||
+    !any(population$age %in% c("70-74", "75-79", "80-84", "85+"))
+)
 analysis_keys(cancer_cases, c("year", "age"))
 analysis_keys(population, c("year", "age"))
 population <- population |>
@@ -269,7 +268,12 @@ if (nrow(pop_totals)) {
   stopifnot(all(is.finite(check$total)), all(check$calculated == check$total))
 }
 
-cancer_asr
+cancer_asr |>
+  select(year, crude, standardised) |>
+  knitr::kable(
+    col.names = c("Year", "Crude incidence", "Age-standardised incidence"), digits = c(0, 1, 1),
+    caption = "Cancer incidence per 10,000 people; WHO World standard"
+  )
 ```
 
 ```{r cancer-asr-plot, fig.alt="Line chart comparing crude and age-standardised cancer incidence per 10,000 in Mongolia. The series compare descriptive rates on a common standard; endpoint changes do not establish an unchanged trajectory.", fig.height=4.5}
@@ -279,7 +283,7 @@ cancer_asr |>
   ggplot(aes(x = year, y = rate, color = measure)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
-  scale_color_manual(values = c("Crude" = "#2a78d6", "Age-standardised (WHO World)" = "#eb6834"), name = NULL) +
+  scale_color_manual(values = c("Crude" = "#167D8D", "Age-standardised (WHO World)" = "#C2623D"), name = NULL) +
   scale_y_continuous(limits = c(0, NA)) +
   labs(
     title = "All-Site Cancer Incidence: Crude and Age-Standardised",
@@ -346,7 +350,15 @@ imr_check <- analysis_pair(
   arrange(year)
 stopifnot(all(imr_check$births > 0))
 
-imr_check
+imr_check |>
+  transmute(
+    year, calculated, published, difference,
+    agreement = if_else(agrees_with_rounding, "Yes", "Needs review")
+  ) |>
+  knitr::kable(
+    col.names = c("Year", "Calculated IMR", "Published IMR", "Difference", "Agrees within rounding"),
+    digits = c(0, 1, 1, 1, 0), caption = "Infant deaths per 1,000 live births: reconciliation with the published rate"
+  )
 ```
 
 The table explicitly shows whether each comparable year agrees within half a unit, the tolerance for a whole-number rounded rate. `r if (run_vignette) sum(!imr_check$agrees_with_rounding) else "Any"` year(s) need review under this check. Differences outside that tolerance cannot be explained by whole-number rounding alone. Agreement is a reconciliation check, not proof that registration and population coverage are complete. The [Getting Started](getting-started.html) and [Mapping](mapping.html) guides retain these limitations.
@@ -393,15 +405,20 @@ tb_rate <- tb_rate |>
   ) |>
   arrange(year)
 
-tb_rate
+tb_rate |>
+  transmute(year, cases, population, rate, interval = sprintf("%.1f–%.1f", lower, upper)) |>
+  knitr::kable(
+    col.names = c("Year", "Reported cases", "Population", "Notifications per 100,000", "95% CI"),
+    digits = c(0, 0, 0, 1, 0), format.args = list(big.mark = ",")
+  )
 ```
 
 ```{r tb-plot, fig.alt="Line chart of the annual tuberculosis notification rate per 100,000 population in Mongolia, falling over the period with a sharp drop in 2021"}
 tb_rate |>
   ggplot(aes(x = year, y = rate)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "#e74c3c", alpha = 0.15) +
-  geom_line(color = "#e74c3c", linewidth = 1) +
-  geom_point(color = "#e74c3c", size = 2) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "#C2623D", alpha = 0.15) +
+  geom_line(color = "#C2623D", linewidth = 1) +
+  geom_point(color = "#C2623D", size = 2) +
   scale_x_continuous(breaks = tb_rate$year) +
   scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.1))) + # start at 0
   labs(

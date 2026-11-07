@@ -24,7 +24,8 @@ knitr::opts_chunk$set(
   fig.dpi = 150, # higher resolution for crisp rendering
   out.width = "100%", # constrain to page width, prevents overflow
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  error = FALSE
 )
 ```
 
@@ -35,19 +36,15 @@ library(dplyr)
 library(ggplot2)
 # Checked teaching helpers are shipped with the package and can be inspected.
 source(system.file("examples", "analysis-helpers.R", package = "mongolstats"), local = TRUE)
-old_options <- nso_options(mongolstats.lang = "en")
+source(system.file("examples", "plot-style.R", package = "mongolstats"), local = TRUE)
+```
 
-# Global theme with proper margins to prevent text cutoff
-old_theme <- theme_set(
-  theme_minimal(base_size = 11) +
-    theme(
-      plot.margin = margin(10, 10, 10, 10),
-      plot.title = element_text(size = 13, face = "bold"),
-      plot.subtitle = element_text(size = 10, color = "grey40"),
-      legend.text = element_text(size = 9),
-      legend.title = element_text(size = 10)
-    )
-)
+```{r presentation, include=FALSE}
+old_options <- c(nso_options(mongolstats.lang = "en"), list(knitr.kable.NA = getOption("knitr.kable.NA")))
+options(knitr.kable.NA = "Not reported")
+
+knitr::opts_chunk$set(dev = "svglite", fig.ext = "svg", dev.args = list(svglite = list(system_fonts = list(sans = "Source Sans 3"))))
+old_theme <- theme_set(analysis_plot_theme())
 ```
 
 ## Overview
@@ -65,7 +62,8 @@ aimags |>
   select(name, nso_code, iso_code, area_km2) |>
   head()
 
-mn_map(aimags, label = TRUE, title = "Mongolia's 21 Aimags and Ulaanbaatar")
+mn_map(aimags, label = TRUE, title = "Mongolia's 21 Aimags and Ulaanbaatar") +
+  analysis_map_theme()
 ```
 
 Other levels work the same way: `mn_regions()`, `mn_soums()`, `mn_ub_districts()` and `mn_khoroos()`. (mongolstats' own geoBoundaries helpers, `mn_boundaries()` and the name-based joins, are deprecated in favour of mongolmaps.)
@@ -145,7 +143,16 @@ national_mmr <- filter(mmr, Region == "0")
 stopifnot(nrow(national_mmr) == 1L, is.finite(national_mmr$mmr))
 mmr_units <- filter(mmr, Region != "0")
 stopifnot(nrow(mmr_units) == 22L)
-mmr_units |> select(Region_en, deaths, births, missing_deaths, missing_births, mmr, lower, upper)
+mmr_units |>
+  transmute(
+    area = Region_en, deaths, births,
+    missing_months = paste(missing_deaths, missing_births, sep = " / "),
+    estimate = if_else(is.finite(mmr), sprintf("%.1f (%.1f–%.1f)", mmr, lower, upper), "Insufficient data")
+  ) |>
+  knitr::kable(
+    col.names = c("Area", "Maternal deaths", "Live births", "Missing months: deaths / births", "MMR per 100,000 (95% CI)"),
+    digits = 0, format.args = list(big.mark = ",")
+  )
 
 # Sensitivity: remove the pandemic years; use the same validation rules.
 sensitivity_years <- setdiff(mmr_years, as.character(2020:2022))
@@ -154,7 +161,9 @@ sensitivity <- analysis_pair(
   select(analysis_pool_counts(maternal_source$annual, sensitivity_years), Region, deaths = count),
   select(analysis_pool_counts(birth_source$annual, sensitivity_years), Region, births = count), "Region"
 ) |> mutate(mmr = if_else(is.finite(deaths) & births > 0, deaths / births * 1e5, NA_real_))
-filter(sensitivity, Region == "0")
+filter(sensitivity, Region == "0") |>
+  transmute(Period = paste(range(sensitivity_years), collapse = "–"), `National MMR per 100,000` = mmr) |>
+  knitr::kable(digits = 1, caption = "National estimate excluding pandemic years")
 ```
 
 Unresolved source values are not converted to zero. `r if (run_vignette) sum(!is.finite(mmr_units$mmr)) else "Some"` areas have insufficient observations for the pooled estimate and appear grey on the map. Inspect `maternal_source$status` and `birth_source$status` before considering any table-specific recode. Conditional Poisson intervals do not include registration error, geographic mismatch or denominator uncertainty.
@@ -163,35 +172,62 @@ Over `r if (run_vignette) mmr_period else "the selected period"`, the national r
 
 ### Choropleth and confidence intervals
 
-```{r maternal-map, fig.alt="Choropleth map of the pooled maternal mortality ratio by aimag and Ulaanbaatar over the last 10 complete years"}
+```{r maternal-map, fig.height=if (run_vignette && any(is.finite(mmr_units$mmr))) 5 else 2.4, fig.alt=if (run_vignette && any(is.finite(mmr_units$mmr))) "Choropleth map of the pooled maternal mortality ratio by aimag and Ulaanbaatar over the selected complete years" else "No area has a complete observed estimate for a maternal mortality map"}
 mmr_map <- mn_join(mmr_units, by = "Region", level = "aimag")
 stopifnot(nrow(mmr_map) == 22L, !anyDuplicated(mmr_map$nso_code))
 
-mn_map(mmr_map, fill = mmr, title = paste0("Maternal Mortality Ratio, ", mmr_period)) +
-  labs(
-    subtitle = "Maternal deaths per 100,000 live births, Pooled recorded counts; grey = insufficient data. Data: NSO Mongolia",
-    fill = "MMR\n(per 100k)"
-  )
+if (!any(is.finite(mmr_units$mmr))) {
+  ggplot() +
+    annotate("text", x = 0, y = 0, label = "No area has a complete observed estimate", size = 5, color = "#536873") +
+    labs(
+      title = "Maternal Mortality Map Is Not Available",
+      subtitle = "Missing observations prevent an area comparison",
+      caption = "Source: NSO Mongolia, DT_NSO_2100_002V2 and DT_NSO_2100_018V5"
+    ) +
+    theme_void() +
+    theme(plot.title = element_text(face = "bold", color = "#183442"))
+} else {
+  mn_map(mmr_map, fill = mmr, title = paste0("Maternal Mortality Ratio, ", mmr_period)) +
+    labs(
+      subtitle = "Per 100,000 live births; grey = insufficient data",
+      fill = "MMR\n(per 100k)",
+      caption = "Pooled recorded counts | Source: NSO Mongolia"
+    ) +
+    guides(fill = guide_colourbar(barwidth = grid::unit(85, "mm"), barheight = grid::unit(3, "mm"))) +
+    analysis_map_theme()
+}
 ```
 
 A map shows point estimates only. The interval plot shows how uncertain each one is:
 
-```{r maternal-intervals, fig.alt="Dot plot of the pooled maternal mortality ratio by aimag with exact 95% confidence intervals and a dashed line at the national ratio", fig.height=7}
-mmr_units |>
-  filter(is.finite(mmr)) |>
-  mutate(Region_en = forcats::fct_reorder(Region_en, mmr)) |>
-  ggplot(aes(x = mmr, y = Region_en)) +
-  geom_vline(xintercept = national_mmr$mmr, linetype = "dashed", color = "grey50") +
-  geom_errorbar(aes(xmin = lower, xmax = upper), width = 0.3, color = "grey60", orientation = "y") +
-  geom_point(color = "#c0392b", size = 2.5) +
-  labs(
-    title = paste0("Maternal Mortality Ratio by Aimag, ", mmr_period),
-    subtitle = "Per 100,000 live births, with exact 95% CIs; dashed line = national ratio",
-    x = "Maternal deaths per 100,000 live births",
-    y = NULL,
-    caption = "Source: NSO Mongolia, DT_NSO_2100_002V2 and DT_NSO_2100_018V5"
-  ) +
-  theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
+```{r maternal-intervals, fig.alt=if (run_vignette && any(is.finite(mmr_units$mmr))) "Dot plot of maternal mortality ratios with exact 95% confidence intervals and a dashed national reference" else "No area has a complete observed estimate or confidence interval for maternal mortality", fig.height=if (run_vignette && any(is.finite(mmr_units$mmr))) 7 else 2.4}
+if (!any(is.finite(mmr_units$mmr))) {
+  ggplot() +
+    annotate("text", x = 0, y = 0, label = "No area has a complete observed estimate", size = 5, color = "#536873") +
+    labs(
+      title = "Maternal Mortality Intervals Are Not Available",
+      subtitle = "Missing observations prevent area estimates and confidence intervals",
+      caption = "Source: NSO Mongolia, DT_NSO_2100_002V2 and DT_NSO_2100_018V5"
+    ) +
+    theme_void() +
+    theme(plot.title = element_text(face = "bold", color = "#183442"))
+} else {
+  mmr_units |>
+    filter(is.finite(mmr)) |>
+    mutate(Region_en = forcats::fct_reorder(Region_en, mmr)) |>
+    ggplot(aes(x = mmr, y = Region_en)) +
+    geom_vline(xintercept = national_mmr$mmr, linetype = "dashed", color = "grey50") +
+    geom_errorbar(aes(xmin = lower, xmax = upper), width = 0.3, color = "grey60", orientation = "y") +
+    geom_point(color = "#A94438", size = 2.5) +
+    labs(
+      title = paste0("Maternal Mortality Ratio by Aimag, ", mmr_period),
+      subtitle = "Per 100,000 live births, with exact 95% CIs; dashed line = national ratio",
+      x = "Maternal deaths per 100,000 live births",
+      y = NULL,
+      caption = "Source: NSO Mongolia, DT_NSO_2100_002V2 and DT_NSO_2100_018V5"
+    ) +
+    theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank())
+}
 ```
 
 Intervals can remain wide after pooling. Zero observed maternal deaths has a positive upper Poisson limit and is not evidence of zero risk. Missing data is a different state and is not shown as zero. Compare the pandemic-excluded result before describing a pooled pattern as typical.
@@ -230,7 +266,7 @@ funnel <- tibble::tibble(births = exp(seq(log(200), log(max(imr_units$births) * 
     lower_95 = funnel_limit(births, 0.025), upper_95 = funnel_limit(births, 0.975)
   )
 
-signal_colors <- c("Above 95% limit" = "#e34948", "Within limits" = "grey55", "Below 95% limit" = "#2a78d6", "Insufficient data" = "grey85")
+signal_colors <- c("Above 95% limit" = "#C2623D", "Within limits" = "grey55", "Below 95% limit" = "#167D8D", "Insufficient data" = "grey85")
 
 ggplot(filter(imr_units, is.finite(imr), births > 0), aes(x = births, y = imr)) +
   geom_line(data = funnel, aes(y = upper_998), linetype = "dotted", color = "grey40") +
@@ -246,6 +282,7 @@ ggplot(filter(imr_units, is.finite(imr), births > 0), aes(x = births, y = imr)) 
   scale_x_log10(labels = scales::label_comma()) +
   scale_y_continuous(limits = c(0, NA)) +
   scale_color_manual(values = signal_colors, name = NULL) +
+  guides(color = guide_legend(ncol = 1)) +
   labs(
     title = paste0("Funnel Plot of Infant Mortality by Aimag, ", imr_year),
     subtitle = "Solid line = national rate; dashed = 95% limits; dotted = 99.8% limits",
@@ -264,7 +301,9 @@ stopifnot(nrow(imr_map) == 22L, !anyDuplicated(imr_map$nso_code))
 
 mn_map(imr_map, fill = signal, title = paste0("Infant Mortality Compared with the National Rate, ", imr_year)) +
   scale_fill_manual(values = signal_colors, na.value = "grey90", name = NULL) +
-  labs(subtitle = "Classified by 95% funnel limits around the national rate. Data: NSO Mongolia")
+  labs(subtitle = "Classified by 95% funnel limits around the national rate. Data: NSO Mongolia") +
+  analysis_map_theme() +
+  guides(fill = guide_legend(ncol = 1))
 ```
 
 With 22 units, roughly one flag at 95% would be expected under an ideal common-rate model; discrete limits can be conservative, and the estimated national reference includes each area. The 99.8% limits are a stricter screen, not a blanket multiple-comparison correction. A signal warrants investigation of source definitions, quality, referral and other differences. If births and deaths are assigned by occurrence rather than residence, referrals may distort area comparisons; that assignment rule must be confirmed for these tables.

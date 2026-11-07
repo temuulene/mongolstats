@@ -60,6 +60,8 @@ Suggests:
     sf,
     stringdist,
     styler,
+    svglite,
+    systemfonts,
     testthat (>= 3.1.7),
     tidyr,
     withr

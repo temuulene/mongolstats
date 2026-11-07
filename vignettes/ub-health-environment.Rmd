@@ -34,7 +34,8 @@ knitr::opts_chunk$set(
   fig.dpi = 150, # higher resolution for crisp rendering
   out.width = "100%", # constrain to page width, prevents overflow
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  error = FALSE
 )
 ```
 
@@ -48,19 +49,15 @@ library(tidyr)
 
 # Checked teaching helpers are shipped with the package and can be inspected.
 source(system.file("examples", "analysis-helpers.R", package = "mongolstats"), local = TRUE)
-old_options <- nso_options(mongolstats.lang = "en")
+source(system.file("examples", "plot-style.R", package = "mongolstats"), local = TRUE)
+```
 
-# Global theme with proper margins to prevent text cutoff
-old_theme <- theme_set(
-  theme_minimal(base_size = 11) +
-    theme(
-      plot.margin = margin(10, 10, 10, 10),
-      plot.title = element_text(size = 13, face = "bold"),
-      plot.subtitle = element_text(size = 10, color = "grey40"),
-      legend.text = element_text(size = 9),
-      legend.title = element_text(size = 10)
-    )
-)
+```{r presentation, include=FALSE}
+old_options <- c(nso_options(mongolstats.lang = "en"), list(knitr.kable.NA = getOption("knitr.kable.NA")))
+options(knitr.kable.NA = "Not reported")
+
+knitr::opts_chunk$set(dev = "svglite", fig.ext = "svg", dev.args = list(svglite = list(system_fonts = list(sans = "Source Sans 3"))))
+old_theme <- theme_set(analysis_plot_theme())
 ```
 
 ## Introduction
@@ -125,9 +122,12 @@ mn_map(
   title = paste0("Population Density by District, ", pop_year)
 ) +
   labs(
-    subtitle = "Residents per km² (log scale). Data: NSO Mongolia, DT_NSO_0300_002V4",
-    fill = "Residents\nper km²"
-  )
+    subtitle = "Residents per km² (log scale)",
+    fill = "Residents\nper km²",
+    caption = "Source: NSO Mongolia, DT_NSO_0300_002V4"
+  ) +
+  guides(fill = guide_colourbar(barwidth = grid::unit(85, "mm"), barheight = grid::unit(3, "mm"))) +
+  analysis_map_theme()
 ```
 
 ```{r density-facts, include = FALSE}
@@ -157,7 +157,13 @@ khoroo_check <- khoroo_raw |>
     by = join_by(Region), relationship = "one-to-one"
   ) |>
   mutate(agrees = is.finite(khoroo_sum) & is.finite(district_total) & khoroo_sum == district_total)
-knitr::kable(khoroo_check, caption = "Population reconciliation before using the illustrative khoroo map")
+khoroo_check |>
+  mutate(agrees = if_else(agrees, "Yes", "No")) |>
+  knitr::kable(
+    col.names = c("District code", "Khoroo total", "District total", "Totals agree"),
+    digits = 0, format.args = list(big.mark = ","),
+    caption = "Population reconciliation before using the illustrative khoroo map"
+  )
 khoroo_pop <- mn_join(khoroo_raw, by = "Region", level = "bag", within = "Ulaanbaatar") |>
   mutate(density = if_else(is.finite(value) & value > 0 &
       is.finite(area_km2) & area_km2 > 0,
@@ -172,7 +178,9 @@ mn_map(
   fill = density, trans = "log10",
   title = paste0("Population Density by Khoroo, Central Ulaanbaatar, ", pop_year)
 ) +
-  labs(subtitle = "Residents per km² (log scale), six central districts", fill = "Residents\nper km²")
+  labs(subtitle = "Residents per km² (log scale), six central districts", fill = "Residents\nper km²") +
+  guides(fill = guide_colourbar(barwidth = grid::unit(85, "mm"), barheight = grid::unit(3, "mm"))) +
+  analysis_map_theme()
 ```
 
 The khoroo boundaries are unofficial. `r inline_value(length(unmapped_khoroos))` source codes lack a matched boundary. The reconciliation table does not establish a matching boundary vintage: splits, mergers and changed codes still need review. This is an illustrative density map, not validated fine-scale risk or exposure data. Missing or nonpositive values are not plotted on the log scale.
@@ -181,21 +189,22 @@ The khoroo boundaries are unofficial. `r inline_value(length(unmapped_khoroos))`
 
 Rapid growth can strain local health and school services.
 
-```{r demog-trend, fig.alt="Line chart of resident population by Ulaanbaatar district over the last 10 years"}
+```{r demog-trend, fig.height=6.5, fig.alt="Nine small-multiple line charts of resident population by Ulaanbaatar district over the last 10 years, on a shared population scale"}
 trend_years <- as.character(as.integer(pop_year) - 9:0)
 pop_trend <- get_ub_data(pop_tbl, list(Year = trend_years)) |>
   mutate(Year = as.integer(Year_en))
 
 pop_trend |>
-  ggplot(aes(x = Year, y = value, color = District)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 1.5) +
+  ggplot(aes(x = Year, y = value)) +
+  geom_line(linewidth = 1, color = "#167D8D") +
+  geom_point(size = 1.5, color = "#167D8D") +
+  facet_wrap(~District, ncol = 3) +
   scale_y_continuous(labels = scales::label_comma()) +
-  scale_x_continuous(breaks = as.integer(trend_years)) +
+  scale_x_continuous(breaks = as.integer(trend_years)[c(1, 5, 10)]) +
   labs(
     title = paste0("Resident Population by District, ", min(trend_years), "–", max(trend_years)),
     subtitle = "Mid-year resident population",
-    y = "Population", x = NULL, color = "District",
+    y = "Population", x = NULL,
     caption = "Source: NSO Mongolia, DT_NSO_0300_002V4"
   ) +
   theme(legend.position = "bottom", panel.grid.minor = element_blank())
@@ -220,7 +229,10 @@ fmt_change <- function(x) sprintf("%+.0f%%", x)
 Across the ten annual observations from `r inline_value(min(trend_years))` to `r inline_value(max(trend_years))`, there are nine elapsed years. The table below shows signed total and annualised changes; negative values are declines. `r inline_value(least_change$District)` had the smallest absolute percentage change. Changes in these totals do not identify migration or service capacity by themselves.
 
 ```{r growth-table}
-knitr::kable(growth, digits = 1, caption = "Population change over the observed interval")
+knitr::kable(growth,
+  col.names = c("District", "Elapsed years", "Total change (%)", "Annualised change (%)"),
+  digits = c(0, 0, 1, 1), caption = "Population change over the observed interval"
+)
 ```
 
 ## 2. School Enrolment
@@ -244,7 +256,7 @@ stopifnot(
 edu_load <- mutate(edu_load, Students_Per_School = Students / Schools)
 
 ggplot(edu_load, aes(x = Students_Per_School, y = reorder(District, Students_Per_School))) +
-  geom_col(fill = "#2a78d6", width = 0.7) +
+  geom_col(fill = "#167D8D", width = 0.7) +
   geom_text(aes(label = round(Students_Per_School)), hjust = -0.1, size = 3) +
   scale_x_continuous(labels = scales::label_comma(), expand = expansion(mult = c(0, 0.15))) +
   labs(
@@ -293,7 +305,7 @@ stopifnot(
 
 vital_rates |>
   ggplot(aes(x = rate, y = reorder(District, residents))) +
-  geom_col(fill = "#8e44ad", width = 0.7) +
+  geom_col(fill = "#5B6E9A", width = 0.7) +
   geom_text(aes(label = round(rate, 1)), hjust = -0.1, size = 3) +
   facet_wrap(~measure, scales = "free_x") +
   scale_x_continuous(expand = expansion(mult = c(0, 0.2))) +
@@ -359,9 +371,10 @@ ub_stations_sf <- station_points |>
   filter(assignment == "Unique") |>
   st_join(select(ub_districts, District = name))
 analysis_keys(st_drop_geometry(ub_stations_sf), "Station")
-knitr::kable(st_drop_geometry(filter(station_points, assignment != "Unique")),
-  caption = "Stations with unresolved district assignments"
-)
+unresolved_stations <- station_points |>
+  filter(assignment != "Unique") |>
+  st_drop_geometry() |>
+  select(Station, assignment)
 
 # Station count for every district, including those with none
 station_count <- ub_districts |>
@@ -370,8 +383,24 @@ station_count <- ub_districts |>
   left_join(count(st_drop_geometry(ub_stations_sf), District, name = "Stations"), by = join_by(District)) |>
   mutate(Stations = coalesce(Stations, 0L)) |>
   arrange(desc(Stations))
+```
 
-knitr::kable(station_count, caption = "Uniquely assigned locations in the illustrative inventory by district")
+```{r station-assignment-check, echo=FALSE, results="asis"}
+if (nrow(unresolved_stations) > 0L) {
+  print(knitr::kable(unresolved_stations,
+    col.names = c("Station", "District assignment"),
+    caption = "Stations with unresolved district assignments"
+  ))
+} else {
+  cat("All listed station locations have a unique district assignment.\n\n")
+}
+```
+
+```{r station-count-table, echo=FALSE}
+knitr::kable(station_count,
+  col.names = c("District", "Listed locations"),
+  caption = "Uniquely assigned locations in the illustrative inventory by district"
+)
 ```
 
 Stations are assigned by their coordinates, using mongolmaps' simplified district boundaries. A station within a few hundred metres of a district border may fall on the other side.
@@ -387,10 +416,10 @@ station_box <- ub_stations_sf |>
   st_bbox()
 
 mn_map(filter(ub_districts, name %in% central),
-  label = TRUE, crs = utm48n,
+  label = FALSE, crs = utm48n,
   title = "Air Quality Monitoring Stations in Central Ulaanbaatar"
 ) +
-  geom_sf(data = ub_stations_sf, color = "#e34948", size = 2.5, alpha = 0.9) +
+  geom_sf(data = ub_stations_sf, color = "#C2623D", size = 2.5, alpha = 0.9) +
   ggrepel::geom_text_repel(
     data = ub_stations_sf, aes(label = Station, geometry = geometry), stat = "sf_coordinates",
     size = 2.4, color = "grey20", min.segment.length = 0, seed = 1
@@ -399,7 +428,8 @@ mn_map(filter(ub_districts, name %in% central),
     crs = utm48n, datum = NA,
     xlim = station_box[c("xmin", "xmax")], ylim = station_box[c("ymin", "ymax")]
   ) +
-  labs(subtitle = "Red points = monitoring stations (approximate locations)")
+  labs(subtitle = "Red points = monitoring stations (approximate locations)") +
+  analysis_map_theme()
 ```
 
 ### Coverage
@@ -409,12 +439,20 @@ station_coverage <- station_count |>
   left_join(select(pop_data, District, Population = value), by = join_by(District)) |>
   mutate(Pop_per_Station = if_else(Stations > 0, Population / Stations, NA_real_))
 
-knitr::kable(station_coverage, caption = "All districts, including those without a listed location")
+station_coverage |>
+  mutate(Pop_per_Station = if_else(Stations > 0,
+    scales::comma(Pop_per_Station, accuracy = 1), "Not applicable"
+  )) |>
+  knitr::kable(
+    col.names = c("District", "Listed locations", "Population", "Residents per listed location"),
+    digits = 0, format.args = list(big.mark = ","),
+    caption = "All districts, including those without a listed location"
+  )
 
 station_coverage |>
   filter(Stations > 0) |>
   ggplot(aes(x = Pop_per_Station / 1000, y = reorder(District, Pop_per_Station))) +
-  geom_col(fill = "#2a78d6", width = 0.7) +
+  geom_col(fill = "#167D8D", width = 0.7) +
   geom_text(aes(label = paste0(round(Pop_per_Station / 1000), "k (", Stations, ")")), hjust = -0.1, size = 3) +
   scale_x_continuous(expand = expansion(mult = c(0, 0.25))) +
   labs(
