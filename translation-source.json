@@ -618,6 +618,12 @@
     "kind": "html"
   },
   {
+    "id": "105aded0ec127abd59da",
+    "source": "{1} without {2} now selects every source period; the previous default sent an {3} selection that failed on fetch.",
+    "page": "news/index.html",
+    "kind": "html"
+  },
+  {
     "id": "109bcb6ecbb2e498848a",
     "source": "Cancer Incidence in Mongolia by Site",
     "page": "articles/discovery_files/figure-html/cancer-analysis-1.svg",
@@ -676,6 +682,12 @@
     "source": "Live NSO response | Illustrative {1} completeness rule | NSO DT_NSO_2{2}_0{3}V5",
     "page": "articles/environmental-surveillance_files/figure-html/pm25-trends-1.svg",
     "kind": "figure"
+  },
+  {
+    "id": "128fca047ed3af2ec85f",
+    "source": "{1} and {2} return the previous setting invisibly, so {3} restores it.",
+    "page": "news/index.html",
+    "kind": "html"
   },
   {
     "id": "12ca9abd962d4305cc42",
@@ -954,12 +966,6 @@
     "kind": "figure"
   },
   {
-    "id": "1a2257828f573bea4c7c",
-    "source": "Inspect source provenance and generate citations",
-    "page": "reference/mongolstats-package.html",
-    "kind": "html"
-  },
-  {
     "id": "1a26e924174bf2983f85",
     "source": "A tibble with {1}, official {2}, source-reported {3}, {4}, {5}, a {6} list column, and {7}. Year ranges and configuration are source text, not verified data coverage.",
     "page": "reference/nso_portal_datamarts.html",
@@ -1065,6 +1071,12 @@
     "id": "1cebaac4f5e092978601",
     "source": "{1}Level:{2} These are recorded counts per day, not population mortality rates. Population growth and ageing can contribute to changes in the series.",
     "page": "articles/mortality-analysis.html",
+    "kind": "html"
+  },
+  {
+    "id": "1d425afeeebe4703b2ac",
+    "source": "{1}, {2}: inspect source provenance and generate citations.",
+    "page": "reference/mongolstats-package.html",
     "kind": "html"
   },
   {
@@ -1286,6 +1298,18 @@
   {
     "id": "241c90eeccde9dc1d43b",
     "source": "Authors:",
+    "page": "reference/mongolstats-package.html",
+    "kind": "html"
+  },
+  {
+    "id": "244a9abc969be36702dc",
+    "source": "{1}, {2}: find tables by keyword or list them all.",
+    "page": "reference/mongolstats-package.html",
+    "kind": "html"
+  },
+  {
+    "id": "2495c4e713252ee0d9a9",
+    "source": "{1}, {2}: inspect a table's dimensions and values.",
     "page": "reference/mongolstats-package.html",
     "kind": "html"
   },
@@ -1710,12 +1734,6 @@
     "kind": "figure"
   },
   {
-    "id": "30a29748109388d61c5b",
-    "source": "Fetch statistical data from a table",
-    "page": "reference/mongolstats-package.html",
-    "kind": "html"
-  },
-  {
     "id": "30e8b3461acc0d25352f",
     "source": "Monthly Mean PM2.{1} at Selected Ulaanbaatar Stations",
     "page": "articles/environmental-surveillance_files/figure-html/pm25-trends-1.svg",
@@ -1884,6 +1902,12 @@
     "kind": "html"
   },
   {
+    "id": "37118e244845381720a0",
+    "source": "{1}, {2}, {3}, {4} and related functions reject {5} and blank identifiers before making requests. Validation errors from the indicator, portal, metadata and manifest functions name the function that was called.",
+    "page": "news/index.html",
+    "kind": "html"
+  },
+  {
     "id": "3749974b5b1907b08b20",
     "source": "Ulaangom",
     "page": "articles/environmental-surveillance.html",
@@ -1904,7 +1928,7 @@
   {
     "id": "37eb710be3fd881d47fd",
     "source": "Invisibly, {1}.",
-    "page": "reference/nso_offline_enable.html",
+    "page": "reference/nso_cache_disable.html",
     "kind": "html"
   },
   {
@@ -1962,6 +1986,12 @@
     "kind": "figure"
   },
   {
+    "id": "3a29b873f2f266982dd3",
+    "source": "Invisibly, the previous option value as a list, suitable for restoring with {1}.",
+    "page": "reference/nso_offline_enable.html",
+    "kind": "html"
+  },
+  {
     "id": "3a5af1b43920828dbb12",
     "source": "# can carry leading spaces, so trim them before comparing.",
     "page": "articles/discovery.html",
@@ -2000,7 +2030,7 @@
   {
     "id": "3c15ea82d066cc3fe1ea",
     "source": "Find tables by keyword",
-    "page": "reference/mongolstats-package.html",
+    "page": "articles/getting-started.html",
     "kind": "html"
   },
   {
@@ -2778,12 +2808,6 @@
     "kind": "comment"
   },
   {
-    "id": "52db641cc13511fd031b",
-    "source": "Main Functions{1}{2}",
-    "page": "reference/mongolstats-package.html",
-    "kind": "html"
-  },
-  {
     "id": "5314483b9e459fa1b37e",
     "source": "Classification codes remain character strings. An empty codebook does not prove that the classification has no categories, and a nonempty one does not prove completeness. A licence or security category describes the catalog record; it does not grant access to underlying records. Missing official translations remain missing.",
     "page": "articles/data-provenance.html",
@@ -2860,12 +2884,6 @@
     "source": "Peak: Dec ({1}/day); lowest: Jan ({2}/day)",
     "page": "articles/mortality-analysis_files/figure-html/monthly-means-plot-1.svg",
     "kind": "figure"
-  },
-  {
-    "id": "558563c7116487590925",
-    "source": "Retrieve explicit public portal aggregate series",
-    "page": "reference/mongolstats-package.html",
-    "kind": "html"
   },
   {
     "id": "55dbf4b2a26e687cadbc",
@@ -3196,12 +3214,6 @@
     "source": "Enforcement{1}{2}",
     "page": "CODE_OF_CONDUCT.html",
     "kind": "html"
-  },
-  {
-    "id": "5ea6bea9993207b7a29b",
-    "source": "# Enable offline mode",
-    "page": "reference/nso_offline_enable.html",
-    "kind": "comment"
   },
   {
     "id": "5fcfe098d1527a6c815e",
@@ -3840,12 +3852,6 @@
     "kind": "html"
   },
   {
-    "id": "71f188b1319648df8ad2",
-    "source": "If TRUE, error when any table fails to fetch. If FALSE (default), failed tables are dropped from the result with a warning naming them.",
-    "page": "reference/nso_package.html",
-    "kind": "html"
-  },
-  {
     "id": "71fe78e0c936926cdd76",
     "source": "Higher values mean more dissolved minerals and salts",
     "page": "articles/environmental-surveillance_files/figure-html/water-quality-1.svg",
@@ -4282,12 +4288,6 @@
     "source": "Create a sequence of periods",
     "page": "reference/nso_period_seq.html",
     "kind": "html"
-  },
-  {
-    "id": "7faa6281e8f32457f07a",
-    "source": "No eligible observations",
-    "page": "articles/environmental-surveillance_files/figure-html/pm25-trends-1.svg",
-    "kind": "figure"
   },
   {
     "id": "7fab88f25760ab0615ad",
@@ -5568,6 +5568,12 @@
     "kind": "html"
   },
   {
+    "id": "a45ffa3f7fbabd9db8ab",
+    "source": "Main functions{1}{2}",
+    "page": "reference/mongolstats-package.html",
+    "kind": "html"
+  },
+  {
     "id": "a47981f1bfcb678a7415",
     "source": "Water Quality Monitoring{1}{2}",
     "page": "articles/environmental-surveillance.html",
@@ -5694,6 +5700,12 @@
     "kind": "html"
   },
   {
+    "id": "a8a1eb44b57813f48a2f",
+    "source": "Adding labels in {1}, {2} and {3} can no longer duplicate rows when table metadata repeats a code or label. Mongolian labels that do not align with their codes are returned as {4} instead of raising an error.",
+    "page": "news/index.html",
+    "kind": "html"
+  },
+  {
     "id": "a8cbe29c60e67d745fd6",
     "source": "Tips for Spatial Epidemiology{1}{2}",
     "page": "articles/mapping.html",
@@ -5704,12 +5716,6 @@
     "source": "A list suitable to send as JSON body to PXWeb.",
     "page": "reference/as_px_query.html",
     "kind": "html"
-  },
-  {
-    "id": "a938f3de4227d1c8d9ef",
-    "source": "# Check the option was set",
-    "page": "reference/nso_offline_enable.html",
-    "kind": "comment"
   },
   {
     "id": "a97844b3feb558291ace",
@@ -6282,6 +6288,12 @@
     "kind": "figure"
   },
   {
+    "id": "b94b7538d7840f7c1098",
+    "source": "{1}, {2}: find reviewed statistical concepts and build queries.",
+    "page": "reference/mongolstats-package.html",
+    "kind": "html"
+  },
+  {
     "id": "b97063db14f4ebf7ecb9",
     "source": "Performs a fuzzy string-distance join between a data frame and geoBoundaries polygons.",
     "page": "reference/mn_fuzzy_join_by_name.html",
@@ -6456,12 +6468,6 @@
     "kind": "html"
   },
   {
-    "id": "bd9599ebbef178540c91",
-    "source": "List all tables",
-    "page": "reference/mongolstats-package.html",
-    "kind": "html"
-  },
-  {
     "id": "bdb97ed27e4a573e83e7",
     "source": "Distance method passed to {1}. Ignored (base Levenshtein distance is used) when the stringdist package is not installed.",
     "page": "reference/mn_fuzzy_join_by_name.html",
@@ -6561,6 +6567,12 @@
     "id": "c0a8566c3974307d9fa3",
     "source": "Navigates one level deeper in the PXWeb catalogue hierarchy. Pass in a path id obtained from {1} or a previous {2} call to list its children (sub-sectors or tables).",
     "page": "reference/nso_subsectors.html",
+    "kind": "html"
+  },
+  {
+    "id": "c14b0957fd370d7a4b38",
+    "source": "{1} raises {2} in offline mode instead of dropping every table with a warning. With {3} the error now has class {4} plus the package classes of the first failure (such as {5} or {6}), rather than always {7}. Results keep a {8} column even when empty.",
+    "page": "news/index.html",
     "kind": "html"
   },
   {
@@ -7188,6 +7200,12 @@
     "kind": "figure"
   },
   {
+    "id": "d4d48b868ab5a676a1d4",
+    "source": "Workers in {1} now overlap their downloads. The shared request lock is held only to reserve the next start slot, so request starts stay spaced while long transfers no longer block other workers or time out waiting for the lock.",
+    "page": "news/index.html",
+    "kind": "html"
+  },
+  {
     "id": "d4e8830a71c73edffe01",
     "source": "Purpose",
     "page": "articles/getting-started.html",
@@ -7542,6 +7560,12 @@
     "kind": "html"
   },
   {
+    "id": "dfb3d443b4ef75879111",
+    "source": "If TRUE, error when any table fails to fetch. The error has class {1} plus the package classes of the first failure, such as {2} or {3}. If FALSE (default), failed tables are dropped from the result with a warning naming them. Offline mode always raises {4}, as in {5}.",
+    "page": "reference/nso_package.html",
+    "kind": "html"
+  },
+  {
     "id": "dfc1e6d16ba5e2e5f863",
     "source": "Toggle navigation",
     "page": "reference/print.nso_query.html",
@@ -7590,6 +7614,12 @@
     "kind": "html"
   },
   {
+    "id": "e0ba2ccb4859b58497fd",
+    "source": "{1}, {2}: periods available in a table.",
+    "page": "reference/mongolstats-package.html",
+    "kind": "html"
+  },
+  {
     "id": "e0bc57889cddca0f2aed",
     "source": "# Generate monthly sequence",
     "page": "reference/nso_period_seq.html",
@@ -7635,12 +7665,6 @@
     "id": "e1dadbef62ad2baeefd4",
     "source": "{1}{2} input validation{3}: malformed periods (wrong width, month {4}, {5}, vectors) and reversed ranges now error with a clear message instead of silently returning a descending sequence or failing inside {6}.",
     "page": "news/index.html",
-    "kind": "html"
-  },
-  {
-    "id": "e1f7d80d33478ab2a49d",
-    "source": "Discover official metadata and collection context",
-    "page": "reference/mongolstats-package.html",
     "kind": "html"
   },
   {
@@ -7764,6 +7788,12 @@
     "kind": "html"
   },
   {
+    "id": "e78f378839edba95db55",
+    "source": "{1}: retrieve explicit public portal aggregate series.",
+    "page": "reference/mongolstats-package.html",
+    "kind": "html"
+  },
+  {
     "id": "e7dee4c30eb358b08f22",
     "source": "{1}December:{2} Red points identify December observations for comparison with other months.",
     "page": "articles/mortality-analysis.html",
@@ -7779,6 +7809,12 @@
     "id": "e8673ced15805981da8b",
     "source": "{1}Discover More Tables{2}: See the {3}Discovery Guide{4} for search techniques",
     "page": "articles/environmental-surveillance.html",
+    "kind": "html"
+  },
+  {
+    "id": "e871d8535f0472b4eb7d",
+    "source": "{1}, {2}: discover official metadata and collection context.",
+    "page": "reference/mongolstats-package.html",
     "kind": "html"
   },
   {
@@ -8001,12 +8037,6 @@
     "id": "f0abe4bb558144b7f672",
     "source": "These experimental interfaces expose the public catalogue at {1}. Its numeric identifiers belong to a separate service from PXWeb table identifiers. An {2} can describe a questionnaire field rather than a published statistical series.",
     "page": "reference/nso_metadata.html",
-    "kind": "html"
-  },
-  {
-    "id": "f0f1916de3ee352852c1",
-    "source": "Inspect a table's dimensions and values",
-    "page": "reference/mongolstats-package.html",
     "kind": "html"
   },
   {
@@ -8454,6 +8484,12 @@
     "kind": "comment"
   },
   {
+    "id": "fd68524c0f837603620d",
+    "source": "{1}: fetch statistical data from a table.",
+    "page": "reference/mongolstats-package.html",
+    "kind": "html"
+  },
+  {
     "id": "fd8f17cfc8d607303b02",
     "source": "Track fine particulate matter (PM2.{1}) and sulphur dioxide (SO₂) at Ulaanbaatar stations",
     "page": "articles/environmental-surveillance.html",
@@ -8530,12 +8566,6 @@
     "source": "Map of stations with complete observed years, sized and coloured by mean annual dust days; settlement centres are approximate station locations",
     "page": "articles/environmental-surveillance.html",
     "kind": "alt"
-  },
-  {
-    "id": "ff4cb71afc31995d2834",
-    "source": "Find reviewed statistical concepts and build queries",
-    "page": "reference/mongolstats-package.html",
-    "kind": "html"
   },
   {
     "id": "ff75697f3cdb1fbdb5ed",
