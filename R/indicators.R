@@ -97,7 +97,8 @@ nso_indicator_query <- function(id, periods = NULL, geography = NULL) {
     }
   }
   selections <- row$selections[[1]]
-  selections[[row$time_dimension[[1]]]] <- periods %||% "all"
+  # Omitting the time dimension selects every period (PXWeb "select all")
+  selections[[row$time_dimension[[1]]]] <- periods
   if (!is.null(geography)) selections[[row$geography_dimension[[1]]]] <- geography
   nso_query(row$source_id[[1]], selections)
 }

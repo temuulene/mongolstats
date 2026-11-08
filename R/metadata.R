@@ -151,7 +151,7 @@ nso_metadata_search <- function(
   } else {
     cli::cli_abort("Supply a nonempty {.arg query} for this {.arg type}.")
   }
-  out <- .nso_metadata_refs()
+  rows <- list()
   unresolved <- 0L
   for (entry in entries) {
     if (type != "all" && type != entry$type) {
@@ -179,8 +179,9 @@ nso_metadata_search <- function(
     if (!is.null(sector) && sector_id != sector) {
       next
     }
-    out <- dplyr::bind_rows(out, .nso_metadata_ref(row, entry$type))
+    rows[[length(rows) + 1L]] <- .nso_metadata_ref(row, entry$type)
   }
+  out <- dplyr::bind_rows(c(list(.nso_metadata_refs()), rows))
   attr(out, "coverage") <- coverage
   attr(out, "exhaustive") <- FALSE
   attr(out, "pagination") <- pagination
@@ -224,11 +225,11 @@ nso_forms <- function(database_id, include_raw = FALSE) {
   .nso_metadata_raw_option(include_raw)
   record <- nso_metadata("database", database_id, include_raw = TRUE)
   forms <- record$raw$forms %||% list()
-  out <- .nso_metadata_refs()
+  references <- list()
   records <- list()
   for (form in forms) {
     reference <- .nso_metadata_ref(form, "form")
-    out <- dplyr::bind_rows(out, reference)
+    references[[length(references) + 1L]] <- reference
     records[[length(records) + 1L]] <- .nso_metadata_record(
       form,
       "form",
@@ -236,6 +237,7 @@ nso_forms <- function(database_id, include_raw = FALSE) {
       include_raw
     )
   }
+  out <- dplyr::bind_rows(c(list(.nso_metadata_refs()), references))
   out$records <- records
   if (!include_raw) {
     record$raw <- NULL
@@ -275,22 +277,20 @@ nso_classification <- function(id, include_raw = FALSE) {
     is_active = logical(),
     source_url = character()
   )
-  for (entry in codes) {
-    out <- dplyr::bind_rows(
-      out,
-      tibble::tibble(
-        source = record$source,
-        classification_id = record$id,
-        classification_key = record$key,
-        code = .nso_metadata_text(entry$code),
-        definition = .nso_metadata_text(entry$definition %||% entry$name),
-        parent_code = .nso_metadata_text(entry$parent_code),
-        version = .nso_metadata_text(entry$version %||% record$version),
-        is_active = .nso_metadata_logical(entry$is_active),
-        source_url = record$url
-      )
+  rows <- lapply(codes, function(entry) {
+    tibble::tibble(
+      source = record$source,
+      classification_id = record$id,
+      classification_key = record$key,
+      code = .nso_metadata_text(entry$code),
+      definition = .nso_metadata_text(entry$definition %||% entry$name),
+      parent_code = .nso_metadata_text(entry$parent_code),
+      version = .nso_metadata_text(entry$version %||% record$version),
+      is_active = .nso_metadata_logical(entry$is_active),
+      source_url = record$url
     )
-  }
+  })
+  out <- dplyr::bind_rows(c(list(out), rows))
   completeness <- if (!length(codes)) "empty" else "unverified"
   if (anyNA(out$code) || anyDuplicated(out$code)) {
     completeness <- "incomplete"
@@ -345,10 +345,10 @@ nso_metadata_dictionary <- function(dictionary) {
       "The dictionary response is not a list of categories."
     )
   }
-  out <- .nso_metadata_refs()
-  for (row in raw) {
-    out <- dplyr::bind_rows(out, .nso_metadata_ref(row, dictionary))
-  }
+  out <- dplyr::bind_rows(c(
+    list(.nso_metadata_refs()),
+    lapply(raw, .nso_metadata_ref, type = dictionary)
+  ))
   out$url <- NULL
   attr(out, "source_url") <- .nso_service_url("metadata", dictionary)
   attr(out, "retrieved_at") <- Sys.time()
@@ -356,11 +356,11 @@ nso_metadata_dictionary <- function(dictionary) {
   out
 }
 
-.nso_metadata_raw_option <- function(include_raw) {
+.nso_metadata_raw_option <- function(include_raw, call = rlang::caller_env()) {
   if (
     !is.logical(include_raw) || length(include_raw) != 1L || is.na(include_raw)
   ) {
-    cli::cli_abort("{.arg include_raw} must be TRUE or FALSE.")
+    cli::cli_abort("{.arg include_raw} must be TRUE or FALSE.", call = call)
   }
   invisible(NULL)
 }
@@ -375,7 +375,7 @@ nso_metadata_dictionary <- function(dictionary) {
   .nso_service_json("metadata", segments, query = query, body = body)
 }
 
-.nso_metadata_type <- function(type, search = FALSE) {
+.nso_metadata_type <- function(type, search = FALSE, call = rlang::caller_env()) {
   allowed <- c("database", "table", "indicator", "classification", "form")
   if (search) {
     allowed <- c(allowed, "all", "organization", "sector")
@@ -386,12 +386,12 @@ nso_metadata_dictionary <- function(dictionary) {
       is.na(type) ||
       !type %in% allowed
   ) {
-    cli::cli_abort("{.arg type} must be one of: {.or {allowed}}.")
+    cli::cli_abort("{.arg type} must be one of: {.or {allowed}}.", call = call)
   }
   type
 }
 
-.nso_metadata_id <- function(id, arg = "id") {
+.nso_metadata_id <- function(id, arg = "id", call = rlang::caller_env()) {
   valid <- (is.numeric(id) || is.character(id)) &&
     length(id) == 1L &&
     !is.na(id) &&
@@ -402,7 +402,8 @@ nso_metadata_dictionary <- function(dictionary) {
     as.numeric(id) == floor(as.numeric(id))
   if (!valid) {
     cli::cli_abort(
-      "{.arg {arg}} must be a positive integer metadata identifier."
+      "{.arg {arg}} must be a positive integer metadata identifier.",
+      call = call
     )
   }
   as.character(as.integer(id))
@@ -529,7 +530,7 @@ nso_metadata_dictionary <- function(dictionary) {
     )
   }
   reference <- .nso_metadata_ref(raw, type)
-  flags <- .nso_metadata_flag()
+  flags <- list(.nso_metadata_flag())
   dates <- list()
   years <- list()
   date_fields <- raw[grep("(_date|_year)$", names(raw), value = TRUE)]
@@ -550,26 +551,21 @@ nso_metadata_dictionary <- function(dictionary) {
     dates[[field]] <- date
     if (is.na(date)) {
       code <- if (is.na(text)) "missing_date" else "invalid_date"
-      flags <- dplyr::bind_rows(
-        flags,
-        .nso_metadata_flag(
-          code,
-          field,
-          "The source field does not contain a valid calendar date or year."
-        )
+      flags[[length(flags) + 1L]] <- .nso_metadata_flag(
+        code,
+        field,
+        "The source field does not contain a valid calendar date or year."
       )
     }
   }
   if (identical(raw$is_active, FALSE)) {
-    flags <- dplyr::bind_rows(
-      flags,
-      .nso_metadata_flag(
-        "inactive",
-        "is_active",
-        "The source marks this record inactive."
-      )
+    flags[[length(flags) + 1L]] <- .nso_metadata_flag(
+      "inactive",
+      "is_active",
+      "The source marks this record inactive."
     )
   }
+  flags <- dplyr::bind_rows(flags)
   is_test <- grepl(
     "(^|[^a-z])(test|demo)([^a-z]|$)|\u0442\u0443\u0440\u0448\u0438\u043b\u0442",
     reference$name_mn,
@@ -671,7 +667,7 @@ nso_metadata_dictionary <- function(dictionary) {
 }
 
 .nso_metadata_relationships <- function(raw) {
-  out <- .nso_metadata_refs()
+  refs <- list()
   visit <- function(value) {
     if (!is.list(value)) {
       return(invisible(NULL))
@@ -690,9 +686,9 @@ nso_metadata_dictionary <- function(dictionary) {
           tbl_id = "table",
           org_id = "organization"
         )
-        out <<- dplyr::bind_rows(
-          out,
-          .nso_metadata_ref(list(id = value[[field]]), type)
+        refs[[length(refs) + 1L]] <<- .nso_metadata_ref(
+          list(id = value[[field]]),
+          type
         )
       }
     }
@@ -737,9 +733,9 @@ nso_metadata_dictionary <- function(dictionary) {
       }
       for (element in items) {
         if (is.list(element) && !is.null(element$id)) {
-          out <<- dplyr::bind_rows(
-            out,
-            .nso_metadata_ref(element, types[[field]])
+          refs[[length(refs) + 1L]] <<- .nso_metadata_ref(
+            element,
+            types[[field]]
           )
         }
       }
@@ -753,6 +749,7 @@ nso_metadata_dictionary <- function(dictionary) {
     invisible(NULL)
   }
   visit(raw)
+  out <- dplyr::bind_rows(c(list(.nso_metadata_refs()), refs))
   out <- out[order(is.na(out$name_mn)), , drop = FALSE]
   out[!duplicated(out$key), , drop = FALSE]
 }

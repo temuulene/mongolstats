@@ -25,9 +25,12 @@ mongolstats. Defaults to the \code{mongolstats.parallel} option (\code{FALSE}).}
 
 \item{value_name}{Name of the numeric value column in the result (default: "value").}
 
-\item{strict}{If TRUE, error when any table fails to fetch. If FALSE
-(default), failed tables are dropped from the result with a warning
-naming them.}
+\item{strict}{If TRUE, error when any table fails to fetch. The error has
+class \code{mongolstats_package_error} plus the package classes of the first
+failure, such as \code{mongolstats_http_error} or
+\code{mongolstats_selection_error}. If FALSE (default), failed tables are
+dropped from the result with a warning naming them. Offline mode always
+raises \code{mongolstats_offline_error}, as in \code{\link[=nso_data]{nso_data()}}.}
 }
 \value{
 A tibble combining data from all requested tables, with a \code{tbl_id} column

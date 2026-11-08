@@ -7,13 +7,14 @@
 nso_offline_disable()
 }
 \value{
-Invisibly, \code{TRUE}.
+Invisibly, the previous option value as a list, suitable for
+restoring with \code{\link[=options]{options()}}.
 }
 \description{
 Disable offline mode
 }
 \examples{
-old <- nso_options(mongolstats.offline = TRUE)
-nso_offline_disable()
+old <- nso_offline_disable()
+getOption("mongolstats.offline")
 options(old)
 }

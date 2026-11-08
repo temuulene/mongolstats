@@ -46,6 +46,16 @@ test_that("offline enable/disable toggles option", {
   expect_false(getOption("mongolstats.offline"))
 })
 
+test_that("offline helpers return the previous setting for options()", {
+  withr::local_options(mongolstats.offline = FALSE)
+  old <- nso_offline_enable()
+  expect_equal(old, list(mongolstats.offline = FALSE))
+  expect_true(getOption("mongolstats.offline"))
+  expect_equal(nso_offline_disable(), list(mongolstats.offline = TRUE))
+  options(old)
+  expect_false(getOption("mongolstats.offline"))
+})
+
 test_that("numeric options reject non-finite values atomically", {
   before <- nso_options()
   for (nm in c(

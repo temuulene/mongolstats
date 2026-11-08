@@ -183,3 +183,28 @@ test_that("nso_subsectors() splits a path id into PXWeb path segments", {
   expect_equal(seen, character())
   expect_snapshot(nso_subsectors(c("a", "b")), error = TRUE)
 })
+
+test_that("Mongolian labels never duplicate codes or fail on malformed metadata", {
+  sex <- function(values, labels) {
+    list(code = "SEX", text = "Sex", values = as.list(values), valueTexts = as.list(labels))
+  }
+  mn <- NULL
+  local_mocked_bindings(
+    .px_table_meta = function(tbl_id, lang = "en", ...) {
+      vars <- if (identical(lang, "mn")) mn else list(sex(c("0", "1"), c("Total", "Male")))
+      list(meta = list(variables = vars))
+    }
+  )
+  # A repeated code in the Mongolian metadata keeps one row per code
+  mn <- list(sex(c("0", "1", "1"), c("Бүгд", "Эр", "Эр (давхар)")))
+  values <- nso_dim_values("T", "Sex", labels = "both")
+  expect_equal(values$code, c("0", "1"))
+  expect_equal(values$label_mn, c("Бүгд", "Эр"))
+  meta <- nso_table_meta("T")
+  expect_equal(nrow(meta$codes[[1]]), meta$n_values)
+  expect_equal(meta$codes[[1]]$label_mn, c("Бүгд", "Эр"))
+  # Labels that do not align with their codes become NA instead of erroring
+  mn <- list(sex(c("0", "1"), "Бүгд"))
+  expect_equal(nso_dim_values("T", "Sex", labels = "mn")$label_mn, c(NA_character_, NA_character_))
+  expect_equal(nso_table_meta("T")$codes[[1]]$label_mn, c(NA_character_, NA_character_))
+})

@@ -51,7 +51,7 @@ test_that("nso_package reports failed tables instead of dropping silently", {
   expect_equal(nrow(out), 0)
   expect_error(
     nso_package(reqs, strict = TRUE),
-    class = "mongolstats_http_error"
+    class = "mongolstats_package_error"
   )
 })
 

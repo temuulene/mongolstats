@@ -25,18 +25,23 @@
 
 .nso_bind_results <- function(parts, failures = list()) {
   out <- dplyr::bind_rows(parts)
+  # Keep the documented `tbl_id` column when every table failed
+  if (!"tbl_id" %in% names(out)) {
+    out$tbl_id <- character(nrow(out))
+  }
   records <- unlist(
     lapply(parts, function(part) nso_provenance(part)$records),
     recursive = FALSE
   )
   attr(out, "nso_provenance") <- .nso_manifest(records, failures)
-  status <- purrr::map_dfr(parts, function(part) {
+  status <- purrr::map(parts, function(part) {
     values <- nso_value_status(part)
     if (nrow(values)) {
       values$tbl_id <- rep(unique(part$tbl_id)[1], nrow(values))
     }
     values
-  })
+  }) |>
+    dplyr::bind_rows()
   attr(out, "nso_value_status") <- status
   out
 }
@@ -210,7 +215,7 @@ nso_table_info <- function(x) {
   text <- function(value) {
     if (length(value)) paste(value, collapse = "\n") else NA_character_
   }
-  purrr::map_dfr(records, function(r) {
+  purrr::map(records, function(r) {
     tibble::tibble(
       backend = r$backend,
       source_id = r$source_id,
@@ -222,7 +227,8 @@ nso_table_info <- function(x) {
       retrieved_at = r$retrieved_at,
       metadata = list(r$metadata)
     )
-  })
+  }) |>
+    dplyr::bind_rows()
 }
 
 #' Generate source citations for fetched statistics
@@ -381,10 +387,10 @@ nso_read_manifest <- function(path) {
   if (!file.rename(temporary, path)) stop("Cannot install the manifest.")
 }
 
-.nso_manifest_path <- function(path) {
+.nso_manifest_path <- function(path, call = rlang::caller_env()) {
   if (
     !is.character(path) || length(path) != 1L || is.na(path) || !nzchar(path)
   ) {
-    cli_abort("{.arg path} must be a single non-empty file path.")
+    cli_abort("{.arg path} must be a single non-empty file path.", call = call)
   }
 }

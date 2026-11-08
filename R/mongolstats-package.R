@@ -7,18 +7,18 @@
 #' collection forms, and classifications. For maps, join the results to the
 #' boundaries in the companion package mongolmaps by NSO code.
 #'
-#' @section Main Functions:
-#' \describe{
-#'   \item{nso_search}{Find tables by keyword}
-#'   \item{nso_tables}{List all tables}
-#'   \item{nso_dims, nso_dim_values}{Inspect a table's dimensions and values}
-#'   \item{nso_table_periods, nso_latest_periods}{Periods available in a table}
-#'   \item{nso_data}{Fetch statistical data from a table}
-#'   \item{nso_indicators, nso_indicator_query}{Find reviewed statistical concepts and build queries}
-#'   \item{nso_provenance, nso_citation}{Inspect source provenance and generate citations}
-#'   \item{nso_metadata, nso_metadata_search}{Discover official metadata and collection context}
-#'   \item{nso_portal_data}{Retrieve explicit public portal aggregate series}
-#' }
+#' @section Main functions:
+#' * [nso_search()], [nso_tables()]: find tables by keyword or list them all.
+#' * [nso_dims()], [nso_dim_values()]: inspect a table's dimensions and values.
+#' * [nso_table_periods()], [nso_latest_periods()]: periods available in a table.
+#' * [nso_data()]: fetch statistical data from a table.
+#' * [nso_indicators()], [nso_indicator_query()]: find reviewed statistical
+#'   concepts and build queries.
+#' * [nso_provenance()], [nso_citation()]: inspect source provenance and
+#'   generate citations.
+#' * [nso_metadata()], [nso_metadata_search()]: discover official metadata and
+#'   collection context.
+#' * [nso_portal_data()]: retrieve explicit public portal aggregate series.
 #'
 #' @importFrom lifecycle deprecated
 #' @importFrom utils head

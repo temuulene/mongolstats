@@ -87,23 +87,23 @@ nso_portal_data <- function(
   out
 }
 
-.portal_check_string <- function(x, arg, pattern = NULL) {
+.portal_check_string <- function(x, arg, pattern = NULL, call = rlang::caller_env()) {
   ok <- is.character(x) && length(x) == 1L && !is.na(x) && nzchar(x)
   if (ok && !is.null(pattern)) ok <- grepl(pattern, x)
-  if (!ok) cli_abort("{.arg {arg}} must be a single valid source identifier or parameter.")
+  if (!ok) cli_abort("{.arg {arg}} must be a single valid source identifier or parameter.", call = call)
   invisible(x)
 }
 
-.portal_check_flag <- function(x, arg) {
+.portal_check_flag <- function(x, arg, call = rlang::caller_env()) {
   if (!is.logical(x) || length(x) != 1L || is.na(x)) {
-    cli_abort("{.arg {arg}} must be TRUE or FALSE.")
+    cli_abort("{.arg {arg}} must be TRUE or FALSE.", call = call)
   }
   invisible(x)
 }
 
-.portal_check_periods <- function(x) {
+.portal_check_periods <- function(x, call = rlang::caller_env()) {
   if (!is.null(x) && (!is.character(x) || !length(x) || anyNA(x) || any(!nzchar(x)))) {
-    cli_abort("{.arg periods} must be NULL or nonmissing source period labels.")
+    cli_abort("{.arg periods} must be NULL or nonmissing source period labels.", call = call)
   }
   invisible(x)
 }

@@ -10,6 +10,9 @@ check_tbl_id <- function(tbl_id, call = rlang::caller_env()) {
       call = call
     )
   }
+  if (is.na(tbl_id) || !nzchar(trimws(tbl_id))) {
+    cli_abort("{.arg tbl_id} must be a non-empty table identifier.", call = call)
+  }
 }
 
 #' @keywords internal
@@ -21,6 +24,7 @@ check_selections <- function(selections, call = rlang::caller_env()) {
         "{.arg selections} must be a named list of values.",
         "i" = "Use {.code list(Year = \"2023\", Sex = \"Total\")}."
       ),
+      class = "mongolstats_selection_error",
       call = call
     )
   }
@@ -56,6 +60,15 @@ check_query <- function(query, call = rlang::caller_env()) {
   if (!is.character(query) || length(query) != 1L) {
     cli_abort(
       "{.arg query} must be a single character string, not {.obj_type_friendly {query}}.",
+      call = call
+    )
+  }
+  if (is.na(query) || !nzchar(trimws(query))) {
+    cli_abort(
+      c(
+        "{.arg query} must be a non-empty search term.",
+        "i" = "List every table with {.fn nso_tables}."
+      ),
       call = call
     )
   }

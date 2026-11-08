@@ -16,7 +16,7 @@
       "verified_at": "2026-10-19",
       "source_url": "https://data.1212.mn/api/v1/en/NSO/Economy%2C%20environment/National%20Accounts/GROSS%20DOMESTIC%20PRODUCT%2C%20by%20production%20approach%2C%20by%20year/DT_NSO_0500_001V1.px",
       "caveats": "Period labels can carry a trailing asterisk; retain the source label. GDP series are subject to revisions. The unit preserves the official UNITS[en] label from the PX-format response verified on 2026-10-19; no numeric conversion is applied. No portal series equivalence is asserted.",
-      "selections": {"Статистик үзүүлэлт": ["0"], "Эдийн засгийн салбар": ["0"], "Жил": ["all"]}
+      "selections": {"Статистик үзүүлэлт": ["0"], "Эдийн засгийн салбар": ["0"]}
     },
     {
       "id": "resident_population",
@@ -33,7 +33,7 @@
       "verified_at": "2026-10-19",
       "source_url": "https://data.1212.mn/api/v1/en/NSO/Population%2C%20household/1_Population%2C%20household/DT_NSO_0300_068V2.px",
       "caveats": "Resident population differs from citizen population and midyear population measures. Geography codes and administrative boundaries can change across years. The PXWeb national code 0 is unrelated to the portal code CO9999. The table is cross-listed; resolution follows the package's standard location rules.",
-      "selections": {"Хүйс": ["0"], "Бүс": ["0"], "Он": ["all"]}
+      "selections": {"Хүйс": ["0"], "Бүс": ["0"]}
     }
   ]
 }

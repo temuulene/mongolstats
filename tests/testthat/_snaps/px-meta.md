@@ -31,7 +31,7 @@
       nso_dim_values("T", c("Sex", "Year"))
     Condition
       Error in `nso_dim_values()`:
-      ! `dim` must be a single character string.
+      ! `dim` must be a single non-empty character string.
 
 # nso_table_periods() lists the time dimension's periods
 
